@@ -66,7 +66,7 @@ public class CoLReferenceBatchTransformer {
 			Taxon taxon = taxa.get(record.get(taxonID));
 			if (taxon == null) {
 				String fmt = "Orphan reference. No taxon found for ID {} ({})";
-				logger.error(fmt, record.get(taxonID), ref);
+//				logger.error(fmt, record.get(taxonID), ref);
 				continue;
 			}
 			if (taxon.getReferences() == null) {

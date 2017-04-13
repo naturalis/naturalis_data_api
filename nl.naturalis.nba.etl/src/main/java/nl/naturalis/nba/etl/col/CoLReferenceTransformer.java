@@ -3,6 +3,7 @@ package nl.naturalis.nba.etl.col;
 import static nl.naturalis.nba.api.model.SourceSystem.COL;
 import static nl.naturalis.nba.dao.DocumentType.TAXON;
 import static nl.naturalis.nba.dao.util.es.ESUtil.getElasticsearchId;
+import static nl.naturalis.nba.etl.ETLUtil.getTestGenera;
 import static nl.naturalis.nba.etl.col.CoLReferenceCsvField.creator;
 import static nl.naturalis.nba.etl.col.CoLReferenceCsvField.date;
 import static nl.naturalis.nba.etl.col.CoLReferenceCsvField.description;
@@ -23,21 +24,24 @@ import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.TransformUtil;
 
 /**
- * Subclass of {@link CSVTransformer} that transforms CSV records into
- * {@link Taxon} objects.
+ * Subclass of {@link CSVTransformer} that transforms CSV records into {@link Taxon}
+ * objects.
  * 
  * @author Ayco Holleman
  *
  */
-class CoLReferenceTransformer extends AbstractCSVTransformer<CoLReferenceCsvField, Taxon> {
+class CoLReferenceTransformer
+		extends AbstractCSVTransformer<CoLReferenceCsvField, Taxon> {
 
 	private final CoLTaxonLoader loader;
 	private int orphans;
+	private String[] testGenera;
 
 	CoLReferenceTransformer(ETLStatistics stats, CoLTaxonLoader loader)
 	{
 		super(stats);
 		this.loader = loader;
+		testGenera = getTestGenera();
 	}
 
 	@Override
@@ -72,12 +76,13 @@ class CoLReferenceTransformer extends AbstractCSVTransformer<CoLReferenceCsvFiel
 			Reference reference = createReference();
 			if (taxon == null) {
 				++orphans;
-				if (!suppressErrors) {
+				if (!suppressErrors && testGenera == null) {
 					error("Orphan reference: " + reference);
 				}
 			}
 			else {
-				if (taxon.getReferences() == null || !taxon.getReferences().contains(reference)) {
+				if (taxon.getReferences() == null
+						|| !taxon.getReferences().contains(reference)) {
 					stats.objectsAccepted++;
 					taxon.addReference(reference);
 					return Arrays.asList(taxon);

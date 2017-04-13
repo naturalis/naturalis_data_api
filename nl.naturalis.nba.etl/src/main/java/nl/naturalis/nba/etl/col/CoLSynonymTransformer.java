@@ -3,6 +3,7 @@ package nl.naturalis.nba.etl.col;
 import static nl.naturalis.nba.api.model.SourceSystem.COL;
 import static nl.naturalis.nba.dao.DocumentType.TAXON;
 import static nl.naturalis.nba.dao.util.es.ESUtil.getElasticsearchId;
+import static nl.naturalis.nba.etl.ETLUtil.getTestGenera;
 import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.acceptedNameUsageID;
 import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.genericName;
 import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.infraspecificEpithet;
@@ -26,8 +27,8 @@ import nl.naturalis.nba.etl.normalize.TaxonomicStatusNormalizer;
 import nl.naturalis.nba.etl.normalize.UnmappedValueException;
 
 /**
- * A implementation of {@link CSVTransformer} that enriches {@link Taxon}
- * objects with synonyms from the taxa.txt file.
+ * A implementation of {@link CSVTransformer} that enriches {@link Taxon} objects with
+ * synonyms from the taxa.txt file.
  * 
  * @author Ayco Holleman
  *
@@ -38,21 +39,23 @@ class CoLSynonymTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, Tax
 	private final TaxonomicStatusNormalizer statusNormalizer;
 
 	private int orphans;
+	private String[] testGenera;
 
 	CoLSynonymTransformer(ETLStatistics stats, CoLTaxonLoader loader)
 	{
 		super(stats);
 		this.loader = loader;
-		this.statusNormalizer = TaxonomicStatusNormalizer.getInstance();
+		statusNormalizer = TaxonomicStatusNormalizer.getInstance();
+		testGenera = getTestGenera();
 	}
 
 	@Override
 	protected boolean skipRecord()
 	{
 		/*
-		 * The acceptedNameUsageID field is a foreign key to an accepted name
-		 * record in the same CSV file. If the field is empty, it means the
-		 * record is itself an accepted name record, so we must skip it.
+		 * The acceptedNameUsageID field is a foreign key to an accepted name record in
+		 * the same CSV file. If the field is empty, it means the record is itself an
+		 * accepted name record, so we must skip it.
 		 */
 		return input.get(acceptedNameUsageID) == null;
 	}
@@ -74,15 +77,14 @@ class CoLSynonymTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, Tax
 			Taxon taxon = loader.findInQueue(id);
 			if (taxon != null) {
 				/*
-				 * Taxon has already been queued for indexing because of a
-				 * previous synonym belonging to the same taxon. Return null,
-				 * because we don't want to index the taxon twice. Otherwise the
-				 * taxon object with the previous synonym would be overwritten
-				 * by the taxon object with the current synonym (thus
-				 * obliterating the previous synonym). Instead, we want to
+				 * Taxon has already been queued for indexing because of a previous
+				 * synonym belonging to the same taxon. Return null, because we don't want
+				 * to index the taxon twice. Otherwise the taxon object with the previous
+				 * synonym would be overwritten by the taxon object with the current
+				 * synonym (thus obliterating the previous synonym). Instead, we want to
 				 * append the current synonym to the list of synonyms of the
-				 * already-queued taxon object, and then save it once with all
-				 * its synonyms.
+				 * already-queued taxon object, and then save it once with all its
+				 * synonyms.
 				 */
 				if (!taxon.getSynonyms().contains(synonym)) {
 					stats.objectsAccepted++;
@@ -101,7 +103,8 @@ class CoLSynonymTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, Tax
 			 */
 			taxon = ESUtil.find(TAXON, id);
 			if (taxon != null) {
-				if (taxon.getSynonyms() == null || !taxon.getSynonyms().contains(synonym)) {
+				if (taxon.getSynonyms() == null
+						|| !taxon.getSynonyms().contains(synonym)) {
 					stats.objectsAccepted++;
 					taxon.addSynonym(getScientificName());
 					return Arrays.asList(taxon);
@@ -111,10 +114,14 @@ class CoLSynonymTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, Tax
 				}
 			}
 			else {
-				if (!suppressErrors) {
-					++orphans;
+				++orphans;
+				if (!suppressErrors && testGenera == null) {
 					error("Orphan synonym: " + synonym);
 				}
+				/*
+				 * When creating a test set we are bound to have huge amounts of orphans
+				 * and we don't want to clutter up our log file
+				 */
 			}
 			stats.objectsRejected++;
 			return null;

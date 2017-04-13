@@ -6,7 +6,6 @@ import static nl.naturalis.nba.etl.ETLUtil.logDuration;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collection;
 
 import org.apache.logging.log4j.Logger;
 
@@ -21,8 +20,8 @@ import nl.naturalis.nba.etl.ETLRuntimeException;
 import nl.naturalis.nba.etl.ETLStatistics;
 
 /**
- * Enriches Taxon documents with literature references sourced from the
- * reference.txt file in a CoL DwC archive.
+ * Enriches Taxon documents with literature references sourced from the reference.txt file
+ * in a CoL DwC archive.
  * 
  * @author Ayco Holleman
  *
@@ -43,7 +42,8 @@ public class CoLReferenceBatchImporter {
 		try {
 			CoLReferenceBatchImporter importer = new CoLReferenceBatchImporter();
 			importer.setBatchSize(batchSize);
-			String dwcaDir = DaoRegistry.getInstance().getConfiguration().required("col.data.dir");
+			String dwcaDir = DaoRegistry.getInstance().getConfiguration()
+					.required("col.data.dir");
 			importer.importCsv(dwcaDir + "/reference.txt");
 		}
 		finally {
@@ -71,9 +71,9 @@ public class CoLReferenceBatchImporter {
 		ETLStatistics stats;
 		CSVExtractor<CoLReferenceCsvField> extractor;
 		CoLReferenceBatchTransformer transformer = null;
-		BulkIndexer<Taxon> updater;
+		BulkIndexer<Taxon> indexer;
 		ArrayList<CSVRecordInfo<CoLReferenceCsvField>> records;
-		Collection<Taxon> taxa;
+		ArrayList<Taxon> taxa = new ArrayList<>(batchSize);
 		int processed = 0;
 		try {
 			File f = new File(path);
@@ -83,7 +83,7 @@ public class CoLReferenceBatchImporter {
 			stats = new ETLStatistics();
 			extractor = createExtractor(stats, f);
 			transformer = new CoLReferenceBatchTransformer();
-			updater = new BulkIndexer<>(TAXON);
+			indexer = new BulkIndexer<>(TAXON);
 			records = new ArrayList<>(batchSize);
 			logger.info("Processing file {}", f.getAbsolutePath());
 			for (CSVRecordInfo<CoLReferenceCsvField> rec : extractor) {
@@ -92,21 +92,27 @@ public class CoLReferenceBatchImporter {
 				}
 				records.add(rec);
 				if (records.size() == batchSize) {
-					taxa = transformer.transform(records);
-					updater.index(taxa);
-					ESUtil.refreshIndex(TAXON);
+					taxa.addAll(transformer.transform(records));
+					if (taxa.size() > batchSize) {
+						indexer.index(taxa);
+						ESUtil.refreshIndex(TAXON);
+						taxa.clear();
+					}
 					records.clear();
 				}
 				if (++processed % 100000 == 0) {
 					logger.info("Records processed: {}", processed);
 					logger.info("References created: {}", transformer.getNumCreated());
 					logger.info("Taxa updated: {}", transformer.getNumUpdated());
-					logger.info("Duplicate references: {}", transformer.getNumDuplicates());
+					logger.info("Duplicate references: {}",
+							transformer.getNumDuplicates());
 				}
 			}
 			if (records.size() != 0) {
-				taxa = transformer.transform(records);
-				updater.index(taxa);
+				taxa.addAll(transformer.transform(records));
+			}
+			if (taxa.size() != 0) {
+				indexer.index(taxa);
 			}
 		}
 		catch (Throwable t) {
@@ -129,7 +135,8 @@ public class CoLReferenceBatchImporter {
 		this.batchSize = batchSize;
 	}
 
-	private static CSVExtractor<CoLReferenceCsvField> createExtractor(ETLStatistics stats, File f)
+	private static CSVExtractor<CoLReferenceCsvField> createExtractor(ETLStatistics stats,
+			File f)
 	{
 		CSVExtractor<CoLReferenceCsvField> extractor;
 		extractor = new CSVExtractor<>(f, stats);

@@ -98,17 +98,24 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 		String recordBasis = val(record, "abcd:RecordBasis");
 		if (recordBasis == null) {
 			stats.recordsSkipped++;
-			if (!suppressErrors)
+			if (!suppressErrors) {
 				warn("Skipping virtual specimen");
+			}
 			return null;
 		}
 
 		List<Element> elems = DOMUtil.getDescendants(record, "ncrsDetermination");
+
 		if (elems == null) {
 			stats.recordsRejected++;
 			if (!suppressErrors) {
 				error("Missing element: <ncrsDetermination>");
 			}
+			return null;
+		}
+
+		if (testGenera != null && !hasTestGenus(elems)) {
+			stats.recordsSkipped++;
 			return null;
 		}
 
@@ -125,11 +132,6 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 			stats.recordsRejected++;
 			if (!suppressErrors)
 				error("Invalid or insufficient specimen identification information");
-			return null;
-		}
-
-		if (testGenera != null && !hasTestGenus(specimen.getIdentifications())) {
-			stats.recordsSkipped++;
 			return null;
 		}
 
@@ -432,13 +434,10 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 		return result;
 	}
 
-	private boolean hasTestGenus(List<SpecimenIdentification> identifications)
+	private boolean hasTestGenus(List<Element> elems)
 	{
-		for (SpecimenIdentification si : identifications) {
-			if (si.getScientificName() == null) {
-				continue;
-			}
-			String genus = si.getScientificName().getGenusOrMonomial();
+		for (Element elem : elems) {
+			String genus = val(elem, "abcd:GenusOrMonomial");
 			if (genus == null) {
 				continue;
 			}

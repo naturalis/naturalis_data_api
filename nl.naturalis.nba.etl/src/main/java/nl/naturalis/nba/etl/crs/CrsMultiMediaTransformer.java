@@ -113,19 +113,23 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 			}
 			return true;
 		}
+		
 		if (getDescendant(oaiDcElem, "frmDigitalebestanden") == null) {
 			if (logger.isDebugEnabled()) {
 				debug("Missing or empty element <frmDigitalebestanden>");
 			}
 			return true;
 		}
-		if (getDescendant(oaiDcElem, "ncrsDetermination") == null) {
+		
+		List<Element> elems = getDescendants(oaiDcElem, "ncrsDetermination");
+		if (elems == null) {
 			if (logger.isDebugEnabled()) {
 				debug("Missing or empty element <ncrsDetermination>");
 			}
 			return true;
 		}
-		return false;
+		
+		return testGenera != null && !hasTestGenus(elems);
 	}
 
 	@Override
@@ -143,10 +147,6 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 			if (!suppressErrors) {
 				error("Invalid/insufficient specimen identification information");
 			}
-			return null;
-		}
-		if (testGenera != null && !hasTestGenus(identifications)) {
-			stats.recordsSkipped++;
 			return null;
 		}
 		stats.recordsAccepted++;
@@ -460,6 +460,23 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 		return result;
 	}
 
+	private boolean hasTestGenus(List<Element> elems)
+	{
+		for (Element elem : elems) {
+			String genus = val(elem, "abcd:GenusOrMonomial");
+			if (genus == null) {
+				continue;
+			}
+			genus = genus.toLowerCase();
+			for (String testGenus : testGenera) {
+				if (genus.equals(testGenus)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 	private Double dval(Element e, String tag)
 	{
 		String s = val(e, tag);
@@ -492,25 +509,5 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 		return ((s = s.trim()).length() == 0 ? null : s);
 	}
 
-	private boolean hasTestGenus(
-			ArrayList<MultiMediaContentIdentification> identifications)
-	{
-		for (MultiMediaContentIdentification mmci : identifications) {
-			if (mmci.getScientificName() == null) {
-				continue;
-			}
-			String genus = mmci.getScientificName().getGenusOrMonomial();
-			if (genus == null) {
-				continue;
-			}
-			genus = genus.toLowerCase();
-			for (String testGenus : testGenera) {
-				if (genus.equals(testGenus)) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
 
 }

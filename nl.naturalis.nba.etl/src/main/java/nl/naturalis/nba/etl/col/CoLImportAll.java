@@ -50,7 +50,7 @@ public class CoLImportAll {
 	private static final Logger logger = ETLRegistry.getInstance()
 			.getLogger(CoLImportAll.class);
 
-	private int batchSize = 100;
+	private int batchSize = 1000;
 
 	public CoLImportAll()
 	{

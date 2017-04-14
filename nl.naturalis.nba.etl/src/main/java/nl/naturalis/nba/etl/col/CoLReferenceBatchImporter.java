@@ -63,7 +63,7 @@ public class CoLReferenceBatchImporter {
 	{
 	}
 
-	private int batchSize = 100;
+	private int batchSize = 1000;
 
 	/**
 	 * Processes the reference.txt file

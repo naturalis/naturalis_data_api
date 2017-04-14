@@ -13,19 +13,19 @@ import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.scientificNameAuthorship
 import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.specificEpithet;
 import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.taxonID;
 import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.taxonomicStatus;
-import static org.elasticsearch.index.query.QueryBuilders.constantScoreQuery;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.IdsQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.TermsQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -50,9 +50,6 @@ class CoLSynonymBatchTransformer {
 		statusNormalizer = TaxonomicStatusNormalizer.getInstance();
 	}
 
-	// Tweak option
-	private static final boolean LOAD_BY_ID = false;
-
 	// The number of synonyms created
 	private int numCreated;
 	// The number of taxa with synonyms
@@ -66,28 +63,25 @@ class CoLSynonymBatchTransformer {
 	{
 		testGenera = getTestGenera();
 	}
-
+	
 	Collection<Taxon> transform(ArrayList<CSVRecordInfo<CoLTaxonCsvField>> records)
 	{
-		HashMap<String, Taxon> taxa;
-		if (LOAD_BY_ID) {
-			taxa = loadTaxaById(records);
-		}
-		else {
-			taxa = loadTaxaBySourceSystemId(records);
-		}
+		HashMap<String, Taxon> lookupTable = createLookupTable(records);
 		for (CSVRecordInfo<CoLTaxonCsvField> record : records) {
-			ScientificName synonym = createSynonym(record);
 			String id = record.get(acceptedNameUsageID);
-			Taxon taxon = taxa.get(id);
+			Taxon taxon = lookupTable.get(id);
+			ScientificName synonym = createSynonym(record);
 			if (taxon == null) {
 				++numOrphans;
+				/*
+				 * When creating a test set we're bound to have huge amounts of orphans;
+				 * let's not clutter up our log files
+				 */
 				if (testGenera == null) {
-					logger.error("{} | Orphan synonym: {} ", id, synonym);
+					logger.error("{} | Orphan: {} ", id, synonym.getFullScientificName());
 				}
-				continue;
 			}
-			if (taxon.getSynonyms() == null) {
+			else if (taxon.getSynonyms() == null) {
 				++numCreated;
 				++numUpdated;
 				taxon.addSynonym(synonym);
@@ -98,10 +92,10 @@ class CoLSynonymBatchTransformer {
 			}
 			else {
 				++numDuplicates;
-				logger.error("{} | Duplicate synonym: {}", id, synonym);
+				logger.error("{} | Duplicate: {}", id, synonym);
 			}
 		}
-		return taxa.values();
+		return lookupTable.values();
 	}
 
 	int getNumCreated()
@@ -124,15 +118,12 @@ class CoLSynonymBatchTransformer {
 		return numOrphans;
 	}
 
-	private static HashMap<String, Taxon> loadTaxaById(
+	private static HashMap<String, Taxon> createLookupTable(
 			ArrayList<CSVRecordInfo<CoLTaxonCsvField>> records)
 	{
 		HashSet<String> ids = new HashSet<>(records.size());
 		for (CSVRecordInfo<CoLTaxonCsvField> record : records) {
-			String id = getElasticsearchId(COL, record.get(acceptedNameUsageID));
-			if (id != null) {
-				ids.add(id);
-			}
+			ids.add(getElasticsearchId(COL, record.get(acceptedNameUsageID)));
 		}
 		DocumentType<Taxon> dt = TAXON;
 		SearchRequestBuilder request = ESUtil.newSearchRequest(dt);
@@ -150,33 +141,6 @@ class CoLSynonymBatchTransformer {
 			taxa.put(taxon.getSourceSystemId(), taxon);
 		}
 		return taxa;
-	}
-
-	private static HashMap<String, Taxon> loadTaxaBySourceSystemId(
-			ArrayList<CSVRecordInfo<CoLTaxonCsvField>> records)
-	{
-		HashSet<String> ids = new HashSet<>(records.size());
-		for (CSVRecordInfo<CoLTaxonCsvField> record : records) {
-			String id = record.get(acceptedNameUsageID);
-			if (id != null) {
-				ids.add(id);
-			}
-		}
-		DocumentType<Taxon> dt = TAXON;
-		SearchRequestBuilder request = ESUtil.newSearchRequest(dt);
-		TermsQueryBuilder query = QueryBuilders.termsQuery("sourceSystemId", ids);
-		request.setQuery(constantScoreQuery(query));
-		request.setSize(ids.size());
-		SearchResponse response = ESUtil.executeSearchRequest(request);
-		SearchHit[] hits = response.getHits().getHits();
-		HashMap<String, Taxon> result = new HashMap<>(hits.length + 4, 1F);
-		ObjectMapper om = dt.getObjectMapper();
-		for (SearchHit hit : hits) {
-			Taxon taxon = om.convertValue(hit.getSource(), dt.getJavaType());
-			taxon.setId(hit.getId());
-			result.put(taxon.getSourceSystemId(), taxon);
-		}
-		return result;
 	}
 
 	private static ScientificName createSynonym(CSVRecordInfo<CoLTaxonCsvField> record)

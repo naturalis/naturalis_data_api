@@ -3,6 +3,7 @@ package nl.naturalis.nba.etl.col;
 import static nl.naturalis.nba.dao.DocumentType.TAXON;
 import static nl.naturalis.nba.etl.ETLUtil.getLogger;
 import static nl.naturalis.nba.etl.ETLUtil.logDuration;
+import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.acceptedNameUsageID;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.dao.DaoRegistry;
 import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.util.es.ESUtil;
+import nl.naturalis.nba.etl.BulkIndexException;
 import nl.naturalis.nba.etl.BulkIndexer;
 import nl.naturalis.nba.etl.CSVExtractor;
 import nl.naturalis.nba.etl.CSVRecordInfo;
@@ -37,8 +39,11 @@ public class CoLSynonymBatchImporter {
 			batchSize = Integer.parseInt(prop);
 		}
 		catch (NumberFormatException e) {
-			System.err.println("Invalid batch size: " + prop);
-			System.exit(1);
+			throw new ETLRuntimeException("Invalid batch size: " + prop);
+		}
+		if (batchSize >= 1024) {
+			// Elasticsearch ids query won't let you look up more than 1024 at once.
+			throw new ETLRuntimeException("Batch size exceeds maximum of 1024");
 		}
 		try {
 			CoLSynonymBatchImporter importer = new CoLSynonymBatchImporter();
@@ -48,7 +53,6 @@ public class CoLSynonymBatchImporter {
 			importer.importCsv(dwcaDir + "/taxa.txt");
 		}
 		finally {
-			ESUtil.refreshIndex(TAXON);
 			ESClientManager.getInstance().closeClient();
 		}
 	}
@@ -65,77 +69,61 @@ public class CoLSynonymBatchImporter {
 	 * Processes the reference.txt file
 	 * 
 	 * @param path
+	 * @throws BulkIndexException
 	 */
-	public void importCsv(String path)
+	public void importCsv(String path) throws BulkIndexException
 	{
+		File f = new File(path);
+		if (!f.exists()) {
+			throw new ETLRuntimeException("No such file: " + path);
+		}
 		long start = System.currentTimeMillis();
-		ETLStatistics stats;
-		CSVExtractor<CoLTaxonCsvField> extractor;
-		CoLSynonymBatchTransformer transformer = null;
-		BulkIndexer<Taxon> indexer;
-		ArrayList<CSVRecordInfo<CoLTaxonCsvField>> records;
+		ETLStatistics stats = new ETLStatistics();
+		CSVExtractor<CoLTaxonCsvField> extractor = createExtractor(stats, f);
+		CoLSynonymBatchTransformer transformer = new CoLSynonymBatchTransformer();
+		ArrayList<CSVRecordInfo<CoLTaxonCsvField>> csvRecords;
+		csvRecords = new ArrayList<>(batchSize);
 		ArrayList<Taxon> queue = new ArrayList<>(batchSize);
 		int processed = 0;
-		try {
-			File f = new File(path);
-			if (!f.exists()) {
-				throw new ETLRuntimeException("No such file: " + path);
+		logger.info("Processing file {}", f.getAbsolutePath());
+		for (CSVRecordInfo<CoLTaxonCsvField> rec : extractor) {
+			if (rec == null) {
+				// Garbage
+				continue;
 			}
-			stats = new ETLStatistics();
-			extractor = createExtractor(stats, f);
-			transformer = new CoLSynonymBatchTransformer();
-			indexer = new BulkIndexer<>(TAXON);
-			records = new ArrayList<>(batchSize);
-			logger.info("Processing file {}", f.getAbsolutePath());
-			for (CSVRecordInfo<CoLTaxonCsvField> rec : extractor) {
-				if (rec == null) {
-					continue;
-				}
-				records.add(rec);
-				if (records.size() == batchSize) {
-					Collection<Taxon> updates = transformer.transform(records);
-					if (queue.size() + updates.size() > 1000) {
-						indexer.index(queue);
-						ESUtil.refreshIndex(TAXON);
-						queue.clear();
-					}
-					queue.addAll(updates);
-					if (queue.size() >= 1000) {
-						throw new ETLRuntimeException("Too many taxa in queue");
-					}
-					records.clear();
-				}
-				if (++processed % 100000 == 0) {
-					logger.info("Records processed: {}", processed);
-					logger.info("References created: {}", transformer.getNumCreated());
-					logger.info("Taxa updated: {}", transformer.getNumUpdated());
-				}
+			if (rec.get(acceptedNameUsageID) == null) {
+				// This is an accepted name, not a synonym
+				continue;
 			}
-			if (records.size() != 0) {
-				Collection<Taxon> updates = transformer.transform(records);
-				if (queue.size() + updates.size() > 1000) {
-					indexer.index(queue);
-					ESUtil.refreshIndex(TAXON);
-					queue.clear();
+			csvRecords.add(rec);
+			if (csvRecords.size() == batchSize) {
+				Collection<Taxon> updates = transformer.transform(csvRecords);
+				if (queue.size() + updates.size() >= batchSize) {
+					flushQueue(queue);
 				}
 				queue.addAll(updates);
+				csvRecords.clear();
 			}
-			if (queue.size() != 0) {
-				if (queue.size() >= 1000) {
-					throw new ETLRuntimeException("Too many taxa in queue");
-				}
-				indexer.index(queue);
-				ESUtil.refreshIndex(TAXON);
+			if (++processed % 100000 == 0) {
+				logger.info("Records processed: {}", processed);
+				logger.info("Synonyms created: {}", transformer.getNumCreated());
 			}
 		}
-		catch (Throwable t) {
-			logger.error(getClass().getSimpleName() + " terminated unexpectedly!", t);
+		if (csvRecords.size() != 0) {
+			Collection<Taxon> updates = transformer.transform(csvRecords);
+			if (queue.size() + updates.size() >= batchSize) {
+				flushQueue(queue);
+			}
+			queue.addAll(updates);
+		}
+		if (queue.size() != 0) {
+			flushQueue(queue);
 		}
 		logger.info("Records processed: {}", processed);
 		logger.info("Synonyms created: {}", transformer.getNumCreated());
-		logger.info("Taxa updated: {}", transformer.getNumUpdated());
-		logger.info("Duplicate synonyms: {}", transformer.getNumDuplicates());
-		logger.info("Orphan synonyms: {}", transformer.getNumOrphans());
+		logger.info("Taxa enriched: {}", transformer.getNumUpdated());
+		logger.info("Duplicates: {}", transformer.getNumDuplicates());
+		logger.info("Orphans: {}", transformer.getNumOrphans());
 		logDuration(logger, getClass(), start);
 	}
 
@@ -147,6 +135,14 @@ public class CoLSynonymBatchImporter {
 	public void setBatchSize(int batchSize)
 	{
 		this.batchSize = batchSize;
+	}
+
+	private static void flushQueue(ArrayList<Taxon> queue) throws BulkIndexException
+	{
+		BulkIndexer<Taxon> indexer = new BulkIndexer<>(TAXON);
+		indexer.index(queue);
+		ESUtil.refreshIndex(TAXON);
+		queue.clear();
 	}
 
 	private static CSVExtractor<CoLTaxonCsvField> createExtractor(ETLStatistics stats,

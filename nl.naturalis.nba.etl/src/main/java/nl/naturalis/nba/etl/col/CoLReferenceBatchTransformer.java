@@ -10,7 +10,6 @@ import static nl.naturalis.nba.etl.col.CoLReferenceCsvField.date;
 import static nl.naturalis.nba.etl.col.CoLReferenceCsvField.description;
 import static nl.naturalis.nba.etl.col.CoLReferenceCsvField.taxonID;
 import static nl.naturalis.nba.etl.col.CoLReferenceCsvField.title;
-import static org.elasticsearch.index.query.QueryBuilders.constantScoreQuery;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,7 +22,6 @@ import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.IdsQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.TermsQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -39,9 +37,6 @@ import nl.naturalis.nba.etl.TransformUtil;
 class CoLReferenceBatchTransformer {
 
 	private static final Logger logger = getLogger(CoLReferenceBatchTransformer.class);
-
-	// Tweak option
-	private static final boolean LOAD_BY_ID = false;
 
 	// The number of references created
 	private int numCreated;
@@ -59,39 +54,36 @@ class CoLReferenceBatchTransformer {
 
 	Collection<Taxon> transform(ArrayList<CSVRecordInfo<CoLReferenceCsvField>> records)
 	{
-		HashMap<String, Taxon> taxa;
-		if (LOAD_BY_ID) {
-			taxa = loadTaxaById(records);
-		}
-		else {
-			taxa = loadTaxaBySourceSystemId(records);
-		}
+		HashMap<String, Taxon> lookupTable = createLookupTable(records);
 		for (CSVRecordInfo<CoLReferenceCsvField> record : records) {
-			Reference ref = createReference(record);
 			String id = record.get(taxonID);
-			Taxon taxon = taxa.get(id);
+			Taxon taxon = lookupTable.get(id);
+			Reference reference = createReference(record);
 			if (taxon == null) {
 				++numOrphans;
+				/*
+				 * When creating a test set we're bound to have huge amounts of orphans;
+				 * let's not clutter up our log files
+				 */
 				if (testGenera == null) {
-					logger.error("{} | Orphan reference: {} ", id, ref);
+					logger.error("{} | Orphan: {} ", id, reference);
 				}
-				continue;
 			}
-			if (taxon.getReferences() == null) {
+			else if (taxon.getReferences() == null) {
 				++numCreated;
 				++numUpdated;
-				taxon.addReference(ref);
+				taxon.addReference(reference);
 			}
-			else if (taxon.getReferences().contains(ref) == false) {
+			else if (!taxon.getReferences().contains(reference)) {
 				++numCreated;
-				taxon.addReference(ref);
+				taxon.addReference(reference);
 			}
 			else {
 				++numDuplicates;
-				logger.error("{} | Duplicate reference: {}", id, ref);
+				logger.error("{} | Duplicate: {}", id, reference);
 			}
 		}
-		return taxa.values();
+		return lookupTable.values();
 	}
 
 	int getNumCreated()
@@ -114,13 +106,12 @@ class CoLReferenceBatchTransformer {
 		return numOrphans;
 	}
 
-	private static HashMap<String, Taxon> loadTaxaById(
+	private static HashMap<String, Taxon> createLookupTable(
 			ArrayList<CSVRecordInfo<CoLReferenceCsvField>> records)
 	{
 		HashSet<String> ids = new HashSet<>(records.size());
 		for (CSVRecordInfo<CoLReferenceCsvField> record : records) {
-			String id = getElasticsearchId(COL, record.get(taxonID));
-			ids.add(id);
+			ids.add(getElasticsearchId(COL, record.get(taxonID)));
 		}
 		DocumentType<Taxon> dt = TAXON;
 		SearchRequestBuilder request = ESUtil.newSearchRequest(dt);
@@ -138,30 +129,6 @@ class CoLReferenceBatchTransformer {
 			taxa.put(taxon.getSourceSystemId(), taxon);
 		}
 		return taxa;
-	}
-
-	private static HashMap<String, Taxon> loadTaxaBySourceSystemId(
-			ArrayList<CSVRecordInfo<CoLReferenceCsvField>> records)
-	{
-		HashSet<String> ids = new HashSet<>(records.size());
-		for (CSVRecordInfo<CoLReferenceCsvField> record : records) {
-			ids.add(record.get(taxonID));
-		}
-		DocumentType<Taxon> dt = TAXON;
-		SearchRequestBuilder request = ESUtil.newSearchRequest(dt);
-		TermsQueryBuilder query = QueryBuilders.termsQuery("sourceSystemId", ids);
-		request.setQuery(constantScoreQuery(query));
-		request.setSize(ids.size());
-		SearchResponse response = ESUtil.executeSearchRequest(request);
-		SearchHit[] hits = response.getHits().getHits();
-		HashMap<String, Taxon> result = new HashMap<>(hits.length + 4, 1F);
-		ObjectMapper om = dt.getObjectMapper();
-		for (SearchHit hit : hits) {
-			Taxon taxon = om.convertValue(hit.getSource(), dt.getJavaType());
-			taxon.setId(hit.getId());
-			result.put(taxon.getSourceSystemId(), taxon);
-		}
-		return result;
 	}
 
 	private static Reference createReference(CSVRecordInfo<CoLReferenceCsvField> record)

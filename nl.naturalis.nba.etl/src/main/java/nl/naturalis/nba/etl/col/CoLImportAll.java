@@ -1,13 +1,12 @@
 package nl.naturalis.nba.etl.col;
 
-import static nl.naturalis.nba.dao.DocumentType.TAXON;
 import static nl.naturalis.nba.etl.ETLUtil.logDuration;
 
 import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.dao.DaoRegistry;
 import nl.naturalis.nba.dao.ESClientManager;
-import nl.naturalis.nba.dao.util.es.ESUtil;
+import nl.naturalis.nba.etl.BulkIndexException;
 import nl.naturalis.nba.etl.ETLRegistry;
 
 /**
@@ -28,7 +27,6 @@ public class CoLImportAll {
 		catch (Throwable t) {
 			logger.error("CoLImportAll terminated unexpectedly!", t);
 			System.exit(1);
-
 		}
 		finally {
 			ESClientManager.getInstance().closeClient();
@@ -43,20 +41,17 @@ public class CoLImportAll {
 
 	/**
 	 * Imports CoL taxa, synonyms, vernacular names and literature references.
+	 * @throws BulkIndexException 
 	 * 
 	 */
-	public void importAll()
+	public void importAll() throws BulkIndexException
 	{
 		long start = System.currentTimeMillis();
 		String dwcaDir = DaoRegistry.getInstance().getConfiguration().required("col.data.dir");
 		new CoLTaxonImporter().importCsv(dwcaDir + "/taxa.txt");
-		ESUtil.refreshIndex(TAXON);
 		new CoLSynonymBatchImporter().importCsv(dwcaDir + "/taxa.txt");
-		ESUtil.refreshIndex(TAXON);
 		new CoLVernacularNameBatchImporter().importCsv(dwcaDir + "/vernacular.txt");
-		ESUtil.refreshIndex(TAXON);
 		new CoLReferenceBatchImporter().importCsv(dwcaDir + "/reference.txt");
-		ESUtil.refreshIndex(TAXON);
 		logDuration(logger, getClass(), start);
 	}
 }

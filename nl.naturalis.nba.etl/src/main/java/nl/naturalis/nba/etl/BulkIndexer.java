@@ -45,6 +45,12 @@ public class BulkIndexer<T extends IDocumentObject> {
 			}
 			else {
 				ids.add(obj.getId());
+				/*
+				 * Nullify id because it is not part of the document type definition, so
+				 * it must not appear in the JSON serialization of the object. Otherwise
+				 * Elasticsearch search will throw aan exception with "strict" document
+				 * type mappings.
+				 */
 				obj.setId(null);
 			}
 		}

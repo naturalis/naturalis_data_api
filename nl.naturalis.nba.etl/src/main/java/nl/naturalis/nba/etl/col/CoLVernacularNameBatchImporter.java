@@ -63,7 +63,7 @@ public class CoLVernacularNameBatchImporter {
 	{
 	}
 
-	private int batchSize;
+	private int batchSize = 100;
 
 	/**
 	 * Processes the reference.txt file
@@ -86,6 +86,7 @@ public class CoLVernacularNameBatchImporter {
 		csvRecords = new ArrayList<>(batchSize);
 		int processed = 0;
 		logger.info("Processing file {}", f.getAbsolutePath());
+		logger.info("Batch size: {}", batchSize);
 		for (CSVRecordInfo<CoLVernacularNameCsvField> rec : extractor) {
 			if (rec == null || rec.get(taxonID) == null) {
 				// Garbage

@@ -81,9 +81,9 @@ public class CoLReferenceBatchImporter {
 		ETLStatistics stats = new ETLStatistics();
 		CSVExtractor<CoLReferenceCsvField> extractor = createExtractor(stats, f);
 		CoLReferenceBatchTransformer transformer = new CoLReferenceBatchTransformer();
+		BulkIndexer<Taxon> indexer = new BulkIndexer<>(TAXON);
 		ArrayList<CSVRecordInfo<CoLReferenceCsvField>> csvRecords;
 		csvRecords = new ArrayList<>(batchSize);
-		ArrayList<Taxon> queue = new ArrayList<>(batchSize);
 		int processed = 0;
 		logger.info("Processing file {}", f.getAbsolutePath());
 		for (CSVRecordInfo<CoLReferenceCsvField> rec : extractor) {
@@ -94,10 +94,10 @@ public class CoLReferenceBatchImporter {
 			csvRecords.add(rec);
 			if (csvRecords.size() == batchSize) {
 				Collection<Taxon> updates = transformer.transform(csvRecords);
-				if (queue.size() + updates.size() >= batchSize) {
-					flushQueue(queue);
+				if (updates.size() != 0) {
+					indexer.index(updates);
+					ESUtil.refreshIndex(TAXON);
 				}
-				queue.addAll(updates);
 				csvRecords.clear();
 			}
 			if (++processed % 100000 == 0) {
@@ -107,13 +107,10 @@ public class CoLReferenceBatchImporter {
 		}
 		if (csvRecords.size() != 0) {
 			Collection<Taxon> updates = transformer.transform(csvRecords);
-			if (queue.size() + updates.size() >= batchSize) {
-				flushQueue(queue);
+			if (updates.size() != 0) {
+				indexer.index(updates);
+				ESUtil.refreshIndex(TAXON);
 			}
-			queue.addAll(updates);
-		}
-		if (queue.size() != 0) {
-			flushQueue(queue);
 		}
 		logger.info("Records processed: {}", processed);
 		logger.info("References created: {}", transformer.getNumCreated());
@@ -131,14 +128,6 @@ public class CoLReferenceBatchImporter {
 	public void setBatchSize(int batchSize)
 	{
 		this.batchSize = batchSize;
-	}
-
-	private static void flushQueue(ArrayList<Taxon> queue) throws BulkIndexException
-	{
-		BulkIndexer<Taxon> indexer = new BulkIndexer<>(TAXON);
-		indexer.index(queue);
-		ESUtil.refreshIndex(TAXON);
-		queue.clear();
 	}
 
 	private static CSVExtractor<CoLReferenceCsvField> createExtractor(ETLStatistics stats,

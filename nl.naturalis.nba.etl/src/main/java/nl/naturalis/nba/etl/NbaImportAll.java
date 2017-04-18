@@ -49,10 +49,12 @@ public class NbaImportAll {
 
 			logger.info("[>--- Starting NSR import ---<]");
 			NsrImporter nsrImporter = new NsrImporter();
+			nsrImporter.reset();
 			nsrImporter.importAll();
 
 			logger.info("[>--- Starting BRAHMS import ---<]");
 			BrahmsImportAll brahmsImportAll = new BrahmsImportAll();
+			brahmsImportAll.reset();
 			brahmsImportAll.importAll();
 
 			logger.info("[>--- Starting CRS import ---<]");

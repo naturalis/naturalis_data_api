@@ -22,7 +22,7 @@ queue_size=1000
 # Provide a comma-separated list of genera to import.
 # This will create a test set with only the specified
 # genera from COL, NSR, CRS and BRAHMS.
-#test_genera=malus,parus,larus,bombus,rhododendron,felix,tulipa,rosa,canis,passer,trientalis
+test_genera=malus,parus,larus,bombus,rhododendron,felix,tulipa,rosa,canis,passer,trientalis
 
 # Make ${confDir} the first entry on the classpath so
 # that resource/config files will be found there first.

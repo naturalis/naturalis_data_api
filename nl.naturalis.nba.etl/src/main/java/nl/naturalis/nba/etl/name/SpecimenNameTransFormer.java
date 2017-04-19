@@ -2,14 +2,11 @@ package nl.naturalis.nba.etl.name;
 
 import static nl.naturalis.nba.etl.ETLUtil.getLogger;
 import static nl.naturalis.nba.etl.SummaryObjectUtil.copySpecimen;
-import static nl.naturalis.nba.etl.name.NameImportUtil.loadNameGroupsById;
-import static nl.naturalis.nba.etl.name.NameImportUtil.loadNameGroupsByName;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.logging.log4j.Logger;
 
@@ -17,15 +14,11 @@ import nl.naturalis.nba.api.model.ScientificNameGroup;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.api.model.summary.SummarySpecimen;
+import nl.naturalis.nba.etl.ETLRuntimeException;
 
 class SpecimenNameTransformer {
 
-	// You can tweak this to see if it has a performance effect
-	private static final boolean LOAD_NAME_GROUPS_BY_ID = false;
-
 	private static final Logger logger = getLogger(SpecimenNameTransformer.class);
-
-	private HashMap<String, ScientificNameGroup> nameCache;
 
 	private int batchSize;
 
@@ -34,22 +27,29 @@ class SpecimenNameTransformer {
 
 	SpecimenNameTransformer(int batchSize)
 	{
-		if (batchSize > 1024) {
-			throw new IllegalArgumentException("Batch size must not exceed 1024");
-			// Because the maximum number of terms in a terms/ids query is 1024
-		}
 		this.batchSize = batchSize;
-		this.nameCache = new HashMap<>(batchSize + 8, 1F);
 	}
 
 	Collection<ScientificNameGroup> transform(Collection<Specimen> specimens)
 	{
-		if (initializeNameGroups(specimens)) {
-			for (Specimen specimen : specimens) {
-				transform(specimen);
+		HashMap<String, ScientificNameGroup> lookupTable = createLookupTable(specimens);
+		if (lookupTable == null) {
+			return null;
+		}
+		for (Specimen specimen : specimens) {
+			List<SpecimenIdentification> identifications = specimen.getIdentifications();
+			if (identifications != null) {
+				for (SpecimenIdentification si : identifications) {
+					String name = si.getScientificName().getScientificNameGroup();
+					ScientificNameGroup nameGroup = lookupTable.get(name);
+					if (!exists(specimen, nameGroup)) {
+						nameGroup.addSpecimen(copySpecimen(specimen, name));
+						nameGroup.setSpecimenCount(nameGroup.getSpecimens().size());
+					}
+				}
 			}
 		}
-		return nameCache.values();
+		return lookupTable.values();
 	}
 
 	int getNumCreated()
@@ -60,21 +60,6 @@ class SpecimenNameTransformer {
 	int getNumUpdated()
 	{
 		return updated;
-	}
-
-	private void transform(Specimen specimen)
-	{
-		List<SpecimenIdentification> identifications = specimen.getIdentifications();
-		if (identifications != null) {
-			for (SpecimenIdentification si : identifications) {
-				String name = si.getScientificName().getScientificNameGroup();
-				ScientificNameGroup group = nameCache.get(name);
-				if (!exists(specimen, group)) {
-					group.addSpecimen(copySpecimen(specimen, name));
-					group.setSpecimenCount(group.getSpecimens().size());
-				}
-			}
-		}
 	}
 
 	private static boolean exists(Specimen specimen, ScientificNameGroup group)
@@ -90,16 +75,9 @@ class SpecimenNameTransformer {
 		return false;
 	}
 
-	private boolean initializeNameGroups(Collection<Specimen> specimens)
+	private HashMap<String, ScientificNameGroup> createLookupTable(Collection<Specimen> specimens)
 	{
-		if (logger.isDebugEnabled()) {
-			logger.debug("Initializing name groups");
-		}
-		nameCache.clear();
-		/*
-		 * Assume we have around 3 unique identifications per specimen
-		 */
-		Set<String> names = new HashSet<>(batchSize * 3);
+		HashSet<String> names = new HashSet<>(batchSize);
 		for (Specimen specimen : specimens) {
 			if (specimen.getIdentifications() != null) {
 				for (SpecimenIdentification si : specimen.getIdentifications()) {
@@ -108,37 +86,36 @@ class SpecimenNameTransformer {
 			}
 		}
 		if (names.isEmpty()) {
-			return false;
+			if (logger.isDebugEnabled()) {
+				logger.debug("Current batch does not contain a single identified specimen");
+			}
+			return null;
+		}
+		if (names.size() > 1024) {
+			String msg = "Too many unique names in current batch (must not exceed 1024)";
+			throw new ETLRuntimeException(msg);
 		}
 		if (logger.isDebugEnabled()) {
-			logger.debug("Number of unique names in batch: {}", names.size());
+			String fmt = "Number of unique names in current batch: {}";
+			logger.debug(fmt, names.size());
 		}
-		List<ScientificNameGroup> groups;
-		if (LOAD_NAME_GROUPS_BY_ID) {
-			groups = loadNameGroupsById(names);
-		}
-		else {
-			groups = loadNameGroupsByName(names);
-		}
-		created += (names.size() - groups.size());
+		List<ScientificNameGroup> groups = NameImportUtil.loadNameGroupsById(names);
+		int newGroups = names.size() - groups.size();
+		created += newGroups;
 		updated += groups.size();
-		if (logger.isDebugEnabled()) {
-			logger.debug("Documents to be created for this batch: {}",
-					(names.size() - groups.size()));
-			logger.debug("Documents to be updated for this batch: {}", groups.size());
-		}
+		HashMap<String, ScientificNameGroup> lookupTable = new HashMap<>(names.size() + 4, 1F);
 		for (ScientificNameGroup group : groups) {
-			nameCache.put(group.getName(), group);
+			lookupTable.put(group.getName(), group);
 		}
-		/*
-		 * Create new, empty ScientificNameGroup instances for remaining names
-		 */
+		if (logger.isDebugEnabled() && newGroups != 0) {
+			logger.debug("Initializing {} new name groups", newGroups);
+		}
 		for (String name : names) {
-			if (!nameCache.containsKey(name)) {
-				nameCache.put(name, new ScientificNameGroup(name));
+			if (!lookupTable.containsKey(name)) {
+				lookupTable.put(name, new ScientificNameGroup(name));
 			}
 		}
-		return true;
+		return lookupTable;
 	}
 
 }

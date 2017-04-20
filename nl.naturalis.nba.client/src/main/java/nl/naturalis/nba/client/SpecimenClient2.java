@@ -1,5 +1,6 @@
 package nl.naturalis.nba.client;
 
+import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -8,6 +9,7 @@ import java.util.zip.ZipOutputStream;
 import nl.naturalis.nba.api.ISpecimenAccess;
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.KeyValuePair;
+import nl.naturalis.nba.api.NoSuchDataSetException;
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QuerySpec;
@@ -82,19 +84,19 @@ public class SpecimenClient2 extends NbaClient2<Specimen> implements ISpecimenAc
 		return false;
 	}
 
-	@Override
-	public void dwcaQuery(QuerySpec querySpec, ZipOutputStream out) throws InvalidQueryException
-	{
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void dwcaGetDataSet(String name, ZipOutputStream out) throws InvalidQueryException
-	{
-		// TODO Auto-generated method stub
-
-	}
+//	@Override
+//	public void dwcaQuery(QuerySpec querySpec, ZipOutputStream out) throws InvalidQueryException
+//	{
+//		// TODO Auto-generated method stub
+//
+//	}
+//
+//	@Override
+//	public void dwcaGetDataSet(String name, ZipOutputStream out) throws InvalidQueryException
+//	{
+//		// TODO Auto-generated method stub
+//
+//	}
 
 	@Override
 	public String[] dwcaGetDataSetNames()
@@ -129,6 +131,20 @@ public class SpecimenClient2 extends NbaClient2<Specimen> implements ISpecimenAc
 	{
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public void dwcaQuery(QuerySpec querySpec, OutputStream out) throws InvalidQueryException
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void dwcaGetDataSet(String name, OutputStream out) throws NoSuchDataSetException
+	{
+		// TODO Auto-generated method stub
+		
 	}
 
 }

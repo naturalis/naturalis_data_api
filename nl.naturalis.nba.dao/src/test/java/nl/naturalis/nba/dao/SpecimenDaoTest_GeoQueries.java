@@ -5,11 +5,11 @@ import static nl.naturalis.nba.dao.DaoTestUtil.saveGeoAreas;
 import static nl.naturalis.nba.dao.DaoTestUtil.saveSpecimens;
 import static nl.naturalis.nba.dao.DocumentType.GEO_AREA;
 import static nl.naturalis.nba.dao.DocumentType.SPECIMEN;
-import static nl.naturalis.nba.dao.TestGeoAreas.Aalten;
-import static nl.naturalis.nba.dao.TestGeoAreas.Netherlands;
-import static nl.naturalis.nba.dao.TestGeoAreas.NoordHolland;
-import static nl.naturalis.nba.dao.TestGeoAreas.Uitgeest;
-import static nl.naturalis.nba.dao.TestGeoAreas.Vatican;
+import static nl.naturalis.nba.dao.mock.GeoAreaMock.Aalten;
+import static nl.naturalis.nba.dao.mock.GeoAreaMock.Netherlands;
+import static nl.naturalis.nba.dao.mock.GeoAreaMock.NoordHolland;
+import static nl.naturalis.nba.dao.mock.GeoAreaMock.Uitgeest;
+import static nl.naturalis.nba.dao.mock.GeoAreaMock.Vatican;
 import static nl.naturalis.nba.dao.util.es.ESUtil.createIndex;
 import static nl.naturalis.nba.dao.util.es.ESUtil.createType;
 import static nl.naturalis.nba.dao.util.es.ESUtil.deleteIndex;
@@ -25,6 +25,7 @@ import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.GeoArea;
 import nl.naturalis.nba.api.model.Specimen;
+import nl.naturalis.nba.dao.mock.SpecimenMock;
 
 @SuppressWarnings("static-method")
 public class SpecimenDaoTest_GeoQueries {
@@ -60,11 +61,11 @@ public class SpecimenDaoTest_GeoQueries {
 		/*
 		 * Insert 5 test specimens.
 		 */
-		pMajor = TestSpecimens.parusMajorSpecimen01();
-		lFuscus1 = TestSpecimens.larusFuscusSpecimen01();
-		lFuscus2 = TestSpecimens.larusFuscusSpecimen02();
-		tRex = TestSpecimens.tRexSpecimen01();
-		mSylvestris = TestSpecimens.malusSylvestrisSpecimen01();
+		pMajor = SpecimenMock.parusMajorSpecimen01();
+		lFuscus1 = SpecimenMock.larusFuscusSpecimen01();
+		lFuscus2 = SpecimenMock.larusFuscusSpecimen02();
+		tRex = SpecimenMock.tRexSpecimen01();
+		mSylvestris = SpecimenMock.malusSylvestrisSpecimen01();
 		saveSpecimens(pMajor, lFuscus1, lFuscus2, tRex, mSylvestris);
 
 		/*

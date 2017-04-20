@@ -36,8 +36,9 @@ public class Demo {
 		QueryCondition condition1 = new QueryCondition("specimens.gatheringEvent.gatheringPersons.fullName", "=", "Springer, LA");
 		
 		ScientificNameGroupQuerySpec query = new ScientificNameGroupQuerySpec();
+		query.setConstantScore(true);
 		query.addCondition(condition0);
-		query.addCondition(condition1);
+		//query.addCondition(condition1);
 		QueryResult<?> result = client.querySpecial(query);
 		//ClientUtil.printTerse(result);
 

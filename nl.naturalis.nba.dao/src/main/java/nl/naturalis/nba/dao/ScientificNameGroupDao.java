@@ -68,36 +68,46 @@ public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
 			throws InvalidQueryException
 	{
 		QuerySpec qs = new QuerySpec();
+		if (querySpec.getConditions() != null) {
+			qs.setLogicalOperator(querySpec.getLogicalOperator());
+			qs.setConditions(processConditions(querySpec.getConditions()));
+		}
 		qs.setConstantScore(true);
 		ScientificNameGroupMetaDataDao metadataDao = new ScientificNameGroupMetaDataDao();
 		Object val = metadataDao.getSetting(INDEX_MAX_RESULT_WINDOW);
 		int size = Integer.parseInt(val.toString());
 		qs.setSize(size);
-		if (querySpec.getConditions() != null) {
-			qs.setLogicalOperator(querySpec.getLogicalOperator());
-			for (QueryCondition condition : querySpec.getConditions()) {
-				if (isSpecimenCondition(condition)) {
-					QueryCondition copy = new QueryCondition(condition);
-					processCondition(copy);
-					qs.addCondition(copy);
-				}
-				else {
-					QueryCondition nested = findDescendantWithSpecimenField(condition);
-					if (nested != null) {
-						String fmt = "Query condition on field {} must not be nested within "
-								+ "condition on field {}. Specimen-related conditions must "
-								+ "be top-level conditions or nested within another "
-								+ "specimen-related, top-level condition";
-						String msg = String.format(fmt, nested.getField(), condition.getField());
-						throw new InvalidQueryException(msg);
-					}
-				}
-			}
-		}
 		return qs;
 	}
 
-	private static void processCondition(QueryCondition condition)
+	private static ArrayList<QueryCondition> processConditions(List<QueryCondition> conditions) throws InvalidQueryException
+	{
+		if (conditions == null) {
+			return null;
+		}
+		ArrayList<QueryCondition> copies = new ArrayList<>(conditions.size());
+		for (QueryCondition condition : conditions) {
+			if (isSpecimenCondition(condition)) {
+				QueryCondition copy = new QueryCondition(condition);
+				processCondition(copy);
+				copies.add(copy);
+			}
+			else {
+				QueryCondition nested = findDescendantWithSpecimenField(condition);
+				if (nested != null) {
+					String fmt = "Query condition on field {} must not be nested within "
+							+ "condition on field {}. Specimen-related conditions must "
+							+ "be top-level conditions or nested within another "
+							+ "specimen-related, top-level condition";
+					String msg = String.format(fmt, nested.getField(), condition.getField());
+					throw new InvalidQueryException(msg);
+				}
+			}
+		}
+		return copies.isEmpty() ? null : copies;
+	}
+
+	private static void processCondition(QueryCondition condition) throws InvalidQueryException
 	{
 		// Chop off the "specimens" path element
 		condition.setField(condition.getField().shift());
@@ -135,39 +145,12 @@ public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
 		return condition.getField().getElement(0).equals("specimens");
 	}
 
-	private static ArrayList<QueryCondition> processConditions(List<QueryCondition> conditions)
-	{
-		if (conditions == null) {
-			return null;
-		}
-		ArrayList<QueryCondition> copies = new ArrayList<>(conditions.size());
-		for (QueryCondition condition : conditions) {
-			if (condition.getField().getElement(0).equals("specimens")) {
-				QueryCondition copy = new QueryCondition(condition);
-				processCondition(copy);
-				copies.add(copy);
-			}
-			else {
-				String msg = "Condition on field {} ignored for specimen filter";
-				logger.warn(msg, condition.getField());
-			}
-		}
-		return copies.isEmpty() ? null : copies;
-	}
-
 	private static void purgeSpecimens(QueryResult<ScientificNameGroup> result,
 			QuerySpec specimenQuerySpec) throws InvalidQueryException
 	{
-		if (logger.isDebugEnabled()) {
-			logger.debug("Purging specimens from name groups that do not satisfy "
-					+ "specimen-related query conditions in QuerySpec");
-		}
-		List<QueryCondition> origConditions = specimenQuerySpec.getConditions();
-		String field = "identifications.scientificNameGroup";
+		String field = "identifications.scientificName.scientificNameGroup";
 		QueryCondition extraCondition = new QueryCondition(field, "=", null);
-		List<QueryCondition> newConditions = new ArrayList<>(origConditions.size() + 1);
-		newConditions.add(extraCondition);
-		newConditions.addAll(origConditions);
+		specimenQuerySpec.addCondition(extraCondition);
 		SpecimenDao specimenDao = new SpecimenDao();
 		for (QueryResultItem<ScientificNameGroup> item : result) {
 			ScientificNameGroup nameGroup = item.getItem();

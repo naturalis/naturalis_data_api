@@ -1,12 +1,12 @@
 package nl.naturalis.nba.dao;
 
 import static nl.naturalis.nba.api.ComparisonOperator.EQUALS;
-import static nl.naturalis.nba.dao.TestSpecimens.larusFuscusSpecimen01;
-import static nl.naturalis.nba.dao.TestSpecimens.larusFuscusSpecimen02;
-import static nl.naturalis.nba.dao.TestSpecimens.malusSylvestrisSpecimen01;
-import static nl.naturalis.nba.dao.TestSpecimens.parusMajorSpecimen01;
-import static nl.naturalis.nba.dao.TestSpecimens.tRexSpecimen01;
-import static nl.naturalis.nba.dao.TestSpecimens.vonSiebold;
+import static nl.naturalis.nba.dao.mock.SpecimenMock.larusFuscusSpecimen01;
+import static nl.naturalis.nba.dao.mock.SpecimenMock.larusFuscusSpecimen02;
+import static nl.naturalis.nba.dao.mock.SpecimenMock.malusSylvestrisSpecimen01;
+import static nl.naturalis.nba.dao.mock.SpecimenMock.parusMajorSpecimen01;
+import static nl.naturalis.nba.dao.mock.SpecimenMock.tRexSpecimen01;
+import static nl.naturalis.nba.dao.mock.SpecimenMock.vonSiebold;
 import static nl.naturalis.nba.dao.util.es.ESUtil.createIndex;
 import static nl.naturalis.nba.dao.util.es.ESUtil.createType;
 import static nl.naturalis.nba.dao.util.es.ESUtil.deleteIndex;

@@ -152,6 +152,12 @@ public class ScientificName implements INbaModelObject {
 		this.year = year;
 	}
 
+	/**
+	 * Returns the concatenation (space-separated and in lower case) of the
+	 * scientific name's genus, specific epithet and infraspecific epithet.
+	 * 
+	 * @return
+	 */
 	public String getScientificNameGroup()
 	{
 		return scientificNameGroup;

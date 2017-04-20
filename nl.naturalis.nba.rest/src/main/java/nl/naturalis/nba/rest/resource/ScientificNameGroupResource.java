@@ -84,7 +84,8 @@ public class ScientificNameGroupResource {
 	public QueryResult<ScientificNameGroup> query_GET(@Context UriInfo uriInfo)
 	{
 		try {
-			ScientificNameGroupQuerySpec qs = new HttpScientificNameGroupQuerySpecBuilder(uriInfo).build();
+			ScientificNameGroupQuerySpec qs = new HttpScientificNameGroupQuerySpecBuilder(uriInfo)
+					.build();
 			ScientificNameGroupDao dao = new ScientificNameGroupDao();
 			return dao.query(qs);
 		}
@@ -101,9 +102,10 @@ public class ScientificNameGroupResource {
 			@Context UriInfo uriInfo)
 	{
 		try {
-			ScientificNameGroupQuerySpec qs = new HttpScientificNameGroupQuerySpecBuilder(form, uriInfo).build();
+			ScientificNameGroupQuerySpec qs = new HttpScientificNameGroupQuerySpecBuilder(form,
+					uriInfo).build();
 			ScientificNameGroupDao dao = new ScientificNameGroupDao();
-			return  dao.query(qs);
+			return dao.query(qs);
 		}
 		catch (Throwable t) {
 			throw handleError(uriInfo, t);
@@ -128,14 +130,15 @@ public class ScientificNameGroupResource {
 	}
 
 	@GET
-	@Path("/getSpeciesWithSpecimens")
+	@Path("/querySpecial")
 	@Produces(JSON_CONTENT_TYPE)
-	public QueryResult<ScientificNameGroup> getSpeciesWithSpecimens_GET(@Context UriInfo uriInfo)
+	public QueryResult<ScientificNameGroup> querySpecial_GET(@Context UriInfo uriInfo)
 	{
 		try {
-			ScientificNameGroupQuerySpec qs = new HttpScientificNameGroupQuerySpecBuilder(uriInfo).build();
+			ScientificNameGroupQuerySpec qs = new HttpScientificNameGroupQuerySpecBuilder(uriInfo)
+					.build();
 			ScientificNameGroupDao dao = new ScientificNameGroupDao();
-			return dao.getSpeciesWithSpecimens(qs);
+			return dao.querySpecial(qs);
 		}
 		catch (Throwable t) {
 			throw handleError(uriInfo, t);
@@ -143,16 +146,17 @@ public class ScientificNameGroupResource {
 	}
 
 	@POST
-	@Path("/getSpeciesWithSpecimens")
+	@Path("/querySpecial")
 	@Produces(JSON_CONTENT_TYPE)
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public QueryResult<ScientificNameGroup> getSpeciesWithSpecimens_POST_FORM(
+	public QueryResult<ScientificNameGroup> querySpecial_POST_FORM(
 			MultivaluedMap<String, String> form, @Context UriInfo uriInfo)
 	{
 		try {
-			ScientificNameGroupQuerySpec qs = new HttpScientificNameGroupQuerySpecBuilder(form, uriInfo).build();
+			ScientificNameGroupQuerySpec qs = new HttpScientificNameGroupQuerySpecBuilder(form,
+					uriInfo).build();
 			ScientificNameGroupDao dao = new ScientificNameGroupDao();
-			return dao.getSpeciesWithSpecimens(qs);
+			return dao.querySpecial(qs);
 		}
 		catch (Throwable t) {
 			throw handleError(uriInfo, t);
@@ -160,15 +164,15 @@ public class ScientificNameGroupResource {
 	}
 
 	@POST
-	@Path("/getSpeciesWithSpecimens")
+	@Path("/querySpecial")
 	@Produces(JSON_CONTENT_TYPE)
 	@Consumes(JSON_CONTENT_TYPE)
-	public QueryResult<ScientificNameGroup> getSpeciesWithSpecimens_POST_JSON(ScientificNameGroupQuerySpec qs,
+	public QueryResult<ScientificNameGroup> querySpecial_POST_JSON(ScientificNameGroupQuerySpec qs,
 			@Context UriInfo uriInfo)
 	{
 		try {
 			ScientificNameGroupDao dao = new ScientificNameGroupDao();
-			return dao.getSpeciesWithSpecimens(qs);
+			return dao.querySpecial(qs);
 		}
 		catch (Throwable t) {
 			throw handleError(uriInfo, t);
@@ -181,7 +185,8 @@ public class ScientificNameGroupResource {
 	public long count(@Context UriInfo uriInfo)
 	{
 		try {
-			ScientificNameGroupQuerySpec qs = new HttpScientificNameGroupQuerySpecBuilder(uriInfo).build();
+			ScientificNameGroupQuerySpec qs = new HttpScientificNameGroupQuerySpecBuilder(uriInfo)
+					.build();
 			ScientificNameGroupDao dao = new ScientificNameGroupDao();
 			return dao.count(qs);
 		}
@@ -197,7 +202,8 @@ public class ScientificNameGroupResource {
 			@Context UriInfo uriInfo)
 	{
 		try {
-			ScientificNameGroupQuerySpec qs = new HttpScientificNameGroupQuerySpecBuilder(uriInfo).build();
+			ScientificNameGroupQuerySpec qs = new HttpScientificNameGroupQuerySpecBuilder(uriInfo)
+					.build();
 			ScientificNameGroupDao dao = new ScientificNameGroupDao();
 			return dao.getDistinctValues(field, qs);
 		}
@@ -214,7 +220,8 @@ public class ScientificNameGroupResource {
 			@Context UriInfo uriInfo)
 	{
 		try {
-			ScientificNameGroupQuerySpec qs = new HttpScientificNameGroupQuerySpecBuilder(uriInfo).build();
+			ScientificNameGroupQuerySpec qs = new HttpScientificNameGroupQuerySpecBuilder(uriInfo)
+					.build();
 			QueryCondition[] conditions = null;
 			if (qs.getConditions() != null && qs.getConditions().size() > 0) {
 				conditions = qs.getConditions()

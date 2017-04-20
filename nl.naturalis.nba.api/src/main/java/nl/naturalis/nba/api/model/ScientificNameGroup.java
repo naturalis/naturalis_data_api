@@ -11,10 +11,15 @@ import nl.naturalis.nba.api.model.summary.SummaryTaxon;
  * various statistics associated with that name. The ScientificNameGroup index
  * is a "frozen" aggregation query on the {@link Specimen} index and the
  * {@link Taxon} index. It groups specimens and taxa on their full scientific
- * name. More precisely: it groups them on the combination of their genus,
- * specific eptithet and infraspecific epithet. Each ScientificNameGroup
+ * name. In other words, each ScientificNameGroup document represents a group
+ * (a.k.a. bucket) with the full scientific name as the group value. To be more
+ * precise: specimens and taxa are actually grouped on the combination of their
+ * genus, specific eptithet and infraspecific epithet (rather than their full
+ * scientific name, which may include an author). Each ScientificNameGroup
  * document contains one such combination, which is guaranteed to be unique
  * within the ScientificNameGroup index as a whole.
+ * 
+ * @see ScientificName#getScientificNameGroup()
  * 
  * @author Ayco Holleman
  *

@@ -90,8 +90,7 @@ public class ESUtil {
 		String index = dt.getIndexInfo().getName();
 		String type = dt.getName();
 		if (logger.isDebugEnabled()) {
-			String pattern = "New search request. Index: {}. Type: {}";
-			logger.debug(pattern, index, type);
+			logger.debug("New search request: {}/{}", index, type);
 		}
 		SearchRequestBuilder request = esClient().prepareSearch(index);
 		request.setTypes(type);

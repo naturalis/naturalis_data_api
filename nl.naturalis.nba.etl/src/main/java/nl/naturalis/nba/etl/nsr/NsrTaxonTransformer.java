@@ -6,6 +6,7 @@ import static nl.naturalis.nba.api.model.TaxonomicStatus.BASIONYM;
 import static nl.naturalis.nba.api.model.TaxonomicStatus.HOMONYM;
 import static nl.naturalis.nba.api.model.TaxonomicStatus.MISSPELLED_NAME;
 import static nl.naturalis.nba.api.model.TaxonomicStatus.SYNONYM;
+import static nl.naturalis.nba.etl.ETLUtil.getTestGenera;
 import static nl.naturalis.nba.etl.TransformUtil.parseDate;
 import static nl.naturalis.nba.etl.TransformUtil.setScientificNameGroup;
 import static nl.naturalis.nba.etl.nsr.NsrImportUtil.val;
@@ -57,13 +58,16 @@ class NsrTaxonTransformer extends AbstractXMLTransformer<Taxon> {
 		translations.put("isInvalidNameOf", SYNONYM);
 	}
 
-	private static final List<String> allowedTaxonRanks = Arrays.asList("species", "subspecies",
-			"varietas", "cultivar", "forma_specialis", "forma", "nothospecies", "nothosubspecies",
-			"nothovarietas", "subforma");
+	private static final List<String> allowedTaxonRanks = Arrays.asList("species",
+			"subspecies", "varietas", "cultivar", "forma_specialis", "forma",
+			"nothospecies", "nothosubspecies", "nothovarietas", "subforma");
+
+	private String[] testGenera;
 
 	NsrTaxonTransformer(ETLStatistics stats)
 	{
 		super(stats);
+		testGenera = getTestGenera();
 	}
 
 	@Override
@@ -83,6 +87,10 @@ class NsrTaxonTransformer extends AbstractXMLTransformer<Taxon> {
 			}
 			Taxon taxon = new Taxon();
 			if (!addScientificNames(taxon)) {
+				return null;
+			}
+			if (testGenera != null && !hasTestGenus(taxon)) {
+				stats.recordsSkipped++;
 				return null;
 			}
 			addSystemClassification(taxon);
@@ -198,8 +206,8 @@ class NsrTaxonTransformer extends AbstractXMLTransformer<Taxon> {
 	}
 
 	/*
-	 * This method MUST be called after addScientificNames(), because it relies
-	 * on checks that are done in that method.
+	 * This method MUST be called after addScientificNames(), because it relies on checks
+	 * that are done in that method.
 	 */
 	private void addVernacularNames(Taxon taxon)
 	{
@@ -217,7 +225,8 @@ class NsrTaxonTransformer extends AbstractXMLTransformer<Taxon> {
 
 	private static boolean isVernacularName(String nameType)
 	{
-		return (nameType.equals("isPreferredNameOf") || nameType.equals("isAlternativeNameOf"));
+		return (nameType.equals("isPreferredNameOf")
+				|| nameType.equals("isAlternativeNameOf"));
 	}
 
 	private void setRecordURI(Taxon taxon)
@@ -288,6 +297,21 @@ class NsrTaxonTransformer extends AbstractXMLTransformer<Taxon> {
 		if (monomials.size() != 0) {
 			taxon.setSystemClassification(monomials);
 		}
+	}
+
+	private boolean hasTestGenus(Taxon taxon)
+	{
+		String genus = taxon.getAcceptedName().getGenusOrMonomial();
+		if (genus == null) {
+			return false;
+		}
+		genus=genus.toLowerCase();
+		for (String testGenus : testGenera) {
+			if (genus.equals(testGenus)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private static String getOccurrenceStatusVerbatim(Element taxonElem)
@@ -430,7 +454,8 @@ class NsrTaxonTransformer extends AbstractXMLTransformer<Taxon> {
 		if (raw == null) {
 			stats.recordsRejected++;
 			if (!suppressErrors) {
-				error("Missing or empty <nametype> for name: " + val(nameElem, "fullname"));
+				error("Missing or empty <nametype> for name: "
+						+ val(nameElem, "fullname"));
 			}
 			return null;
 		}

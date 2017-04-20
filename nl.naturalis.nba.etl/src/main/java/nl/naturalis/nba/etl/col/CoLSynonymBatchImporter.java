@@ -3,7 +3,7 @@ package nl.naturalis.nba.etl.col;
 import static nl.naturalis.nba.dao.DocumentType.TAXON;
 import static nl.naturalis.nba.etl.ETLUtil.getLogger;
 import static nl.naturalis.nba.etl.ETLUtil.logDuration;
-import static nl.naturalis.nba.etl.col.CoLReferenceCsvField.taxonID;
+import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.acceptedNameUsageID;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -29,7 +29,7 @@ import nl.naturalis.nba.etl.ETLStatistics;
  * @author Ayco Holleman
  *
  */
-public class CoLReferenceBatchImporter {
+public class CoLSynonymBatchImporter {
 
 	public static void main(String[] args) throws Exception
 	{
@@ -46,20 +46,20 @@ public class CoLReferenceBatchImporter {
 			throw new ETLRuntimeException("Batch size exceeds maximum of 1024");
 		}
 		try {
-			CoLReferenceBatchImporter importer = new CoLReferenceBatchImporter();
+			CoLSynonymBatchImporter importer = new CoLSynonymBatchImporter();
 			importer.setBatchSize(batchSize);
 			String dwcaDir = DaoRegistry.getInstance().getConfiguration()
 					.required("col.data.dir");
-			importer.importCsv(dwcaDir + "/reference.txt");
+			importer.importCsv(dwcaDir + "/taxa.txt");
 		}
 		finally {
 			ESClientManager.getInstance().closeClient();
 		}
 	}
 
-	private static final Logger logger = getLogger(CoLReferenceBatchImporter.class);
+	private static final Logger logger = getLogger(CoLSynonymBatchImporter.class);
 
-	public CoLReferenceBatchImporter()
+	public CoLSynonymBatchImporter()
 	{
 	}
 
@@ -79,17 +79,21 @@ public class CoLReferenceBatchImporter {
 		}
 		long start = System.currentTimeMillis();
 		ETLStatistics stats = new ETLStatistics();
-		CSVExtractor<CoLReferenceCsvField> extractor = createExtractor(stats, f);
-		CoLReferenceBatchTransformer transformer = new CoLReferenceBatchTransformer();
+		CSVExtractor<CoLTaxonCsvField> extractor = createExtractor(stats, f);
+		CoLSynonymBatchTransformer transformer = new CoLSynonymBatchTransformer();
 		BulkIndexer<Taxon> indexer = new BulkIndexer<>(TAXON);
-		ArrayList<CSVRecordInfo<CoLReferenceCsvField>> csvRecords;
+		ArrayList<CSVRecordInfo<CoLTaxonCsvField>> csvRecords;
 		csvRecords = new ArrayList<>(batchSize);
 		int processed = 0;
 		logger.info("Processing file {}", f.getAbsolutePath());
 		logger.info("Batch size: {}", batchSize);
-		for (CSVRecordInfo<CoLReferenceCsvField> rec : extractor) {
-			if (rec == null || rec.get(taxonID) == null) {
-				// garbage
+		for (CSVRecordInfo<CoLTaxonCsvField> rec : extractor) {
+			if (rec == null) {
+				// Garbage
+				continue;
+			}
+			if (rec.get(acceptedNameUsageID) == null) {
+				// This is an accepted name, not a synonym
 				continue;
 			}
 			csvRecords.add(rec);
@@ -103,7 +107,7 @@ public class CoLReferenceBatchImporter {
 			}
 			if (++processed % 100000 == 0) {
 				logger.info("Records processed: {}", processed);
-				logger.info("References created: {}", transformer.getNumCreated());
+				logger.info("Synonyms created: {}", transformer.getNumCreated());
 			}
 		}
 		if (csvRecords.size() != 0) {
@@ -114,7 +118,7 @@ public class CoLReferenceBatchImporter {
 			}
 		}
 		logger.info("Records processed: {}", processed);
-		logger.info("References created: {}", transformer.getNumCreated());
+		logger.info("Synonyms created: {}", transformer.getNumCreated());
 		logger.info("Taxa enriched: {}", transformer.getNumUpdated());
 		logger.info("Duplicates: {}", transformer.getNumDuplicates());
 		logger.info("Orphans: {}", transformer.getNumOrphans());
@@ -131,10 +135,10 @@ public class CoLReferenceBatchImporter {
 		this.batchSize = batchSize;
 	}
 
-	private static CSVExtractor<CoLReferenceCsvField> createExtractor(ETLStatistics stats,
+	private static CSVExtractor<CoLTaxonCsvField> createExtractor(ETLStatistics stats,
 			File f)
 	{
-		CSVExtractor<CoLReferenceCsvField> extractor;
+		CSVExtractor<CoLTaxonCsvField> extractor;
 		extractor = new CSVExtractor<>(f, stats);
 		extractor.setSkipHeader(true);
 		extractor.setDelimiter('\t');

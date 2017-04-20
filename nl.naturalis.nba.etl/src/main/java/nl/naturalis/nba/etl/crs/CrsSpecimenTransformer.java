@@ -2,6 +2,7 @@ package nl.naturalis.nba.etl.crs;
 
 import static nl.naturalis.nba.api.model.SourceSystem.CRS;
 import static nl.naturalis.nba.dao.DocumentType.SPECIMEN;
+import static nl.naturalis.nba.etl.ETLUtil.getTestGenera;
 import static nl.naturalis.nba.etl.LoadConstants.LICENCE;
 import static nl.naturalis.nba.etl.LoadConstants.LICENCE_TYPE;
 import static nl.naturalis.nba.etl.LoadConstants.SOURCE_INSTITUTION_ID;
@@ -63,20 +64,21 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 	}
 
 	private String databaseID;
+	private String[] testGenera;
 
 	CrsSpecimenTransformer(ETLStatistics stats)
 	{
 		super(stats);
+		testGenera = getTestGenera();
 	}
 
 	@Override
 	protected String getObjectID()
 	{
 		/*
-		 * Side effect: set the database ID of the record as well, so we can
-		 * provide both the UnitID and the database ID of the specimen when
-		 * logging messages. We override messagePrefix() to also print out the
-		 * database ID.
+		 * Side effect: set the database ID of the record as well, so we can provide both
+		 * the UnitID and the database ID of the specimen when logging messages. We
+		 * override messagePrefix() to also print out the database ID.
 		 */
 		databaseID = val(input.getRecord(), "identifier");
 		return val(input.getRecord(), "abcd:UnitID");
@@ -96,17 +98,24 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 		String recordBasis = val(record, "abcd:RecordBasis");
 		if (recordBasis == null) {
 			stats.recordsSkipped++;
-			if (!suppressErrors)
+			if (!suppressErrors) {
 				warn("Skipping virtual specimen");
+			}
 			return null;
 		}
 
 		List<Element> elems = DOMUtil.getDescendants(record, "ncrsDetermination");
+
 		if (elems == null) {
 			stats.recordsRejected++;
 			if (!suppressErrors) {
 				error("Missing element: <ncrsDetermination>");
 			}
+			return null;
+		}
+
+		if (testGenera != null && !hasTestGenus(elems)) {
+			stats.recordsSkipped++;
 			return null;
 		}
 
@@ -129,16 +138,18 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 		stats.recordsAccepted++;
 		stats.objectsProcessed++;
 
-		Collections.sort(specimen.getIdentifications(), new Comparator<SpecimenIdentification>() {
+		Collections.sort(specimen.getIdentifications(),
+				new Comparator<SpecimenIdentification>() {
 
-			public int compare(SpecimenIdentification o1, SpecimenIdentification o2)
-			{
-				if (o1.isPreferred()) {
-					return o2.isPreferred() ? 0 : -1;
-				}
-				return o2.isPreferred() ? 1 : 0;
-			}
-		});
+					public int compare(SpecimenIdentification o1,
+							SpecimenIdentification o2)
+					{
+						if (o1.isPreferred()) {
+							return o2.isPreferred() ? 0 : -1;
+						}
+						return o2.isPreferred() ? 1 : 0;
+					}
+				});
 
 		try {
 			String tmp;
@@ -274,7 +285,8 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 		List<Element> elems = DOMUtil.getChildren(elem, "ncrsHighername");
 		if (elems == null)
 			return lowerClassification;
-		List<Monomial> classification = new ArrayList<>(elems.size() + lowerClassification.size());
+		List<Monomial> classification = new ArrayList<>(
+				elems.size() + lowerClassification.size());
 		for (Element e : elems) {
 			String rank = DOMUtil.getValue(e, "abcd:HigherTaxonRank");
 			String name = DOMUtil.getValue(e, "abcd:taxonCoverage");
@@ -413,12 +425,30 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 		if (lithoStratigraphyElements == null) {
 			return null;
 		}
-		List<LithoStratigraphy> result = new ArrayList<>(lithoStratigraphyElements.size());
+		List<LithoStratigraphy> result = new ArrayList<>(
+				lithoStratigraphyElements.size());
 		for (Element e : lithoStratigraphyElements) {
 			LithoStratigraphy one = getLithoStratigraphyObject(e);
 			result.add(one);
 		}
 		return result;
+	}
+
+	private boolean hasTestGenus(List<Element> elems)
+	{
+		for (Element elem : elems) {
+			String genus = val(elem, "abcd:GenusOrMonomial");
+			if (genus == null) {
+				continue;
+			}
+			genus = genus.toLowerCase();
+			for (String testGenus : testGenera) {
+				if (genus.equals(testGenus)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	@Override

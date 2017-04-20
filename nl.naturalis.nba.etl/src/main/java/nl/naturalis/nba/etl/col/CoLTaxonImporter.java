@@ -21,10 +21,9 @@ import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.utils.IOUtil;
 
 /**
- * Imports taxa from the taxa.txt file. This is the only import program for the
- * CoL that actually creates documents. The other programs only enrich existing
- * documents (e.g. with synonym data, vernacular names and literature
- * references).
+ * Imports taxa from the taxa.txt file. This is the only import program for the CoL that
+ * actually creates documents. The other programs only enrich existing documents (e.g.
+ * with synonym data, vernacular names and literature references).
  * 
  * @author Ayco Holleman
  *
@@ -35,7 +34,8 @@ public class CoLTaxonImporter extends CoLImporter {
 	{
 		try {
 			CoLTaxonImporter importer = new CoLTaxonImporter();
-			String dwcaDir = DaoRegistry.getInstance().getConfiguration().required("col.data.dir");
+			String dwcaDir = DaoRegistry.getInstance().getConfiguration()
+					.required("col.data.dir");
 			importer.importCsv(dwcaDir + "/taxa.txt");
 		}
 		catch (Throwable t) {
@@ -43,7 +43,6 @@ public class CoLTaxonImporter extends CoLImporter {
 			System.exit(1);
 		}
 		finally {
-			ESUtil.refreshIndex(TAXON);
 			ESClientManager.getInstance().closeClient();
 		}
 	}
@@ -97,6 +96,7 @@ public class CoLTaxonImporter extends CoLImporter {
 		}
 		finally {
 			IOUtil.close(loader);
+			ESUtil.refreshIndex(TAXON);
 		}
 		stats.logStatistics(logger);
 		logger.info("(NB skipped records are synonyms or higher taxa)");

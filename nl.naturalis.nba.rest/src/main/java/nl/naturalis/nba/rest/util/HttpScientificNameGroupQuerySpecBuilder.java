@@ -25,6 +25,7 @@ import nl.naturalis.nba.api.ScientificNameGroupQuerySpec;
 import nl.naturalis.nba.api.SortField;
 import nl.naturalis.nba.rest.exception.HTTP400Exception;
 import nl.naturalis.nba.utils.CollectionUtil;
+import nl.naturalis.nba.utils.ConfigObject;
 
 /**
  * Extracts {@link ScientificNameGroupQuerySpec} objects from HTTP requests.
@@ -46,6 +47,7 @@ public class HttpScientificNameGroupQuerySpecBuilder {
 	public static final String PARAM_SPECIMENS_FROM = "_specimensFrom";
 	public static final String PARAM_SPECIMENS_SIZE = "_specimensSize";
 	public static final String PARAM_SPECIMENS_SORT_FIELDS = "_specimensSortFields";
+	public static final String PARAM_SPECIMENS_NO_TAXA = "_noTaxa";
 
 	private static final String ERR_ILLEGAL_PARAM = "Unknown or illegal parameter: %s";
 	private static final String ERR_NO_UNDERSCORE = "Unknown or illegal parameter: "
@@ -134,6 +136,9 @@ public class HttpScientificNameGroupQuerySpecBuilder {
 					break;
 				case PARAM_SPECIMENS_SORT_FIELDS:
 					qs.setSpecimensSortFields(getSortFields(value));
+					break;
+				case PARAM_SPECIMENS_NO_TAXA:
+					qs.setNoTaxa(ConfigObject.isTrueValue(value, true));
 					break;
 				default:
 					if (param.charAt(0) == '_') {

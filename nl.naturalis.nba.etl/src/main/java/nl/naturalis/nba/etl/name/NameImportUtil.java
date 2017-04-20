@@ -29,7 +29,7 @@ public class NameImportUtil {
 
 	private static final Logger logger = getLogger(NameImportUtil.class);
 
-	public static List<ScientificNameGroup> loadNameGroupsById(Collection<String> names)
+	static List<ScientificNameGroup> loadNameGroupsById(Collection<String> names)
 	{
 		if (logger.isDebugEnabled()) {
 			logger.debug("Loading ScientificNameGroup documents for {} names", names.size());
@@ -55,7 +55,7 @@ public class NameImportUtil {
 		return result;
 	}
 
-	public static List<ScientificNameGroup> loadNameGroupsByName(Collection<String> names)
+	static List<ScientificNameGroup> loadNameGroupsByName(Collection<String> names)
 	{
 		if (logger.isDebugEnabled()) {
 			logger.debug("Loading ScientificNameGroup documents for {} names", names.size());

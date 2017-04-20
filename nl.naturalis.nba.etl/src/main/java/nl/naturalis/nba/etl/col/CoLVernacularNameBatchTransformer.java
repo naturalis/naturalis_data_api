@@ -5,15 +5,12 @@ import static nl.naturalis.nba.dao.DocumentType.TAXON;
 import static nl.naturalis.nba.dao.util.es.ESUtil.getElasticsearchId;
 import static nl.naturalis.nba.etl.ETLUtil.getLogger;
 import static nl.naturalis.nba.etl.ETLUtil.getTestGenera;
-import static nl.naturalis.nba.etl.col.CoLReferenceCsvField.creator;
-import static nl.naturalis.nba.etl.col.CoLReferenceCsvField.date;
-import static nl.naturalis.nba.etl.col.CoLReferenceCsvField.description;
-import static nl.naturalis.nba.etl.col.CoLReferenceCsvField.taxonID;
-import static nl.naturalis.nba.etl.col.CoLReferenceCsvField.title;
+import static nl.naturalis.nba.etl.col.CoLVernacularNameCsvField.language;
+import static nl.naturalis.nba.etl.col.CoLVernacularNameCsvField.taxonID;
+import static nl.naturalis.nba.etl.col.CoLVernacularNameCsvField.vernacularName;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -26,39 +23,39 @@ import org.elasticsearch.search.SearchHit;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import nl.naturalis.nba.api.model.Person;
-import nl.naturalis.nba.api.model.Reference;
 import nl.naturalis.nba.api.model.Taxon;
+import nl.naturalis.nba.api.model.VernacularName;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.CSVRecordInfo;
-import nl.naturalis.nba.etl.TransformUtil;
 
-class CoLReferenceBatchTransformer {
+class CoLVernacularNameBatchTransformer {
 
-	private static final Logger logger = getLogger(CoLReferenceBatchTransformer.class);
+	private static final Logger logger = getLogger(
+			CoLVernacularNameBatchTransformer.class);
 
-	// The number of references created
+	// The number of vernacular names created
 	private int numCreated;
-	// The number of taxa with references
+	// The number of taxa with vernacular names
 	private int numUpdated;
 	private int numDuplicates;
 	private int numOrphans;
 
 	private String[] testGenera;
 
-	CoLReferenceBatchTransformer()
+	CoLVernacularNameBatchTransformer()
 	{
 		testGenera = getTestGenera();
 	}
 
-	Collection<Taxon> transform(ArrayList<CSVRecordInfo<CoLReferenceCsvField>> records)
+	Collection<Taxon> transform(
+			ArrayList<CSVRecordInfo<CoLVernacularNameCsvField>> records)
 	{
 		HashMap<String, Taxon> lookupTable = createLookupTable(records);
-		for (CSVRecordInfo<CoLReferenceCsvField> record : records) {
+		for (CSVRecordInfo<CoLVernacularNameCsvField> record : records) {
 			String id = record.get(taxonID);
 			Taxon taxon = lookupTable.get(id);
-			Reference reference = createReference(record);
+			VernacularName vernacular = createVernacularName(record);
 			if (taxon == null) {
 				++numOrphans;
 				/*
@@ -66,21 +63,21 @@ class CoLReferenceBatchTransformer {
 				 * let's not clutter up our log files
 				 */
 				if (testGenera == null) {
-					logger.error("{} | Orphan: {} ", id, reference);
+					logger.error("{} | Orphan: {} ", id, vernacular);
 				}
 			}
-			else if (taxon.getReferences() == null) {
+			else if (taxon.getVernacularNames() == null) {
 				++numCreated;
 				++numUpdated;
-				taxon.addReference(reference);
+				taxon.addVernacularName(vernacular);
 			}
-			else if (!taxon.getReferences().contains(reference)) {
+			else if (!taxon.getVernacularNames().contains(vernacular)) {
 				++numCreated;
-				taxon.addReference(reference);
+				taxon.addVernacularName(vernacular);
 			}
 			else {
 				++numDuplicates;
-				logger.error("{} | Duplicate: {}", id, reference);
+				logger.error("{} | Duplicate: {}", id, vernacular);
 			}
 		}
 		return lookupTable.values();
@@ -107,10 +104,10 @@ class CoLReferenceBatchTransformer {
 	}
 
 	private static HashMap<String, Taxon> createLookupTable(
-			ArrayList<CSVRecordInfo<CoLReferenceCsvField>> records)
+			ArrayList<CSVRecordInfo<CoLVernacularNameCsvField>> records)
 	{
 		HashSet<String> ids = new HashSet<>(records.size());
-		for (CSVRecordInfo<CoLReferenceCsvField> record : records) {
+		for (CSVRecordInfo<CoLVernacularNameCsvField> record : records) {
 			ids.add(getElasticsearchId(COL, record.get(taxonID)));
 		}
 		DocumentType<Taxon> dt = TAXON;
@@ -131,20 +128,13 @@ class CoLReferenceBatchTransformer {
 		return taxa;
 	}
 
-	private static Reference createReference(CSVRecordInfo<CoLReferenceCsvField> record)
+	private static VernacularName createVernacularName(
+			CSVRecordInfo<CoLVernacularNameCsvField> input)
 	{
-		Reference ref = new Reference();
-		ref.setTitleCitation(record.get(title));
-		ref.setCitationDetail(record.get(description));
-		String s;
-		if ((s = record.get(date)) != null) {
-			Date pubDate = TransformUtil.parseDate(s);
-			ref.setPublicationDate(pubDate);
-		}
-		if ((s = record.get(creator)) != null) {
-			ref.setAuthor(new Person(s));
-		}
-		return ref;
+		VernacularName vn = new VernacularName();
+		vn.setName(input.get(vernacularName));
+		vn.setLanguage(input.get(language));
+		return vn;
 	}
 
 }

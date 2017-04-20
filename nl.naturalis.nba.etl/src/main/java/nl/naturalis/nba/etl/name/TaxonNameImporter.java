@@ -61,29 +61,30 @@ class TaxonNameImporter {
 		extractor.setTimeout(timeout);
 		transformer = new TaxonNameTransformer();
 		BulkIndexer<ScientificNameGroup> indexer = new BulkIndexer<>(SCIENTIFIC_NAME_GROUP);
-		logger.info("Loading first batch of taxa");
+		logger.info("Loading first batch of taxa. Batch size is {}", batchSize);
 		List<Taxon> batch = extractor.nextBatch();
 		disableAutoRefresh(SCIENTIFIC_NAME_GROUP.getIndexInfo());
 		int batchNo = 0;
 		while (batch != null) {
-			Collection<ScientificNameGroup> scientificNameGroups = transformer.transform(batch);
+			Collection<ScientificNameGroup> nameGroups = transformer.transform(batch);
 			if (logger.isDebugEnabled()) {
 				logger.debug("Creating/updating ScientificNameGroup documents");
 			}
-			indexer.index(scientificNameGroups);
+			indexer.index(nameGroups);
+			refreshIndex(SCIENTIFIC_NAME_GROUP.getIndexInfo());
 			if ((++batchNo % 100) == 0) {
 				logger.info("Taxa processed: {}", (batchNo * batchSize));
 				logger.info("Name groups created: {}", transformer.getNumCreated());
 				logger.info("Name groups updated: {}", transformer.getNumUpdated());
 				logger.info("Most recent name group: {}", transformer.getLastGroup().getName());
-				refreshIndex(SCIENTIFIC_NAME_GROUP.getIndexInfo());
 			}
 			if (logger.isDebugEnabled()) {
-				logger.debug("Loading next batch of taxa");
+				logger.debug(">>>>>>>> Loading next batch of taxa <<<<<<<<");
 			}
 			batch = extractor.nextBatch();
 		}
 		indexer.index(Arrays.asList(transformer.getLastGroup()));
+		refreshIndex(SCIENTIFIC_NAME_GROUP.getIndexInfo());
 		setAutoRefreshInterval(SCIENTIFIC_NAME_GROUP.getIndexInfo(), "30s");
 		logger.info("Taxa processed: {}", extractor.getDocCounter());
 		logger.info("Name groups created: {}", transformer.getNumCreated());

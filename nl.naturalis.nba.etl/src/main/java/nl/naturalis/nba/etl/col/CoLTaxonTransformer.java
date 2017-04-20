@@ -10,6 +10,7 @@ import static nl.naturalis.nba.api.model.TaxonomicRank.SPECIES;
 import static nl.naturalis.nba.api.model.TaxonomicRank.SUBGENUS;
 import static nl.naturalis.nba.api.model.TaxonomicRank.SUBSPECIES;
 import static nl.naturalis.nba.api.model.TaxonomicRank.SUPER_FAMILY;
+import static nl.naturalis.nba.etl.ETLUtil.getTestGenera;
 import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.acceptedNameUsageID;
 import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.classRank;
 import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.description;
@@ -58,10 +59,12 @@ class CoLTaxonTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, Taxon
 	}
 
 	private String colYear;
+	private String[] testGenera;
 
 	public CoLTaxonTransformer(ETLStatistics stats)
 	{
 		super(stats);
+		testGenera = getTestGenera();
 	}
 
 	public void setColYear(String colYear)
@@ -73,11 +76,17 @@ class CoLTaxonTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, Taxon
 	protected boolean skipRecord()
 	{
 		/*
-		 * The acceptedNameUsageID field is a foreign key to an accepted name
-		 * record in the same CSV file. If the field is empty, it means the
-		 * record is itself an accepted name record, so we must process it.
+		 * The acceptedNameUsageID field is a foreign key to an accepted name record in
+		 * the same CSV file. If the field is empty, it means the record is itself an
+		 * accepted name record, so we must process it.
 		 */
-		return input.get(acceptedNameUsageID) != null;
+		if (input.get(acceptedNameUsageID) != null) {
+			return true;
+		}
+		if (testGenera != null && !isTestSetGenus()) {
+			return true;
+		}
+		return false;
 	}
 
 	@Override
@@ -232,6 +241,21 @@ class CoLTaxonTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, Taxon
 			m = new Monomial(SUBSPECIES, dc.getInfraspecificEpithet());
 			taxon.addMonomial(m);
 		}
+	}
+
+	private boolean isTestSetGenus()
+	{
+		String genus = input.get(genericName);
+		if (genus == null) {
+			return false;
+		}
+		genus = genus.toLowerCase();
+		for (String s : testGenera) {
+			if (s.equals(genus)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }

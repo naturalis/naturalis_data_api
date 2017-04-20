@@ -3,6 +3,7 @@ package nl.naturalis.nba.etl.col;
 import static nl.naturalis.nba.api.model.SourceSystem.COL;
 import static nl.naturalis.nba.dao.DocumentType.TAXON;
 import static nl.naturalis.nba.dao.util.es.ESUtil.getElasticsearchId;
+import static nl.naturalis.nba.etl.ETLUtil.getTestGenera;
 import static nl.naturalis.nba.etl.col.CoLVernacularNameCsvField.language;
 import static nl.naturalis.nba.etl.col.CoLVernacularNameCsvField.taxonID;
 import static nl.naturalis.nba.etl.col.CoLVernacularNameCsvField.vernacularName;
@@ -18,8 +19,8 @@ import nl.naturalis.nba.etl.CSVTransformer;
 import nl.naturalis.nba.etl.ETLStatistics;
 
 /**
- * A subclass of {@link CSVTransformer} that transforms CSV records into
- * {@link Taxon} objects enriched with vernacular names.
+ * A subclass of {@link CSVTransformer} that transforms CSV records into {@link Taxon}
+ * objects enriched with vernacular names.
  * 
  * @author Ayco Holleman
  *
@@ -29,11 +30,13 @@ class CoLVernacularNameTransformer
 
 	private final CoLTaxonLoader loader;
 	private int orphans;
+	private String[] testGenera;
 
 	CoLVernacularNameTransformer(ETLStatistics stats, CoLTaxonLoader loader)
 	{
 		super(stats);
 		this.loader = loader;
+		testGenera = getTestGenera();
 	}
 
 	@Override
@@ -48,10 +51,10 @@ class CoLVernacularNameTransformer
 		stats.recordsAccepted++;
 		stats.objectsProcessed++;
 		try {
+			VernacularName vn = createVernacularName();
 			String id = getElasticsearchId(COL, objectID);
 			Taxon taxon = loader.findInQueue(id);
 			if (taxon != null) {
-				VernacularName vn = createVernacularName();
 				if (!taxon.getVernacularNames().contains(vn)) {
 					stats.objectsAccepted++;
 					taxon.addVernacularName(vn);
@@ -65,7 +68,6 @@ class CoLVernacularNameTransformer
 				return null;
 			}
 			taxon = ESUtil.find(TAXON, id);
-			VernacularName vn = createVernacularName();
 			if (taxon != null) {
 				if (taxon.getVernacularNames() == null
 						|| !taxon.getVernacularNames().contains(vn)) {
@@ -78,8 +80,8 @@ class CoLVernacularNameTransformer
 				}
 			}
 			else {
-				if (!suppressErrors) {
-					++orphans;
+				++orphans;
+				if (!suppressErrors && testGenera == null) {
 					error("Orphan vernacular name: " + vn);
 				}
 			}

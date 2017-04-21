@@ -1,4 +1,4 @@
-package nl.naturalis.nba.dao;
+package nl.naturalis.nba.dao.mock;
 
 import static nl.naturalis.nba.api.model.PhaseOrStage.ADULT;
 import static nl.naturalis.nba.api.model.PhaseOrStage.EGG;
@@ -31,9 +31,9 @@ import nl.naturalis.nba.api.model.SpecimenIdentification;
  * @author Ayco Holleman
  *
  */
-class TestSpecimens {
+public class SpecimenMock {
 
-	static Specimen parusMajorSpecimen01()
+	public static Specimen parusMajorSpecimen01()
 	{
 		Specimen specimen = new Specimen();
 		specimen.setUnitID("ZMA.MAM.100");
@@ -90,7 +90,7 @@ class TestSpecimens {
 		return specimen;
 	}
 
-	static Specimen larusFuscusSpecimen01()
+	public static Specimen larusFuscusSpecimen01()
 	{
 		Specimen specimen = new Specimen();
 		specimen.setUnitID("ZMA.MAM.101");
@@ -149,7 +149,7 @@ class TestSpecimens {
 		return specimen;
 	}
 
-	static Specimen larusFuscusSpecimen02()
+	public static Specimen larusFuscusSpecimen02()
 	{
 		Specimen specimen = new Specimen();
 		specimen.setUnitID("309801857");
@@ -203,7 +203,7 @@ class TestSpecimens {
 		return specimen;
 	}
 
-	static Specimen tRexSpecimen01()
+	public static Specimen tRexSpecimen01()
 	{
 		Specimen specimen = new Specimen();
 		specimen.setUnitID("RMNH.100");
@@ -258,7 +258,7 @@ class TestSpecimens {
 		return specimen;
 	}
 
-	static Specimen malusSylvestrisSpecimen01()
+	public static Specimen malusSylvestrisSpecimen01()
 	{
 		Specimen specimen = new Specimen();
 		specimen.setUnitID("L   100");
@@ -307,21 +307,21 @@ class TestSpecimens {
 		return specimen;
 	}
 
-	static Person ruudAltenBurg()
+	public static Person ruudAltenBurg()
 	{
 		Person person = new Person("Altenburg, R.");
 		person.setAgentText("Also likes David Bowie");
 		return person;
 	}
 
-	static Person edwinVanHuis()
+	public static Person edwinVanHuis()
 	{
 		Person person = new Person("E. van Huis");
 		person.setAgentText("Director of NBC Naturalis");
 		return person;
 	}
 
-	static Person vonSiebold()
+	public static Person vonSiebold()
 	{
 		Person person = new Person("Philipp Franz von Siebold");
 		person.setAgentText("Philipp Franz von Siebold werkte als "
@@ -344,7 +344,7 @@ class TestSpecimens {
 		return person;
 	}
 
-	static Person nathanielWallich()
+	public static Person nathanielWallich()
 	{
 		Person person = new Person("Nathaniel Wallich");
 		person.setAgentText(null);

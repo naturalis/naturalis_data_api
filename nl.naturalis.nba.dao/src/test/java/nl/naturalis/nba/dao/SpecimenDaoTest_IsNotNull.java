@@ -16,6 +16,7 @@ import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.Specimen;
+import nl.naturalis.nba.dao.mock.SpecimenMock;
 
 @SuppressWarnings("static-method")
 public class SpecimenDaoTest_IsNotNull {
@@ -39,11 +40,11 @@ public class SpecimenDaoTest_IsNotNull {
 		/*
 		 * Insert 5 test specimens.
 		 */
-		pMajor = TestSpecimens.parusMajorSpecimen01();
-		lFuscus1 = TestSpecimens.larusFuscusSpecimen01();
-		lFuscus2 = TestSpecimens.larusFuscusSpecimen02();
-		tRex = TestSpecimens.tRexSpecimen01();
-		mSylvestris = TestSpecimens.malusSylvestrisSpecimen01();
+		pMajor = SpecimenMock.parusMajorSpecimen01();
+		lFuscus1 = SpecimenMock.larusFuscusSpecimen01();
+		lFuscus2 = SpecimenMock.larusFuscusSpecimen02();
+		tRex = SpecimenMock.tRexSpecimen01();
+		mSylvestris = SpecimenMock.malusSylvestrisSpecimen01();
 		DaoTestUtil.saveSpecimens(pMajor, lFuscus1, lFuscus2, tRex, mSylvestris);
 	}
 

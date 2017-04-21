@@ -52,7 +52,7 @@ public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
 	}
 
 	@Override
-	public QueryResult<ScientificNameGroup> getSpeciesWithSpecimens(
+	public QueryResult<ScientificNameGroup> querySpecial(
 			ScientificNameGroupQuerySpec querySpec) throws InvalidQueryException
 	{
 		QueryResult<ScientificNameGroup> result = super.query(querySpec);
@@ -65,71 +65,92 @@ public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
 	}
 
 	private static QuerySpec createQuerySpecForSpecimens(QuerySpec querySpec)
+			throws InvalidQueryException
 	{
 		QuerySpec qs = new QuerySpec();
-		qs.setConstantScore(true);
-		qs.setFields(Collections.emptyList());
-		ScientificNameGroupMetaDataDao metadataDao = new ScientificNameGroupMetaDataDao();
-		Object val = metadataDao.getSetting(INDEX_MAX_RESULT_WINDOW);
-		int size = Integer.parseInt(val.toString());
-		qs.setSize(size);
 		if (querySpec.getConditions() != null) {
 			qs.setLogicalOperator(querySpec.getLogicalOperator());
 			qs.setConditions(processConditions(querySpec.getConditions()));
 		}
+		qs.setConstantScore(true);
+		ScientificNameGroupMetaDataDao metadataDao = new ScientificNameGroupMetaDataDao();
+		Object val = metadataDao.getSetting(INDEX_MAX_RESULT_WINDOW);
+		int size = Integer.parseInt(val.toString());
+		qs.setSize(size);
 		return qs;
 	}
 
-	private static ArrayList<QueryCondition> processConditions(List<QueryCondition> conditions)
+	private static ArrayList<QueryCondition> processConditions(List<QueryCondition> conditions) throws InvalidQueryException
 	{
 		if (conditions == null) {
 			return null;
 		}
-		ArrayList<QueryCondition> copy = new ArrayList<>(conditions.size());
+		ArrayList<QueryCondition> copies = new ArrayList<>(conditions.size());
 		for (QueryCondition condition : conditions) {
-			if (condition.getField().getElement(0).equals("specimens")) {
-				QueryCondition c = new QueryCondition(condition);
-				processCondition(c);
-				copy.add(c);
+			if (isSpecimenCondition(condition)) {
+				QueryCondition copy = new QueryCondition(condition);
+				processCondition(copy);
+				copies.add(copy);
 			}
 			else {
-				String fmt = "Query condition on field {} along with {} AND "
-						+ "sibling(s) and {} OR sibling(s) ignored for specimen "
-						+ "purge. Make sure all conditions on specimen fields "
-						+ "are main conditions within the QuerySpec (i.e. not "
-						+ "nested within other conditions), or make sure that "
-						+ "they are siblings of main conditions on specimen fields";
-				int x = condition.getAnd() == null ? 0 : condition.getAnd().size();
-				int y = condition.getOr() == null ? 0 : condition.getOr().size();
-				logger.warn(fmt, condition.getField(), x, y);
+				QueryCondition nested = findDescendantWithSpecimenField(condition);
+				if (nested != null) {
+					String fmt = "Query condition on field {} must not be nested within "
+							+ "condition on field {}. Specimen-related conditions must "
+							+ "be top-level conditions or nested within another "
+							+ "specimen-related, top-level condition";
+					String msg = String.format(fmt, nested.getField(), condition.getField());
+					throw new InvalidQueryException(msg);
+				}
 			}
 		}
-		return copy.isEmpty() ? null : copy;
+		return copies.isEmpty() ? null : copies;
 	}
 
-	private static void processCondition(QueryCondition condition)
+	private static void processCondition(QueryCondition condition) throws InvalidQueryException
 	{
-		if (condition.getField().getElement(1).equals("matchingIdentifications")) {
-			Path mapped = condition.getField().replace(1, "identifications");
+		// Chop off the "specimens" path element
+		condition.setField(condition.getField().shift());
+		if (condition.getField().getElement(0).equals("matchingIdentifications")) {
+			Path mapped = condition.getField().replace(0, "identifications");
 			condition.setField(mapped);
 		}
 		condition.setAnd(processConditions(condition.getAnd()));
 		condition.setOr(processConditions(condition.getOr()));
 	}
 
+	private static QueryCondition findDescendantWithSpecimenField(QueryCondition condition)
+	{
+		if (condition.getAnd() != null) {
+			for (QueryCondition c : condition.getAnd()) {
+				if (!isSpecimenCondition(c)) {
+					return c;
+				}
+				return findDescendantWithSpecimenField(c);
+			}
+		}
+		if (condition.getOr() != null) {
+			for (QueryCondition c : condition.getOr()) {
+				if (!isSpecimenCondition(c)) {
+					return c;
+				}
+				return findDescendantWithSpecimenField(c);
+			}
+		}
+		return null;
+	}
+
+	private static boolean isSpecimenCondition(QueryCondition condition)
+	{
+		return condition.getField().getElement(0).equals("specimens");
+	}
+
 	private static void purgeSpecimens(QueryResult<ScientificNameGroup> result,
 			QuerySpec specimenQuerySpec) throws InvalidQueryException
 	{
-		if (logger.isDebugEnabled()) {
-			logger.debug("Purging specimens from name groups that do not satisfy "
-					+ "specimen-related query conditions in QuerySpec");
-		}
-		List<QueryCondition> origConditions = specimenQuerySpec.getConditions();
-		String field = "identifications.scientificNameGroup";
+		String field = "identifications.scientificName.scientificNameGroup";
 		QueryCondition extraCondition = new QueryCondition(field, "=", null);
-		List<QueryCondition> newConditions = new ArrayList<>(origConditions.size() + 1);
-		newConditions.add(extraCondition);
-		newConditions.addAll(origConditions);
+		specimenQuerySpec.addCondition(extraCondition);
 		SpecimenDao specimenDao = new SpecimenDao();
 		for (QueryResultItem<ScientificNameGroup> item : result) {
 			ScientificNameGroup nameGroup = item.getItem();

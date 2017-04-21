@@ -1,4 +1,4 @@
-package nl.naturalis.nba.dao;
+package nl.naturalis.nba.dao.mock;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,13 +10,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.naturalis.nba.api.model.GeoArea;
 import nl.naturalis.nba.api.model.SourceSystem;
 
-public class TestGeoAreas {
+public class GeoAreaMock {
 
-	private TestGeoAreas()
+	private GeoAreaMock()
 	{
 	}
 
-	static GeoArea Aalten()
+	public static GeoArea Aalten()
 	{
 		GeoArea area = new GeoArea();
 		area.setSourceSystem(SourceSystem.GEO);
@@ -26,7 +26,7 @@ public class TestGeoAreas {
 		return area;
 	}
 
-	static GeoArea Uitgeest()
+	public static GeoArea Uitgeest()
 	{
 		GeoArea area = new GeoArea();
 		area.setSourceSystem(SourceSystem.GEO);
@@ -34,10 +34,9 @@ public class TestGeoAreas {
 		area.setLocality("Uitgeest");
 		area.setShape(loadShape("uitgeest.geojson.txt"));
 		return area;
-		// "{\"type\":
 	}
 
-	static GeoArea NoordHolland()
+	public static GeoArea NoordHolland()
 	{
 		GeoArea area = new GeoArea();
 		area.setSourceSystem(SourceSystem.GEO);
@@ -47,7 +46,7 @@ public class TestGeoAreas {
 		return area;
 	}
 
-	static GeoArea Netherlands()
+	public static GeoArea Netherlands()
 	{
 		GeoArea area = new GeoArea();
 		area.setSourceSystem(SourceSystem.GEO);
@@ -57,7 +56,7 @@ public class TestGeoAreas {
 		return area;
 	}
 	
-	static GeoArea Vatican() {
+	public static GeoArea Vatican() {
 		GeoArea area = new GeoArea();
 		area.setSourceSystem(SourceSystem.GEO);
 		area.setSourceSystemId("005");
@@ -68,7 +67,7 @@ public class TestGeoAreas {
 
 	private static GeoJsonObject loadShape(String resource)
 	{
-		InputStream is = TestGeoAreas.class.getResourceAsStream(resource);
+		InputStream is = GeoAreaMock.class.getResourceAsStream(resource);
 		try {
 			return new ObjectMapper().readValue(is, GeoJsonObject.class);
 		}

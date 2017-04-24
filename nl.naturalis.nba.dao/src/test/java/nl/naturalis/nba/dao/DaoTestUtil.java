@@ -13,6 +13,7 @@ import org.elasticsearch.index.query.QueryBuilder;
 
 import nl.naturalis.nba.api.model.GeoArea;
 import nl.naturalis.nba.api.model.IDocumentObject;
+import nl.naturalis.nba.api.model.ScientificNameGroup;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.util.es.ESUtil;
@@ -73,6 +74,26 @@ public class DaoTestUtil {
 		ESUtil.refreshIndex(dt.getIndexInfo());
 	}
 
+	public static void saveGeoAreas(GeoArea... areas)
+	{
+		DocumentType<?> dt = DocumentType.forClass(GeoArea.class);
+		ESUtil.disableAutoRefresh(dt.getIndexInfo());
+		for (GeoArea area : areas) {
+			saveGeoArea(area, false);
+		}
+		ESUtil.refreshIndex(dt.getIndexInfo());
+	}
+
+	public static void saveScientificNameGroups(ScientificNameGroup... groups)
+	{
+		DocumentType<?> dt = DocumentType.forClass(ScientificNameGroup.class);
+		ESUtil.disableAutoRefresh(dt.getIndexInfo());
+		for (ScientificNameGroup group : groups) {
+			saveScientificNameGroup(group, false);
+		}
+		ESUtil.refreshIndex(dt.getIndexInfo());
+	}
+
 	public static void saveSpecimens(List<Specimen> specimens)
 	{
 		DocumentType<?> dt = DocumentType.forClass(Specimen.class);
@@ -89,20 +110,16 @@ public class DaoTestUtil {
 		saveObject(id, null, specimen, refreshIndex);
 	}
 
-	public static void saveGeoAreas(GeoArea... areas)
-	{
-		DocumentType<?> dt = DocumentType.forClass(GeoArea.class);
-		ESUtil.disableAutoRefresh(dt.getIndexInfo());
-		for (GeoArea area : areas) {
-			saveGeoArea(area, false);
-		}
-		ESUtil.refreshIndex(dt.getIndexInfo());
-	}
-
 	public static void saveGeoArea(GeoArea area, boolean refreshIndex)
 	{
 		String id = area.getSourceSystemId() + "@" + area.getSourceSystem().getCode();
 		saveObject(id, null, area, refreshIndex);
+	}
+
+	public static void saveScientificNameGroup(ScientificNameGroup group, boolean refreshIndex)
+	{
+		String id = group.getName();
+		saveObject(id, null, group, refreshIndex);
 	}
 
 	public static void saveObject(IDocumentObject object, boolean refreshIndex)

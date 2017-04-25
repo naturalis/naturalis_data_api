@@ -1,7 +1,7 @@
 package nl.naturalis.nba.dao;
 
 import java.io.InputStream;
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 
 import org.apache.logging.log4j.Logger;
@@ -74,6 +74,30 @@ public class DaoTestUtil {
 		ESUtil.refreshIndex(dt.getIndexInfo());
 	}
 
+	public static void saveSpecimens(Collection<Specimen> specimens)
+	{
+		DocumentType<?> dt = DocumentType.forClass(Specimen.class);
+		ESUtil.disableAutoRefresh(dt.getIndexInfo());
+		for (Specimen specimen : specimens) {
+			saveSpecimen(specimen, false);
+		}
+		ESUtil.refreshIndex(dt.getIndexInfo());
+	}
+
+	public static void saveSpecimen(Specimen specimen, boolean refreshIndex)
+	{
+		if (specimen.getId() == null) {
+			String id = specimen.getUnitID() + "@" + specimen.getSourceSystem().getCode();
+			saveObject(id, null, specimen, refreshIndex);
+		}
+		else {
+			String id = specimen.getId();
+			specimen.setId(null);
+			saveObject(id, null, specimen, refreshIndex);
+			specimen.setId(id);
+		}
+	}
+
 	public static void saveGeoAreas(GeoArea... areas)
 	{
 		DocumentType<?> dt = DocumentType.forClass(GeoArea.class);
@@ -82,6 +106,20 @@ public class DaoTestUtil {
 			saveGeoArea(area, false);
 		}
 		ESUtil.refreshIndex(dt.getIndexInfo());
+	}
+
+	public static void saveGeoArea(GeoArea area, boolean refreshIndex)
+	{
+		if (area.getId() == null) {
+			String id = area.getSourceSystemId() + "@" + area.getSourceSystem().getCode();
+			saveObject(id, null, area, refreshIndex);
+		}
+		else {
+			String id = area.getId();
+			area.setId(null);
+			saveObject(id, null, area, refreshIndex);
+			area.setId(id);
+		}
 	}
 
 	public static void saveScientificNameGroups(ScientificNameGroup... groups)
@@ -94,32 +132,18 @@ public class DaoTestUtil {
 		ESUtil.refreshIndex(dt.getIndexInfo());
 	}
 
-	public static void saveSpecimens(List<Specimen> specimens)
-	{
-		DocumentType<?> dt = DocumentType.forClass(Specimen.class);
-		ESUtil.disableAutoRefresh(dt.getIndexInfo());
-		for (Specimen specimen : specimens) {
-			saveSpecimen(specimen, false);
-		}
-		ESUtil.refreshIndex(dt.getIndexInfo());
-	}
-
-	public static void saveSpecimen(Specimen specimen, boolean refreshIndex)
-	{
-		String id = specimen.getUnitID() + "@" + specimen.getSourceSystem().getCode();
-		saveObject(id, null, specimen, refreshIndex);
-	}
-
-	public static void saveGeoArea(GeoArea area, boolean refreshIndex)
-	{
-		String id = area.getSourceSystemId() + "@" + area.getSourceSystem().getCode();
-		saveObject(id, null, area, refreshIndex);
-	}
-
 	public static void saveScientificNameGroup(ScientificNameGroup group, boolean refreshIndex)
 	{
-		String id = group.getName();
-		saveObject(id, null, group, refreshIndex);
+		if (group.getId() == null) {
+			String id = group.getName();
+			saveObject(id, null, group, refreshIndex);
+		}
+		else {
+			String id = group.getName();
+			group.setId(null);
+			saveObject(id, null, group, refreshIndex);
+			group.setId(id);
+		}
 	}
 
 	public static void saveObject(IDocumentObject object, boolean refreshIndex)

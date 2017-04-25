@@ -31,9 +31,10 @@ public class ScientificNameGroupQuerySpec extends QuerySpec {
 
 	/**
 	 * Sets the offset within the {@link List} of specimens. Default 0. This
-	 * enables paging through specimens within a single {@code ScientificNameGroup}. For
-	 * each {@code ScientificNameGroup} returned from the query, only specimens at or
-	 * after the offset are included.
+	 * enables paging through specimens within a single
+	 * {@code ScientificNameGroup}. For each {@code ScientificNameGroup}
+	 * returned from the query, only specimens at or after the offset are
+	 * included.
 	 * 
 	 * @param specimensFrom
 	 */
@@ -43,8 +44,8 @@ public class ScientificNameGroupQuerySpec extends QuerySpec {
 	}
 
 	/**
-	 * Returns the maxmimum number of specimens to include per {@code ScientificNameGroup}
-	 * document. Default all.
+	 * Returns the maxmimum number of specimens to include per
+	 * {@code ScientificNameGroup} document.
 	 * 
 	 * @return
 	 */
@@ -54,10 +55,13 @@ public class ScientificNameGroupQuerySpec extends QuerySpec {
 	}
 
 	/**
-	 * Sets the maxmimum number of specimens to include per {@code ScientificNameGroup}
-	 * document. Default all. You can specify 0 (zero) to indicate that you are
-	 * only interested in the taxa associated with the name group's name, or
-	 * only in statistics like the total specimen count for the name.
+	 * Sets the maxmimum number of specimens to include per
+	 * {@code ScientificNameGroup} document. Default 10. Specify -1 (minus one)
+	 * to indicate that you do not want to limit the number of specimens per
+	 * {@code ScientificNameGroup}. Note though that this may degrade query
+	 * performance. Specify 0 (zero) to indicate that you are only interested in
+	 * the taxa associated with the name group's name, or only in statistics
+	 * like the total specimen count for the name.
 	 * 
 	 * @return
 	 */
@@ -78,16 +82,18 @@ public class ScientificNameGroupQuerySpec extends QuerySpec {
 	}
 
 	/**
-	 * Sets the sort order within the {@link List} of specimens. Default
-	 * {@link SummarySpecimen#getUnitID() unitID}. For each {@code ScientificNameGroup},
-	 * specimens are sorted on the sort fields specified through this method.
-	 * Thus, you can sort the {@code ScientificNameGroup} documents according to one set
-	 * of sort fields (using {@link QuerySpec#setSortFields(List)
-	 * QuerySpec.setSortFields}) while sorting the specimens within each of them
-	 * according to another set of sort fields. Sort fields must be specified
-	 * relative to {@link SummarySpecimen} object rather than to the root of the
-	 * ScientificNameGroup document. In other words, the path should <b>not</b> start with
-	 * "specimens".
+	 * Sets the sort order within the {@link List} of specimens. Sort fields
+	 * must be specified relative to the specimens field within the
+	 * {@code ScientificNameGroup} document. In other words: they must
+	 * <i>not</i> start with {@link ScientificNameGroup#getSpecimens()
+	 * "specimens"}. For example, if you want to sort on the specimen's unitID,
+	 * specify "unitID"; do not specify "specimens.unitID". For each
+	 * {@code ScientificNameGroup}, specimens are sorted on the sort fields
+	 * specified through this method. Thus, you can sort the
+	 * {@code ScientificNameGroup} documents according to one set of sort fields
+	 * (using {@link QuerySpec#setSortFields(List) QuerySpec.setSortFields})
+	 * while sorting the specimens within each of them according to another set
+	 * of sort fields.
 	 * 
 	 * @param specimensSortFields
 	 */

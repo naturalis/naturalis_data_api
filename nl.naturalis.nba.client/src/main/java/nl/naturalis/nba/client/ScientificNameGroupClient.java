@@ -9,7 +9,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import nl.naturalis.nba.api.IScientificNameGroupAccess;
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.QueryResult;
-import nl.naturalis.nba.api.ScientificNameGroupQuerySpec;
+import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.ScientificNameGroup;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.utils.http.SimpleHttpGet;
@@ -23,7 +23,7 @@ public class ScientificNameGroupClient extends NbaClient<ScientificNameGroup>
 	}
 
 	@Override
-	public QueryResult<ScientificNameGroup> query(ScientificNameGroupQuerySpec querySpec)
+	public QueryResult<ScientificNameGroup> query(QuerySpec querySpec)
 			throws InvalidQueryException
 	{
 		// TODO Auto-generated method stub
@@ -32,7 +32,7 @@ public class ScientificNameGroupClient extends NbaClient<ScientificNameGroup>
 
 	@Override
 	public QueryResult<ScientificNameGroup> querySpecial(
-			ScientificNameGroupQuerySpec querySpec) throws InvalidQueryException
+			QuerySpec querySpec) throws InvalidQueryException
 	{
 		SimpleHttpGet request = new SimpleHttpGet();
 		request.setBaseUrl(config.getBaseUrl());

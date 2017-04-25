@@ -5,10 +5,19 @@ import static nl.naturalis.nba.dao.util.es.ESUtil.createType;
 import static nl.naturalis.nba.dao.util.es.ESUtil.deleteIndex;
 import static nl.naturalis.nba.utils.StringUtil.lpad;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.TreeSet;
 
+import nl.naturalis.nba.api.model.GatheringEvent;
+import nl.naturalis.nba.api.model.Person;
 import nl.naturalis.nba.api.model.PhaseOrStage;
+import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.ScientificNameGroup;
+import nl.naturalis.nba.api.model.Specimen;
+import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.api.model.summary.SummaryGatheringEvent;
 import nl.naturalis.nba.api.model.summary.SummaryPerson;
 import nl.naturalis.nba.api.model.summary.SummaryScientificName;
@@ -26,6 +35,20 @@ public class ScientificNameGroupMock {
 	public static ScientificNameGroup sngFelixFelix;
 	public static ScientificNameGroup sngMalusSylvestris;
 
+	private static final String ZMA_MAM = "ZMA.MAM.";
+	private static final String WAG = "WAG.";
+	private static final String CRS = "CRS";
+	private static final String BRAHMS = "BRAHMS";
+
+	private static TreeSet<Specimen> specimens = new TreeSet<>(new Comparator<Specimen>() {
+
+		@Override
+		public int compare(Specimen s1, Specimen s2)
+		{
+			return s1.getUnitID().compareTo(s2.getUnitID());
+		}
+	});
+
 	private static int unitIdCounter = 0;
 
 	public static void saveAll()
@@ -37,12 +60,17 @@ public class ScientificNameGroupMock {
 		sngFelixFelix = sngFelixFelix();
 		sngMalusSylvestris = sngMalusSylvestris();
 
+		deleteIndex(DocumentType.SPECIMEN);
 		deleteIndex(DocumentType.SCIENTIFIC_NAME_GROUP);
+		createIndex(DocumentType.SPECIMEN);
 		createIndex(DocumentType.SCIENTIFIC_NAME_GROUP);
+		createType(DocumentType.SPECIMEN);
 		createType(DocumentType.SCIENTIFIC_NAME_GROUP);
 
 		DaoTestUtil.saveScientificNameGroups(sngLarusFuscus, sngLarusFuscusFuscus,
 				sngLarusFuscusArgentatus, sngParusMajor, sngFelixFelix, sngMalusSylvestris);
+
+		DaoTestUtil.saveSpecimens(specimens);
 
 	}
 
@@ -54,94 +82,101 @@ public class ScientificNameGroupMock {
 	{
 		// NB name groups are always all lowercase
 		ScientificNameGroup sng = new ScientificNameGroup("larus fuscus");
-		sng.addSpecimen(larusFuscusAalten1());
-		sng.addSpecimen(larusFuscusAalten2());
-		sng.addSpecimen(larusFuscusAalten3());
-		sng.addSpecimen(larusFuscusAalten4());
-		sng.addSpecimen(larusFuscusAalten5());
-		sng.addSpecimen(larusFuscusBreda());
-		sng.addSpecimen(larusFuscusDenHelder1());
-		sng.addSpecimen(larusFuscusDenHelder2());
-		sng.addSpecimen(larusFuscusDenHelder3());
-		sng.addSpecimen(larusFuscusDenHelder4());
-		sng.addSpecimen(larusFuscusDenHelder5());
-		sng.addSpecimen(larusFuscusDenHelder6());
-		sng.addSpecimen(larusFuscusDenHelder7());
-		sng.addSpecimen(larusFuscusDenHelder8());
-		sng.addSpecimen(larusFuscusZwolle1());
-		sng.addSpecimen(larusFuscusZwolle2());
+		addSpecimen(sng, larusFuscusAalten1());
+		addSpecimen(sng, larusFuscusAalten2());
+		addSpecimen(sng, larusFuscusAalten3());
+		addSpecimen(sng, larusFuscusAalten4());
+		addSpecimen(sng, larusFuscusAalten5());
+		addSpecimen(sng, larusFuscusBreda());
+		addSpecimen(sng, larusFuscusDenHelder1());
+		addSpecimen(sng, larusFuscusDenHelder2());
+		addSpecimen(sng, larusFuscusDenHelder3());
+		addSpecimen(sng, larusFuscusDenHelder4());
+		addSpecimen(sng, larusFuscusDenHelder5());
+		addSpecimen(sng, larusFuscusDenHelder6());
+		addSpecimen(sng, larusFuscusDenHelder7());
+		addSpecimen(sng, larusFuscusDenHelder8());
+		addSpecimen(sng, larusFuscusZwolle1());
+		addSpecimen(sng, larusFuscusZwolle2());
 		return sng;
 	}
 
 	public static ScientificNameGroup sngLarusFuscusFuscus()
 	{
 		ScientificNameGroup sng = new ScientificNameGroup("larus fuscus fuscus");
-		sng.addSpecimen(larusFuscusFuscusDenHelder1());
-		sng.addSpecimen(larusFuscusFuscusDenHelder2());
-		sng.addSpecimen(larusFuscusFuscusDenHelder3());
-		sng.addSpecimen(larusFuscusFuscusDenHelder4());
-		sng.addSpecimen(larusFuscusFuscusDenHelder5());
-		sng.addSpecimen(larusFuscusFuscusDenHelder6());
-		sng.addSpecimen(larusFuscusFuscusDenHelder7());
-		sng.addSpecimen(larusFuscusFuscusDenHelder8());
-		sng.addSpecimen(larusFuscusFuscusDenHelder9());
-		sng.addSpecimen(larusFuscusFuscusDenHelder10());
-		sng.addSpecimen(larusFuscusFuscusAmterdam1());
-		sng.addSpecimen(larusFuscusFuscusAmterdam2());
-		sng.addSpecimen(larusFuscusFuscusAmterdam3());
-		sng.addSpecimen(larusFuscusFuscusAmterdam4());
-		sng.addSpecimen(larusFuscusFuscusAmterdam5());
-		sng.addSpecimen(larusFuscusFuscusAmterdam6());
+		addSpecimen(sng, larusFuscusFuscusDenHelder1());
+		addSpecimen(sng, larusFuscusFuscusDenHelder2());
+		addSpecimen(sng, larusFuscusFuscusDenHelder3());
+		addSpecimen(sng, larusFuscusFuscusDenHelder4());
+		addSpecimen(sng, larusFuscusFuscusDenHelder5());
+		addSpecimen(sng, larusFuscusFuscusDenHelder6());
+		addSpecimen(sng, larusFuscusFuscusDenHelder7());
+		addSpecimen(sng, larusFuscusFuscusDenHelder8());
+		addSpecimen(sng, larusFuscusFuscusDenHelder9());
+		addSpecimen(sng, larusFuscusFuscusDenHelder10());
+		addSpecimen(sng, larusFuscusFuscusAmterdam1());
+		addSpecimen(sng, larusFuscusFuscusAmterdam2());
+		addSpecimen(sng, larusFuscusFuscusAmterdam3());
+		addSpecimen(sng, larusFuscusFuscusAmterdam4());
+		addSpecimen(sng, larusFuscusFuscusAmterdam5());
+		addSpecimen(sng, larusFuscusFuscusAmterdam6());
 		return sng;
 	}
 
 	public static ScientificNameGroup sngLarusFuscusArgentatus()
 	{
 		ScientificNameGroup sng = new ScientificNameGroup("larus fuscus argentatus");
-		sng.addSpecimen(larusFuscusArgentatusAmsterdam1());
-		sng.addSpecimen(larusFuscusArgentatusAmsterdam2());
+		addSpecimen(sng, larusFuscusArgentatusAmsterdam1());
+		addSpecimen(sng, larusFuscusArgentatusAmsterdam2());
 		return sng;
 	}
 
 	public static ScientificNameGroup sngParusMajor()
 	{
 		ScientificNameGroup sng = new ScientificNameGroup("parus major");
-		sng.addSpecimen(parusMajorAmsterdam1());
-		sng.addSpecimen(parusMajorAmsterdam2());
-		sng.addSpecimen(parusMajorAmsterdam3());
-		sng.addSpecimen(parusMajorZwolle1());
-		sng.addSpecimen(parusMajorZwolle2());
-		sng.addSpecimen(parusMajorZwolle3());
+		addSpecimen(sng, parusMajorAmsterdam1());
+		addSpecimen(sng, parusMajorAmsterdam2());
+		addSpecimen(sng, parusMajorAmsterdam3());
+		addSpecimen(sng, parusMajorZwolle1());
+		addSpecimen(sng, parusMajorZwolle2());
+		addSpecimen(sng, parusMajorZwolle3());
 		return sng;
 	}
 
 	public static ScientificNameGroup sngFelixFelix()
 	{
 		ScientificNameGroup sng = new ScientificNameGroup("felix felix");
-		sng.addSpecimen(felixFelixBreda1());
-		sng.addSpecimen(felixFelixBreda2());
-		sng.addSpecimen(felixFelixBreda3());
-		sng.addSpecimen(felixFelixRotterdam1());
-		sng.addSpecimen(felixFelixRotterdam2());
+		addSpecimen(sng, felixFelixBreda1());
+		addSpecimen(sng, felixFelixBreda2());
+		addSpecimen(sng, felixFelixBreda3());
+		addSpecimen(sng, felixFelixRotterdam1());
+		addSpecimen(sng, felixFelixRotterdam2());
 		return sng;
 	}
 
 	public static ScientificNameGroup sngMalusSylvestris()
 	{
 		ScientificNameGroup sng = new ScientificNameGroup("malus sylvestris");
-		sng.addSpecimen(malusSylvestrusApeldoorn1());
-		sng.addSpecimen(malusSylvestrusApeldoorn2());
-		sng.addSpecimen(malusSylvestrusApeldoorn3());
-		sng.addSpecimen(malusSylvestrusApeldoorn4());
-		sng.addSpecimen(malusSylvestrusApeldoorn5());
-		sng.addSpecimen(malusSylvestrusApeldoorn6());
-		sng.addSpecimen(malusSylvestrusApeldoorn7());
-		sng.addSpecimen(malusSylvestrusApeldoorn8());
-		sng.addSpecimen(malusSylvestrusRotterdam1());
-		sng.addSpecimen(malusSylvestrusRotterdam2());
-		sng.addSpecimen(malusSylvestrusRotterdam3());
-		sng.addSpecimen(malusSylvestrusRotterdam4());
+		addSpecimen(sng, malusSylvestrusApeldoorn1());
+		addSpecimen(sng, malusSylvestrusApeldoorn2());
+		addSpecimen(sng, malusSylvestrusApeldoorn3());
+		addSpecimen(sng, malusSylvestrusApeldoorn4());
+		addSpecimen(sng, malusSylvestrusApeldoorn5());
+		addSpecimen(sng, malusSylvestrusApeldoorn6());
+		addSpecimen(sng, malusSylvestrusApeldoorn7());
+		addSpecimen(sng, malusSylvestrusApeldoorn8());
+		addSpecimen(sng, malusSylvestrusRotterdam1());
+		addSpecimen(sng, malusSylvestrusRotterdam2());
+		addSpecimen(sng, malusSylvestrusRotterdam3());
+		addSpecimen(sng, malusSylvestrusRotterdam4());
 		return sng;
+	}
+
+	private static void addSpecimen(ScientificNameGroup sng, SummarySpecimen ss)
+	{
+		sng.addSpecimen(ss);
+		sng.setSpecimenCount(sng.getSpecimens().size());
+		specimens.add(copySpecimen(ss));
 	}
 
 	/* ************************************************* */
@@ -156,7 +191,7 @@ public class ScientificNameGroupMock {
 	{
 		SummarySpecimen specimen = new SummarySpecimen();
 		specimen.setPhaseOrStage(PhaseOrStage.ADULT);
-		specimen.setUnitID("ZMA.MAM." + lpad(unitIdCounter, 5, '0'));
+		setUnitID(specimen, ZMA_MAM, CRS);
 		foundInAalten(specimen);
 		foundByJuliaRoberts(specimen);
 		identifiedAsLarusFuscusLinnaeus1752(specimen);
@@ -168,7 +203,7 @@ public class ScientificNameGroupMock {
 	{
 		SummarySpecimen specimen = new SummarySpecimen();
 		specimen.setPhaseOrStage(PhaseOrStage.EGG);
-		specimen.setUnitID("ZMA.MAM." + lpad(unitIdCounter, 5, '0'));
+		setUnitID(specimen, ZMA_MAM, CRS);
 		foundInAalten(specimen);
 		foundByKirstenDunst(specimen);
 		identifiedAsLarusFuscusLinnaeus1752(specimen);
@@ -180,7 +215,7 @@ public class ScientificNameGroupMock {
 	{
 		SummarySpecimen specimen = new SummarySpecimen();
 		specimen.setPhaseOrStage(PhaseOrStage.ADULT);
-		specimen.setUnitID("ZMA.MAM." + lpad(unitIdCounter, 5, '0'));
+		setUnitID(specimen, ZMA_MAM, CRS);
 		foundInAalten(specimen);
 		foundByRobertDeNiro(specimen);
 		identifiedAsLarusFuscusLinnaeus1752(specimen);
@@ -191,7 +226,7 @@ public class ScientificNameGroupMock {
 	{
 		SummarySpecimen specimen = new SummarySpecimen();
 		specimen.setPhaseOrStage(PhaseOrStage.ADULT);
-		specimen.setUnitID("ZMA.MAM." + lpad(unitIdCounter, 5, '0'));
+		setUnitID(specimen, ZMA_MAM, CRS);
 		foundInAalten(specimen);
 		foundByRobertRedford(specimen);
 		identifiedAsLarusFuscusLinnaeus1752(specimen);
@@ -202,7 +237,7 @@ public class ScientificNameGroupMock {
 	{
 		SummarySpecimen specimen = new SummarySpecimen();
 		specimen.setPhaseOrStage(PhaseOrStage.EGG);
-		specimen.setUnitID("ZMA.MAM." + lpad(unitIdCounter, 5, '0'));
+		setUnitID(specimen, ZMA_MAM, CRS);
 		foundInAalten(specimen);
 		foundByJuliaRoberts(specimen);
 		identifiedAsLarusFuscusLinnaeus1752(specimen);
@@ -213,7 +248,7 @@ public class ScientificNameGroupMock {
 	{
 		SummarySpecimen specimen = new SummarySpecimen();
 		specimen.setPhaseOrStage(PhaseOrStage.EGG);
-		specimen.setUnitID("ZMA.MAM." + lpad(unitIdCounter, 5, '0'));
+		setUnitID(specimen, ZMA_MAM, CRS);
 		foundInBreda(specimen);
 		foundByKirstenDunst(specimen);
 		identifiedAsLarusFuscusLinnaeus1752(specimen);
@@ -224,7 +259,7 @@ public class ScientificNameGroupMock {
 	{
 		SummarySpecimen specimen = new SummarySpecimen();
 		specimen.setPhaseOrStage(PhaseOrStage.ADULT);
-		specimen.setUnitID("ZMA.MAM." + lpad(unitIdCounter, 5, '0'));
+		setUnitID(specimen, ZMA_MAM, CRS);
 		foundInDenHelder(specimen);
 		foundByRobertDeNiro(specimen);
 		identifiedAsLarusFuscusLinnaeus1752(specimen);
@@ -235,7 +270,7 @@ public class ScientificNameGroupMock {
 	{
 		SummarySpecimen specimen = new SummarySpecimen();
 		specimen.setPhaseOrStage(PhaseOrStage.ADULT);
-		specimen.setUnitID("ZMA.MAM." + lpad(unitIdCounter, 5, '0'));
+		setUnitID(specimen, ZMA_MAM, CRS);
 		foundInDenHelder(specimen);
 		foundByRobertRedford(specimen);
 		identifiedAsLarusFuscusLinnaeus1752(specimen);
@@ -246,7 +281,7 @@ public class ScientificNameGroupMock {
 	{
 		SummarySpecimen specimen = new SummarySpecimen();
 		specimen.setPhaseOrStage(PhaseOrStage.ADULT);
-		specimen.setUnitID("ZMA.MAM." + lpad(unitIdCounter, 5, '0'));
+		setUnitID(specimen, ZMA_MAM, CRS);
 		foundInDenHelder(specimen);
 		foundByJuliaRoberts(specimen);
 		identifiedAsLarusFuscusLinnaeus1752(specimen);
@@ -261,7 +296,7 @@ public class ScientificNameGroupMock {
 	{
 		SummarySpecimen specimen = new SummarySpecimen();
 		specimen.setPhaseOrStage(PhaseOrStage.ADULT);
-		specimen.setUnitID("ZMA.MAM." + lpad(unitIdCounter, 5, '0'));
+		setUnitID(specimen, ZMA_MAM, CRS);
 		foundInDenHelder(specimen);
 		foundByKirstenDunst(specimen);
 		identifiedAsLarusFuscusLinnaeus1752(specimen);
@@ -272,7 +307,7 @@ public class ScientificNameGroupMock {
 	{
 		SummarySpecimen specimen = new SummarySpecimen();
 		specimen.setPhaseOrStage(PhaseOrStage.ADULT);
-		specimen.setUnitID("ZMA.MAM." + lpad(unitIdCounter, 5, '0'));
+		setUnitID(specimen, ZMA_MAM, CRS);
 		foundInDenHelder(specimen);
 		foundByRobertDeNiro(specimen);
 		identifiedAsLarusFuscusLinnaeus1752(specimen);
@@ -283,7 +318,7 @@ public class ScientificNameGroupMock {
 	{
 		SummarySpecimen specimen = new SummarySpecimen();
 		specimen.setPhaseOrStage(PhaseOrStage.ADULT);
-		specimen.setUnitID("ZMA.MAM." + lpad(unitIdCounter, 5, '0'));
+		setUnitID(specimen, ZMA_MAM, CRS);
 		foundInDenHelder(specimen);
 		foundByRobertRedford(specimen);
 		identifiedAsLarusFuscusLinnaeus1752(specimen);
@@ -294,7 +329,7 @@ public class ScientificNameGroupMock {
 	{
 		SummarySpecimen specimen = new SummarySpecimen();
 		specimen.setPhaseOrStage(PhaseOrStage.ADULT);
-		specimen.setUnitID("ZMA.MAM." + lpad(unitIdCounter, 5, '0'));
+		setUnitID(specimen, ZMA_MAM, CRS);
 		foundInDenHelder(specimen);
 		foundByJuliaRoberts(specimen);
 		identifiedAsLarusFuscusLinnaeus1752(specimen);
@@ -305,7 +340,7 @@ public class ScientificNameGroupMock {
 	{
 		SummarySpecimen specimen = new SummarySpecimen();
 		specimen.setPhaseOrStage(PhaseOrStage.ADULT);
-		specimen.setUnitID("ZMA.MAM." + lpad(unitIdCounter, 5, '0'));
+		setUnitID(specimen, ZMA_MAM, CRS);
 		foundInDenHelder(specimen);
 		foundByKirstenDunst(specimen);
 		identifiedAsLarusFuscusLinnaeus1752(specimen);
@@ -316,7 +351,7 @@ public class ScientificNameGroupMock {
 	{
 		SummarySpecimen specimen = new SummarySpecimen();
 		specimen.setPhaseOrStage(PhaseOrStage.ADULT);
-		specimen.setUnitID("ZMA.MAM." + lpad(unitIdCounter, 5, '0'));
+		setUnitID(specimen, ZMA_MAM, CRS);
 		foundInZwolle(specimen);
 		foundByRobertDeNiro(specimen);
 		identifiedAsLarusFuscusLinnaeus1752(specimen);
@@ -327,7 +362,7 @@ public class ScientificNameGroupMock {
 	{
 		SummarySpecimen specimen = new SummarySpecimen();
 		specimen.setPhaseOrStage(PhaseOrStage.ADULT);
-		specimen.setUnitID("ZMA.MAM." + lpad(unitIdCounter, 5, '0'));
+		setUnitID(specimen, ZMA_MAM, CRS);
 		foundInZwolle(specimen);
 		foundByRobertRedford(specimen);
 		identifiedAsLarusFuscusLinnaeus1752(specimen);
@@ -338,7 +373,7 @@ public class ScientificNameGroupMock {
 	{
 		SummarySpecimen specimen = new SummarySpecimen();
 		specimen.setPhaseOrStage(PhaseOrStage.ADULT);
-		specimen.setUnitID("ZMA.MAM." + lpad(unitIdCounter, 5, '0'));
+		setUnitID(specimen, ZMA_MAM, CRS);
 		foundInDenHelder(specimen);
 		foundByJuliaRoberts(specimen);
 		identifiedAsLarusFuscusFuscusLinnaeus1752(specimen);
@@ -349,7 +384,7 @@ public class ScientificNameGroupMock {
 	{
 		SummarySpecimen specimen = new SummarySpecimen();
 		specimen.setPhaseOrStage(PhaseOrStage.ADULT);
-		specimen.setUnitID("ZMA.MAM." + lpad(unitIdCounter, 5, '0'));
+		setUnitID(specimen, ZMA_MAM, CRS);
 		foundInDenHelder(specimen);
 		foundByKirstenDunst(specimen);
 		identifiedAsLarusFuscusFuscusLinnaeus1752(specimen);
@@ -360,7 +395,7 @@ public class ScientificNameGroupMock {
 	{
 		SummarySpecimen specimen = new SummarySpecimen();
 		specimen.setPhaseOrStage(PhaseOrStage.ADULT);
-		specimen.setUnitID("ZMA.MAM." + lpad(unitIdCounter, 5, '0'));
+		setUnitID(specimen, ZMA_MAM, CRS);
 		foundInDenHelder(specimen);
 		foundByRobertRedford(specimen);
 		identifiedAsLarusFuscusFuscusLinnaeus1752(specimen);
@@ -371,7 +406,7 @@ public class ScientificNameGroupMock {
 	{
 		SummarySpecimen specimen = new SummarySpecimen();
 		specimen.setPhaseOrStage(PhaseOrStage.ADULT);
-		specimen.setUnitID("ZMA.MAM." + lpad(unitIdCounter, 5, '0'));
+		setUnitID(specimen, ZMA_MAM, CRS);
 		foundInDenHelder(specimen);
 		foundByJuliaRoberts(specimen);
 		identifiedAsLarusFuscusFuscusLinnaeus1752(specimen);
@@ -382,7 +417,7 @@ public class ScientificNameGroupMock {
 	{
 		SummarySpecimen specimen = new SummarySpecimen();
 		specimen.setPhaseOrStage(PhaseOrStage.ADULT);
-		specimen.setUnitID("ZMA.MAM." + lpad(unitIdCounter, 5, '0'));
+		setUnitID(specimen, ZMA_MAM, CRS);
 		foundInDenHelder(specimen);
 		foundByKirstenDunst(specimen);
 		identifiedAsLarusFuscusFuscusLinnaeus1752(specimen);
@@ -393,7 +428,7 @@ public class ScientificNameGroupMock {
 	{
 		SummarySpecimen specimen = new SummarySpecimen();
 		specimen.setPhaseOrStage(PhaseOrStage.EGG);
-		specimen.setUnitID("ZMA.MAM." + lpad(unitIdCounter, 5, '0'));
+		setUnitID(specimen, ZMA_MAM, CRS);
 		foundInDenHelder(specimen);
 		foundByRobertDeNiro(specimen);
 		identifiedAsLarusFuscusFuscusLinnaeus1752(specimen);
@@ -404,7 +439,7 @@ public class ScientificNameGroupMock {
 	{
 		SummarySpecimen specimen = new SummarySpecimen();
 		specimen.setPhaseOrStage(PhaseOrStage.EGG);
-		specimen.setUnitID("ZMA.MAM." + lpad(unitIdCounter, 5, '0'));
+		setUnitID(specimen, ZMA_MAM, CRS);
 		foundInDenHelder(specimen);
 		foundByRobertRedford(specimen);
 		identifiedAsLarusFuscusFuscusLinnaeus1752(specimen);
@@ -415,7 +450,7 @@ public class ScientificNameGroupMock {
 	{
 		SummarySpecimen specimen = new SummarySpecimen();
 		specimen.setPhaseOrStage(PhaseOrStage.EGG);
-		specimen.setUnitID("ZMA.MAM." + lpad(unitIdCounter, 5, '0'));
+		setUnitID(specimen, ZMA_MAM, CRS);
 		foundInDenHelder(specimen);
 		// Let's not have a gathering person this time
 		identifiedAsLarusFuscusFuscusLinnaeus1752(specimen);
@@ -426,7 +461,7 @@ public class ScientificNameGroupMock {
 	{
 		SummarySpecimen specimen = new SummarySpecimen();
 		specimen.setPhaseOrStage(PhaseOrStage.EGG);
-		specimen.setUnitID("ZMA.MAM." + lpad(unitIdCounter, 5, '0'));
+		setUnitID(specimen, ZMA_MAM, CRS);
 		foundInDenHelder(specimen);
 		foundByJuliaRoberts(specimen);
 		identifiedAsLarusFuscusFuscusLinnaeus1752(specimen);
@@ -437,7 +472,7 @@ public class ScientificNameGroupMock {
 	{
 		SummarySpecimen specimen = new SummarySpecimen();
 		specimen.setPhaseOrStage(PhaseOrStage.EGG);
-		specimen.setUnitID("ZMA.MAM." + lpad(unitIdCounter, 5, '0'));
+		setUnitID(specimen, ZMA_MAM, CRS);
 		foundInDenHelder(specimen);
 		foundByKirstenDunst(specimen);
 		identifiedAsLarusFuscusFuscusLinnaeus1752(specimen);
@@ -450,7 +485,7 @@ public class ScientificNameGroupMock {
 	{
 		SummarySpecimen specimen = new SummarySpecimen();
 		specimen.setPhaseOrStage(PhaseOrStage.ADULT);
-		specimen.setUnitID("ZMA.MAM." + lpad(unitIdCounter, 5, '0'));
+		setUnitID(specimen, ZMA_MAM, CRS);
 		foundInAmsterdam(specimen);
 		foundByRobertDeNiro(specimen);
 		identifiedAsLarusFuscusFuscusLinnaeus1752(specimen);
@@ -463,7 +498,7 @@ public class ScientificNameGroupMock {
 	{
 		SummarySpecimen specimen = new SummarySpecimen();
 		specimen.setPhaseOrStage(PhaseOrStage.ADULT);
-		specimen.setUnitID("ZMA.MAM." + lpad(unitIdCounter, 5, '0'));
+		setUnitID(specimen, ZMA_MAM, CRS);
 		foundInAmsterdam(specimen);
 		foundByRobertRedford(specimen);
 		identifiedAsLarusFuscusFuscusLinnaeus1752(specimen);
@@ -474,7 +509,7 @@ public class ScientificNameGroupMock {
 	{
 		SummarySpecimen specimen = new SummarySpecimen();
 		specimen.setPhaseOrStage(PhaseOrStage.ADULT);
-		specimen.setUnitID("ZMA.MAM." + lpad(unitIdCounter, 5, '0'));
+		setUnitID(specimen, ZMA_MAM, CRS);
 		foundInAmsterdam(specimen);
 		foundByJuliaRoberts(specimen);
 		identifiedAsLarusFuscusFuscusLinnaeus1752(specimen);
@@ -485,7 +520,7 @@ public class ScientificNameGroupMock {
 	{
 		SummarySpecimen specimen = new SummarySpecimen();
 		specimen.setPhaseOrStage(PhaseOrStage.ADULT);
-		specimen.setUnitID("ZMA.MAM." + lpad(unitIdCounter, 5, '0'));
+		setUnitID(specimen, ZMA_MAM, CRS);
 		foundInAmsterdam(specimen);
 		foundByKirstenDunst(specimen);
 		identifiedAsLarusFuscusFuscusLinnaeus1752(specimen);
@@ -496,7 +531,7 @@ public class ScientificNameGroupMock {
 	{
 		SummarySpecimen specimen = new SummarySpecimen();
 		specimen.setPhaseOrStage(PhaseOrStage.ADULT);
-		specimen.setUnitID("ZMA.MAM." + lpad(unitIdCounter, 5, '0'));
+		setUnitID(specimen, ZMA_MAM, CRS);
 		foundInAmsterdam(specimen);
 		foundByRobertDeNiro(specimen);
 		identifiedAsLarusFuscusFuscusLinnaeus1752(specimen);
@@ -508,7 +543,7 @@ public class ScientificNameGroupMock {
 	{
 		SummarySpecimen specimen = new SummarySpecimen();
 		specimen.setPhaseOrStage(PhaseOrStage.EGG);
-		specimen.setUnitID("ZMA.MAM." + lpad(unitIdCounter, 5, '0'));
+		setUnitID(specimen, ZMA_MAM, CRS);
 		foundInAmsterdam(specimen);
 		// No collector
 		identifiedAsLarusFuscusFuscusLinnaeus1752(specimen);
@@ -524,7 +559,7 @@ public class ScientificNameGroupMock {
 	{
 		SummarySpecimen specimen = new SummarySpecimen();
 		specimen.setPhaseOrStage(PhaseOrStage.ADULT);
-		specimen.setUnitID("ZMA.MAM." + lpad(unitIdCounter, 5, '0'));
+		setUnitID(specimen, ZMA_MAM, CRS);
 		foundInAmsterdam(specimen);
 		foundByRobertDeNiro(specimen);
 		identifiedAsLarusFuscusFuscusLinnaeus1752(specimen);
@@ -535,7 +570,7 @@ public class ScientificNameGroupMock {
 	{
 		SummarySpecimen specimen = new SummarySpecimen();
 		specimen.setPhaseOrStage(PhaseOrStage.ADULT);
-		specimen.setUnitID("ZMA.MAM." + lpad(unitIdCounter, 5, '0'));
+		setUnitID(specimen, ZMA_MAM, CRS);
 		foundInAmsterdam(specimen);
 		foundByRobertRedford(specimen);
 		identifiedAsLarusFuscusFuscusLinnaeus1752(specimen);
@@ -550,7 +585,7 @@ public class ScientificNameGroupMock {
 	{
 		SummarySpecimen specimen = new SummarySpecimen();
 		specimen.setPhaseOrStage(PhaseOrStage.ADULT);
-		specimen.setUnitID("ZMA.MAM." + lpad(unitIdCounter, 5, '0'));
+		setUnitID(specimen, ZMA_MAM, CRS);
 		foundInAmsterdam(specimen);
 		foundByJuliaRoberts(specimen);
 		identifiedAsParusMajor(specimen);
@@ -561,7 +596,7 @@ public class ScientificNameGroupMock {
 	{
 		SummarySpecimen specimen = new SummarySpecimen();
 		specimen.setPhaseOrStage(PhaseOrStage.ADULT);
-		specimen.setUnitID("ZMA.MAM." + lpad(unitIdCounter, 5, '0'));
+		setUnitID(specimen, ZMA_MAM, CRS);
 		foundInAmsterdam(specimen);
 		foundByKirstenDunst(specimen);
 		identifiedAsParusMajor(specimen);
@@ -572,7 +607,7 @@ public class ScientificNameGroupMock {
 	{
 		SummarySpecimen specimen = new SummarySpecimen();
 		specimen.setPhaseOrStage(PhaseOrStage.EGG);
-		specimen.setUnitID("ZMA.MAM." + lpad(unitIdCounter, 5, '0'));
+		setUnitID(specimen, ZMA_MAM, CRS);
 		foundInAmsterdam(specimen);
 		foundByRobertDeNiro(specimen);
 		identifiedAsParusMajor(specimen);
@@ -583,7 +618,7 @@ public class ScientificNameGroupMock {
 	{
 		SummarySpecimen specimen = new SummarySpecimen();
 		specimen.setPhaseOrStage(PhaseOrStage.EGG);
-		specimen.setUnitID("ZMA.MAM." + lpad(unitIdCounter, 5, '0'));
+		setUnitID(specimen, ZMA_MAM, CRS);
 		foundInAmsterdam(specimen);
 		foundByRobertRedford(specimen);
 		identifiedAsParusMajor(specimen);
@@ -594,7 +629,7 @@ public class ScientificNameGroupMock {
 	{
 		SummarySpecimen specimen = new SummarySpecimen();
 		specimen.setPhaseOrStage(PhaseOrStage.ADULT);
-		specimen.setUnitID("ZMA.MAM." + lpad(unitIdCounter, 5, '0'));
+		setUnitID(specimen, ZMA_MAM, CRS);
 		foundInZwolle(specimen);
 		foundByJuliaRoberts(specimen);
 		identifiedAsParusMajor(specimen);
@@ -605,7 +640,7 @@ public class ScientificNameGroupMock {
 	{
 		SummarySpecimen specimen = new SummarySpecimen();
 		specimen.setPhaseOrStage(PhaseOrStage.ADULT);
-		specimen.setUnitID("ZMA.MAM." + lpad(unitIdCounter, 5, '0'));
+		setUnitID(specimen, ZMA_MAM, CRS);
 		foundInZwolle(specimen);
 		foundByRobertDeNiro(specimen);
 		identifiedAsParusMajor(specimen);
@@ -616,7 +651,7 @@ public class ScientificNameGroupMock {
 	{
 		SummarySpecimen specimen = new SummarySpecimen();
 		specimen.setPhaseOrStage(PhaseOrStage.ADULT);
-		specimen.setUnitID("ZMA.MAM." + lpad(unitIdCounter, 5, '0'));
+		setUnitID(specimen, ZMA_MAM, CRS);
 		foundInZwolle(specimen);
 		foundByRobertRedford(specimen);
 		identifiedAsParusMajor(specimen);
@@ -632,7 +667,7 @@ public class ScientificNameGroupMock {
 	{
 		SummarySpecimen specimen = new SummarySpecimen();
 		specimen.setPhaseOrStage(PhaseOrStage.ADULT);
-		specimen.setUnitID("ZMA.MAM." + lpad(unitIdCounter, 5, '0'));
+		setUnitID(specimen, ZMA_MAM, CRS);
 		foundInBreda(specimen);
 		foundByJuliaRoberts(specimen);
 		identifiedAsFelixFelix(specimen);
@@ -643,7 +678,7 @@ public class ScientificNameGroupMock {
 	{
 		SummarySpecimen specimen = new SummarySpecimen();
 		specimen.setPhaseOrStage(PhaseOrStage.ADULT);
-		specimen.setUnitID("ZMA.MAM." + lpad(unitIdCounter, 5, '0'));
+		setUnitID(specimen, ZMA_MAM, CRS);
 		foundInBreda(specimen);
 		foundByKirstenDunst(specimen);
 		identifiedAsFelixFelix(specimen);
@@ -654,7 +689,7 @@ public class ScientificNameGroupMock {
 	{
 		SummarySpecimen specimen = new SummarySpecimen();
 		specimen.setPhaseOrStage(PhaseOrStage.ADULT);
-		specimen.setUnitID("ZMA.MAM." + lpad(unitIdCounter, 5, '0'));
+		setUnitID(specimen, ZMA_MAM, CRS);
 		foundInBreda(specimen);
 		foundByRobertDeNiro(specimen);
 		identifiedAsFelixFelix(specimen);
@@ -666,7 +701,7 @@ public class ScientificNameGroupMock {
 	{
 		SummarySpecimen specimen = new SummarySpecimen();
 		specimen.setPhaseOrStage(PhaseOrStage.ADULT);
-		specimen.setUnitID("ZMA.MAM." + lpad(unitIdCounter, 5, '0'));
+		setUnitID(specimen, ZMA_MAM, CRS);
 		foundInRotterdam(specimen);
 		// No Collector
 		identifiedAsFelixFelix(specimen);
@@ -677,7 +712,7 @@ public class ScientificNameGroupMock {
 	{
 		SummarySpecimen specimen = new SummarySpecimen();
 		specimen.setPhaseOrStage(PhaseOrStage.JUVENILE);
-		specimen.setUnitID("ZMA.MAM." + lpad(unitIdCounter, 5, '0'));
+		setUnitID(specimen, ZMA_MAM, CRS);
 		foundInRotterdam(specimen);
 		foundByRobertRedford(specimen);
 		identifiedAsFelixFelix(specimen);
@@ -691,27 +726,27 @@ public class ScientificNameGroupMock {
 	public static SummarySpecimen malusSylvestrusApeldoorn1()
 	{
 		SummarySpecimen specimen = new SummarySpecimen();
-		specimen.setUnitID("WAG." + lpad(unitIdCounter, 5, '0'));
+		setUnitID(specimen, WAG, BRAHMS);
 		foundInApeldoorn(specimen);
 		foundByJuliaRoberts(specimen);
-		identifiedAsFelixFelix(specimen);
+		identifiedAsMalusSylvestris(specimen);
 		return specimen;
 	}
 
 	public static SummarySpecimen malusSylvestrusApeldoorn2()
 	{
 		SummarySpecimen specimen = new SummarySpecimen();
-		specimen.setUnitID("WAG." + lpad(unitIdCounter, 5, '0'));
+		setUnitID(specimen, WAG, BRAHMS);
 		foundInApeldoorn(specimen);
 		foundByKirstenDunst(specimen);
-		identifiedAsFelixFelix(specimen);
+		identifiedAsMalusSylvestris(specimen);
 		return specimen;
 	}
 
 	public static SummarySpecimen malusSylvestrusApeldoorn3()
 	{
 		SummarySpecimen specimen = new SummarySpecimen();
-		specimen.setUnitID("WAG." + lpad(unitIdCounter, 5, '0'));
+		setUnitID(specimen, WAG, BRAHMS);
 		foundInApeldoorn(specimen);
 		foundByRobertDeNiro(specimen);
 		identifiedAsFelixFelix(specimen);
@@ -721,91 +756,100 @@ public class ScientificNameGroupMock {
 	public static SummarySpecimen malusSylvestrusApeldoorn4()
 	{
 		SummarySpecimen specimen = new SummarySpecimen();
-		specimen.setUnitID("WAG." + lpad(unitIdCounter, 5, '0'));
+		setUnitID(specimen, WAG, BRAHMS);
 		foundInApeldoorn(specimen);
 		foundByRobertRedford(specimen);
-		identifiedAsFelixFelix(specimen);
+		identifiedAsMalusSylvestris(specimen);
 		return specimen;
 	}
 
 	public static SummarySpecimen malusSylvestrusApeldoorn5()
 	{
 		SummarySpecimen specimen = new SummarySpecimen();
-		specimen.setUnitID("WAG." + lpad(unitIdCounter, 5, '0'));
+		setUnitID(specimen, WAG, BRAHMS);
 		foundInApeldoorn(specimen);
 		foundByJuliaRoberts(specimen);
-		identifiedAsFelixFelix(specimen);
+		identifiedAsMalusSylvestris(specimen);
 		return specimen;
 	}
 
 	public static SummarySpecimen malusSylvestrusApeldoorn6()
 	{
 		SummarySpecimen specimen = new SummarySpecimen();
-		specimen.setUnitID("WAG." + lpad(unitIdCounter, 5, '0'));
+		setUnitID(specimen, WAG, BRAHMS);
 		foundInApeldoorn(specimen);
 		foundByKirstenDunst(specimen);
-		identifiedAsFelixFelix(specimen);
+		identifiedAsMalusSylvestris(specimen);
 		return specimen;
 	}
 
 	public static SummarySpecimen malusSylvestrusApeldoorn7()
 	{
 		SummarySpecimen specimen = new SummarySpecimen();
-		specimen.setUnitID("WAG." + lpad(unitIdCounter, 5, '0'));
+		setUnitID(specimen, WAG, BRAHMS);
 		foundInApeldoorn(specimen);
 		foundByRobertDeNiro(specimen);
-		identifiedAsFelixFelix(specimen);
+		identifiedAsMalusSylvestris(specimen);
 		return specimen;
 	}
 
 	public static SummarySpecimen malusSylvestrusApeldoorn8()
 	{
 		SummarySpecimen specimen = new SummarySpecimen();
-		specimen.setUnitID("WAG." + lpad(unitIdCounter, 5, '0'));
+		setUnitID(specimen, WAG, BRAHMS);
 		foundInApeldoorn(specimen);
 		foundByRobertRedford(specimen);
-		identifiedAsFelixFelix(specimen);
+		identifiedAsMalusSylvestris(specimen);
 		return specimen;
 	}
 
 	public static SummarySpecimen malusSylvestrusRotterdam1()
 	{
 		SummarySpecimen specimen = new SummarySpecimen();
-		specimen.setUnitID("WAG." + lpad(unitIdCounter, 5, '0'));
+		setUnitID(specimen, WAG, BRAHMS);
 		foundInRotterdam(specimen);
 		foundByJuliaRoberts(specimen);
-		identifiedAsFelixFelix(specimen);
+		identifiedAsMalusSylvestris(specimen);
 		return specimen;
 	}
 
 	public static SummarySpecimen malusSylvestrusRotterdam2()
 	{
 		SummarySpecimen specimen = new SummarySpecimen();
-		specimen.setUnitID("WAG." + lpad(unitIdCounter, 5, '0'));
+		setUnitID(specimen, WAG, BRAHMS);
 		foundInRotterdam(specimen);
 		foundByKirstenDunst(specimen);
-		identifiedAsFelixFelix(specimen);
+		identifiedAsMalusSylvestris(specimen);
 		return specimen;
 	}
 
 	public static SummarySpecimen malusSylvestrusRotterdam3()
 	{
 		SummarySpecimen specimen = new SummarySpecimen();
-		specimen.setUnitID("WAG." + lpad(unitIdCounter, 5, '0'));
+		setUnitID(specimen, WAG, BRAHMS);
 		foundInRotterdam(specimen);
 		foundByRobertDeNiro(specimen);
-		identifiedAsFelixFelix(specimen);
+		identifiedAsMalusSylvestris(specimen);
 		return specimen;
 	}
 
 	public static SummarySpecimen malusSylvestrusRotterdam4()
 	{
 		SummarySpecimen specimen = new SummarySpecimen();
-		specimen.setUnitID("WAG." + lpad(unitIdCounter, 5, '0'));
+		setUnitID(specimen, WAG, BRAHMS);
 		foundInRotterdam(specimen);
 		foundByRobertRedford(specimen);
-		identifiedAsFelixFelix(specimen);
+		identifiedAsMalusSylvestris(specimen);
 		return specimen;
+	}
+
+	private static void setUnitID(SummarySpecimen specimen, String prefix, String postfix)
+	{
+		if (specimen.getUnitID() == null) {
+			String unitID = prefix + lpad(++unitIdCounter, 5, '0');
+			specimen.setUnitID(unitID);
+			specimen.setId(unitID + '@' + postfix);
+		}
 	}
 
 	/* ************************************************* */
@@ -844,6 +888,13 @@ public class ScientificNameGroupMock {
 	{
 		SummarySpecimenIdentification ssi = new SummarySpecimenIdentification();
 		ssi.setScientificName(snParusMajor());
+		specimen.addMatchingIdentification(ssi);
+	}
+
+	private static void identifiedAsMalusSylvestris(SummarySpecimen specimen)
+	{
+		SummarySpecimenIdentification ssi = new SummarySpecimenIdentification();
+		ssi.setScientificName(snMalusSylvestris());
 		specimen.addMatchingIdentification(ssi);
 	}
 
@@ -1067,6 +1118,106 @@ public class ScientificNameGroupMock {
 		SummaryPerson person = new SummaryPerson();
 		person.setFullName("Kirsten Dunst");
 		ge.setGatheringPersons(Arrays.asList(person));
+	}
+
+	/* ************************************************* */
+	/* ********* SPECIMEN CONVERSION METHODS *********** */
+	/* ************************************************* */
+
+	/*
+	 * NB conversion from summary objects to full-blown objects is not
+	 * necessarily complete!!! Only what's needed for the unit tests is copied
+	 * over to the full-blown object.
+	 */
+
+	private static Specimen copySpecimen(SummarySpecimen summary)
+	{
+		Specimen specimen = new Specimen();
+		specimen.setId(summary.getId());
+		specimen.setUnitID(summary.getUnitID());
+		if (summary.getMatchingIdentifications() != null) {
+			for (SummarySpecimenIdentification si : summary.getMatchingIdentifications()) {
+				specimen.addIndentification(copyIdentification(si));
+			}
+		}
+		if (summary.getOtherIdentifications() != null) {
+			for (SummarySpecimenIdentification si : summary.getOtherIdentifications()) {
+				specimen.addIndentification(copyIdentification(si));
+			}
+		}
+		specimen.setCollectorsFieldNumber(summary.getCollectorsFieldNumber());
+		specimen.setPhaseOrStage(summary.getPhaseOrStage());
+		specimen.setSex(summary.getSex());
+		specimen.setGatheringEvent(copyGatheringEvent(summary.getGatheringEvent()));
+		return specimen;
+	}
+
+	private static SpecimenIdentification copyIdentification(SummarySpecimenIdentification ssi)
+	{
+		SpecimenIdentification si = new SpecimenIdentification();
+		si.setTypeStatus(ssi.getTypeStatus());
+		si.setDefaultClassification(ssi.getDefaultClassification());
+		si.setScientificName(copyScientificName(ssi.getScientificName()));
+		si.setTaxonomicEnrichments(ssi.getTaxonomicEnrichments());
+		return si;
+	}
+
+	private static ScientificName copyScientificName(SummaryScientificName ssn)
+	{
+		ScientificName sn = new ScientificName();
+		sn.setAuthorshipVerbatim(ssn.getAuthorshipVerbatim());
+		sn.setFullScientificName(ssn.getFullScientificName());
+		sn.setGenusOrMonomial(ssn.getGenusOrMonomial());
+		sn.setInfraspecificEpithet(ssn.getInfraspecificEpithet());
+		sn.setSpecificEpithet(ssn.getSpecificEpithet());
+		sn.setSubgenus(ssn.getSubgenus());
+		sn.setTaxonomicStatus(ssn.getTaxonomicStatus());
+		setScientificNameGroup(sn);
+		return sn;
+	}
+
+	private static GatheringEvent copyGatheringEvent(SummaryGatheringEvent sge)
+	{
+		if (sge == null) {
+			return null;
+		}
+		GatheringEvent ge = new GatheringEvent();
+		ge.setDateTimeBegin(sge.getDateTimeBegin());
+		ge.setDateTimeEnd(sge.getDateTimeEnd());
+		ge.setGatheringOrganizations(sge.getGatheringOrganizations());
+		ge.setGatheringPersons(copyGatheringPersons(sge.getGatheringPersons()));
+		ge.setLocalityText(sge.getLocalityText());
+		return ge;
+	}
+
+	private static List<Person> copyGatheringPersons(List<SummaryPerson> persons)
+	{
+		if (persons == null) {
+			return null;
+		}
+		List<Person> summaries = new ArrayList<>(persons.size());
+		for (SummaryPerson p : persons) {
+			Person sp = new Person();
+			sp.setFullName(p.getFullName());
+			summaries.add(sp);
+		}
+		return summaries;
+	}
+
+	// TODO share code with TransformUtil.setScientificNameGroup
+	private static void setScientificNameGroup(ScientificName sn)
+	{
+		String s0 = sn.getGenusOrMonomial();
+		s0 = s0 == null ? "?" : s0.toLowerCase();
+		String s1 = sn.getSpecificEpithet();
+		s1 = s1 == null ? "?" : s1.toLowerCase();
+		String s2 = sn.getInfraspecificEpithet();
+		if (s2 == null) {
+			sn.setScientificNameGroup(s0 + " " + s1);
+		}
+		else {
+			sn.setScientificNameGroup(s0 + " " + s1 + " " + s2.toLowerCase());
+		}
 	}
 
 }

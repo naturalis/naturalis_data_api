@@ -16,25 +16,24 @@ public interface IScientificNameGroupAccess extends INbaAccess<ScientificNameGro
 
 	/**
 	 * Returns {@link ScientificNameGroup} documents conforming to the provided
-	 * query specification. This method hides {@link INbaAccess#query(QuerySpec)
-	 * INbaAccess.query} as it takes a {@link ScientificNameGroupQuerySpec}
-	 * rather than a {@link QuerySpec} argument. This reflects the fact that
-	 * there a some (optional) extra features when specifying a query for
-	 * {@code ScientificNameGroup} documents.
+	 * query specification. This method duplicates
+	 * {@link INbaAccess#query(QuerySpec)}, just to point out that when querying
+	 * {@code ScientificNameGroup} documents you can optionally provide a
+	 * subclass of {@link QuerySpec}, namely
+	 * {@link ScientificNameGroupQuerySpec}.
 	 * 
 	 * @param querySpec
 	 * @return
 	 * @throws InvalidQueryException
 	 */
-	QueryResult<ScientificNameGroup> query(ScientificNameGroupQuerySpec querySpec)
-			throws InvalidQueryException;
+	QueryResult<ScientificNameGroup> query(QuerySpec querySpec) throws InvalidQueryException;
 
 	/**
 	 * <p>
 	 * Returns {@link ScientificNameGroup} documents conforming to the provided
 	 * query specification. This method works very much like the generic
-	 * {@link #query(QuerySpec) query} method, but this method applies extra
-	 * post-processing to the query result. If the {@code QuerySpec} object
+	 * {@link #query(QuerySpec) query} method, but this method applies some
+	 * post-processing to the query result: if the {@code QuerySpec} object
 	 * contains any specimen-specific query conditions, these are not just used
 	 * to find {@code ScientificNameGroup} documents, but also to filter out
 	 * specimens <i>within</i> each of the subsequently retrieved
@@ -60,6 +59,13 @@ public interface IScientificNameGroupAccess extends INbaAccess<ScientificNameGro
 	 * {@code ScientificNameGroup} documents that ostensibly violate the query
 	 * condition, even though strictly speaking they aren't.
 	 * </p>
+	 * <p>
+	 * As with the generic {@link #query(QuerySpec) query} method, you can
+	 * optionally provide a subclass of {@link QuerySpec}, namely
+	 * {@link ScientificNameGroupQuerySpec}. The extra query specification
+	 * options in this subclass are applied <i>after</i> the post-processing
+	 * mentioned above.
+	 * </p>
 	 * <h3>Limitations</h3>
 	 * <p>
 	 * The {@code querySpecial} method enforces some extra constraints on how
@@ -76,7 +82,7 @@ public interface IScientificNameGroupAccess extends INbaAccess<ScientificNameGro
 	 * @param querySpec
 	 * @return
 	 */
-	QueryResult<ScientificNameGroup> querySpecial(ScientificNameGroupQuerySpec querySpec)
+	QueryResult<ScientificNameGroup> querySpecial(QuerySpec querySpec)
 			throws InvalidQueryException;
 
 }

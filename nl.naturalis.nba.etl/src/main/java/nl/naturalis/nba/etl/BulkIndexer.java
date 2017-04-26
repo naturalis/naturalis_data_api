@@ -40,24 +40,20 @@ public class BulkIndexer<T extends IDocumentObject> {
 			objs = new ArrayList<>(documents);
 		}
 		String[] ids = new String[objs.size()];
+		/*
+		 * For some deeply mysterious reason defying anything I thought I understood about
+		 * Java it seems we have to do this in two separate loops, otherwise
+		 * objs.get(i).getId() returns null where it really really shouldn't:
+		 */
 		for (int i = 0; i < objs.size(); i++) {
-			T obj = objs.get(i);
-			ids[i] = obj.getId();
-			/*
-			 * Nullify id because it is not part of the document type
-			 * definition, so it must not appear in the JSON serialization of
-			 * the object. Otherwise Elasticsearch search will throw aan
-			 * exception with "strict" document type mappings.
-			 */
-			obj.setId(null);
+			ids[i] = objs.get(i).getId();
 		}
-		try {
-			index(objs, Arrays.asList(ids), null);
+		for (int i = 0; i < objs.size(); i++) {
+			objs.get(i).setId(null);
 		}
-		finally {
-			for (int i = 0; i < objs.size(); i++) {
-				objs.get(i).setId(ids[i]);
-			}
+		index(objs, Arrays.asList(ids), null);
+		for (int i = 0; i < objs.size(); i++) {
+			objs.get(i).setId(ids[i]);
 		}
 	}
 

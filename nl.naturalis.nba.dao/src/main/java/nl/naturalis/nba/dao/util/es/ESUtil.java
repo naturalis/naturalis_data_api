@@ -27,6 +27,9 @@ import org.elasticsearch.action.admin.indices.settings.get.GetSettingsRequest;
 import org.elasticsearch.action.admin.indices.settings.get.GetSettingsResponse;
 import org.elasticsearch.action.admin.indices.settings.put.UpdateSettingsRequest;
 import org.elasticsearch.action.admin.indices.settings.put.UpdateSettingsResponse;
+import org.elasticsearch.action.bulk.BulkRequestBuilder;
+import org.elasticsearch.action.bulk.BulkResponse;
+import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.get.GetRequestBuilder;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
@@ -38,14 +41,12 @@ import org.elasticsearch.common.settings.Settings.Builder;
 import org.elasticsearch.index.IndexNotFoundException;
 import org.elasticsearch.index.query.IdsQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.TermQueryBuilder;
-import org.elasticsearch.index.reindex.BulkIndexByScrollResponse;
-import org.elasticsearch.index.reindex.DeleteByQueryAction;
-import org.elasticsearch.index.reindex.DeleteByQueryRequestBuilder;
 import org.elasticsearch.search.SearchHit;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import nl.naturalis.nba.api.QueryCondition;
+import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nba.common.es.map.MappingSerializer;
@@ -499,16 +500,28 @@ public class ESUtil {
 	 * @param dt
 	 *            The type of the documents to be deleted
 	 */
-	public static void truncate(DocumentType<?> dt)
+	public static <T extends IDocumentObject> void truncate(DocumentType<T> dt)
 	{
 		logger.info("Deleting all documents from {}", dt.getName());
-		DeleteByQueryAction action = DeleteByQueryAction.INSTANCE;
-		DeleteByQueryRequestBuilder request = action.newRequestBuilder(esClient());
-		request.filter(QueryBuilders.matchAllQuery());
-		request.source(dt.getIndexInfo().getName());
-		BulkIndexByScrollResponse response = request.get();
-		long deleted = response.getDeleted();
-		logger.info("Documents deleted: {}", deleted);
+		DocumentIterator<T> extractor = new DocumentIterator<>(dt);
+		extractor.setBatchSize(1000);
+		String index = dt.getIndexInfo().getName();
+		String type = dt.getName();
+		Client client = ESClientManager.getInstance().getClient();
+		Collection<T> batch = extractor.nextBatch();
+		while (batch != null) {
+			BulkRequestBuilder brb = client.prepareBulk();
+			for (T obj : batch) {
+				DeleteRequest r = new DeleteRequest(index, type, obj.getId());
+				brb.add(r);
+			}
+			BulkResponse response = brb.get();
+			if (response.hasFailures()) {
+				throw new DaoException("Error while deleting documents from " + type);
+			}
+		}
+		refreshIndex(dt);
+		logger.info("Documents deleted: {}", extractor.size());
 	}
 
 	/**
@@ -520,17 +533,31 @@ public class ESUtil {
 	 * @param ss
 	 *            The source system of the documents to be deleted
 	 */
-	public static void truncate(DocumentType<?> dt, SourceSystem ss)
+	public static <T extends IDocumentObject> void truncate(DocumentType<T> dt, SourceSystem ss)
 	{
-		logger.info("Deleting all {} documents from {}", ss.getCode(), dt.getName());
-		DeleteByQueryAction action = DeleteByQueryAction.INSTANCE;
-		DeleteByQueryRequestBuilder request = action.newRequestBuilder(esClient());
-		TermQueryBuilder query = termQuery("sourceSystem.code", ss.getCode());
-		request.filter(query);
-		request.source(dt.getIndexInfo().getName());
-		BulkIndexByScrollResponse response = request.get();
-		long deleted = response.getDeleted();
-		logger.info("Documents deleted: {}", deleted);
+		logger.info("Deleting all documents from {}", dt.getName());
+		QuerySpec qs = new QuerySpec();
+		qs.setConstantScore(true);
+		qs.addCondition(new QueryCondition("sourceSystem.code", "=", ss.getCode()));
+		DocumentIterator<T> extractor = new DocumentIterator<>(dt, qs);
+		extractor.setBatchSize(1000);
+		String index = dt.getIndexInfo().getName();
+		String type = dt.getName();
+		Client client = ESClientManager.getInstance().getClient();
+		Collection<T> batch = extractor.nextBatch();
+		while (batch != null) {
+			BulkRequestBuilder brb = client.prepareBulk();
+			for (T obj : batch) {
+				DeleteRequest r = new DeleteRequest(index, type, obj.getId());
+				brb.add(r);
+			}
+			BulkResponse response = brb.get();
+			if (response.hasFailures()) {
+				throw new DaoException("Error while deleting documents from " + type);
+			}
+		}
+		refreshIndex(dt);
+		logger.info("Documents deleted: {}", extractor.size());
 	}
 
 	/**

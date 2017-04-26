@@ -209,6 +209,18 @@ public class ESUtil {
 	}
 
 	/**
+	 * Deletes the specified Elasticsearch indices.
+	 * 
+	 * @param documentType
+	 */
+	public static void deleteIndices(Set<IndexInfo> indices)
+	{
+		for (IndexInfo index : indices) {
+			deleteIndex(index);
+		}
+	}
+
+	/**
 	 * Deletes the specified Elasticsearch index.
 	 * 
 	 * @param indexInfo
@@ -242,8 +254,21 @@ public class ESUtil {
 	}
 
 	/**
-	 * Creates the specified index plus all document types it is configured to
-	 * host.
+	 * Creates the specified indices <i>plus</i> all document types they are
+	 * configured to host.
+	 * 
+	 * @param indices
+	 */
+	public static void createIndices(Set<IndexInfo> indices)
+	{
+		for (IndexInfo index : indices) {
+			createIndex(index);
+		}
+	}
+
+	/**
+	 * Creates the specified index <i>plus</i> all document types it is
+	 * configured to host.
 	 * 
 	 * @param indexInfo
 	 */

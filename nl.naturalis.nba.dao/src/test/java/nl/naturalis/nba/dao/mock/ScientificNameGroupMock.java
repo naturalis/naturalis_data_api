@@ -1,14 +1,17 @@
 package nl.naturalis.nba.dao.mock;
 
-import static nl.naturalis.nba.dao.util.es.ESUtil.createIndex;
-import static nl.naturalis.nba.dao.util.es.ESUtil.createType;
-import static nl.naturalis.nba.dao.util.es.ESUtil.deleteIndex;
+import static nl.naturalis.nba.dao.DocumentType.SCIENTIFIC_NAME_GROUP;
+import static nl.naturalis.nba.dao.DocumentType.SPECIMEN;
+import static nl.naturalis.nba.dao.util.es.ESUtil.createIndices;
+import static nl.naturalis.nba.dao.util.es.ESUtil.deleteIndices;
+import static nl.naturalis.nba.dao.util.es.ESUtil.getDistinctIndices;
 import static nl.naturalis.nba.utils.StringUtil.lpad;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 import java.util.TreeSet;
 
 import nl.naturalis.nba.api.model.GatheringEvent;
@@ -24,7 +27,7 @@ import nl.naturalis.nba.api.model.summary.SummaryScientificName;
 import nl.naturalis.nba.api.model.summary.SummarySpecimen;
 import nl.naturalis.nba.api.model.summary.SummarySpecimenIdentification;
 import nl.naturalis.nba.dao.DaoTestUtil;
-import nl.naturalis.nba.dao.DocumentType;
+import nl.naturalis.nba.dao.IndexInfo;
 
 public class ScientificNameGroupMock {
 
@@ -60,12 +63,9 @@ public class ScientificNameGroupMock {
 		sngFelixFelix = sngFelixFelix();
 		sngMalusSylvestris = sngMalusSylvestris();
 
-		deleteIndex(DocumentType.SPECIMEN);
-		deleteIndex(DocumentType.SCIENTIFIC_NAME_GROUP);
-		createIndex(DocumentType.SPECIMEN);
-		createIndex(DocumentType.SCIENTIFIC_NAME_GROUP);
-		createType(DocumentType.SPECIMEN);
-		createType(DocumentType.SCIENTIFIC_NAME_GROUP);
+		Set<IndexInfo> indices = getDistinctIndices(SPECIMEN, SCIENTIFIC_NAME_GROUP);
+		deleteIndices(indices);
+		createIndices(indices);
 
 		DaoTestUtil.saveScientificNameGroups(sngLarusFuscus, sngLarusFuscusFuscus,
 				sngLarusFuscusArgentatus, sngParusMajor, sngFelixFelix, sngMalusSylvestris);

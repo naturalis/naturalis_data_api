@@ -3,7 +3,6 @@ package nl.naturalis.nba.dao;
 import static nl.naturalis.nba.api.ComparisonOperator.MATCHES;
 import static nl.naturalis.nba.api.ComparisonOperator.NOT_MATCHES;
 import static nl.naturalis.nba.dao.util.es.ESUtil.createIndex;
-import static nl.naturalis.nba.dao.util.es.ESUtil.createType;
 import static nl.naturalis.nba.dao.util.es.ESUtil.deleteIndex;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -45,7 +44,6 @@ public class SpecimenDaoTest_Matches {
 		logger.info("Starting tests");
 		deleteIndex(DocumentType.SPECIMEN);
 		createIndex(DocumentType.SPECIMEN);
-		createType(DocumentType.SPECIMEN);
 		/*
 		 * Insert 5 test specimens.
 		 */

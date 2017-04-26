@@ -4,7 +4,6 @@ import static nl.naturalis.nba.api.ComparisonOperator.IN;
 import static nl.naturalis.nba.api.ComparisonOperator.NOT_IN;
 import static nl.naturalis.nba.api.UnaryBooleanOperator.NOT;
 import static nl.naturalis.nba.dao.util.es.ESUtil.createIndex;
-import static nl.naturalis.nba.dao.util.es.ESUtil.createType;
 import static nl.naturalis.nba.dao.util.es.ESUtil.deleteIndex;
 import static org.junit.Assert.assertEquals;
 
@@ -43,7 +42,6 @@ public class SpecimenDaoTest_In {
 		logger.info("Starting tests");
 		deleteIndex(DocumentType.SPECIMEN);
 		createIndex(DocumentType.SPECIMEN);
-		createType(DocumentType.SPECIMEN);
 		/*
 		 * Insert 5 test specimens.
 		 */

@@ -10,10 +10,12 @@ import static nl.naturalis.nba.dao.mock.GeoAreaMock.Netherlands;
 import static nl.naturalis.nba.dao.mock.GeoAreaMock.NoordHolland;
 import static nl.naturalis.nba.dao.mock.GeoAreaMock.Uitgeest;
 import static nl.naturalis.nba.dao.mock.GeoAreaMock.Vatican;
-import static nl.naturalis.nba.dao.util.es.ESUtil.createIndex;
-import static nl.naturalis.nba.dao.util.es.ESUtil.createType;
-import static nl.naturalis.nba.dao.util.es.ESUtil.deleteIndex;
+import static nl.naturalis.nba.dao.util.es.ESUtil.createIndices;
+import static nl.naturalis.nba.dao.util.es.ESUtil.deleteIndices;
+import static nl.naturalis.nba.dao.util.es.ESUtil.getDistinctIndices;
 import static org.junit.Assert.assertEquals;
+
+import java.util.Set;
 
 import org.apache.logging.log4j.Logger;
 import org.junit.BeforeClass;
@@ -49,14 +51,10 @@ public class SpecimenDaoTest_GeoQueries {
 	public static void before()
 	{
 		logger.info("Starting tests");
-		
-		deleteIndex(SPECIMEN);
-		createIndex(SPECIMEN);
-		createType(SPECIMEN);
 
-		deleteIndex(GEO_AREA);
-		createIndex(GEO_AREA);
-		createType(GEO_AREA);
+		Set<IndexInfo> indices = getDistinctIndices(SPECIMEN, GEO_AREA);
+		deleteIndices(indices);
+		createIndices(indices);
 
 		/*
 		 * Insert 5 test specimens.

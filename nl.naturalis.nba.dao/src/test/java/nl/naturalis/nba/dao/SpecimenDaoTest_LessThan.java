@@ -4,7 +4,6 @@ import static nl.naturalis.nba.api.ComparisonOperator.GT;
 import static nl.naturalis.nba.api.ComparisonOperator.GTE;
 import static nl.naturalis.nba.api.ComparisonOperator.LT;
 import static nl.naturalis.nba.dao.util.es.ESUtil.createIndex;
-import static nl.naturalis.nba.dao.util.es.ESUtil.createType;
 import static nl.naturalis.nba.dao.util.es.ESUtil.deleteIndex;
 import static org.junit.Assert.assertEquals;
 
@@ -40,7 +39,6 @@ public class SpecimenDaoTest_LessThan {
 		logger.info("Starting tests");
 		deleteIndex(DocumentType.SPECIMEN);
 		createIndex(DocumentType.SPECIMEN);
-		createType(DocumentType.SPECIMEN);
 		/*
 		 * Insert 5 test specimens.
 		 */

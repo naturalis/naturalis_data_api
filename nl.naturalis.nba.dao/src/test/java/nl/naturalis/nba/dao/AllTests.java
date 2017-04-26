@@ -47,7 +47,8 @@ import nl.naturalis.nba.dao.util.SwapOutputStreamTest;
 	SpecimenDaoTest_Like.class,
 	SpecimenDaoTest_Matches.class,
 	SpecimenDaoTest_Miscellaneous.class,
-	SpecimenDaoTest_SortingSizingPaging.class
+	SpecimenDaoTest_SortingSizingPaging.class,
+	ScientificNameGroupDaoTest_AllowedOperators.class
 	/*ScientificNameGroupDaoTest.class*/
 })
 //@formatter:on

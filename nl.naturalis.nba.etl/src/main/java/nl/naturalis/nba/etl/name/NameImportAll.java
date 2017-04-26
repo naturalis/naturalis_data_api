@@ -3,7 +3,7 @@ package nl.naturalis.nba.etl.name;
 import static nl.naturalis.nba.dao.DocumentType.SCIENTIFIC_NAME_GROUP;
 import static nl.naturalis.nba.etl.ETLUtil.getLogger;
 import static nl.naturalis.nba.etl.ETLUtil.logDuration;
-import static nl.naturalis.nba.etl.LoadConstants.SYSPROP_SUPPRESS_ERRORS;
+import static nl.naturalis.nba.etl.ETLConstants.SYSPROP_SUPPRESS_ERRORS;
 
 import org.apache.logging.log4j.Logger;
 

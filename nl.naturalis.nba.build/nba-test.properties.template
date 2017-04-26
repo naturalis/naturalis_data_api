@@ -7,13 +7,5 @@ elasticsearch.transportaddress.port=@elasticsearch.transportaddress.port@
 elasticsearch.index.default.shards=1
 elasticsearch.index.default.replicas=0
 
-elasticsearch.index.0.name=specimens_integration_test
-elasticsearch.index.0.types=Specimen
-elasticsearch.index.1.name=taxa_integration_test
-elasticsearch.index.1.types=Taxon
-elasticsearch.index.2.name=multimedia_integration_test
-elasticsearch.index.2.types=MultiMediaObject
-elasticsearch.index.3.name=geoareas_integration_test
-elasticsearch.index.3.types=GeoArea
-elasticsearch.index.4.name=sng_integration_test
-elasticsearch.index.4.types=ScientificNameGroup
+elasticsearch.index.0.name=nba_integration_test
+elasticsearch.index.0.types=Specimen,Taxon,MultiMediaObject,GeoArea,ScientificNameGroup

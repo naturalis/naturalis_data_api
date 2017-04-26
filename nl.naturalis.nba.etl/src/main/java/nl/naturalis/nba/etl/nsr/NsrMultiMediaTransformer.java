@@ -4,9 +4,9 @@ import static nl.naturalis.nba.api.model.ServiceAccessPoint.Variant.MEDIUM_QUALI
 import static nl.naturalis.nba.api.model.SourceSystem.NSR;
 import static nl.naturalis.nba.dao.util.es.ESUtil.getElasticsearchId;
 import static nl.naturalis.nba.etl.ETLUtil.getTestGenera;
-import static nl.naturalis.nba.etl.LoadConstants.LICENCE;
-import static nl.naturalis.nba.etl.LoadConstants.LICENCE_TYPE;
-import static nl.naturalis.nba.etl.LoadConstants.SOURCE_INSTITUTION_ID;
+import static nl.naturalis.nba.etl.ETLConstants.LICENCE;
+import static nl.naturalis.nba.etl.ETLConstants.LICENCE_TYPE;
+import static nl.naturalis.nba.etl.ETLConstants.SOURCE_INSTITUTION_ID;
 import static nl.naturalis.nba.etl.TransformUtil.equalizeNameComponents;
 import static nl.naturalis.nba.etl.TransformUtil.guessMimeType;
 import static nl.naturalis.nba.etl.TransformUtil.parseDate;

@@ -73,9 +73,9 @@ public class NameImportUtil {
 		List<ScientificNameGroup> result = new ArrayList<>(hits.length);
 		ObjectMapper om = dt.getObjectMapper();
 		for (SearchHit hit : hits) {
-			ScientificNameGroup sns = om.convertValue(hit.getSource(), dt.getJavaType());
-			sns.setId(hit.getId());
-			result.add(sns);
+			ScientificNameGroup sng = om.convertValue(hit.getSource(), dt.getJavaType());
+			sng.setId(hit.getId());
+			result.add(sng);
 		}
 		return result;
 	}

@@ -6,7 +6,7 @@ package nl.naturalis.nba.etl;
  * @author Ayco Holleman
  *
  */
-public interface LoadConstants {
+public interface ETLConstants {
 
 	/**
 	 * Optional system property that can be used to fine-tune bulk indexing (the number of

@@ -12,7 +12,7 @@
 		</File>
 	</Appenders>
 	<Loggers>
-		<Logger name="nl.naturalis" level="debug" additivity="false">
+		<Logger name="nl.naturalis" level="INFO" additivity="false">
 			<!-- AppenderRef ref="FILE" / -->
 			<AppenderRef ref="CONSOLE" />
 		</Logger>

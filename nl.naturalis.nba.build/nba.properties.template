@@ -11,3 +11,5 @@ elasticsearch.index.default.replicas=0
 
 elasticsearch.index.0.name=nba
 elasticsearch.index.0.types=Specimen,Taxon,MultiMediaObject,GeoArea,ScientificNameGroup
+elasticsearch.index.0.name=geo_areas
+elasticsearch.index.0.types=GeoArea

@@ -494,8 +494,26 @@ public class ESUtil {
 	}
 
 	/**
-	 * Deletes all documents of the specified type and the specified source
-	 * system.
+	 * Deletes all documents of the specified document type.
+	 * 
+	 * @param dt
+	 *            The type of the documents to be deleted
+	 */
+	public static void truncate(DocumentType<?> dt)
+	{
+		logger.info("Deleting all documents from {}", dt.getName());
+		DeleteByQueryAction action = DeleteByQueryAction.INSTANCE;
+		DeleteByQueryRequestBuilder request = action.newRequestBuilder(esClient());
+		request.filter(QueryBuilders.matchAllQuery());
+		request.source(dt.getIndexInfo().getName());
+		BulkIndexByScrollResponse response = request.get();
+		long deleted = response.getDeleted();
+		logger.info("Documents deleted: {}", deleted);
+	}
+
+	/**
+	 * Deletes all documents of the specified document type and the specified
+	 * source system.
 	 * 
 	 * @param dt
 	 *            The type of the documents to be deleted

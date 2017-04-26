@@ -54,6 +54,9 @@ public class NameImportAll {
 			System.err.println("Invalid timeout: " + prop);
 			System.exit(1);
 		}
+
+		ESUtil.truncate(SCIENTIFIC_NAME_GROUP);
+		
 		TaxonNameImporter importer0 = new TaxonNameImporter();
 		importer0.setSuppressErrors(suppressErrors);
 		importer0.setBatchSize(batchSize);

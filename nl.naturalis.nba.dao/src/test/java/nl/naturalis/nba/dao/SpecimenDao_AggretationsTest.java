@@ -30,7 +30,6 @@ public class SpecimenDao_AggretationsTest {
 		logger.info("Starting tests");
 		deleteIndex(DocumentType.SPECIMEN);
 		createIndex(DocumentType.SPECIMEN);
-		createType(DocumentType.SPECIMEN);
 		/*
 		 * Insert 5 test specimens.
 		 */

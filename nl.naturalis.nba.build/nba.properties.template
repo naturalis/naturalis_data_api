@@ -1,3 +1,7 @@
+# Configuration file for the NBA. If you change these properties here,
+# you must also change these properties for the import programs
+# (in module nl.naturalis.nba.sh etl/conf/nba.properties)
+
 elasticsearch.cluster.name=@elasticsearch.cluster.name@
 elasticsearch.transportaddress.host=@elasticsearch.transportaddress.host@
 elasticsearch.transportaddress.port=@elasticsearch.transportaddress.port@
@@ -5,13 +9,8 @@ elasticsearch.transportaddress.port=@elasticsearch.transportaddress.port@
 elasticsearch.index.default.shards=4
 elasticsearch.index.default.replicas=0
 
-elasticsearch.index.0.name=specimens
-elasticsearch.index.0.types=Specimen
-elasticsearch.index.1.name=taxa
-elasticsearch.index.1.types=Taxon
-elasticsearch.index.2.name=multimedia
-elasticsearch.index.2.types=MultiMediaObject
-elasticsearch.index.3.name=geoareas
-elasticsearch.index.3.types=GeoArea
-elasticsearch.index.4.name=sng
-elasticsearch.index.4.types=ScientificNameGroup
+elasticsearch.index.0.name=nba
+elasticsearch.index.0.types=Specimen,Taxon,MultiMediaObject,GeoArea,ScientificNameGroup
+elasticsearch.index.1.name=geo_areas
+elasticsearch.index.1.types=GeoArea
+elasticsearch.index.1.shards=1

@@ -17,7 +17,7 @@ import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.ETLUtil;
-import nl.naturalis.nba.etl.LoadConstants;
+import nl.naturalis.nba.etl.ETLConstants;
 import nl.naturalis.nba.utils.ConfigObject;
 import nl.naturalis.nba.utils.IOUtil;
 
@@ -57,7 +57,7 @@ public class GeoImporter {
 	public GeoImporter()
 	{
 		suppressErrors = ConfigObject.isEnabled("suppressErrors");
-		String key = LoadConstants.SYSPROP_LOADER_QUEUE_SIZE;
+		String key = ETLConstants.SYSPROP_LOADER_QUEUE_SIZE;
 		/*
 		 * Queue size not too big b/c documents can become huge because of the
 		 * geo json.

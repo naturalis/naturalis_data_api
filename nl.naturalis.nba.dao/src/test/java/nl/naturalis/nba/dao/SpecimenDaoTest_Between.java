@@ -42,7 +42,6 @@ public class SpecimenDaoTest_Between {
 		logger.info("Start");
 		deleteIndex(DocumentType.SPECIMEN);
 		createIndex(DocumentType.SPECIMEN);
-		createType(DocumentType.SPECIMEN);
 		/*
 		 * Insert 5 test specimens.
 		 */

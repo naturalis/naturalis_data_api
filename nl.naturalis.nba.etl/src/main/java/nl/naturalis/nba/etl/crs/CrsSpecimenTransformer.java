@@ -3,9 +3,9 @@ package nl.naturalis.nba.etl.crs;
 import static nl.naturalis.nba.api.model.SourceSystem.CRS;
 import static nl.naturalis.nba.dao.DocumentType.SPECIMEN;
 import static nl.naturalis.nba.etl.ETLUtil.getTestGenera;
-import static nl.naturalis.nba.etl.LoadConstants.LICENCE;
-import static nl.naturalis.nba.etl.LoadConstants.LICENCE_TYPE;
-import static nl.naturalis.nba.etl.LoadConstants.SOURCE_INSTITUTION_ID;
+import static nl.naturalis.nba.etl.ETLConstants.LICENCE;
+import static nl.naturalis.nba.etl.ETLConstants.LICENCE_TYPE;
+import static nl.naturalis.nba.etl.ETLConstants.SOURCE_INSTITUTION_ID;
 import static nl.naturalis.nba.utils.StringUtil.rpad;
 
 import java.text.ParseException;

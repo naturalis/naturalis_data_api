@@ -20,6 +20,11 @@
 		}
 	},
 	"index": {
+		"mapping" : {
+			"nested_fields" : {
+				"limit" : 75
+			}
+		},
 		"refresh_interval": "30s",
 		"max_result_window": 100000
 	}

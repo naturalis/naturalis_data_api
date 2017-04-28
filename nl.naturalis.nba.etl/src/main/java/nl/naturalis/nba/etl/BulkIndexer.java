@@ -1,6 +1,7 @@
 package nl.naturalis.nba.etl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -38,23 +39,22 @@ public class BulkIndexer<T extends IDocumentObject> {
 		else {
 			objs = new ArrayList<>(documents);
 		}
-		ArrayList<String> ids = new ArrayList<>(objs.size());
-		for (T obj : objs) {
-			if (obj.getId() == null) {
-				ids.add(null);
-			}
-			else {
-				ids.add(obj.getId());
-				/*
-				 * Nullify id because it is not part of the document type definition, so
-				 * it must not appear in the JSON serialization of the object. Otherwise
-				 * Elasticsearch search will throw aan exception with "strict" document
-				 * type mappings.
-				 */
-				obj.setId(null);
-			}
+		String[] ids = new String[objs.size()];
+		/*
+		 * For some deeply mysterious reason defying anything I thought I understood about
+		 * Java it seems we have to do this in two separate loops, otherwise
+		 * objs.get(i).getId() returns null where it really really shouldn't:
+		 */
+		for (int i = 0; i < objs.size(); i++) {
+			ids[i] = objs.get(i).getId();
 		}
-		index(objs, ids, null);
+		for (int i = 0; i < objs.size(); i++) {
+			objs.get(i).setId(null);
+		}
+		index(objs, Arrays.asList(ids), null);
+		for (int i = 0; i < objs.size(); i++) {
+			objs.get(i).setId(ids[i]);
+		}
 	}
 
 	public void index(List<T> documents, List<String> ids, List<String> parentIds)

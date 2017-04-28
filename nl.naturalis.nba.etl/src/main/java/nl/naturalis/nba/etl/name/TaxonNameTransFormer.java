@@ -15,7 +15,7 @@ class TaxonNameTransformer {
 
 	@SuppressWarnings("unused")
 	private static final Logger logger = getLogger(TaxonNameTransformer.class);
-	private static final ScientificNameGroup DUMMY = new ScientificNameGroup();
+	private static final ScientificNameGroup DUMMY = new ScientificNameGroup("__dummy__");
 
 	private ScientificNameGroup previousGroup = DUMMY;
 

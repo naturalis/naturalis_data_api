@@ -43,24 +43,27 @@ public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
 	}
 
 	@Override
-	public QueryResult<ScientificNameGroup> query(ScientificNameGroupQuerySpec querySpec)
-			throws InvalidQueryException
+	public QueryResult<ScientificNameGroup> query(QuerySpec querySpec) throws InvalidQueryException
 	{
 		QueryResult<ScientificNameGroup> result = super.query(querySpec);
-		processSpecimens(result, querySpec);
+		if (querySpec instanceof ScientificNameGroupQuerySpec) {
+			processSpecimens(result, (ScientificNameGroupQuerySpec) querySpec);
+		}
 		return result;
 	}
 
 	@Override
-	public QueryResult<ScientificNameGroup> querySpecial(
-			ScientificNameGroupQuerySpec querySpec) throws InvalidQueryException
+	public QueryResult<ScientificNameGroup> querySpecial(QuerySpec querySpec)
+			throws InvalidQueryException
 	{
 		QueryResult<ScientificNameGroup> result = super.query(querySpec);
 		QuerySpec specimenQuerySpec = createQuerySpecForSpecimens(querySpec);
 		if (specimenQuerySpec.getConditions() != null) {
 			purgeSpecimens(result, specimenQuerySpec);
 		}
-		processSpecimens(result, querySpec);
+		if (querySpec instanceof ScientificNameGroupQuerySpec) {
+			processSpecimens(result, (ScientificNameGroupQuerySpec) querySpec);
+		}
 		return result;
 	}
 
@@ -73,14 +76,15 @@ public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
 			qs.setConditions(processConditions(querySpec.getConditions()));
 		}
 		qs.setConstantScore(true);
-		ScientificNameGroupMetaDataDao metadataDao = new ScientificNameGroupMetaDataDao();
+		SpecimenMetaDataDao metadataDao = new SpecimenMetaDataDao();
 		Object val = metadataDao.getSetting(INDEX_MAX_RESULT_WINDOW);
 		int size = Integer.parseInt(val.toString());
 		qs.setSize(size);
 		return qs;
 	}
 
-	private static ArrayList<QueryCondition> processConditions(List<QueryCondition> conditions) throws InvalidQueryException
+	private static ArrayList<QueryCondition> processConditions(List<QueryCondition> conditions)
+			throws InvalidQueryException
 	{
 		if (conditions == null) {
 			return null;
@@ -178,11 +182,12 @@ public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
 	}
 
 	private static void processSpecimens(QueryResult<ScientificNameGroup> result,
-			ScientificNameGroupQuerySpec qs)
+			ScientificNameGroupQuerySpec qs) throws InvalidQueryException
 	{
 		Integer f = qs.getSpecimensFrom();
 		Integer s = qs.getSpecimensSize();
 		int offset = f == null ? 0 : Math.max(f.intValue(), 0);
+		/* TODO: soft-code default max size */
 		int maxSpecimens = s == null ? 10 : Math.max(s.intValue(), -1);
 		PathValueComparator<SummarySpecimen> comparator = null;
 		if (qs.getSpecimensSortFields() != null) {
@@ -222,10 +227,20 @@ public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
 	}
 
 	private static Comparee[] sortFieldsToComparees(List<SortField> sortFields)
+			throws InvalidQueryException
 	{
 		Comparee[] comparees = new Comparee[sortFields.size()];
 		for (int i = 0; i < sortFields.size(); i++) {
 			SortField sf = sortFields.get(i);
+			if (sf.getPath().getElement(0).equals("specimens")) {
+				String fmt = "Invalid sort field: %s\nSort fields for specimens "
+						+ "within a ScientificNameGroup document must be specified "
+						+ "relative to the \"specimens\" field.\nThey must NOT "
+						+ "include the \"specimens\" path element";
+				String msg = String.format(fmt, sf.getPath());
+				throw new InvalidQueryException(msg);
+
+			}
 			comparees[i] = new Comparee(sf.getPath(), !sf.isAscending());
 		}
 		return comparees;

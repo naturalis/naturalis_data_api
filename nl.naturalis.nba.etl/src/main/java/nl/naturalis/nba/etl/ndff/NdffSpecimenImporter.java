@@ -15,7 +15,7 @@ import nl.naturalis.nba.etl.CSVExtractor;
 import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.ETLStatistics;
-import nl.naturalis.nba.etl.LoadConstants;
+import nl.naturalis.nba.etl.ETLConstants;
 import nl.naturalis.nba.etl.ETLUtil;
 import nl.naturalis.nba.utils.ConfigObject;
 import nl.naturalis.nba.utils.IOUtil;
@@ -45,7 +45,7 @@ public class NdffSpecimenImporter {
 	public NdffSpecimenImporter()
 	{
 		suppressErrors = ConfigObject.isEnabled("ndff.suppress-errors");
-		String key = LoadConstants.SYSPROP_LOADER_QUEUE_SIZE;
+		String key = ETLConstants.SYSPROP_LOADER_QUEUE_SIZE;
 		String val = System.getProperty(key, "1000");
 		esBulkRequestSize = Integer.parseInt(val);
 	}

@@ -1,6 +1,6 @@
 package nl.naturalis.nba.etl.brahms;
 
-import static nl.naturalis.nba.etl.LoadConstants.*;
+import static nl.naturalis.nba.etl.ETLConstants.*;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.BARCODE;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.COLLECTOR;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.CONTINENT;

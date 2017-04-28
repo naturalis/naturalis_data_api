@@ -18,7 +18,7 @@ import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.ETLUtil;
-import nl.naturalis.nba.etl.LoadConstants;
+import nl.naturalis.nba.etl.ETLConstants;
 import nl.naturalis.nba.etl.MimeTypeCacheFactory;
 import nl.naturalis.nba.etl.ThemeCache;
 import nl.naturalis.nba.etl.XMLRecordInfo;
@@ -70,7 +70,7 @@ public class CrsMultiMediaImportOffline {
 	public CrsMultiMediaImportOffline()
 	{
 		suppressErrors = ConfigObject.isEnabled("suppressErrors");
-		String key = LoadConstants.SYSPROP_LOADER_QUEUE_SIZE;
+		String key = ETLConstants.SYSPROP_LOADER_QUEUE_SIZE;
 		String val = System.getProperty(key, "1000");
 		esBulkRequestSize = Integer.parseInt(val);
 	}

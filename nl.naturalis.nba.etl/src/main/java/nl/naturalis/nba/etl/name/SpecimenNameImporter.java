@@ -51,12 +51,13 @@ class SpecimenNameImporter {
 		QuerySpec qs = new QuerySpec();
 		qs.setConstantScore(true);
 		qs.sortBy("identifications.scientificName.scientificNameGroup");
+		logger.info("Initializing extractor for specimens. Batch size is {}", batchSize);
 		extractor = new DocumentIterator<>(SPECIMEN, qs);
+		logger.info("Number of specimens to be processed: {}",extractor.size());
 		extractor.setBatchSize(batchSize);
 		extractor.setTimeout(timeout);
 		transformer = new SpecimenNameTransformer(batchSize);
 		BulkIndexer<ScientificNameGroup> indexer = new BulkIndexer<>(SCIENTIFIC_NAME_GROUP);
-		logger.info("Loading first batch of specimens. Batch size is {}", batchSize);
 		List<Specimen> batch = extractor.nextBatch();
 		int batchNo = 0;
 		while (batch != null) {

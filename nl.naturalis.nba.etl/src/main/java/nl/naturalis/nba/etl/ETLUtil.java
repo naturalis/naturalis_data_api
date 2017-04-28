@@ -1,7 +1,7 @@
 package nl.naturalis.nba.etl;
 
-import static nl.naturalis.nba.etl.LoadConstants.PURL_SERVER_BASE_URL;
-import static nl.naturalis.nba.etl.LoadConstants.SYSPROP_TEST_GENERA;
+import static nl.naturalis.nba.etl.ETLConstants.PURL_SERVER_BASE_URL;
+import static nl.naturalis.nba.etl.ETLConstants.SYSPROP_TEST_GENERA;
 import static nl.naturalis.nba.utils.StringUtil.zpad;
 
 import java.net.URISyntaxException;

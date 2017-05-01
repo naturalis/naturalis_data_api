@@ -75,8 +75,8 @@ public class NbaImportAll {
 			specimenEnricher.enrich();
 
 			logger.info("[>--- Starting MultiMediaObject enrichment ---<]");
-			MultiMediaObjectEnricher multimediaenricher = new MultiMediaObjectEnricher();
-			multimediaenricher.enrich();
+			MultiMediaObjectEnricher multimediaEnricher = new MultiMediaObjectEnricher();
+			multimediaEnricher.enrich();
 
 			logger.info("[>--- Starting ScientificNameGroup import ---<]");
 			NameImportAll nameImporter = new NameImportAll();

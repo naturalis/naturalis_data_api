@@ -25,7 +25,6 @@ import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.IDocumentObject;
-import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.utils.ArrayUtil;
 import nl.naturalis.nba.utils.http.SimpleHttpException;
 import nl.naturalis.nba.utils.http.SimpleHttpGet;
@@ -100,11 +99,18 @@ abstract class NbaClient<T extends IDocumentObject> implements INbaAccess<T> {
 	@Override
 	public QueryResult<T> query(QuerySpec querySpec) throws InvalidQueryException
 	{
-		SimpleHttpPost request = new SimpleHttpPost();
+		SimpleHttpRequest request;
+		if (config.isPreferGET()) {
+			request = new SimpleHttpGet();
+			request.addQueryParam("_querySpec", toJson(querySpec));
+		}
+		else {
+			request = new SimpleHttpPost();
+			request.setRequestBody(toJson(querySpec), CT_APPLICATION_JSON);
+		}
 		request.setAccept(CT_APPLICATION_JSON);
 		request.setBaseUrl(config.getBaseUrl());
 		request.setPath(rootPath + "query");
-		request.setRequestBody(toJson(querySpec), CT_APPLICATION_JSON);
 		sendRequest(request);
 		int status = request.getStatus();
 		if (status != HTTP_OK) {
@@ -122,31 +128,29 @@ abstract class NbaClient<T extends IDocumentObject> implements INbaAccess<T> {
 		request.setPath(rootPath + "count");
 		request.setRequestBody(toJson(querySpec), CT_APPLICATION_JSON);
 		sendRequest(request);
-		int status = request.getStatus();		
+		int status = request.getStatus();
 		if (status != HTTP_OK) {
 			throw newServerException(status, request.getResponseBody());
 		}
 		return ClientUtil.getObject(request.getResponseBody(), Long.class);
 	}
-	
-//	
-//	@Override
-//	public long count(QuerySpec querySpec) throws InvalidQueryException
-//	{
-//		SimpleHttpGet request = new SimpleHttpGet();
-//		request.setBaseUrl(config.getBaseUrl());
-//		request.setPath(rootPath + "count");
-//		String json = JsonUtil.toJson(querySpec);
-//		request.addQueryParam("_querySpec", json);
-//		sendRequest(request);
-//		int status = request.getStatus();
-//		if (status != HTTP_OK) {
-//			throw newServerException(status, request.getResponseBody());
-//		}
-//		return ClientUtil.getObject(request.getResponseBody(), Long.class);
-//	}
-	
-	
+
+	//	
+	//	@Override
+	//	public long count(QuerySpec querySpec) throws InvalidQueryException
+	//	{
+	//		SimpleHttpGet request = new SimpleHttpGet();
+	//		request.setBaseUrl(config.getBaseUrl());
+	//		request.setPath(rootPath + "count");
+	//		String json = JsonUtil.toJson(querySpec);
+	//		request.addQueryParam("_querySpec", json);
+	//		sendRequest(request);
+	//		int status = request.getStatus();
+	//		if (status != HTTP_OK) {
+	//			throw newServerException(status, request.getResponseBody());
+	//		}
+	//		return ClientUtil.getObject(request.getResponseBody(), Long.class);
+	//	}
 
 	@Override
 	public Map<String, Long> getDistinctValues(String forField, QuerySpec spec)

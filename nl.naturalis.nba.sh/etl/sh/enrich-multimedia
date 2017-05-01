@@ -1,0 +1,12 @@
+#!/bin/bash
+
+. ./include.sh
+
+action="${1}"
+
+if [ "${action}" = nullify ]
+then
+	java -cp ${classpath} $JAVA_OPTS ${root_package}.enrich.MultiMediaObjectEnrichmentNullifier
+else
+	java -cp ${classpath} $JAVA_OPTS ${root_package}.enrich.MultiMediaObjectEnricher
+fi

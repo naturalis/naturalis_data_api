@@ -13,7 +13,8 @@ import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.brahms.BrahmsImportAll;
 import nl.naturalis.nba.etl.col.CoLImportAll;
 import nl.naturalis.nba.etl.crs.CrsImportAll;
-import nl.naturalis.nba.etl.enrich.TaxonomicEnricher;
+import nl.naturalis.nba.etl.enrich.MultiMediaObjectEnricher;
+import nl.naturalis.nba.etl.enrich.SpecimenEnricher;
 import nl.naturalis.nba.etl.geo.GeoImporter;
 import nl.naturalis.nba.etl.name.NameImportAll;
 import nl.naturalis.nba.etl.nsr.NsrImporter;
@@ -70,8 +71,12 @@ public class NbaImportAll {
 			geoImporter.importAll();
 
 			logger.info("[>--- Starting Specimen enrichment ---<]");
-			TaxonomicEnricher enricher = new TaxonomicEnricher();
-			enricher.enrich();
+			SpecimenEnricher specimenEnricher = new SpecimenEnricher();
+			specimenEnricher.enrich();
+
+			logger.info("[>--- Starting MultiMediaObject enrichment ---<]");
+			MultiMediaObjectEnricher multimediaenricher = new MultiMediaObjectEnricher();
+			multimediaenricher.enrich();
 
 			logger.info("[>--- Starting ScientificNameGroup import ---<]");
 			NameImportAll nameImporter = new NameImportAll();

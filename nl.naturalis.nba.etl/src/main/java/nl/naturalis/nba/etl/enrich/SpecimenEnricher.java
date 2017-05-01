@@ -45,11 +45,11 @@ import nl.naturalis.nba.etl.BulkIndexException;
 import nl.naturalis.nba.etl.BulkIndexer;
 import nl.naturalis.nba.etl.ETLRuntimeException;
 
-public class TaxonomicEnricher {
+public class SpecimenEnricher {
 
 	public static void main(String[] args)
 	{
-		TaxonomicEnricher enricher = new TaxonomicEnricher();
+		SpecimenEnricher enricher = new SpecimenEnricher();
 		try {
 			enricher.enrich();
 		}
@@ -64,7 +64,7 @@ public class TaxonomicEnricher {
 		System.exit(0);
 	}
 
-	private static final Logger logger = getLogger(TaxonomicEnricher.class);
+	private static final Logger logger = getLogger(SpecimenEnricher.class);
 	private static final List<TaxonomicEnrichment> NONE = new ArrayList<>(0);
 	private static final int READ_BATCH_SIZE = 500;
 	private static final int WRITE_BATCH_SIZE = 500;

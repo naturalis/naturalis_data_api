@@ -20,17 +20,17 @@ import nl.naturalis.nba.etl.ETLRegistry;
 /**
  * Nullifies the {@link TaxonomicEnrichment} objects within specimens. Useful if
  * something went wrong during taxonomic enrichment (see
- * {@link TaxonomicEnricher}) and you have to do it over again.
+ * {@link SpecimenEnricher}) and you have to do it over again.
  * 
  * @author Ayco Holleman
  *
  */
-public class EnrichmentNullifier {
+public class SpecimenEnrichmentNullifier {
 
 	public static void main(String[] args) throws Exception
 	{
 		try {
-			EnrichmentNullifier nullifier = new EnrichmentNullifier();
+			SpecimenEnrichmentNullifier nullifier = new SpecimenEnrichmentNullifier();
 			nullifier.nullify();
 		}
 		finally {
@@ -40,9 +40,9 @@ public class EnrichmentNullifier {
 	}
 
 	private static final Logger logger = ETLRegistry.getInstance()
-			.getLogger(EnrichmentNullifier.class);
+			.getLogger(SpecimenEnrichmentNullifier.class);
 
-	public EnrichmentNullifier()
+	public SpecimenEnrichmentNullifier()
 	{
 	}
 

@@ -7,9 +7,8 @@ import static nl.naturalis.nba.api.annotations.Analyzer.LIKE;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import nl.naturalis.nba.api.annotations.Analyzers;
+import nl.naturalis.nba.api.annotations.NotStored;
 
 /**
  * 
@@ -27,6 +26,7 @@ public class MultiMediaObject extends NbaTraceableObject implements IDocumentObj
 		COLLECTION, STILL_IMAGE, SOUND, MOVING_IMAGE, INTERACTIVE_RESOURCE, TEXT, OTHER
 	}
 
+	@NotStored
 	private String id;
 	private String sourceInstitutionID;
 	private String sourceID;
@@ -62,13 +62,12 @@ public class MultiMediaObject extends NbaTraceableObject implements IDocumentObj
 	private List<String> theme;
 
 	// Non-persistent data
-	@JsonIgnore
+	@NotStored
 	private Specimen associatedSpecimen;
-	@JsonIgnore
+	@NotStored
 	private Taxon associatedTaxon;
 
-	public void addServiceAccessPoint(String uri, String format,
-			ServiceAccessPoint.Variant variant)
+	public void addServiceAccessPoint(String uri, String format, ServiceAccessPoint.Variant variant)
 	{
 		if (serviceAccessPoints == null) {
 			serviceAccessPoints = new ArrayList<ServiceAccessPoint>();

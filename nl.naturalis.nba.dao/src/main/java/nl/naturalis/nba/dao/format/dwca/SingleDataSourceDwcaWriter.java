@@ -128,7 +128,7 @@ class SingleDataSourceDwcaWriter implements IDwcaWriter {
 	}
 
 	private RandomEntryZipOutputStream createZipStream()
-			throws DataSetConfigurationException, DataSetWriteException, IOException
+			throws DataSetConfigurationException, IOException
 	{
 		Entity coreEntity = cfg.getCoreEntity();
 		String fileName = cfg.getCsvFileName(coreEntity);

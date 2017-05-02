@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nl.naturalis.nba.api.annotations.Analyzers;
+import nl.naturalis.nba.api.annotations.NotStored;
 
 /**
  * 
@@ -16,6 +17,7 @@ import nl.naturalis.nba.api.annotations.Analyzers;
  */
 public class Taxon extends NbaTraceableObject implements IDocumentObject {
 
+	@NotStored
 	private String id;
 	private String sourceSystemParentId;
 	private String taxonRank;

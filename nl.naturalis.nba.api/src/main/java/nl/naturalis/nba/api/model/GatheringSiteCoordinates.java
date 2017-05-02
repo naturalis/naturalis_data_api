@@ -33,12 +33,12 @@ public class GatheringSiteCoordinates implements INbaModelObject {
 
 	/**
 	 * <p>
-	 * Returns the site coordinates as {@link GeoJsonObject shape}. Since the
-	 * {@code GatheringSiteCoordinates} still basically represents a point
-	 * coordinate, the actual return type of this method is a geojson
-	 * {@link Point}. Use the {@code geoShape} property for queries using
-	 * pre-indexed shapes using the {@link ComparisonOperator#IN} operator. For
-	 * example:
+	 * Returns the site coordinates as {@link GeoJsonObject}. Since the
+	 * {@code GatheringSiteCoordinates} still basically constitute a point
+	 * coordinate, the actual return type of this method is a GeoJson
+	 * {@link Point Point subclass}. Use the {@code geoShape} property for
+	 * queries using pre-indexed shapes using the {@link ComparisonOperator#IN}
+	 * operator. For example:
 	 * </p>
 	 * <p>
 	 * <code>

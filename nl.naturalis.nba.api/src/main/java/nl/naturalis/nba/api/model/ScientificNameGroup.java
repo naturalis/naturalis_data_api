@@ -3,6 +3,7 @@ package nl.naturalis.nba.api.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import nl.naturalis.nba.api.annotations.NotStored;
 import nl.naturalis.nba.api.model.summary.SummarySpecimen;
 import nl.naturalis.nba.api.model.summary.SummaryTaxon;
 
@@ -26,6 +27,7 @@ import nl.naturalis.nba.api.model.summary.SummaryTaxon;
  */
 public class ScientificNameGroup implements IDocumentObject {
 
+	@NotStored
 	private String id;
 	private String name;
 	private int specimenCount;

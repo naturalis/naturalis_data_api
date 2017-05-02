@@ -7,9 +7,11 @@ import static nl.naturalis.nba.api.annotations.Analyzer.LIKE;
 import org.geojson.GeoJsonObject;
 
 import nl.naturalis.nba.api.annotations.Analyzers;
+import nl.naturalis.nba.api.annotations.NotStored;
 
 public class GeoArea extends NbaTraceableObject implements IDocumentObject {
 
+	@NotStored
 	private String id;
 	private String areaType;
 	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })

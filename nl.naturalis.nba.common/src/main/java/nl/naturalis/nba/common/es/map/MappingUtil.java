@@ -9,11 +9,9 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import nl.naturalis.nba.api.model.IDocumentObject;
-import nl.naturalis.nba.utils.ClassUtil;
+import nl.naturalis.nba.api.annotations.NotStored;
 
 class MappingUtil {
 
@@ -88,16 +86,7 @@ class MappingUtil {
 			for (Field f : fields) {
 				if (Modifier.isStatic(f.getModifiers()))
 					continue;
-				/*
-				 * Do not map the "id" field of the IDocumentObject class
-				 * itself. This field is populated with the system ID of the
-				 * Elasticsearch document, which is not part of the document
-				 * source. Note though that we cannot @JsonIgnore this field
-				 * because we do want it serialized.
-				 */
-				if (ClassUtil.isA(c, IDocumentObject.class) && f.getName().equals("id"))
-					continue;
-				if (f.getAnnotation(JsonIgnore.class) != null)
+				if (f.getAnnotation(NotStored.class) != null)
 					continue;
 				allFields.add(f);
 			}

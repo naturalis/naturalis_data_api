@@ -3,6 +3,7 @@ package nl.naturalis.nba.common.mock;
 import java.util.Date;
 import java.util.List;
 
+import nl.naturalis.nba.api.annotations.NotStored;
 import nl.naturalis.nba.api.model.IDocumentObject;
 
 /**
@@ -13,6 +14,7 @@ import nl.naturalis.nba.api.model.IDocumentObject;
  */
 public class TestPerson implements IDocumentObject {
 
+	@NotStored
 	private String id;
 	private String firstName;
 	private String lastName;

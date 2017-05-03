@@ -57,16 +57,16 @@ public class DaoRegistry {
 	{
 		setConfDir();
 		loadConfig();
-//		String encoding = System.getProperty("file.encoding");
-//		if (encoding == null || !encoding.equals("UTF-8")) {
-//			String msg = "NBA boot failure. Java VM must be started with "
-//					+ "-Dfile.encoding=UTF-8. When running within Widlfly,"
-//					+ "this system property can also be set within the "
-//					+ "<system-properties> XML element of standalone.xml."
-//					+ "Actual character encoding is: " + encoding;
-//			logger.fatal(msg);
-//			throw new DaoException(msg);
-//		}
+		String encoding = System.getProperty("file.encoding");
+		if (encoding == null || !encoding.equals("UTF-8")) {
+			String msg = "NBA boot failure. Java VM must be started with "
+					+ "-Dfile.encoding=UTF-8. When running within Widlfly,"
+					+ "this system property can also be set within the "
+					+ "<system-properties> XML element of standalone.xml."
+					+ "Actual character encoding is: " + encoding;
+			logger.fatal(msg);
+			throw new DaoException(msg);
+		}
 	}
 
 	/**

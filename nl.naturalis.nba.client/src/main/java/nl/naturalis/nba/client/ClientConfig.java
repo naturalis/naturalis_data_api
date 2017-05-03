@@ -12,6 +12,7 @@ public class ClientConfig {
 	static final String PRODUCTION_BASE_URL = "http://api.biodiversitydata.nl/v2";
 
 	private String baseUrl;
+	private boolean preferGET;
 
 	public ClientConfig(String baseUrl)
 	{
@@ -33,6 +34,16 @@ public class ClientConfig {
 		this.baseUrl = baseUrl;
 	}
 
+	public boolean isPreferGET()
+	{
+		return preferGET;
+	}
+
+	public void setPreferGET(boolean preferGETRequests)
+	{
+		this.preferGET = preferGETRequests;
+	}
+
 	@Override
 	public boolean equals(Object obj)
 	{
@@ -43,7 +54,7 @@ public class ClientConfig {
 			return false;
 		}
 		ClientConfig other = (ClientConfig) obj;
-		return baseUrl.equals(other.baseUrl);
+		return baseUrl.equals(other.baseUrl) && preferGET == other.preferGET;
 	}
 
 	@Override
@@ -51,6 +62,7 @@ public class ClientConfig {
 	{
 		int hash = 17;
 		hash = (hash * 31) + baseUrl.hashCode();
+		hash = (hash * 31) + (preferGET ? 1 : 0);
 		return hash;
 	}
 

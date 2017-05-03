@@ -1,3 +1,36 @@
+RELEASE NOTES V 2.3
+
+* NBAVTWO-263 There now is a metadata service that
+  gives information about various constants and limits
+  pertaining to the operation of the NBA and the
+  underlying Elasticsearch index.
+  
+* NBAVTWO-283 Data model change. The specimen's type
+  status field has been moved to the specimen's
+  identification.
+  
+* NBAVTWO-285 Data model change. The TaxonomicIdentification
+  object within a Specimen and MultiMediaObject
+  document now contains data from the associated
+  Taxon document. This enhances searchability.
+  
+* NBAVTWO-291 There is new service for the
+  ScientificNameGroup document: querySpecial. This
+  service provides more intuitive query results than
+  the stock query method.
+  
+* NBAVTWO-325 If you sort on anything else than
+  document relevance, the score field in the query
+  result will be null (i.e. absent) rather than
+  NaN
+  
+* NBAVTWO-326 You can now explicitly sort on 
+  document relevance by specifying the "_score"
+  sort field.
+  
+* NBAVTWO-311 There now is a metadata service than
+  returns all available NBA REST services.
+
 RELEASE NOTES V 2.2
 
 * NBAVTWO-285 Query specimens using taxonomic 

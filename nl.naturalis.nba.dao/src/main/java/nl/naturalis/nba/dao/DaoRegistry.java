@@ -6,6 +6,7 @@ import java.io.IOException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import nl.naturalis.nba.dao.exception.DaoException;
 import nl.naturalis.nba.dao.exception.InitializationException;
 import nl.naturalis.nba.utils.ConfigObject;
 import nl.naturalis.nba.utils.FileUtil;
@@ -31,7 +32,7 @@ public class DaoRegistry {
 	 */
 	public static final String SYSPROP_CONFIG_DIR = "nba.v2.conf.dir";
 
-	protected static DaoRegistry instance;
+	private static DaoRegistry instance;
 
 	private File cfgDir;
 	private File cfgFile;
@@ -56,7 +57,13 @@ public class DaoRegistry {
 	{
 		setConfDir();
 		loadConfig();
-		setupLogging();
+		String encoding = System.getProperty("file.encoding");
+		if (encoding == null || !encoding.equals("UTF-8")) {
+			String msg = "NBA boot failure. Java VM must be started with system "
+					+ "property file.encoding=UTF-8. Actual character encoding is: " + encoding;
+			logger.fatal(msg);
+			throw new DaoException(msg);
+		}
 	}
 
 	/**
@@ -148,11 +155,6 @@ public class DaoRegistry {
 		catch (IOException e) {
 			throw new InitializationException(e);
 		}
-	}
-
-	private void setupLogging()
-	{
-		logger = getLogger(getClass());
 	}
 
 	private void loadConfig()

@@ -6,10 +6,10 @@ import nl.naturalis.nba.api.IMultiMediaObjectAccess;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.model.MultiMediaObject;
 
-public class MultiMediaClient extends NbaClient<MultiMediaObject>
+public class MultiMediaObjectClient extends NbaClient<MultiMediaObject>
 		implements IMultiMediaObjectAccess {
 
-	MultiMediaClient(ClientConfig cfg, String rootPath)
+	MultiMediaObjectClient(ClientConfig cfg, String rootPath)
 	{
 		super(cfg, rootPath);
 	}

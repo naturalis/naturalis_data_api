@@ -64,9 +64,9 @@ public class NbaSession {
 	 * 
 	 * @return
 	 */
-	public MultiMediaClient getMultiMediaObjectClient()
+	public MultiMediaObjectClient getMultiMediaObjectClient()
 	{
-		return new MultiMediaClient(cfg, "multimedia/");
+		return new MultiMediaObjectClient(cfg, "multimedia/");
 	}
 
 	/**

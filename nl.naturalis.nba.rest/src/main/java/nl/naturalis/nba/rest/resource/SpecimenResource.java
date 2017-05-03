@@ -124,22 +124,6 @@ public class SpecimenResource {
 	}
 
 	@GET
-	@Path("/save/specimen")
-	@Produces(JSON_CONTENT_TYPE)
-	public String save(@PathParam("specimen") String json, @Context UriInfo uriInfo)
-	{
-		return save(json, uriInfo, false);
-	}
-
-	@GET
-	@Path("/save/specimen/immediate")
-	@Produces(JSON_CONTENT_TYPE)
-	public String saveImmediate(@PathParam("specimen") String json, @Context UriInfo uriInfo)
-	{
-		return save(json, uriInfo, true);
-	}
-
-	@GET
 	@Path("/query")
 	@Produces(JSON_CONTENT_TYPE)
 	public QueryResult<Specimen> query_GET(@Context UriInfo uriInfo)
@@ -388,23 +372,6 @@ public class SpecimenResource {
 		try {
 			SpecimenDao dao = new SpecimenDao();
 			return dao.getIdsInCollection(name);
-		}
-		catch (Throwable t) {
-			throw handleError(uriInfo, t);
-		}
-	}
-
-	private static String save(String json, UriInfo uriInfo, boolean immediate)
-	{
-		try {
-			String host = uriInfo.getBaseUri().getHost();
-			if (!host.equals("localhost") && !host.equals("127.0.0.1")) {
-				String msg = "Method not allowed for remote clients";
-				throw new RESTException(uriInfo, Status.FORBIDDEN, msg);
-			}
-			Specimen specimen = JsonUtil.deserialize(json, Specimen.class);
-			SpecimenDao dao = new SpecimenDao();
-			return dao.save(specimen, immediate);
 		}
 		catch (Throwable t) {
 			throw handleError(uriInfo, t);

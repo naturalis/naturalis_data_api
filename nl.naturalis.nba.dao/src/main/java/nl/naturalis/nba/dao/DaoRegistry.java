@@ -6,7 +6,6 @@ import java.io.IOException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import nl.naturalis.nba.dao.exception.DaoException;
 import nl.naturalis.nba.dao.exception.InitializationException;
 import nl.naturalis.nba.utils.ConfigObject;
 import nl.naturalis.nba.utils.FileUtil;
@@ -65,7 +64,7 @@ public class DaoRegistry {
 					+ "<system-properties> XML element of standalone.xml."
 					+ "Actual character encoding is: " + encoding;
 			logger.fatal(msg);
-			throw new DaoException(msg);
+			throw new InitializationException(msg);
 		}
 	}
 

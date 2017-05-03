@@ -2,22 +2,20 @@ package nl.naturalis.nba.client;
 
 import static nl.naturalis.nba.api.ComparisonOperator.EQUALS;
 import static nl.naturalis.nba.api.ComparisonOperator.EQUALS_IC;
-import static nl.naturalis.nba.api.ComparisonOperator.LIKE;
 import static nl.naturalis.nba.api.LogicalOperator.OR;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.BufferedOutputStream;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.zip.ZipEntry;
+
 import java.util.zip.ZipOutputStream;
-import java.util.ArrayList;
+
 import java.util.Arrays;
-import java.util.List;
+
 import java.util.Map;
 
 import org.junit.Before;
@@ -38,15 +36,18 @@ public class TestNbaClientAssertions {
 	// private static String baseUrl = "http://145.136.242.164:8080/v2";
 	private static NbaSession session;
 	private static SpecimenClient specimenClient;
+	private static TaxonClient taxonClient;
 
 	@Before
-	public void before() {
+	public void before()
+	{
 
 		// Initialise an NBA session
 		session = new NbaSession(new ClientConfig(baseUrl));
 
 		// Initialize client
 		specimenClient = session.getSpecimenClient();
+		taxonClient = session.getTaxonClient();
 
 	}
 
@@ -55,34 +56,35 @@ public class TestNbaClientAssertions {
 	 * the provided query specification.
 	 */
 	@Test
-	public void test_count() throws InvalidQueryException {
+	public void test_count() throws InvalidQueryException
+	{
 
 		QuerySpec querySpec = new QuerySpec();
 		String field = "collectionType";
 		QueryCondition condition = new QueryCondition(field, EQUALS, "Botany");
 		querySpec.addCondition(condition);
-		System.out.println("Query spec count: " + JsonUtil.toPrettyJson(querySpec));
+		// System.out.println("Query spec count: " + JsonUtil.toPrettyJson(querySpec));
 
 		long resultActual = specimenClient.count(querySpec);
-		System.out.println("Count: " + specimenClient.count(querySpec));
+		// System.out.println("Count: " + specimenClient.count(querySpec));
 
 		QueryResult<Specimen> specimenResults = specimenClient.query(querySpec);
 		long resultExpected = specimenResults.getTotalSize();
-		System.out.println("Expected: " + resultExpected);
+		// System.out.println("Expected: " + resultExpected);
 
 		assertEquals(resultExpected, resultActual);
 
 	}
 
-	
 	/*
 	 * delete(String id, boolean immediate) Deletes the specimen with the
 	 * specified system ID (as can be retrieved using Specimen.getId()).
 	 */
 	@Test
-	public void test_delete() {
+	public void test_delete()
+	{
 
-		// ...
+		// skipped for now ...
 
 	}
 
@@ -92,7 +94,8 @@ public class TestNbaClientAssertions {
 	 * stream.
 	 */
 	@Test
-	public void test_dwcaGetDataSet() {
+	public void test_dwcaGetDataSet()
+	{
 
 		// ...
 		// Afhankelijk van dwcaGetDataSetNames() (nog niet geimplementeerd)
@@ -105,37 +108,59 @@ public class TestNbaClientAssertions {
 	 * specimen/occurrence data.
 	 */
 	@Test
-	public void test_dwcaGetDataSetNames() {
+	public void test_dwcaGetDataSetNames()
+	{
+		// This seems to work for taxa:
+		//
+		//		String[] setNames = taxonClient.dwcaGetDataSetNames();
+		//		int i = 1;
+		//		for (String setName : setNames) {
+		//			System.out.println(i + ": " + setName);
+		//			i++;
+		//		}
+		// or,
+		// System.out.println("DataSetNames: " + JsonUtil.toPrettyJson(taxonClient.dwcaGetDataSetNames()));
 
-		// Nog niet geimplementeerd
-		System.err.println("dwcaGetDataSetNames() is nog niet geimplementeerd.\n");
-		// System.out.println("DataSetNames: " +
-		// specimenClient.dwcaGetDataSetNames());
+		// Nog niet geimplementeerd in SpecimenDao
+		String[] names = specimenClient.dwcaGetDataSetNames();
+		if (names.length == 0) {
+			System.out.println("No sets available!!!");
+		}
+		else {
+
+			int n = 1;
+			for (String name : names) {
+				System.out.println(n + ": " + name);
+				n++;
+			}
+			// System.out.println("DataSetNames: " + JsonUtil.toPrettyJson(specimenClient.dwcaGetDataSetNames()));
+		}
 
 	}
 
-	
 	/*
 	 * dwcaQuery(QuerySpec querySpec, ZipOutputStream out) Writes a DarwinCore
 	 * Archive with specimens satisfying the specified query specification to
 	 * the specified output stream.
 	 */
 	@Test
-	public void test_dwcaQuery() throws IOException, InvalidQueryException {
+	public void test_dwcaQuery() throws IOException, InvalidQueryException
+	{
 
 		FileOutputStream fos = new FileOutputStream("/home/tom/tmp/dwca.zip");
 		ZipOutputStream out = new ZipOutputStream(fos);
-		
+
 		QuerySpec querySpec = new QuerySpec();
 		QueryCondition condition = new QueryCondition();
-		condition = new QueryCondition("identifications.defaultClassification.genus", EQUALS_IC, "tulipa");
+		condition = new QueryCondition("identifications.defaultClassification.genus", EQUALS_IC,
+				"tulipa");
 		querySpec.addCondition(condition);
-		
+
 		specimenClient.dwcaQuery(querySpec, out);
 		IOUtil.close(fos);
-		
-//		QueryResult<Specimen> specimenResults = specimenClient.query(querySpec);
-//		System.out.println("DWCA query result: " + JsonUtil.toPrettyJson(specimenResults));
+
+		//		QueryResult<Specimen> specimenResults = specimenClient.query(querySpec);
+		//		System.out.println("DWCA query result: " + JsonUtil.toPrettyJson(specimenResults));
 
 		// Error:
 		// Exception in thread "main" nl.naturalis.nba.client.NoSuchServiceException: 
@@ -143,28 +168,27 @@ public class TestNbaClientAssertions {
 
 	}
 
-	
 	/*
-	 * exists(String unitID)
-	 * Returns whether or not the specified string is a valid UnitID (i.e. is the UnitID 
-	 * of at least one specimen record).
+	 * exists(String unitID) Returns whether or not the specified string is a
+	 * valid UnitID (i.e. is the UnitID of at least one specimen record).
 	 */
 	@Test
-	public void test_exists_unitID() {
+	public void test_exists()
+	{
 
 		// exists(unitID)
 		assertTrue(specimenClient.exists("WAG.1706277"));
 		assertFalse(specimenClient.exists("ABC.123456789"));
 	}
 
-	
 	/*
-	 * 	find(String id)
-	 * Returns the data model object with the specified system ID, or null if there is no 
-	 * data model object with the specified system ID.
+	 * find(String id) Returns the data model object with the specified system
+	 * ID, or null if there is no data model object with the specified system
+	 * ID.
 	 */
 	@Test
-	public void test_find_id() {
+	public void test_find_id()
+	{
 
 		// find(id) - Find specimen with ID = "WAG.1706236@BRAHMS"
 
@@ -177,12 +201,12 @@ public class TestNbaClientAssertions {
 	}
 
 	/*
-	 * find(String[] ids)
-	 * Returns the data model objects with the specified system IDs, or a zero-length 
-	 * array no specimens were found.
+	 * find(String[] ids) Returns the data model objects with the specified
+	 * system IDs, or a zero-length array no specimens were found.
 	 */
 	@Test
-	public void test_find_ids() {
+	public void test_find_ids()
+	{
 
 		String[] ids = { "WAG.1706278@BRAHMS", "WAG.1706277@BRAHMS" };
 		Specimen[] result = specimenClient.find(ids);
@@ -192,60 +216,128 @@ public class TestNbaClientAssertions {
 
 	}
 
-	
 	/*
-	 * findByUnitID(String unitID)
-	 * Retrieves a Specimen by its UnitID.
+	 * findByUnitID(String unitID) Retrieves a Specimen by its UnitID.
 	 */
 	@Test
-	public void test_findByUnitID() {
+	public void test_findByUnitID()
+	{
 
 		String unitID = "WAG.1706236";
 		Specimen[] result = specimenClient.findByUnitID(unitID);
 		// System.out.println("Hash code: " + result.hashCode());
 		int expectedHasCode = 987249254;
 		assertEquals(expectedHasCode, result.hashCode());
-		
+
 	}
 
-	
 	/*
-	 * getDistinctValues(String forField, QuerySpec spec)
-	 * Returns the unique values of the specified field.
+	 * getDistinctValues(String forField, QuerySpec spec) Returns the unique
+	 * values of the specified field.
 	 */
 	@Test
-	public void test_getDistinctValues() throws InvalidQueryException {
+	public void test_getDistinctValues() throws InvalidQueryException
+	{
 
 		// Not yet implemented!
-		
+
 		QuerySpec querySpec = new QuerySpec();
 		QueryCondition condition = new QueryCondition();
-		condition = new QueryCondition("identifications.defaultClassification.genus", EQUALS_IC, "tulipa");
+		condition = new QueryCondition("identifications.defaultClassification.genus", EQUALS_IC,
+				"tulipa");
 		querySpec.addCondition(condition);
-	
+
 		// QueryResult<Specimen> specimenResults = specimenClient.query(querySpec);
 		// System.out.println("Get Distinct: %n" + JsonUtil.toPrettyJson(specimenResults));
-		
-		Map uniqueValues = specimenClient.getDistinctValues("identifications.defaultClassification.specificEpithet", querySpec);
+
+		Map uniqueValues = specimenClient.getDistinctValues(
+				"identifications.defaultClassification.specificEpithet", querySpec);
 		System.out.println(uniqueValues.values().toString());
-	
+
+		// NB: nog niet geimplementeerd in de client!!!
+
+		// http://localhost:8080/v2/specimen/getDistinctValues/sourceSystem.code
+		// Result: "BRAHMS": 870001
+
+		// System.out.println("Distinct: " +
+		// specimenClient.getDistinctValues("sourceSystem.code", null));
+
+		// QuerySpec querySpec = new QuerySpec();
+		// String field = "sourceSystem.code";
+		// QueryCondition condition = new QueryCondition(field, EQUALS,
+		// "BRAHMS");
+		// QueryCondition condition = new QueryCondition(field, NOT_EQUALS,
+		// null);
+		// querySpec.addCondition(condition);
+		// QueryResult<Specimen> specimenResults =
+		// specimenClient.query(querySpec);
+		//
+		// System.out.println(JsonUtil.toPrettyJson(querySpec));
+		// System.out.println(JsonUtil.toPrettyJson(specimenResults));
+
 	}
 
-	
 	/*
-	 * getDistinctValuesPerGroup(String groupField, String valuesField, QueryCondition... conditions)
-	 * Returns the unique values of the specified field, grouping them using another field .
+	 * getDistinctValuesPerGroup(String groupField, String valuesField,
+	 * QueryCondition... conditions) Returns the unique values of the specified
+	 * field, grouping them using another field .
 	 */
 	@Test
-	public void test_getDistinctValuesPerGroup(){
+	public void test_getDistinctValuesPerGroup()
+	{
 
 		//..
 
 	}
 
-	
+	/*
+	 * getGroups(String groupByField, QuerySpec querySpec)
+	 */
 	@Test
-	public void test_query_test_01() throws InvalidQueryException {
+	public void test_getGroups()
+	{
+		// ..
+	}
+
+	/*
+	 * getIdsInCollection(String collectionName) Returns the ids of all
+	 * specimens belonging to a named collection.
+	 */
+	@Test
+	public void test_getIdsInCollection()
+	{
+		String result[] = specimenClient.getIdsInCollection("Strange Plants");
+		// Is dit een bug???
+
+		// System.out.println("IDs in named collection: " +
+		// Arrays.toString(result));
+		assertNotNull(Arrays.toString(result));
+
+	}
+
+	/*
+	 * getNamedCollections() Returns all "special collections" defined within
+	 * the specimen dataset.
+	 */
+	@Test
+	public void test_getNamedCollections() throws InvalidQueryException
+	{
+
+		String[] definedCollections = { "Living Dinos", "Strange Plants" };
+		String[] collectionNames = specimenClient.getNamedCollections();
+		Arrays.sort(collectionNames);
+		// System.out.println("Result: " + Arrays.toString(collectionNames));
+		assertTrue(Arrays.equals(collectionNames, definedCollections));
+
+	}
+
+	/*
+	 * query(QuerySpec querySpec) Returns the documents conforming to the
+	 * provided query specification.
+	 */
+	@Test
+	public void test_query_test_01() throws InvalidQueryException
+	{
 
 		QuerySpec querySpec = new QuerySpec();
 
@@ -273,7 +365,8 @@ public class TestNbaClientAssertions {
 	}
 
 	@Test
-	public void test_query_test_02() throws InvalidQueryException {
+	public void test_query_test_02() throws InvalidQueryException
+	{
 
 		QuerySpec querySpec = new QuerySpec();
 
@@ -297,7 +390,8 @@ public class TestNbaClientAssertions {
 	}
 
 	@Test
-	public void test_query_test_03() throws InvalidQueryException {
+	public void test_query_test_03() throws InvalidQueryException
+	{
 
 		QuerySpec querySpec01 = new QuerySpec();
 
@@ -358,55 +452,8 @@ public class TestNbaClientAssertions {
 	}
 
 	@Test
-	public void test_get_named_collections() throws InvalidQueryException {
-
-		String[] definedCollections = { "Living Dinos", "Strange Plants" };
-		String[] collectionNames = specimenClient.getNamedCollections();
-		Arrays.sort(collectionNames);
-		// System.out.println("Result: " + Arrays.toString(collectionNames));
-		assertTrue(Arrays.equals(collectionNames, definedCollections));
-
-	}
-
-	@Test
-	public void test_get_ids_in_named_collection() throws InvalidQueryException {
-
-		String result[] = specimenClient.getIdsInCollection("Strange Plants");
-		// Is dit een bug???
-
-		// System.out.println("IDs in named collection: " +
-		// Arrays.toString(result));
-		assertNotNull(Arrays.toString(result));
-	}
-
-	@Test
-	public void test_get_distinct_values() {
-
-		// NB: nog niet geimplementeerd in de client!!!
-
-		// http://localhost:8080/v2/specimen/getDistinctValues/sourceSystem.code
-		// Result: "BRAHMS": 870001
-
-		// System.out.println("Distinct: " +
-		// specimenClient.getDistinctValues("sourceSystem.code", null));
-
-		// QuerySpec querySpec = new QuerySpec();
-		// String field = "sourceSystem.code";
-		// QueryCondition condition = new QueryCondition(field, EQUALS,
-		// "BRAHMS");
-		// QueryCondition condition = new QueryCondition(field, NOT_EQUALS,
-		// null);
-		// querySpec.addCondition(condition);
-		// QueryResult<Specimen> specimenResults =
-		// specimenClient.query(querySpec);
-		//
-		// System.out.println(JsonUtil.toPrettyJson(querySpec));
-		// System.out.println(JsonUtil.toPrettyJson(specimenResults));
-
-	}
-
-	@Test
-	public void test_save() {
+	public void test_save()
+	{
 		String id = "WAG.1706236@BRAHMS";
 		Specimen existingRecord = specimenClient.find(id);
 		// System.out.println("hash: " + test.hashCode());

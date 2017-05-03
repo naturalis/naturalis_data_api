@@ -180,6 +180,7 @@
 			<sysproperty key="nba.v2.log.file"
 			             value="${build.module.location}/log/test.${test.datetime}.log" />
 			<sysproperty key="nba.v2.conf.dir" value="${proto.conf.dir}" />
+			<sysproperty key="file.encoding" value="UTF-8" />
 			<classpath>
 				<fileset dir="build/classpath">
 					<include name="**/*.jar" />

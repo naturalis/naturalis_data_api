@@ -107,7 +107,7 @@ public class CrsFindInSource {
 	{
 		long start = System.currentTimeMillis();
 		ConfigObject cfg = DaoRegistry.getInstance().getConfiguration();
-		System.out.print("Searching " + cfg.required("crs.data_dir") + " ");
+		System.out.print("Searching " + cfg.required("crs.data.dir") + " ");
 		Iterator<File> iterator = getFileIterator(type);
 		int matches = 0;
 		String valueUpperCase = value.toUpperCase();
@@ -230,7 +230,7 @@ public class CrsFindInSource {
 
 	private static Iterator<File> getFileIterator(final String type)
 	{
-		String path = DaoRegistry.getInstance().getConfiguration().required("crs.data_dir");
+		String path = DaoRegistry.getInstance().getConfiguration().required("crs.data.dir");
 		if (type == null) {
 			return Arrays.asList(new File(path).listFiles()).iterator();
 		}

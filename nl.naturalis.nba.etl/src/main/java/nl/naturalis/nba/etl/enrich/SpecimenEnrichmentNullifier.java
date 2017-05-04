@@ -8,8 +8,8 @@ import java.util.ArrayList;
 import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.api.model.Specimen;
-import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.api.model.TaxonomicEnrichment;
+import nl.naturalis.nba.api.model.TaxonomicIdentification;
 import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.util.es.DocumentIterator;
 import nl.naturalis.nba.dao.util.es.ESUtil;
@@ -60,7 +60,7 @@ public class SpecimenEnrichmentNullifier {
 		logger.info("Processing specimens");
 		for (Specimen specimen : iterator) {
 			boolean modified = false;
-			for (SpecimenIdentification si : specimen.getIdentifications()) {
+			for (TaxonomicIdentification si : specimen.getIdentifications()) {
 				if (si.getTaxonomicEnrichments() != null) {
 					si.setTaxonomicEnrichments(null);
 					modified = true;

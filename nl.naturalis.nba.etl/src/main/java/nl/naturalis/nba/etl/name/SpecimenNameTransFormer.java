@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 import nl.naturalis.nba.api.model.ScientificNameGroup;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
+import nl.naturalis.nba.api.model.TaxonomicIdentification;
 import nl.naturalis.nba.api.model.summary.SummarySpecimen;
 import nl.naturalis.nba.etl.ETLRuntimeException;
 
@@ -39,7 +40,7 @@ class SpecimenNameTransformer {
 		for (Specimen specimen : specimens) {
 			List<SpecimenIdentification> identifications = specimen.getIdentifications();
 			if (identifications != null) {
-				for (SpecimenIdentification si : identifications) {
+				for (TaxonomicIdentification si : identifications) {
 					String name = si.getScientificName().getScientificNameGroup();
 					ScientificNameGroup nameGroup = lookupTable.get(name);
 					if (!exists(specimen, nameGroup)) {
@@ -80,7 +81,7 @@ class SpecimenNameTransformer {
 		HashSet<String> names = new HashSet<>(batchSize);
 		for (Specimen specimen : specimens) {
 			if (specimen.getIdentifications() != null) {
-				for (SpecimenIdentification si : specimen.getIdentifications()) {
+				for (TaxonomicIdentification si : specimen.getIdentifications()) {
 					names.add(si.getScientificName().getScientificNameGroup());
 				}
 			}

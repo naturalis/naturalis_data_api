@@ -20,8 +20,8 @@ import nl.naturalis.nba.api.model.MultiMediaContentIdentification;
 import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.Specimen;
-import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.api.model.Taxon;
+import nl.naturalis.nba.api.model.TaxonomicIdentification;
 import nl.naturalis.nba.utils.StringUtil;
 
 /**
@@ -159,7 +159,7 @@ public class TransformUtil {
 
 	public static void equalizeNameComponents(Specimen specimen) throws NameMismatchException
 	{
-		for (SpecimenIdentification i : specimen.getIdentifications()) {
+		for (TaxonomicIdentification i : specimen.getIdentifications()) {
 			equalizeNameComponents(i.getDefaultClassification(), i.getScientificName());
 		}
 	}

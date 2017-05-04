@@ -9,7 +9,6 @@ import nl.naturalis.nba.api.annotations.Analyzers;
 public class SpecimenIdentification extends TaxonomicIdentification {
 
 	private boolean preferred;
-	private SpecimenTypeStatus typeStatus;
 	private String verificationStatus;
 	private String rockType;
 	private String associatedFossilAssemblage;
@@ -26,16 +25,6 @@ public class SpecimenIdentification extends TaxonomicIdentification {
 	public void setPreferred(boolean preferred)
 	{
 		this.preferred = preferred;
-	}
-
-	public SpecimenTypeStatus getTypeStatus()
-	{
-		return typeStatus;
-	}
-
-	public void setTypeStatus(SpecimenTypeStatus typeStatus)
-	{
-		this.typeStatus = typeStatus;
 	}
 
 	public String getVerificationStatus()

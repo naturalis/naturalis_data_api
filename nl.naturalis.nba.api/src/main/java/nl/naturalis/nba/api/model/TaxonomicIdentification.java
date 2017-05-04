@@ -8,11 +8,14 @@ public abstract class TaxonomicIdentification implements INbaModelObject {
 
 	private String taxonRank;
 	private ScientificName scientificName;
+	private SpecimenTypeStatus typeStatus;
+	private Date dateIdentified;
+	
 	private DefaultClassification defaultClassification;
+	
 	private List<Monomial> systemClassification;
 	private List<VernacularName> vernacularNames;
 	private List<String> identificationQualifiers;
-	private Date dateIdentified;
 	private List<Agent> identifiers;
 
 	private List<TaxonomicEnrichment> taxonomicEnrichments;
@@ -43,6 +46,26 @@ public abstract class TaxonomicIdentification implements INbaModelObject {
 	public void setScientificName(ScientificName scientificName)
 	{
 		this.scientificName = scientificName;
+	}
+
+	public SpecimenTypeStatus getTypeStatus()
+	{
+		return typeStatus;
+	}
+
+	public void setTypeStatus(SpecimenTypeStatus typeStatus)
+	{
+		this.typeStatus = typeStatus;
+	}
+
+	public Date getDateIdentified()
+	{
+		return dateIdentified;
+	}
+
+	public void setDateIdentified(Date dateIdentified)
+	{
+		this.dateIdentified = dateIdentified;
 	}
 
 	public DefaultClassification getDefaultClassification()
@@ -83,16 +106,6 @@ public abstract class TaxonomicIdentification implements INbaModelObject {
 	public void setIdentificationQualifiers(List<String> identificationQualifiers)
 	{
 		this.identificationQualifiers = identificationQualifiers;
-	}
-
-	public Date getDateIdentified()
-	{
-		return dateIdentified;
-	}
-
-	public void setDateIdentified(Date dateIdentified)
-	{
-		this.dateIdentified = dateIdentified;
 	}
 
 	public List<Agent> getIdentifiers()

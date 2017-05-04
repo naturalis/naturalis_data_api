@@ -31,6 +31,7 @@ import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.api.model.Person;
 import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.ServiceAccessPoint;
+import nl.naturalis.nba.api.model.SpecimenTypeStatus;
 import nl.naturalis.nba.api.model.VernacularName;
 import nl.naturalis.nba.etl.AbstractXMLTransformer;
 import nl.naturalis.nba.etl.ETLStatistics;
@@ -40,6 +41,8 @@ import nl.naturalis.nba.etl.ThemeCache;
 import nl.naturalis.nba.etl.TransformUtil;
 import nl.naturalis.nba.etl.normalize.PhaseOrStageNormalizer;
 import nl.naturalis.nba.etl.normalize.SexNormalizer;
+import nl.naturalis.nba.etl.normalize.SpecimenTypeStatusNormalizer;
+import nl.naturalis.nba.etl.normalize.UnmappedValueException;
 
 /**
  * The transformer component for the CRS multimedia import.
@@ -56,6 +59,7 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 		private String medialibId;
 	}
 
+	private final SpecimenTypeStatusNormalizer tsNormalizer;
 	private final PhaseOrStageNormalizer posNormalizer;
 	private final SexNormalizer sexNormalizer;
 	private final MimeTypeCache mimetypeCache;
@@ -68,6 +72,7 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 	CrsMultiMediaTransformer(ETLStatistics stats)
 	{
 		super(stats);
+		tsNormalizer = SpecimenTypeStatusNormalizer.getInstance();
 		themeCache = ThemeCache.getInstance();
 		mimetypeCache = MimeTypeCacheFactory.getInstance().getCache();
 		posNormalizer = PhaseOrStageNormalizer.getInstance();
@@ -95,9 +100,10 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 	protected boolean skipRecord()
 	{
 		/*
-		 * Side effect: set the database identifier of the record, so we can provide both
-		 * the UnitID and the database ID of the specimen when logging messages. We
-		 * override messagePrefix() to also print out the database ID.
+		 * Side effect: set the database identifier of the record, so we can
+		 * provide both the UnitID and the database ID of the specimen when
+		 * logging messages. We override messagePrefix() to also print out the
+		 * database ID.
 		 */
 		databaseID = val(input.getRecord(), "identifier");
 		if (hasStatusDeleted()) {
@@ -113,14 +119,14 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 			}
 			return true;
 		}
-		
+
 		if (getDescendant(oaiDcElem, "frmDigitalebestanden") == null) {
 			if (logger.isDebugEnabled()) {
 				debug("Missing or empty element <frmDigitalebestanden>");
 			}
 			return true;
 		}
-		
+
 		List<Element> elems = getDescendants(oaiDcElem, "ncrsDetermination");
 		if (elems == null) {
 			if (logger.isDebugEnabled()) {
@@ -128,7 +134,7 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 			}
 			return true;
 		}
-		
+
 		return testGenera != null && !hasTestGenus(elems);
 	}
 
@@ -136,10 +142,8 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 	protected List<MultiMediaObject> doTransform()
 	{
 		Element oaiDcElem = getDescendant(input.getRecord(), "oai_dc:dc");
-		List<Element> frmDigitaleBestandenElems = getDescendants(oaiDcElem,
-				"frmDigitalebestanden");
-		List<Element> ncsrDeterminationElems = getDescendants(oaiDcElem,
-				"ncrsDetermination");
+		List<Element> frmDigitaleBestandenElems = getDescendants(oaiDcElem, "frmDigitalebestanden");
+		List<Element> ncsrDeterminationElems = getDescendants(oaiDcElem, "ncrsDetermination");
 		ArrayList<MultiMediaContentIdentification> identifications;
 		identifications = getIdentifications(ncsrDeterminationElems);
 		if (identifications == null) {
@@ -151,8 +155,7 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 		}
 		stats.recordsAccepted++;
 		first = null;
-		ArrayList<MultiMediaObject> mmos = new ArrayList<>(
-				frmDigitaleBestandenElems.size());
+		ArrayList<MultiMediaObject> mmos = new ArrayList<>(frmDigitaleBestandenElems.size());
 		for (int i = 0; i < frmDigitaleBestandenElems.size(); i++) {
 			try {
 				stats.objectsProcessed++;
@@ -177,8 +180,7 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 				String title = getTitle(frmDigitaleBestandenElem, unitID);
 				mmo.setTitle(title);
 				mmo.setCaption(title);
-				mmo.setMultiMediaPublic(
-						bval(frmDigitaleBestandenElem, "abcd:MultiMediaPublic"));
+				mmo.setMultiMediaPublic(bval(frmDigitaleBestandenElem, "abcd:MultiMediaPublic"));
 				mmo.setCreator(val(frmDigitaleBestandenElem, "dc:creator"));
 				mmos.add(mmo);
 				stats.objectsAccepted++;
@@ -217,8 +219,8 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 	}
 
 	/*
-	 * Create a new multimedia object, initialized with the values from the first
-	 * multimedia object of the specimen record we are processing.
+	 * Create a new multimedia object, initialized with the values from the
+	 * first multimedia object of the specimen record we are processing.
 	 */
 	private MultiMediaObject initializeFromFirst()
 	{
@@ -252,9 +254,9 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 				continue;
 			}
 			MultiMediaContentIdentification mmci = new MultiMediaContentIdentification();
+			mmci.setTypeStatus(getTypeStatus(ncrsDeterminationElem));
 			mmci.setScientificName(sn);
-			mmci.setDefaultClassification(
-					TransformUtil.extractClassificiationFromName(sn));
+			mmci.setDefaultClassification(TransformUtil.extractClassificiationFromName(sn));
 			mmci.setIdentificationQualifiers(getQualifiers(ncrsDeterminationElem));
 			mmci.setVernacularNames(getVernacularNames(ncrsDeterminationElem));
 			if (identifications == null) {
@@ -363,11 +365,10 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 		MultiMediaInfo info = new MultiMediaInfo();
 		if (url.startsWith(MEDIALIB_URL_START)) {
 			/*
-			 * HACK: attempt to repair bad medialib URLs where MEDIALIB_URL_START occurs
-			 * twice at the beginning
+			 * HACK: attempt to repair bad medialib URLs where
+			 * MEDIALIB_URL_START occurs twice at the beginning
 			 */
-			if (url.substring(MEDIALIB_URL_START.length())
-					.startsWith(MEDIALIB_URL_START)) {
+			if (url.substring(MEDIALIB_URL_START.length()).startsWith(MEDIALIB_URL_START)) {
 				url = url.substring(MEDIALIB_URL_START.length());
 			}
 			// Extract medialib ID
@@ -444,6 +445,24 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 		return result;
 	}
 
+	private SpecimenTypeStatus getTypeStatus(Element elem)
+	{
+		String raw = val(elem, "abcd:NomenclaturalTypeText");
+		if (raw == null) {
+			warn("Missing type status");
+			return null;
+		}
+		try {
+			return tsNormalizer.map(raw);
+		}
+		catch (UnmappedValueException e) {
+			if (logger.isDebugEnabled()) {
+				debug(e.getMessage());
+			}
+			return null;
+		}
+	}
+
 	private String getSex(Element oaiDcElem)
 	{
 		String raw = val(oaiDcElem, "dwc:sex");
@@ -508,6 +527,5 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 		}
 		return ((s = s.trim()).length() == 0 ? null : s);
 	}
-
 
 }

@@ -35,6 +35,7 @@ import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.api.model.TaxonomicEnrichment;
+import nl.naturalis.nba.api.model.TaxonomicIdentification;
 import nl.naturalis.nba.api.model.VernacularName;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.DocumentType;
@@ -162,7 +163,7 @@ public class SpecimenEnricher {
 			if (specimen.getIdentifications() == null) {
 				continue;
 			}
-			for (SpecimenIdentification si : specimen.getIdentifications()) {
+			for (TaxonomicIdentification si : specimen.getIdentifications()) {
 				String nameGroup = si.getScientificName().getScientificNameGroup();
 				List<TaxonomicEnrichment> enrichments = cache.get(nameGroup);
 				if (enrichments == null) {
@@ -228,7 +229,7 @@ public class SpecimenEnricher {
 	{
 		HashSet<String> groups = new HashSet<>(specimens.size());
 		for (Specimen specimen : specimens) {
-			for (SpecimenIdentification si : specimen.getIdentifications()) {
+			for (TaxonomicIdentification si : specimen.getIdentifications()) {
 				groups.add(si.getScientificName().getScientificNameGroup());
 			}
 		}

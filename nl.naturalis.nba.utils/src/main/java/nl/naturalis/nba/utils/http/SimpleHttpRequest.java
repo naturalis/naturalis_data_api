@@ -158,6 +158,24 @@ public abstract class SimpleHttpRequest {
 		this.baseUrl = baseUrl;
 		return this;
 	}
+	/**
+	 * Sets the base URL (scheme, user info, host, port). You can, in fact, also
+	 * use this method to set the entire URL, including path, query and
+	 * fragment. Or you can use it to set the base URL plus the context root. In
+	 * short, this method simply allows you to set the start of the URL. This is
+	 * the only property that <b>must</b> be set in order to successfully
+	 * {@link #execute() execute} an HTTP request.
+	 * 
+	 * @param baseUrl
+	 *            The base URL or complete URL
+	 * 
+	 * @return This {@code SimpleHttpRequest}
+	 */
+	public SimpleHttpRequest setBaseUrl(URI baseUrl)
+	{
+		this.baseUrl = baseUrl.toString();
+		return this;
+	}
 
 	/**
 	 * Returns the base URL for the request. See {@link #setBaseUrl(String)}.

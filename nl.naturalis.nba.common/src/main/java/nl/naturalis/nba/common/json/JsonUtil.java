@@ -52,6 +52,12 @@ public class JsonUtil {
 		return deserialize(om, json, type);
 	}
 
+	public static <T> T deserialize(byte[] json, TypeReference<T> type)
+	{
+		ObjectMapper om = oml.getObjectMapper(type);
+		return deserialize(om, json, type);
+	}
+
 	public static <T> T deserialize(ObjectMapper om, byte[] json, Class<T> type)
 	{
 		try {
@@ -62,7 +68,22 @@ public class JsonUtil {
 		}
 	}
 
+	public static <T> T deserialize(ObjectMapper om, byte[] json, TypeReference<T> type)
+	{
+		try {
+			return om.readValue(json, type);
+		}
+		catch (IOException e) {
+			throw new JsonDeserializationException(e);
+		}
+	}
+
 	public static <T> T deserialize(String json, Class<T> type)
+	{
+		return deserialize(json.getBytes(UTF8), type);
+	}
+
+	public static <T> T deserialize(String json, TypeReference<T> type)
 	{
 		return deserialize(json.getBytes(UTF8), type);
 	}
@@ -95,6 +116,17 @@ public class JsonUtil {
 	}
 
 	public static <T> T deserialize(InputStream src, Class<T> type)
+	{
+		ObjectMapper om = oml.getObjectMapper(type);
+		try {
+			return om.readValue(src, type);
+		}
+		catch (IOException e) {
+			throw new JsonDeserializationException(e);
+		}
+	}
+
+	public static <T> T deserialize(InputStream src, TypeReference<T> type)
 	{
 		ObjectMapper om = oml.getObjectMapper(type);
 		try {
@@ -232,6 +264,12 @@ public class JsonUtil {
 	}
 
 	public static <T> T convert(Map<String, Object> map, Class<T> type)
+	{
+		ObjectMapper om = oml.getObjectMapper(type);
+		return om.convertValue(map, type);
+	}
+
+	public static <T> T convert(Map<String, Object> map, TypeReference<T> type)
 	{
 		ObjectMapper om = oml.getObjectMapper(type);
 		return om.convertValue(map, type);

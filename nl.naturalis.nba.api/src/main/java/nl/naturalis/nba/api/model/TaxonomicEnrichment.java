@@ -1,13 +1,8 @@
 package nl.naturalis.nba.api.model;
 
-import static nl.naturalis.nba.api.annotations.Analyzer.CASE_INSENSITIVE;
-import static nl.naturalis.nba.api.annotations.Analyzer.DEFAULT;
-import static nl.naturalis.nba.api.annotations.Analyzer.LIKE;
-
 import java.util.ArrayList;
 import java.util.List;
 
-import nl.naturalis.nba.api.annotations.Analyzers;
 import nl.naturalis.nba.api.annotations.NotIndexed;
 import nl.naturalis.nba.api.model.summary.SummaryScientificName;
 import nl.naturalis.nba.api.model.summary.SummarySourceSystem;
@@ -23,9 +18,7 @@ import nl.naturalis.nba.api.model.summary.SummaryVernacularName;
  */
 public class TaxonomicEnrichment implements INbaModelObject {
 
-	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private List<SummaryVernacularName> vernacularNames;
-	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private List<SummaryScientificName> synonyms;
 
 	private SummarySourceSystem sourceSystem;

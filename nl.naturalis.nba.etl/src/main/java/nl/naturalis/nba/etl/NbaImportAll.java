@@ -72,10 +72,12 @@ public class NbaImportAll {
 
 			logger.info("[>--- Starting Specimen enrichment ---<]");
 			SpecimenEnricher specimenEnricher = new SpecimenEnricher();
+			specimenEnricher.configureWithSystemProperties();
 			specimenEnricher.enrich();
 
 			logger.info("[>--- Starting MultiMediaObject enrichment ---<]");
 			MultiMediaObjectEnricher multimediaEnricher = new MultiMediaObjectEnricher();
+			multimediaEnricher.configureWithSystemProperties();
 			multimediaEnricher.enrich();
 
 			logger.info("[>--- Starting ScientificNameGroup import ---<]");

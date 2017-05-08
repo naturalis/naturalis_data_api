@@ -7,13 +7,13 @@
 				<condition>
 					<field>sourceSystem.code</field>
 					<operator>EQUALS</operator>
-					<value>:-)</value>
+					<value>FOO</value>
 				</condition>
 			</conditions>
 		</query-spec>
 	</shared-data-source>
-	<entity name="TAXON">
-		<fields>
+	<entity name="taxon">
+		<mapping>
 			<field name="taxonID" term="http://rs.tdwg.org/dwc/terms/taxonID">
 				<path>sourceSystemId</path>
 			</field>
@@ -21,10 +21,7 @@
 				<path>acceptedName.fullScientificName</path>
 			</field>
 			<field name="scientificNameAuthorship" term="http://rs.tdwg.org/dwc/terms/scientificNameAuthorship">
-				<calculator>
-						<java-class>ScientificNameAuthorshipCalculator</java-class>
-						<arg name="type">accepted name</arg>
-				</calculator>
+				<path>acceptedName.authorshipVerbatim</path>
 			</field>
 			<field name="taxonomicStatus" term="http://rs.tdwg.org/dwc/terms/taxonomicStatus">
 				<constant>accepted name</constant>
@@ -44,9 +41,6 @@
 			<field name="order" term="http://rs.tdwg.org/dwc/terms/order">
 				<path>defaultClassification.order</path>
 			</field>
-			<field name="superFamily" term="http://rs.tdwg.org/dwc/terms/superfamily">
-				<path>defaultClassification.superFamily</path>
-			</field>
 			<field name="family" term="http://rs.tdwg.org/dwc/terms/family">
 				<path>defaultClassification.family</path>
 			</field>
@@ -65,26 +59,14 @@
 			<field name="occurrenceStatus" term="http://rs.tdwg.org/dwc/terms/occurrenceStatus">
 				<path>occurrenceStatusVerbatim</path>
 			</field>
-			<field name="expert" term="http://purl.org/dc/terms/agent">
-				<calculator>
-						<java-class>TaxonomicExpertCalculator</java-class>
-						<arg name="type">accepted name</arg>
-				</calculator>
-			</field>
-			<field name="namePublishedIn" term="http://rs.tdwg.org/dwc/terms/namePublishedIn">
-				<calculator>
-						<java-class>NamePublishedInCalculator</java-class>
-						<arg name="type">accepted name</arg>
-				</calculator>
-			</field>
 			<field name="references" term="http://purl.org/dc/terms/references">
 				<path>recordURI</path>
 			</field>
-		</fields>
+		</mapping>
 	</entity>
-	<entity name="SYNONYM">
+	<entity name="synonym">
 		<path>synonyms</path>
-		<fields>
+		<mapping>
 			<field name="taxonID" term="http://rs.tdwg.org/dwc/terms/taxonID">
 				<path>sourceSystemId</path>
 			</field>
@@ -92,52 +74,33 @@
 				<path relative="true">fullScientificName</path>
 			</field>
 			<field name="scientificNameAuthorship" term="http://rs.tdwg.org/dwc/terms/scientificNameAuthorship">
-				<calculator>
-						<java-class>ScientificNameAuthorshipCalculator</java-class>
-						<arg name="type">synonym</arg>
-				</calculator>
+				<path relative="true">authorshipVerbatim</path>
 			</field>
 			<field name="taxonomicStatus" term="http://rs.tdwg.org/dwc/terms/taxonomicStatus">
 				<path relative="true">taxonomicStatus</path>
 			</field>
-			<field name="expert" term="http://purl.org/dc/terms/agent">
-				<calculator>
-						<java-class>TaxonomicExpertCalculator</java-class>
-						<arg name="type">synonym</arg>
-				</calculator>
-			</field>
-			<field name="namePublishedIn" term="http://rs.tdwg.org/dwc/terms/namePublishedIn">
-				<calculator>
-						<java-class>NamePublishedInCalculator</java-class>
-						<arg name="type">synonym</arg>
-				</calculator>
-			</field>
-		</fields>
+		</mapping>
 	</entity>
-	<entity name="VERNACULAR_NAME">
+	<entity name="vernacular_name">
 		<path>vernacularNames</path>
-		<fields>
+		<filter>
+			<java-class>SimpleEntityFilter</java-class>
+			<arg name="path">language</arg>
+			<arg name="values">Dutch</arg>
+		</filter>
+		<mapping>
 			<field name="taxonID" term="http://rs.tdwg.org/dwc/terms/taxonID">
 				<path>sourceSystemId</path>
 			</field>
 			<field name="vernacularName" term="http://rs.tdwg.org/dwc/terms/vernacularName">
 				<path relative="true">name</path>
 			</field>
+			<field name="isPreferredName" term="http://data.biodiversitydata.nl/terms/isPreferredName">
+				<path relative="true">preferred</path>
+			</field>
 			<field name="language" term="http://purl.org/dc/terms/language">
 				<path relative="true">language</path>
 			</field>
-			<field name="expert" term="http://purl.org/dc/terms/agent">
-				<calculator>
-						<java-class>TaxonomicExpertCalculator</java-class>
-						<arg name="type">vernacular name</arg>
-				</calculator>
-			</field>
-			<field name="source" term="http://purl.org/dc/terms/source">
-				<calculator>
-						<java-class>NamePublishedInCalculator</java-class>
-						<arg name="type">vernacular name</arg>
-				</calculator>
-			</field>
-		</fields>
+		</mapping>
 	</entity>
 </dataset-config>

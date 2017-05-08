@@ -5,6 +5,9 @@ import static nl.naturalis.nba.dao.DocumentType.TAXON;
 import static nl.naturalis.nba.dao.util.es.ESUtil.executeSearchRequest;
 import static nl.naturalis.nba.dao.util.es.ESUtil.newSearchRequest;
 import static nl.naturalis.nba.dao.util.es.ESUtil.refreshIndex;
+import static nl.naturalis.nba.etl.ETLConstants.SYS_PROP_ENRICH_READ_BATCH_SIZE;
+import static nl.naturalis.nba.etl.ETLConstants.SYS_PROP_ENRICH_SCROLL_TIMEOUT;
+import static nl.naturalis.nba.etl.ETLConstants.SYS_PROP_ENRICH_WRITE_BATCH_SIZE;
 import static nl.naturalis.nba.etl.ETLUtil.getLogger;
 import static nl.naturalis.nba.etl.ETLUtil.logDuration;
 import static nl.naturalis.nba.etl.SummaryObjectUtil.copyScientificName;
@@ -51,6 +54,7 @@ public class MultiMediaObjectEnricher {
 	{
 		MultiMediaObjectEnricher enricher = new MultiMediaObjectEnricher();
 		try {
+			enricher.configureWithSystemProperties();
 			enricher.enrich();
 		}
 		catch (Throwable t) {
@@ -66,8 +70,10 @@ public class MultiMediaObjectEnricher {
 
 	private static final Logger logger = getLogger(MultiMediaObjectEnricher.class);
 	private static final List<TaxonomicEnrichment> NONE = new ArrayList<>(0);
-	private static final int READ_BATCH_SIZE = 500;
-	private static final int WRITE_BATCH_SIZE = 500;
+
+	private int readBatchSize = 500;
+	private int writeBatchSize = 500;
+	private int scrollTimeout = 60000;
 
 	public void enrich() throws BulkIndexException
 	{
@@ -77,23 +83,24 @@ public class MultiMediaObjectEnricher {
 		qs.sortBy("identifications.scientificName.scientificNameGroup");
 		DocumentIterator<MultiMediaObject> extractor;
 		extractor = new DocumentIterator<>(MULTI_MEDIA_OBJECT, qs);
-		extractor.setBatchSize(READ_BATCH_SIZE);
+		extractor.setTimeout(scrollTimeout);
+		extractor.setBatchSize(readBatchSize);
 		BulkIndexer<MultiMediaObject> indexer = new BulkIndexer<>(MULTI_MEDIA_OBJECT);
 		int processed = 0;
 		int enriched = 0;
-		List<MultiMediaObject> queue = new ArrayList<>((int) (WRITE_BATCH_SIZE * 1.5));
+		List<MultiMediaObject> queue = new ArrayList<>((int) (writeBatchSize * 1.5));
 		logger.info("Loading first batch of multimedia documents");
 		List<MultiMediaObject> batch = extractor.nextBatch();
 		try {
 			while (batch != null) {
-				List<MultiMediaObject> enrichedMultimedia = enrichSpecimens(batch);
+				List<MultiMediaObject> enrichedMultimedia = enrichMultiMedia(batch);
 				if (logger.isDebugEnabled()) {
 					logger.debug("Number of multimedia documents enriched in current batch: {}",
 							enrichedMultimedia.size());
 				}
 				enriched += enrichedMultimedia.size();
 				queue.addAll(enrichedMultimedia);
-				if (queue.size() >= WRITE_BATCH_SIZE) {
+				if (queue.size() >= writeBatchSize) {
 					if (logger.isDebugEnabled()) {
 						logger.debug("Re-indexing enriched {} multimedia documents", queue.size());
 					}
@@ -140,7 +147,62 @@ public class MultiMediaObjectEnricher {
 		}
 	}
 
-	private static List<MultiMediaObject> enrichSpecimens(List<MultiMediaObject> mmos)
+	public void configureWithSystemProperties()
+	{
+		String prop = System.getProperty(SYS_PROP_ENRICH_READ_BATCH_SIZE, "500");
+		try {
+			setReadBatchSize(Integer.parseInt(prop));
+		}
+		catch (NumberFormatException e) {
+			throw new ETLRuntimeException("Invalid read batch size: " + prop);
+		}
+		prop = System.getProperty(SYS_PROP_ENRICH_WRITE_BATCH_SIZE, "500");
+		try {
+			setWriteBatchSize(Integer.parseInt(prop));
+		}
+		catch (NumberFormatException e) {
+			throw new ETLRuntimeException("Invalid write batch size: " + prop);
+		}
+		prop = System.getProperty(SYS_PROP_ENRICH_SCROLL_TIMEOUT, "10000");
+		try {
+			setScrollTimeout(Integer.parseInt(prop));
+		}
+		catch (NumberFormatException e) {
+			throw new ETLRuntimeException("Invalid scroll timeout: " + prop);
+		}
+	}
+
+	public int getReadBatchSize()
+	{
+		return readBatchSize;
+	}
+
+	public void setReadBatchSize(int readBatchSize)
+	{
+		this.readBatchSize = readBatchSize;
+	}
+
+	public int getWriteBatchSize()
+	{
+		return writeBatchSize;
+	}
+
+	public void setWriteBatchSize(int writeBatchSize)
+	{
+		this.writeBatchSize = writeBatchSize;
+	}
+
+	public int getScrollTimeout()
+	{
+		return scrollTimeout;
+	}
+
+	public void setScrollTimeout(int scrollTimeout)
+	{
+		this.scrollTimeout = scrollTimeout;
+	}
+
+	private static List<MultiMediaObject> enrichMultiMedia(List<MultiMediaObject> mmos)
 	{
 		if (logger.isDebugEnabled()) {
 			logger.debug("Creating taxon lookup table");

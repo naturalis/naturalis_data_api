@@ -46,12 +46,15 @@ import nl.naturalis.nba.etl.BulkIndexException;
 import nl.naturalis.nba.etl.BulkIndexer;
 import nl.naturalis.nba.etl.ETLRuntimeException;
 
+import static nl.naturalis.nba.etl.ETLConstants.*;
+
 public class SpecimenEnricher {
 
 	public static void main(String[] args)
 	{
 		SpecimenEnricher enricher = new SpecimenEnricher();
 		try {
+			enricher.configureWithSystemProperties();
 			enricher.enrich();
 		}
 		catch (Throwable t) {
@@ -67,8 +70,10 @@ public class SpecimenEnricher {
 
 	private static final Logger logger = getLogger(SpecimenEnricher.class);
 	private static final List<TaxonomicEnrichment> NONE = new ArrayList<>(0);
-	private static final int READ_BATCH_SIZE = 500;
-	private static final int WRITE_BATCH_SIZE = 500;
+
+	private int readBatchSize = 500;
+	private int writeBatchSize = 500;
+	private int scrollTimeout = 60000;
 
 	public void enrich() throws BulkIndexException
 	{
@@ -77,11 +82,12 @@ public class SpecimenEnricher {
 		QuerySpec qs = new QuerySpec();
 		qs.sortBy("identifications.scientificName.scientificNameGroup");
 		DocumentIterator<Specimen> extractor = new DocumentIterator<>(SPECIMEN, qs);
-		extractor.setBatchSize(READ_BATCH_SIZE);
+		extractor.setBatchSize(readBatchSize);
+		extractor.setTimeout(scrollTimeout);
 		BulkIndexer<Specimen> indexer = new BulkIndexer<>(SPECIMEN);
 		int processed = 0;
 		int enriched = 0;
-		List<Specimen> queue = new ArrayList<>((int) (WRITE_BATCH_SIZE * 1.5));
+		List<Specimen> queue = new ArrayList<>((int) (writeBatchSize * 1.5));
 		logger.info("Loading first batch of specimens");
 		List<Specimen> batch = extractor.nextBatch();
 		try {
@@ -93,7 +99,7 @@ public class SpecimenEnricher {
 				}
 				enriched += enrichedSpecimens.size();
 				queue.addAll(enrichedSpecimens);
-				if (queue.size() >= WRITE_BATCH_SIZE) {
+				if (queue.size() >= writeBatchSize) {
 					if (logger.isDebugEnabled()) {
 						logger.debug("Re-indexing enriched {} specimens", queue.size());
 					}
@@ -138,6 +144,61 @@ public class SpecimenEnricher {
 			logger.info("Specimen documents enriched: {}", enriched);
 			logDuration(logger, getClass(), start);
 		}
+	}
+
+	public void configureWithSystemProperties()
+	{
+		String prop = System.getProperty(SYS_PROP_ENRICH_READ_BATCH_SIZE, "500");
+		try {
+			setReadBatchSize(Integer.parseInt(prop));
+		}
+		catch (NumberFormatException e) {
+			throw new ETLRuntimeException("Invalid read batch size: " + prop);
+		}
+		prop = System.getProperty(SYS_PROP_ENRICH_WRITE_BATCH_SIZE, "500");
+		try {
+			setWriteBatchSize(Integer.parseInt(prop));
+		}
+		catch (NumberFormatException e) {
+			throw new ETLRuntimeException("Invalid write batch size: " + prop);
+		}
+		prop = System.getProperty(SYS_PROP_ENRICH_SCROLL_TIMEOUT, "10000");
+		try {
+			setScrollTimeout(Integer.parseInt(prop));
+		}
+		catch (NumberFormatException e) {
+			throw new ETLRuntimeException("Invalid scroll timeout: " + prop);
+		}
+	}
+
+	public int getReadBatchSize()
+	{
+		return readBatchSize;
+	}
+
+	public void setReadBatchSize(int readBatchSize)
+	{
+		this.readBatchSize = readBatchSize;
+	}
+
+	public int getWriteBatchSize()
+	{
+		return writeBatchSize;
+	}
+
+	public void setWriteBatchSize(int writeBatchSize)
+	{
+		this.writeBatchSize = writeBatchSize;
+	}
+
+	public int getScrollTimeout()
+	{
+		return scrollTimeout;
+	}
+
+	public void setScrollTimeout(int scrollTimeout)
+	{
+		this.scrollTimeout = scrollTimeout;
 	}
 
 	private static List<Specimen> enrichSpecimens(List<Specimen> specimens)

@@ -15,19 +15,29 @@ import static nl.naturalis.nba.dao.util.es.ESUtil.deleteIndices;
 import static nl.naturalis.nba.dao.util.es.ESUtil.getDistinctIndices;
 import static org.junit.Assert.assertEquals;
 
+import java.util.List;
 import java.util.Set;
 
 import org.apache.logging.log4j.Logger;
+import org.geojson.LngLatAlt;
+import org.geojson.MultiPolygon;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+
+import nl.naturalis.nba.api.ComparisonOperator;
 import nl.naturalis.nba.api.InvalidQueryException;
+import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.GeoArea;
 import nl.naturalis.nba.api.model.Specimen;
+import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.mock.SpecimenMock;
+import nl.naturalis.nba.dao.translate.ConditionTranslator;
+import nl.naturalis.nba.dao.translate.ConditionTranslatorFactory;
 
 @SuppressWarnings("static-method")
 public class SpecimenDaoTest_GeoQueries {
@@ -168,5 +178,24 @@ public class SpecimenDaoTest_GeoQueries {
 		QueryResult<Specimen> result = dao.query(qs);
 		assertEquals("01", 0, result.size());
 	}
+
+//	@Test
+//	public void testQuery_04() throws InvalidQueryException
+//	{
+//		QueryCondition qc = new QueryCondition();
+//		qc.setField(new Path("gatheringEvent.siteCoordinates.geoShape"));
+//		qc.setOperator(ComparisonOperator.IN);
+//		MultiPolygon polygon = new MultiPolygon();
+//		TypeReference<List<List<List<LngLatAlt>>>> typeRef = new TypeReference<List<List<List<LngLatAlt>>>>() {};
+//		String s = "[ [ [ [100.0, 0.0], [101.0, 0.0], [101.0, 1.0], [100.0, 1.0], [100.0, 0.0] ], [ [100.35, 0.35], [100.65, 0.35], [100.65, 0.65], [100.35, 0.65], [100.35, 0.35] ] ] ]";
+//		List<List<List<LngLatAlt>>> coords = JsonUtil.deserialize(s, typeRef);
+//		polygon.setCoordinates(coords);
+//		qc.setValue(polygon);
+//		QuerySpec qs = new QuerySpec();
+//		qs.addCondition(qc);
+//		SpecimenDao dao = new SpecimenDao();
+//		QueryResult<Specimen> result = dao.query(qs);
+//		assertEquals("01", 0, result.size());
+//	}
 
 }

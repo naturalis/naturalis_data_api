@@ -1,15 +1,18 @@
 package nl.naturalis.nba.dao.translate;
 
+import static org.elasticsearch.common.geo.builders.ShapeBuilders.newMultiPolygon;
+import static org.elasticsearch.common.geo.builders.ShapeBuilders.newPolygon;
 import static org.elasticsearch.index.query.QueryBuilders.geoShapeQuery;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
+import org.elasticsearch.common.geo.builders.LineStringBuilder;
 import org.elasticsearch.common.geo.builders.MultiPolygonBuilder;
 import org.elasticsearch.common.geo.builders.PolygonBuilder;
 import org.elasticsearch.common.geo.builders.ShapeBuilder;
-import org.elasticsearch.common.geo.builders.ShapeBuilders;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.geojson.GeoJsonObject;
 import org.geojson.LngLatAlt;
@@ -25,9 +28,9 @@ import nl.naturalis.nba.dao.exception.DaoException;
 
 /**
  * Translates conditions with an IN or NOT_IN operator when used with fields of
- * type {@link GeoJsonObject} and with a {@link QueryCondition#getValue()
- * search term that is also a {@link GeoJsonObject} (or a JSON string that
- * deserializes into a {@link GeoJsonObject}).
+ * type {@link GeoJsonObject} and with a {@link QueryCondition#getValue() search
+ * term that is also a {@link GeoJsonObject} (or a JSON string that deserializes
+ * into a {@link GeoJsonObject}).
  * 
  * @author Ayco Holleman
  *
@@ -61,31 +64,45 @@ class ShapeInShapeConditionTranslator extends ConditionTranslator {
 		Object value = condition.getValue();
 		Class<?> cls = value.getClass();
 		if (cls == Polygon.class) {
-			Polygon polygon = (Polygon) value;
-			PolygonBuilder shape = ShapeBuilders.newPolygon(convert(polygon.getCoordinates()));
-			return shape;
+			Polygon geoJsonPolygon = (Polygon) value;
+			return createESPolygon(geoJsonPolygon);
 		}
 		else if (cls == MultiPolygon.class) {
-			MultiPolygon polygon = (MultiPolygon) value;
-			MultiPolygonBuilder shape = ShapeBuilders.newMultiPolygon();
-			List<List<List<LngLatAlt>>> multiPolygonCoords = polygon.getCoordinates();
-			for (List<List<LngLatAlt>> polygonCoords : multiPolygonCoords) {
-				shape.polygon(ShapeBuilders.newPolygon(convert(polygonCoords)));
+			MultiPolygon geoJsonMulti = (MultiPolygon) value;
+			MultiPolygonBuilder elasticMulti = newMultiPolygon();
+			for (List<List<LngLatAlt>> geoJsonPolygon : geoJsonMulti.getCoordinates()) {
+				elasticMulti.polygon(createESPolygon(geoJsonPolygon));
 			}
-			return shape;
+			return elasticMulti;
 		}
 		throw new InvalidConditionException("Unsupported geo shape: " + cls.getSimpleName());
 	}
 
-	private static List<Coordinate> convert(List<List<LngLatAlt>> polyonCoords)
+	private static PolygonBuilder createESPolygon(Polygon geoJsonPolygon)
+	{
+		return createESPolygon(geoJsonPolygon.getCoordinates());
+	}
+
+	private static PolygonBuilder createESPolygon(List<List<LngLatAlt>> coords)
+	{
+		Iterator<List<LngLatAlt>> rings = coords.iterator();
+		List<LngLatAlt> exterior = rings.next();
+		PolygonBuilder esPolygon = newPolygon(convertRing(exterior));
+		while (rings.hasNext()) {
+			List<LngLatAlt> hole = rings.next();
+			List<Coordinate> coordinates = convertRing(hole);
+			esPolygon.hole(new LineStringBuilder(coordinates));
+		}
+		return esPolygon;
+	}
+
+	private static List<Coordinate> convertRing(List<LngLatAlt> polyonCoords)
 	{
 		List<Coordinate> coordinates = new ArrayList<>();
-		for (List<LngLatAlt> lngLatAlts : polyonCoords) {
-			for (LngLatAlt lngLatAlt : lngLatAlts) {
-				double lon = lngLatAlt.getLongitude();
-				double lat = lngLatAlt.getLatitude();
-				coordinates.add(new Coordinate(lon, lat));
-			}
+		for (LngLatAlt lngLatAlt : polyonCoords) {
+			double lon = lngLatAlt.getLongitude();
+			double lat = lngLatAlt.getLatitude();
+			coordinates.add(new Coordinate(lon, lat));
 		}
 		return coordinates;
 	}

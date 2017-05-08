@@ -15,6 +15,7 @@ import static nl.naturalis.nba.dao.util.es.ESUtil.deleteIndices;
 import static nl.naturalis.nba.dao.util.es.ESUtil.getDistinctIndices;
 import static org.junit.Assert.assertEquals;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -24,8 +25,6 @@ import org.geojson.MultiPolygon;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-
 import nl.naturalis.nba.api.ComparisonOperator;
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.Path;
@@ -34,10 +33,7 @@ import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.GeoArea;
 import nl.naturalis.nba.api.model.Specimen;
-import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.mock.SpecimenMock;
-import nl.naturalis.nba.dao.translate.ConditionTranslator;
-import nl.naturalis.nba.dao.translate.ConditionTranslatorFactory;
 
 @SuppressWarnings("static-method")
 public class SpecimenDaoTest_GeoQueries {
@@ -179,23 +175,37 @@ public class SpecimenDaoTest_GeoQueries {
 		assertEquals("01", 0, result.size());
 	}
 
-//	@Test
-//	public void testQuery_04() throws InvalidQueryException
-//	{
-//		QueryCondition qc = new QueryCondition();
-//		qc.setField(new Path("gatheringEvent.siteCoordinates.geoShape"));
-//		qc.setOperator(ComparisonOperator.IN);
-//		MultiPolygon polygon = new MultiPolygon();
-//		TypeReference<List<List<List<LngLatAlt>>>> typeRef = new TypeReference<List<List<List<LngLatAlt>>>>() {};
-//		String s = "[ [ [ [100.0, 0.0], [101.0, 0.0], [101.0, 1.0], [100.0, 1.0], [100.0, 0.0] ], [ [100.35, 0.35], [100.65, 0.35], [100.65, 0.65], [100.35, 0.65], [100.35, 0.35] ] ] ]";
-//		List<List<List<LngLatAlt>>> coords = JsonUtil.deserialize(s, typeRef);
-//		polygon.setCoordinates(coords);
-//		qc.setValue(polygon);
-//		QuerySpec qs = new QuerySpec();
-//		qs.addCondition(qc);
-//		SpecimenDao dao = new SpecimenDao();
-//		QueryResult<Specimen> result = dao.query(qs);
-//		assertEquals("01", 0, result.size());
-//	}
+	@Test
+	public void testQuery_04() throws InvalidQueryException
+	{
+		QueryCondition qc = new QueryCondition();
+		qc.setField(new Path("gatheringEvent.siteCoordinates.geoShape"));
+		qc.setOperator(ComparisonOperator.IN);
+		MultiPolygon polygon = new MultiPolygon();
+		
+		LngLatAlt coord00 = new LngLatAlt(60, -60);
+		LngLatAlt coord01 = new LngLatAlt(60, 60);
+		LngLatAlt coord02 = new LngLatAlt(-60, 60);
+		LngLatAlt coord03 = new LngLatAlt(-60, -60);
+		List<LngLatAlt> ring0 = Arrays.asList(coord00, coord01, coord02, coord03, coord00);
+
+		LngLatAlt coord10 = new LngLatAlt(40, -40);
+		LngLatAlt coord11 = new LngLatAlt(40, 40);
+		LngLatAlt coord12 = new LngLatAlt(-40, 40);
+		LngLatAlt coord13 = new LngLatAlt(-40, -40);
+		List<LngLatAlt> ring1 = Arrays.asList(coord10, coord11, coord12, coord13, coord10);
+
+		List<List<LngLatAlt>> rings = Arrays.asList(ring0, ring1);
+		
+		List<List<List<LngLatAlt>>> coords = Arrays.asList(rings);
+
+		polygon.setCoordinates(coords);
+		qc.setValue(polygon);
+		QuerySpec qs = new QuerySpec();
+		qs.addCondition(qc);
+		SpecimenDao dao = new SpecimenDao();
+		QueryResult<Specimen> result = dao.query(qs);
+		assertEquals("01", 3, result.size());
+	}
 
 }

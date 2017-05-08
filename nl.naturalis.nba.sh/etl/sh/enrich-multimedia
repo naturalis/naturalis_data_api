@@ -2,11 +2,20 @@
 
 . ./include.sh
 
-# The number of multimedia documents read and process at once
-read_batch_size=500
-# The number of enriched multimedia documents to re-index at once
+# The number of multimedia documents to be read and processed
+# at once
+read_batch_size=1000
+
+# The number of enriched multimedia documents to re-index at
+# once. Not all documents can be taxonimically enriched. Only
+# once we have built up a buffer of ${write_batch_size} enriched
+# documents, a re-index action will take place.
 write_batch_size=500
-# The read timeout in milliseconds
+
+# The read timeout in milliseconds. Each batch MUST be processed
+# within this time. Since all processing basically goes into
+# re-indexing enriched multimedia, specifying a smaller
+# write_batch_size may also help to prevent timeouts. 
 scroll_timeout=60000
 
 action="${1}"

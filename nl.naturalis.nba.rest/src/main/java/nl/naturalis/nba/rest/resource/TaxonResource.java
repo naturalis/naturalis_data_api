@@ -141,8 +141,7 @@ public class TaxonResource {
 	@Path("/count")
 	@Produces(JSON_CONTENT_TYPE)
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public long count_POST_FORM(MultivaluedMap<String, String> form,
-			@Context UriInfo uriInfo)
+	public long count_POST_FORM(MultivaluedMap<String, String> form, @Context UriInfo uriInfo)
 	{
 		try {
 			QuerySpec qs = new HttpQuerySpecBuilder(form, uriInfo).build();
@@ -153,7 +152,7 @@ public class TaxonResource {
 			throw handleError(uriInfo, t);
 		}
 	}
-	
+
 	@POST
 	@Path("/count")
 	@Produces(JSON_CONTENT_TYPE)
@@ -211,7 +210,8 @@ public class TaxonResource {
 			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
 			QueryCondition[] conditions = null;
 			if (qs.getConditions() != null && qs.getConditions().size() > 0) {
-				conditions = qs.getConditions().toArray(new QueryCondition[qs.getConditions().size()]);
+				conditions = qs.getConditions()
+						.toArray(new QueryCondition[qs.getConditions().size()]);
 			}
 			TaxonDao dao = new TaxonDao();
 			return dao.getDistinctValuesPerGroup(keyField, valuesField, conditions);
@@ -246,7 +246,7 @@ public class TaxonResource {
 			};
 			ResponseBuilder response = Response.ok(stream);
 			response.type("application/zip");
-			response.header("Content-Disposition", "attachment; filename=\"nba.dwca.zip\"");
+			response.header("Content-Disposition", "attachment; filename=\"nba-taxa.dwca.zip\"");
 			return response.build();
 		}
 		catch (Throwable t) {

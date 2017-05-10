@@ -10,7 +10,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.zip.ZipOutputStream;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -27,7 +26,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
-import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriInfo;
 
@@ -41,7 +39,6 @@ import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.Specimen;
-import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.SpecimenDao;
 import nl.naturalis.nba.rest.exception.HTTP400Exception;
@@ -279,20 +276,24 @@ public class SpecimenResource {
 			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
 			StreamingOutput stream = new StreamingOutput() {
 
-				public void write(OutputStream out) throws IOException, WebApplicationException
+				public void write(OutputStream out) throws IOException
 				{
 					SpecimenDao dao = new SpecimenDao();
 					try {
-						dao.dwcaQuery(qs, new ZipOutputStream(out));
+						dao.dwcaQuery(qs, out);
 					}
 					catch (InvalidQueryException e) {
 						throw new HTTP400Exception(uriInfo, e.getMessage());
+					}
+					catch (Throwable e) {
+						throw new RESTException(uriInfo, e);
 					}
 				}
 			};
 			ResponseBuilder response = Response.ok(stream);
 			response.type("application/zip");
-			response.header("Content-Disposition", "attachment; filename=\"nba.dwca.zip\"");
+			response.header("Content-Disposition",
+					"attachment; filename=\"nba-specimens.dwca.zip\"");
 			return response.build();
 		}
 		catch (Throwable t) {

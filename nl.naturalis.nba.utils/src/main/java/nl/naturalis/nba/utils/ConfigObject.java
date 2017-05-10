@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
@@ -20,10 +21,18 @@ import java.util.Set;
 @SuppressWarnings({ "synthetic-access", "serial" })
 public class ConfigObject {
 
+	public static class ConfigObjectException extends RuntimeException {
+
+		public ConfigObjectException(String message)
+		{
+			super(message);
+		}
+	}
+
 	/**
 	 * Exception thrown when a required property turns out to be missing
 	 */
-	public static class MissingPropertyException extends RuntimeException {
+	public static class MissingPropertyException extends ConfigObjectException {
 
 		private MissingPropertyException(String property)
 		{
@@ -35,7 +44,7 @@ public class ConfigObject {
 	 * Exception when a property was expected to have a non-whitespace value,
 	 * but its value did in fact only contain whitespace.
 	 */
-	public static class PropertyNotSetException extends RuntimeException {
+	public static class PropertyNotSetException extends ConfigObjectException {
 
 		private PropertyNotSetException(String property)
 		{
@@ -591,7 +600,7 @@ public class ConfigObject {
 	 * 
 	 * @return
 	 */
-	public String getSectionName()
+	public String getParentSection()
 	{
 		return this.section;
 	}
@@ -609,13 +618,14 @@ public class ConfigObject {
 	 * <li>host.ip
 	 * <li>host.port
 	 * </ul>
-	 * then {@code getSection("db"} will return a new {@code ConfigObject}
+	 * then {@code getSection("db")} will return a new {@code ConfigObject}
 	 * instance with the properties
-	 * <ul>
 	 * <li>user
 	 * <li>password
 	 * <li>name
 	 * </ul>
+	 * Calling {@link #getParentSection()} on the new {@code ConfigObject} will
+	 * return "db".
 	 * 
 	 * @param prefix
 	 * @return
@@ -639,6 +649,85 @@ public class ConfigObject {
 		}
 		String newSection = section + '.' + prefix;
 		return new ConfigObject(newSection, child);
+	}
+
+	/**
+	 * Whether or not there is at least one property starting with the specified
+	 * prefix followed by a dot.
+	 * 
+	 * @param prefix
+	 * @return
+	 */
+	public boolean hasSection(String prefix)
+	{
+		prefix += '.';
+		for (String prop : config.stringPropertyNames()) {
+			if (prop.startsWith(prefix)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Returns the names of all subsections within this configuration. For
+	 * example, if a {@code ConfigObject} contains the properties
+	 * <ul>
+	 * <li>db.user
+	 * <li>db.password
+	 * <li>db.name
+	 * <li>host.ip
+	 * <li>host.port
+	 * <li>baseUrl
+	 * </ul>
+	 * then {@code getSectionNames()} will return <code>["db", "host"]</code>.
+	 * Note that the baseUrl property will not be listed as a subsection. Only
+	 * properties with a dot in their name are considered to be grouped into
+	 * sections. If no subsections were found (i.e. there were no properties
+	 * with a dot in their name), then {@code null} is returned rather than a
+	 * zero-length array.
+	 * 
+	 * @return
+	 */
+	public String[] getSubsections()
+	{
+		LinkedHashSet<String> sections = new LinkedHashSet<>();
+		for (String prop : config.stringPropertyNames()) {
+			int i = prop.indexOf('.');
+			if (i != 0) {
+				sections.add(prop.substring(0, i));
+			}
+		}
+		if (sections.size() == 0) {
+			return null;
+		}
+		return sections.toArray(new String[sections.size()]);
+	}
+
+	/**
+	 * Returns the subsection of the specified parent section. For example, if a
+	 * {@code ConfigObject} contains the properties
+	 * <ul>
+	 * <li>system.db.user
+	 * <li>system.db.password
+	 * <li>system.db.name
+	 * <li>system.host.ip
+	 * <li>system.host.port
+	 * <li>baseUrl
+	 * </ul>
+	 * then {@code getSectionNames("system")} will return
+	 * <code>["db", "host"]</code>.
+	 * 
+	 * @param parentSection
+	 * @return
+	 */
+	public String[] getSubsections(String parentSection)
+	{
+		ConfigObject section = getSection(parentSection);
+		if (section == null) {
+			throw new ConfigObjectException("No such section: " + parentSection);
+		}
+		return section.getSubsections();
 	}
 
 	/**

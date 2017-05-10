@@ -135,7 +135,7 @@ public class DwcaConfig {
 
 	String getCsvFileName(Entity entity) throws DataSetConfigurationException
 	{
-		String property = "entity." + entity.getName() + ".location";
+		String property = "entity." + entity.getName().toLowerCase() + ".location";
 		try {
 			return myConfig.required(property);
 		}
@@ -148,7 +148,7 @@ public class DwcaConfig {
 
 	String getRowtype(Entity entity) throws DataSetConfigurationException
 	{
-		String property = "entity." + entity.getName() + ".rowtype";
+		String property = "entity." + entity.getName().toLowerCase() + ".rowtype";
 		try {
 			return myConfig.required(property);
 		}

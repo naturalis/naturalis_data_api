@@ -15,7 +15,7 @@ import java.util.Set;
  * A class decorating the {@link java.util.Properties} class, providing useful
  * extra functionality on top of it.
  * 
- * @author ayco
+ * @author Ayco Holleman
  *
  */
 @SuppressWarnings({ "synthetic-access", "serial" })

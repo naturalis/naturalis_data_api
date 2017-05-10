@@ -14,10 +14,11 @@ import nl.naturalis.nba.dao.format.DataSetBuilder;
 import nl.naturalis.nba.dao.format.DataSetConfigurationException;
 import nl.naturalis.nba.dao.format.Entity;
 import nl.naturalis.nba.dao.format.csv.CsvFieldFactory;
+import nl.naturalis.nba.utils.ArrayUtil;
 import nl.naturalis.nba.utils.ConfigObject;
-import nl.naturalis.nba.utils.FileUtil;
 import nl.naturalis.nba.utils.ConfigObject.MissingPropertyException;
 import nl.naturalis.nba.utils.ConfigObject.PropertyNotSetException;
+import nl.naturalis.nba.utils.FileUtil;
 
 /**
  * Captures the information in the XML configuration file for a DarwinCore
@@ -99,11 +100,10 @@ public class DwcaConfig {
 	 */
 	public IDwcaWriter getWriter(OutputStream out)
 	{
+		logger.info("Creating DwCA writer");
 		if (dataSet.getSharedDataSource() == null) {
-			logger.info("Creating DwCA writer for per-entity data source setup");
 			return new MultiDataSourceDwcaWriter(this, out);
 		}
-		logger.info("Creating DwCA writer for shared data source setup");
 		return new SingleDataSourceDwcaWriter(this, out);
 	}
 
@@ -175,7 +175,19 @@ public class DwcaConfig {
 		}
 		DataSetBuilder dsb = new DataSetBuilder(confFile);
 		dsb.setDefaultFieldFactory(new CsvFieldFactory());
-		return dsb.build();
+		DataSet dataset = dsb.build();
+		for (Entity entity : dataset.getEntities()) {
+			String section = "entity." + entity.getName().toLowerCase();
+			if (!myConfig.hasSection(section)) {
+				String[] definedEntities = myConfig.getSubsections("entity");
+				String s = ArrayUtil.implode(definedEntities);
+				String fmt = "Entity {} defined in {} but not in dwca.properties. "
+						+ "Entities defined by dwca.properties: {}";
+				String msg = String.format(fmt, entity.getName(), fileName, s);
+				throw new DataSetConfigurationException(msg);
+			}
+		}
+		return dataset;
 	}
 
 	private File getHome()

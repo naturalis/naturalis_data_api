@@ -11,6 +11,10 @@ import nl.naturalis.nba.dao.DocumentType;
  * @author Ayco Holleman
  *
  */
+/*
+ * For each type there must be a directory under the "dwca" directory (full path
+ * usually /etc/nba/dwca) with the same name, but in lowercase.
+ */
 public enum DwcaDataSetType
 {
 	TAXON, SPECIMEN;

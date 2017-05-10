@@ -81,9 +81,10 @@
 			           filtersfile="${build.module.location}/${build.properties.file}" />
 		</copy>
 		<!-- Copy DwCA configuration to conf dir, but only if not present yet -->
-		<copy todir="${nl.naturalis.nba.conf.dir}/dwca" overwrite="false">
+		<!-- copy todir="${nl.naturalis.nba.conf.dir}/dwca" overwrite="false">
 			<fileset dir="${proto.conf.dir}/dwca" />
-		</copy>
+		</copy -->
+		<!-- This now really is the responsibility of the application maintainers -->
 	</target>
 
 

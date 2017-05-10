@@ -97,8 +97,7 @@ final class SingleDataSourceSearchHitHandler implements SearchHitHandler {
 		logger.info("Documents processed: {}", processed);
 		for (int i = 0; i < entities.length; i++) {
 			logger.info("Records written for entity {}  : {}", entities[i].getName(), written[i]);
-			logger.info("Records rejected by filters for entity {} : {}", entities[i].getName(),
-					filtered[i]);
+			logger.info("Records rejected for entity {} : {}", entities[i].getName(), filtered[i]);
 		}
 	}
 

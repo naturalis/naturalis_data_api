@@ -39,31 +39,41 @@ class GeoTransformer extends AbstractCSVTransformer<GeoCsvField, GeoArea> {
 	@Override
 	protected List<GeoArea> doTransform()
 	{
-		stats.objectsProcessed++;
+		String loc = input.get(locality);
+		if (logger.isDebugEnabled()) {
+			logger.debug("Processing {}", loc);
+		}
 		String geoJson = input.get(geojson);
-		if(geoJson == null) {
-			error("Missing value for field geojson");
+		if (geoJson == null) {
 			stats.recordsRejected++;
+			if (!suppressErrors) {
+				error("Missing GeoJSON for locality {}", loc);
+			}
 			return null;
 		}
-		stats.recordsAccepted++;
-		GeoArea area = new GeoArea();
-		area.setSourceSystem(SourceSystem.GEO);
-		area.setSourceSystemId(input.get(gid));
-		area.setAreaType(input.get(type));
-		area.setCountryNL(input.get(country_nl));
 		GeoJsonObject obj;
 		try {
 			obj = mapper.readValue(geoJson, GeoJsonObject.class);
 		}
 		catch (IOException e) {
-			logger.error(e.getMessage());
+			stats.recordsRejected++;
+			if (!suppressErrors) {
+				error("Error in JSON for locality {}: {}", loc, e.getMessage());
+			}
 			return null;
 		}
+		GeoArea area = new GeoArea();
+		area.setLocality(loc);
+		area.setSourceSystem(SourceSystem.GEO);
+		area.setSourceSystemId(input.get(gid));
+		area.setAreaType(input.get(type));
+		area.setCountryNL(input.get(country_nl));
 		area.setShape(obj);
 		area.setIsoCode(input.get(iso));
-		area.setLocality(input.get(locality));
 		area.setSource(input.get(source));
+		stats.recordsAccepted++;
+		stats.objectsProcessed++;
+		stats.objectsAccepted++;
 		return Arrays.asList(area);
 	}
 

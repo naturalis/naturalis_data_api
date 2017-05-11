@@ -85,6 +85,12 @@ public class DwcaConfig {
 			throw new DataSetConfigurationException(msg);
 		}
 		this.dataSet = buildDataSet();
+		/*
+		 * Validate as much as possible before generating a response; if things
+		 * go wrong after the first byte has been sent out, the client won't
+		 * know what went wrong and just get a corrupt zip file.
+		 */
+		validateConfig();
 	}
 
 	/**
@@ -122,15 +128,10 @@ public class DwcaConfig {
 		return dataSet;
 	}
 
-	File getEmlFile() throws DataSetConfigurationException
+	File getEmlFile()
 	{
 		String emlFile = dataSetName + "/eml.xml";
-		File f = FileUtil.newFile(getHome(), emlFile);
-		if (!f.isFile()) {
-			String msg = "Missing eml.xml for data set " + dataSetName;
-			throw new DataSetConfigurationException(msg);
-		}
-		return f;
+		return FileUtil.newFile(getHome(), emlFile);
 	}
 
 	String getCsvFileName(Entity entity) throws DataSetConfigurationException
@@ -195,6 +196,22 @@ public class DwcaConfig {
 		File root = DaoRegistry.getInstance().getConfigurationDirectory();
 		String subdir = "dwca/" + dataSetType.name().toLowerCase();
 		return FileUtil.newFile(root, subdir);
+	}
+
+	private void validateConfig() throws DataSetConfigurationException
+	{
+		File file = getHome();
+		if (!file.isDirectory()) {
+			String fmt = "Missing directory %s for DwCA dataset %s";
+			String msg = String.format(fmt, file.getAbsolutePath(), dataSetName);			
+			throw new DataSetConfigurationException(msg);
+		}
+		file = getEmlFile();
+		if (!file.isFile()) {
+			String fmt = "Missing file %s for DwCA dataset %s";
+			String msg = String.format(fmt, file.getAbsolutePath(), dataSetName);
+			throw new DataSetConfigurationException(msg);
+		}
 	}
 
 }

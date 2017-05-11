@@ -1,6 +1,5 @@
 package nl.naturalis.nba.etl.geo;
 
-import static nl.naturalis.nba.api.model.SourceSystem.GEO;
 import static nl.naturalis.nba.dao.DocumentType.GEO_AREA;
 import static nl.naturalis.nba.etl.geo.GeoImportUtil.getCsvFiles;
 
@@ -17,7 +16,6 @@ import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.ETLUtil;
-import nl.naturalis.nba.etl.ETLConstants;
 import nl.naturalis.nba.utils.ConfigObject;
 import nl.naturalis.nba.utils.IOUtil;
 
@@ -52,18 +50,15 @@ public class GeoImporter {
 	}
 
 	private final boolean suppressErrors;
-	private final int esBulkRequestSize;
+	/*
+	 * Queue size not too big b/c documents can become huge because of the
+	 * GeoJSON values.
+	 */
+	private final int esBulkRequestSize = 20;
 
 	public GeoImporter()
 	{
 		suppressErrors = ConfigObject.isEnabled("suppressErrors");
-		String key = ETLConstants.SYSPROP_LOADER_QUEUE_SIZE;
-		/*
-		 * Queue size not too big b/c documents can become huge because of the
-		 * geo json.
-		 */
-		String val = System.getProperty(key, "10");
-		esBulkRequestSize = Integer.parseInt(val);
 	}
 
 	/**
@@ -72,7 +67,7 @@ public class GeoImporter {
 	public void importAll()
 	{
 		long start = System.currentTimeMillis();
-		ESUtil.truncate(GEO_AREA, GEO);
+		ESUtil.truncate(GEO_AREA);
 		File[] csvFiles = getCsvFiles();
 		if (csvFiles.length == 0) {
 			logger.info("No CSV files to process");
@@ -99,8 +94,6 @@ public class GeoImporter {
 			transformer = new GeoTransformer(fileStats);
 			loader = new GeoLoader(fileStats, esBulkRequestSize);
 			for (CSVRecordInfo<GeoCsvField> rec : extractor) {
-				if (rec == null)
-					continue;
 				loader.queue(transformer.transform(rec));
 				if (fileStats.recordsProcessed != 0 && fileStats.recordsProcessed % 100 == 0) {
 					logger.info("Records processed: {}", fileStats.recordsProcessed);

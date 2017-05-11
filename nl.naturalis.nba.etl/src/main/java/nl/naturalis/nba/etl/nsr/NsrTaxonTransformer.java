@@ -263,6 +263,7 @@ class NsrTaxonTransformer extends AbstractXMLTransformer<Taxon> {
 			TaxonDescription descr = new TaxonDescription();
 			descr.setCategory(val(pageElem, "title"));
 			descr.setDescription(val(pageElem, "text"));
+			descr.setLanguage(val(pageElem, "language"));
 			taxon.addDescription(descr);
 		}
 	}

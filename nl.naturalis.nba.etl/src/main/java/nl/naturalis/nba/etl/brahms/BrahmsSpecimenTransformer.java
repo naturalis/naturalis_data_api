@@ -15,7 +15,7 @@ import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.MONTHIDENT;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.NOTONLINE;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.PLANTDESC;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.VERNACULAR;
-import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.YEARIDENT;
+import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.*;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getDefaultClassification;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getScientificName;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getSystemClassification;
@@ -90,6 +90,7 @@ class BrahmsSpecimenTransformer extends BrahmsTransformer<Specimen> {
 				specimen.setObjectPublic(true);
 			else
 				specimen.setObjectPublic(false);
+			specimen.setCollectorsFieldNumber(getCollectorsFieldNumber());
 			specimen.setGatheringEvent(getGatheringEvent(input));
 			specimen.addIndentification(getSpecimenIdentification(input));
 			stats.objectsAccepted++;
@@ -160,6 +161,17 @@ class BrahmsSpecimenTransformer extends BrahmsTransformer<Specimen> {
 			return null;
 		}
 		return ESUtil.getElasticsearchId(BRAHMS, f.intValue());
+	}
+
+	private String getCollectorsFieldNumber()
+	{
+		StringBuilder sb = new StringBuilder(64);
+		CSVRecordInfo<BrahmsCsvField> rec = input;
+		sb.append(rec.get(COLLECTOR, false).trim()).append(' ');
+		sb.append(rec.get(PREFIX, false).trim()).append(' ');
+		sb.append(rec.get(NUMBER, false).trim()).append(' ');
+		sb.append(rec.get(SUFFIX, false).trim());
+		return sb.toString();
 	}
 
 }

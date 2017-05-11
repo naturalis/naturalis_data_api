@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nl.naturalis.nba.api.annotations.Analyzers;
+import nl.naturalis.nba.api.annotations.NotIndexed;
 import nl.naturalis.nba.api.annotations.NotStored;
 
 public class Specimen extends NbaTraceableObject implements IDocumentObject {
@@ -16,6 +17,7 @@ public class Specimen extends NbaTraceableObject implements IDocumentObject {
 	private String id;
 	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String unitID;
+	@NotIndexed
 	private String unitGUID;
 	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String collectorsFieldNumber;

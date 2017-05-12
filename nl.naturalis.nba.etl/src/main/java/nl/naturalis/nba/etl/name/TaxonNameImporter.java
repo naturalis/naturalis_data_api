@@ -1,10 +1,12 @@
 package nl.naturalis.nba.etl.name;
 
 import static nl.naturalis.nba.dao.DocumentType.SCIENTIFIC_NAME_GROUP;
-import static nl.naturalis.nba.dao.DocumentType.*;
+import static nl.naturalis.nba.dao.DocumentType.TAXON;
 import static nl.naturalis.nba.dao.util.es.ESUtil.disableAutoRefresh;
 import static nl.naturalis.nba.dao.util.es.ESUtil.refreshIndex;
 import static nl.naturalis.nba.dao.util.es.ESUtil.setAutoRefreshInterval;
+import static nl.naturalis.nba.etl.ETLConstants.SYS_PROP_ENRICH_READ_BATCH_SIZE;
+import static nl.naturalis.nba.etl.ETLConstants.SYS_PROP_ENRICH_SCROLL_TIMEOUT;
 import static nl.naturalis.nba.etl.ETLUtil.getLogger;
 import static nl.naturalis.nba.etl.ETLUtil.logDuration;
 
@@ -22,14 +24,14 @@ import nl.naturalis.nba.dao.util.es.DocumentIterator;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.BulkIndexException;
 import nl.naturalis.nba.etl.BulkIndexer;
+import nl.naturalis.nba.etl.ETLRuntimeException;
 
 class TaxonNameImporter {
 
 	public static void main(String[] args) throws Exception
 	{
 		try {
-			ESUtil.deleteIndex(SCIENTIFIC_NAME_GROUP);
-			ESUtil.createIndex(SCIENTIFIC_NAME_GROUP);
+			ESUtil.truncate(SCIENTIFIC_NAME_GROUP);
 			TaxonNameImporter importer = new TaxonNameImporter();
 			importer.importNames();
 		}
@@ -46,8 +48,8 @@ class TaxonNameImporter {
 	private static final Logger logger = getLogger(TaxonNameImporter.class);
 
 	private boolean suppressErrors;
-	private int batchSize = 512;
-	private int timeout = 60000;
+	private int readBatchSize = 512;
+	private int scrollTimeout = 60000;
 
 	void importNames() throws BulkIndexException
 	{
@@ -57,11 +59,10 @@ class TaxonNameImporter {
 		QuerySpec qs = new QuerySpec();
 		qs.sortBy("acceptedName.scientificNameGroup");
 		extractor = new DocumentIterator<>(TAXON, qs);
-		extractor.setBatchSize(batchSize);
-		extractor.setTimeout(timeout);
+		extractor.setBatchSize(readBatchSize);
+		extractor.setTimeout(scrollTimeout);
 		transformer = new TaxonNameTransformer();
 		BulkIndexer<ScientificNameGroup> indexer = new BulkIndexer<>(SCIENTIFIC_NAME_GROUP);
-		logger.info("Loading first batch of taxa. Batch size is {}", batchSize);
 		List<Taxon> batch = extractor.nextBatch();
 		disableAutoRefresh(SCIENTIFIC_NAME_GROUP.getIndexInfo());
 		int batchNo = 0;
@@ -73,7 +74,7 @@ class TaxonNameImporter {
 			indexer.index(nameGroups);
 			refreshIndex(SCIENTIFIC_NAME_GROUP.getIndexInfo());
 			if ((++batchNo % 100) == 0) {
-				logger.info("Taxa processed: {}", (batchNo * batchSize));
+				logger.info("Taxa processed: {}", (batchNo * readBatchSize));
 				logger.info("Name groups created: {}", transformer.getNumCreated());
 				logger.info("Name groups updated: {}", transformer.getNumUpdated());
 				logger.info("Most recent name group: {}", transformer.getLastGroup().getName());
@@ -92,34 +93,52 @@ class TaxonNameImporter {
 		logDuration(logger, getClass(), start);
 	}
 
-	boolean isSuppressErrors()
+	public void configureWithSystemProperties()
+	{
+		String prop = System.getProperty(SYS_PROP_ENRICH_READ_BATCH_SIZE, "512");
+		try {
+			setReadBatchSize(Integer.parseInt(prop));
+		}
+		catch (NumberFormatException e) {
+			throw new ETLRuntimeException("Invalid read batch size: " + prop);
+		}
+		prop = System.getProperty(SYS_PROP_ENRICH_SCROLL_TIMEOUT, "60000");
+		try {
+			setScrollTimeout(Integer.parseInt(prop));
+		}
+		catch (NumberFormatException e) {
+			throw new ETLRuntimeException("Invalid scroll timeout: " + prop);
+		}
+	}
+
+	public boolean isSuppressErrors()
 	{
 		return suppressErrors;
 	}
 
-	void setSuppressErrors(boolean suppressErrors)
+	public void setSuppressErrors(boolean suppressErrors)
 	{
 		this.suppressErrors = suppressErrors;
 	}
 
-	int getBatchSize()
+	public int getReadBatchSize()
 	{
-		return batchSize;
+		return readBatchSize;
 	}
 
-	void setBatchSize(int batchSize)
+	public void setReadBatchSize(int readBatchSize)
 	{
-		this.batchSize = batchSize;
+		this.readBatchSize = readBatchSize;
 	}
 
-	int getTimeout()
+	public int getScrollTimeout()
 	{
-		return timeout;
+		return scrollTimeout;
 	}
 
-	void setTimeout(int timeout)
+	public void setScrollTimeout(int scrollTimeout)
 	{
-		this.timeout = timeout;
+		this.scrollTimeout = scrollTimeout;
 	}
 
 }

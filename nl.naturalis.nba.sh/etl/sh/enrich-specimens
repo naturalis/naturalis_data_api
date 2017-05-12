@@ -10,7 +10,7 @@ read_batch_size=1000
 # once. Not all documents can be taxonimically enriched. Only
 # once we have built up a buffer of ${write_batch_size} enriched
 # documents, a re-index action will take place.
-write_batch_size=500
+write_batch_size=1000
 
 # The read timeout in milliseconds. Each batch MUST be processed
 # within this time. Since all processing basically goes into
@@ -22,10 +22,10 @@ action="${1}"
 
 if [ "${action}" = nullify ]
 then
-	java -cp ${classpath} $JAVA_OPTS ${root_package}.enrich.SpecimenEnrichmentNullifier
+	java -cp ${classpath} $JAVA_OPTS ${root_package}.enrich.SpecimenTaxonomicEnrichmentNullifier
 else
 	JAVA_OPTS="$JAVA_OPTS -Dnl.naturalis.nba.etl.enrich.readBatchSize=${read_batch_size}"
 	JAVA_OPTS="$JAVA_OPTS -Dnl.naturalis.nba.etl.enrich.writeBatchSize=${write_batch_size}"
 	JAVA_OPTS="$JAVA_OPTS -Dnl.naturalis.nba.etl.enrich.scrollTimeout=${scroll_timeout}"
-	java -cp ${classpath} $JAVA_OPTS ${root_package}.enrich.SpecimenEnricher
+	java -cp ${classpath} $JAVA_OPTS ${root_package}.enrich.SpecimenTaxonomicEnricher2
 fi

@@ -31,8 +31,7 @@ import nl.naturalis.nba.etl.CSVRecordInfo;
 
 class CoLVernacularNameBatchTransformer {
 
-	private static final Logger logger = getLogger(
-			CoLVernacularNameBatchTransformer.class);
+	private static final Logger logger = getLogger(CoLVernacularNameBatchTransformer.class);
 
 	// The number of vernacular names created
 	private int numCreated;
@@ -48,8 +47,7 @@ class CoLVernacularNameBatchTransformer {
 		testGenera = getTestGenera();
 	}
 
-	Collection<Taxon> transform(
-			ArrayList<CSVRecordInfo<CoLVernacularNameCsvField>> records)
+	Collection<Taxon> transform(ArrayList<CSVRecordInfo<CoLVernacularNameCsvField>> records)
 	{
 		HashMap<String, Taxon> lookupTable = createLookupTable(records);
 		for (CSVRecordInfo<CoLVernacularNameCsvField> record : records) {
@@ -59,8 +57,8 @@ class CoLVernacularNameBatchTransformer {
 			if (taxon == null) {
 				++numOrphans;
 				/*
-				 * When creating a test set we're bound to have huge amounts of orphans;
-				 * let's not clutter up our log files
+				 * When creating a test set we're bound to have huge amounts of
+				 * orphans; let's not clutter up our log files
 				 */
 				if (testGenera == null) {
 					logger.error("{} | Orphan: {} ", id, vernacular);
@@ -77,7 +75,7 @@ class CoLVernacularNameBatchTransformer {
 			}
 			else {
 				++numDuplicates;
-				logger.error("{} | Duplicate: {}", id, vernacular);
+				logger.error("{} | Duplicate vernacular name: {}", id, vernacular);
 			}
 		}
 		return lookupTable.values();

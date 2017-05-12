@@ -90,7 +90,7 @@ class CoLSynonymBatchTransformer {
 			}
 			else {
 				++numDuplicates;
-				logger.error("{} | Duplicate: {}", id, synonym);
+				logger.error("{} | Duplicate synonym: {}", id, synonym.getScientificNameGroup());
 			}
 		}
 		return lookupTable.values();

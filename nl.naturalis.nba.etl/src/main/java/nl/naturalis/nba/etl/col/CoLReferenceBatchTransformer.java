@@ -62,8 +62,8 @@ class CoLReferenceBatchTransformer {
 			if (taxon == null) {
 				++numOrphans;
 				/*
-				 * When creating a test set we're bound to have huge amounts of orphans;
-				 * let's not clutter up our log files
+				 * When creating a test set we're bound to have huge amounts of
+				 * orphans; let's not clutter up our log files
 				 */
 				if (testGenera == null) {
 					logger.error("{} | Orphan: {} ", id, reference);
@@ -80,7 +80,7 @@ class CoLReferenceBatchTransformer {
 			}
 			else {
 				++numDuplicates;
-				logger.error("{} | Duplicate: {}", id, reference);
+				logger.error("{} | Duplicate reference: {}", id, reference);
 			}
 		}
 		return lookupTable.values();

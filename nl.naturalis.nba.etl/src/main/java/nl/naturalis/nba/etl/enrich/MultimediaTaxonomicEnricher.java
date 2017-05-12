@@ -48,11 +48,11 @@ import nl.naturalis.nba.etl.BulkIndexException;
 import nl.naturalis.nba.etl.BulkIndexer;
 import nl.naturalis.nba.etl.ETLRuntimeException;
 
-public class MultiMediaObjectEnricher {
+public class MultimediaTaxonomicEnricher {
 
 	public static void main(String[] args)
 	{
-		MultiMediaObjectEnricher enricher = new MultiMediaObjectEnricher();
+		MultimediaTaxonomicEnricher enricher = new MultimediaTaxonomicEnricher();
 		try {
 			enricher.configureWithSystemProperties();
 			enricher.enrich();
@@ -68,7 +68,7 @@ public class MultiMediaObjectEnricher {
 		System.exit(0);
 	}
 
-	private static final Logger logger = getLogger(MultiMediaObjectEnricher.class);
+	private static final Logger logger = getLogger(MultimediaTaxonomicEnricher.class);
 	private static final List<TaxonomicEnrichment> NONE = new ArrayList<>(0);
 
 	private int readBatchSize = 500;

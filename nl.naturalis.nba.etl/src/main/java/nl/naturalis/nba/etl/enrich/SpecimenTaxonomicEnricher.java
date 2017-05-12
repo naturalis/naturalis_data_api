@@ -48,11 +48,11 @@ import nl.naturalis.nba.etl.ETLRuntimeException;
 
 import static nl.naturalis.nba.etl.ETLConstants.*;
 
-public class SpecimenEnricher {
+public class SpecimenTaxonomicEnricher {
 
 	public static void main(String[] args)
 	{
-		SpecimenEnricher enricher = new SpecimenEnricher();
+		SpecimenTaxonomicEnricher enricher = new SpecimenTaxonomicEnricher();
 		try {
 			enricher.configureWithSystemProperties();
 			enricher.enrich();
@@ -68,7 +68,7 @@ public class SpecimenEnricher {
 		System.exit(0);
 	}
 
-	private static final Logger logger = getLogger(SpecimenEnricher.class);
+	private static final Logger logger = getLogger(SpecimenTaxonomicEnricher.class);
 	private static final List<TaxonomicEnrichment> NONE = new ArrayList<>(0);
 
 	private int readBatchSize = 500;

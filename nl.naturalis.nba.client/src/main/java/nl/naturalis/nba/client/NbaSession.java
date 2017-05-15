@@ -1,7 +1,6 @@
 package nl.naturalis.nba.client;
 
 import static nl.naturalis.nba.client.ServerException.newServerException;
-import static nl.naturalis.nba.utils.http.SimpleHttpRequest.CT_APPLICATION_JSON;
 import static nl.naturalis.nba.utils.http.SimpleHttpRequest.HTTP_NOT_FOUND;
 import static nl.naturalis.nba.utils.http.SimpleHttpRequest.HTTP_OK;
 
@@ -109,7 +108,7 @@ public class NbaSession {
 	{
 		SimpleHttpGet request = new SimpleHttpGet();
 		request.setBaseUrl(cfg.getBaseUrl());
-		request.setAccept(CT_APPLICATION_JSON);
+		request.setAccept("text/plain");
 		request.setPath("/ping");
 		NbaClient.sendRequest(request);
 		int status = request.getStatus();

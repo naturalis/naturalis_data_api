@@ -52,7 +52,7 @@ public class SpecimenDaoTest_IsNotNull {
 	@Test
 	public void test__01() throws InvalidQueryException
 	{
-		QueryCondition condition = new QueryCondition("unitGUID", NOT_EQUALS, null);
+		QueryCondition condition = new QueryCondition("preparationType", NOT_EQUALS, null);
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
@@ -66,7 +66,7 @@ public class SpecimenDaoTest_IsNotNull {
 	@Test
 	public void test__02() throws InvalidQueryException
 	{
-		QueryCondition condition = new QueryCondition(NOT, "unitGUID", NOT_EQUALS, null);
+		QueryCondition condition = new QueryCondition(NOT, "preparationType", NOT_EQUALS, null);
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();

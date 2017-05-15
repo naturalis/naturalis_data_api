@@ -79,23 +79,19 @@ class SpecimenNameImporter2 {
 		DocumentIterator<Specimen> extractor = new DocumentIterator<>(SPECIMEN);
 		extractor.setBatchSize(readBatchSize);
 		extractor.setTimeout(scrollTimeout);
-		SpecimenNameTransformer transformer = new SpecimenNameTransformer(readBatchSize);
 		List<Specimen> batch = extractor.nextBatch();
 		int batchNo = 0;
 		try {
 			while (batch != null) {
-				Collection<ScientificNameGroup> nameGroups = transformer.transform(batch);
-				if (nameGroups != null) {
-					for (ScientificNameGroup sng : nameGroups) {
-						byte[] json = JsonUtil.serialize(sng);
-						bos.write(json);
-						bos.write(NEW_LINE);
-					}
+				SpecimenToNameGroupConverter converter = new SpecimenToNameGroupConverter(batch);
+				Collection<ScientificNameGroup> nameGroups = converter.convert();
+				for (ScientificNameGroup sng : nameGroups) {
+					byte[] json = JsonUtil.serialize(sng);
+					bos.write(json);
+					bos.write(NEW_LINE);
 				}
 				if ((++batchNo % 100) == 0) {
 					logger.info("Specimens processed: {}", (batchNo * readBatchSize));
-					logger.info("Name groups created: {}", transformer.getNumCreated());
-					logger.info("Name groups updated: {}", transformer.getNumUpdated());
 				}
 				batch = extractor.nextBatch();
 			}
@@ -103,8 +99,6 @@ class SpecimenNameImporter2 {
 		finally {
 			bos.close();
 			logger.info("Specimens processed: {}", (batchNo * readBatchSize));
-			logger.info("Name groups created: {}", transformer.getNumCreated());
-			logger.info("Name groups updated: {}", transformer.getNumUpdated());
 		}
 	}
 
@@ -122,11 +116,12 @@ class SpecimenNameImporter2 {
 				ScientificNameGroup sng = JsonUtil.deserialize(line, ScientificNameGroup.class);
 				batch.add(sng);
 				if (batch.size() == writeBatchSize) {
-					indexer.index(batch);
+					NameGroupMerger merger = new NameGroupMerger(batch);
+					indexer.index(merger.merge());
 					batch.clear();
 				}
 				if (++processed % 100000 == 0) {
-					logger.info("ScientificNameGroup documents imported: {}", processed);
+					logger.info("Records processed: {}", processed);
 				}
 			}
 		}

@@ -12,13 +12,14 @@ public class Demo {
 	public static void main(String[] args)
 	{
 
-		// String baseUrl = "http://localhost:8080/v2";
-		String baseUrl = "http://145.136.242.164:8080/v2";
+		String baseUrl = "http://localhost:8080/v2";
+		//String baseUrl = "http://145.136.242.164:8080/v2";
 		
 		ClientConfig config = new ClientConfig();
 		config.setBaseUrl(baseUrl);
 		
 		NbaSession session = new NbaSession(config);
+		System.out.println(session.ping());
 		
 		
 		

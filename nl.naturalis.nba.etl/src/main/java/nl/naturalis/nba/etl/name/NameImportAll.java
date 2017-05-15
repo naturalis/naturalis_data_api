@@ -38,7 +38,7 @@ public class NameImportAll {
 		ESUtil.truncate(SCIENTIFIC_NAME_GROUP);
 		TaxonNameImporter taxonNameImporter = new TaxonNameImporter();
 		taxonNameImporter.importNames();
-		SpecimenNameImporter specimenNameImporter = new SpecimenNameImporter();
+		SpecimenNameImporter2 specimenNameImporter = new SpecimenNameImporter2();
 		specimenNameImporter.importNames();
 		logDuration(logger, getClass(), start);
 	}

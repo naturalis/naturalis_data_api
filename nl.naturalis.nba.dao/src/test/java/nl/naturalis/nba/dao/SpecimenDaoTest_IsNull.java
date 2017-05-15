@@ -54,7 +54,7 @@ public class SpecimenDaoTest_IsNull {
 	{
 		// UnitGUID is null in all test specimens, so query should return them
 		// all.
-		QueryCondition condition = new QueryCondition("unitGUID", EQUALS, null);
+		QueryCondition condition = new QueryCondition("preparationType", EQUALS, null);
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
@@ -69,7 +69,7 @@ public class SpecimenDaoTest_IsNull {
 	public void test__02() throws InvalidQueryException
 	{
 		// UnitGUID is always null, so query should return 0 specimens.
-		QueryCondition condition = new QueryCondition(NOT, "unitGUID", EQUALS, null);
+		QueryCondition condition = new QueryCondition(NOT, "preparationType", EQUALS, null);
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();

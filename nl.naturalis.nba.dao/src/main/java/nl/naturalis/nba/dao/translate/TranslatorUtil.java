@@ -29,6 +29,12 @@ class TranslatorUtil {
 	private static final SimpleDateFormat[] acceptedDateFormats = new SimpleDateFormat[] { SDF0,
 			SDF1, SDF2, SDF3 };
 
+	static boolean isTrueCondition(QueryCondition condition)
+	{
+		return condition.getField() == null && condition.getOperator() == null
+				&& condition.getValue() == null;
+	}
+
 	static String getNestedPath(Path path, MappingInfo<?> mappingInfo)
 	{
 		SimpleField sf = getESField(path, mappingInfo);
@@ -86,8 +92,7 @@ class TranslatorUtil {
 		}
 	}
 
-	static void ensureValueIsDateOrNumber(QueryCondition condition)
-			throws InvalidConditionException
+	static void ensureValueIsDateOrNumber(QueryCondition condition) throws InvalidConditionException
 	{
 		if (!isNumber(condition.getValue()) && !isA(condition.getValue(), Date.class)) {
 			throw invalidDataType(condition);
@@ -102,8 +107,7 @@ class TranslatorUtil {
 		}
 	}
 
-	static void convertValuesForDateField(QueryCondition condition)
-			throws InvalidConditionException
+	static void convertValuesForDateField(QueryCondition condition) throws InvalidConditionException
 	{
 		Object value = condition.getValue();
 		if (value == null) {

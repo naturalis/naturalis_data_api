@@ -71,6 +71,23 @@ import java.util.List;
  * querySpec.addCondition(new Condition(NOT, "sourceSystem.code", EQUALS, "CRS"));
  * </pre>
  * 
+ * <h3>The "always true" query condition</h3>
+ * 
+ * <p>
+ * Analogous to SQL query conditions that always evaluate to true (like
+ * {@code WHERE 1 = 1}), a {@code QueryCondition} whose field, operator and
+ * value are not set, will be interpreted as an "always true" query condition.
+ * In other words: the following condition always evaluates to true:
+ * </p>
+ * 
+ * <pre>
+ * 
+ * QueryCondition alwaysTrue = new QueryCondition();
+ * </pre>
+ * <p>
+ * Note that you can still add AND and OR siblings to this query condition.
+ * </p>
+ * 
  * <h3>Scoring and non-scoring conditions</h3>
  * <p>
  * There is a difference between <i>whether</i> a document satisfies a query

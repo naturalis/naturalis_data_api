@@ -53,6 +53,9 @@ public class ConditionTranslatorFactory {
 	public static ConditionTranslator getTranslator(QueryCondition condition,
 			MappingInfo<?> mappingInfo) throws InvalidConditionException
 	{
+		if (TranslatorUtil.isTrueCondition(condition)) {
+			return new TrueConditionTranslator(condition, mappingInfo);
+		}
 		new ConditionValidator(condition, mappingInfo).validateCondition();
 		ConditionTranslator translator = null;
 		switch (condition.getOperator()) {

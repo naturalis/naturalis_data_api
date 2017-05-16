@@ -7,7 +7,7 @@ import static nl.naturalis.nba.api.ComparisonOperator.NOT_IN;
 import static nl.naturalis.nba.api.ComparisonOperator.NOT_LIKE;
 import static nl.naturalis.nba.api.ComparisonOperator.NOT_MATCHES;
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
-import static nl.naturalis.nba.dao.translate.TranslatorUtil.getNestedPath;
+import static nl.naturalis.nba.dao.translate.TranslatorUtil.*;
 import static nl.naturalis.nba.utils.CollectionUtil.hasElements;
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.constantScoreQuery;
@@ -131,12 +131,14 @@ public abstract class ConditionTranslator {
 	 */
 	QueryBuilder postprocess(QueryBuilder query)
 	{
-		String nestedPath = getNestedPath(condition.getField(), mappingInfo);
-		if (nestedPath != null) {
-			query = nestedQuery(nestedPath, query, ScoreMode.Avg);
-		}
-		if (hasNegativeOperator()) {
-			query = not(query);
+		if (!isTrueCondition(condition)) {
+			String nestedPath = getNestedPath(condition.getField(), mappingInfo);
+			if (nestedPath != null) {
+				query = nestedQuery(nestedPath, query, ScoreMode.Avg);
+			}
+			if (hasNegativeOperator()) {
+				query = not(query);
+			}
 		}
 		if (constantScoreQueryRequired()) {
 			query = constantScoreQuery(query);
@@ -188,7 +190,7 @@ public abstract class ConditionTranslator {
 	{
 		return negatingOperators.contains(condition.getOperator());
 	}
-	
+
 	private boolean constantScoreQueryRequired()
 	{
 		QueryCondition c = condition;
@@ -200,7 +202,6 @@ public abstract class ConditionTranslator {
 		}
 		return c.isConstantScore();
 	}
-
 
 	private static QueryBuilder not(QueryBuilder query)
 	{

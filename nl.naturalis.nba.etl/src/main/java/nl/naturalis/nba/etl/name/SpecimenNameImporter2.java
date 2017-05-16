@@ -81,6 +81,7 @@ class SpecimenNameImporter2 {
 		extractor.setTimeout(scrollTimeout);
 		List<Specimen> batch = extractor.nextBatch();
 		int batchNo = 0;
+		int processed = 0;
 		try {
 			while (batch != null) {
 				SpecimenToNameGroupConverter converter = new SpecimenToNameGroupConverter(batch);
@@ -90,15 +91,15 @@ class SpecimenNameImporter2 {
 					bos.write(json);
 					bos.write(NEW_LINE);
 				}
+				processed += batch.size();
 				if ((++batchNo % 100) == 0) {
-					logger.info("Specimens processed: {}", (batchNo * readBatchSize));
+					logger.info("Specimens processed: {}", processed);
 				}
 				batch = extractor.nextBatch();
 			}
 		}
 		finally {
 			bos.close();
-			logger.info("Specimens processed: {}", (batchNo * readBatchSize));
 		}
 	}
 

@@ -1,9 +1,13 @@
 package nl.naturalis.nba.etl.name;
 
+import static nl.naturalis.nba.etl.ETLUtil.getLogger;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+
+import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.api.model.ScientificNameGroup;
 import nl.naturalis.nba.api.model.summary.SummarySpecimen;
@@ -12,14 +16,16 @@ import nl.naturalis.nba.dao.ScientificNameGroupDao;
 
 class NameGroupMerger {
 
-	private Collection<ScientificNameGroup> nameGroups;
+	private static final Logger logger = getLogger(NameGroupMerger.class);
 
-	NameGroupMerger(Collection<ScientificNameGroup> nameGroups)
+	private int numCreated;
+	private int numMerged;
+
+	NameGroupMerger()
 	{
-		this.nameGroups = nameGroups;
 	}
 
-	Collection<ScientificNameGroup> merge()
+	Collection<ScientificNameGroup> merge(Collection<ScientificNameGroup> nameGroups)
 	{
 		HashSet<String> ids = new HashSet<>(nameGroups.size());
 		for (ScientificNameGroup sng : nameGroups) {
@@ -35,12 +41,24 @@ class NameGroupMerger {
 			ScientificNameGroup oldNameGroup = lookupTable.get(newNameGroup.getId());
 			if (oldNameGroup == null) {
 				lookupTable.put(newNameGroup.getId(), newNameGroup);
+				++numCreated;
 			}
 			else {
 				mergeNameGroups(oldNameGroup, newNameGroup);
+				++numMerged;
 			}
 		}
 		return lookupTable.values();
+	}
+
+	int getNumCreated()
+	{
+		return numCreated;
+	}
+
+	int getNumMerged()
+	{
+		return numMerged;
 	}
 
 	private static void mergeNameGroups(ScientificNameGroup sng1, ScientificNameGroup sng2)
@@ -50,6 +68,9 @@ class NameGroupMerger {
 				if (!exists(st, sng1.getTaxa())) {
 					sng1.addTaxon(st);
 				}
+				else {
+					logger.warn("Encountered duplicate taxa for name group {}", sng1.getName());
+				}
 			}
 			sng1.setTaxonCount(sng1.getTaxa().size());
 		}
@@ -57,6 +78,10 @@ class NameGroupMerger {
 			for (SummarySpecimen ss : sng2.getSpecimens()) {
 				if (!exists(ss, sng1.getSpecimens())) {
 					sng1.addSpecimen(ss);
+				}
+				else {
+					logger.warn("Encountered duplicate specimens for name group {}",
+							sng1.getName());
 				}
 			}
 			sng1.setSpecimenCount(sng1.getSpecimens().size());
@@ -70,6 +95,7 @@ class NameGroupMerger {
 		}
 		for (SummaryTaxon st : taxa) {
 			if (st.getId().equals(taxon.getId())) {
+				logger.warn("Duplicate taxon: {}", st.getId());
 				return true;
 			}
 		}
@@ -83,6 +109,7 @@ class NameGroupMerger {
 		}
 		for (SummarySpecimen ss : specimens) {
 			if (ss.getId().equals(specimen.getId())) {
+				logger.warn("Duplicate taxon: {}", specimen.getId());
 				return true;
 			}
 		}

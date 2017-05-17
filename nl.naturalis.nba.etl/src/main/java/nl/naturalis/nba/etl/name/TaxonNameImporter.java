@@ -2,9 +2,7 @@ package nl.naturalis.nba.etl.name;
 
 import static nl.naturalis.nba.dao.DocumentType.SCIENTIFIC_NAME_GROUP;
 import static nl.naturalis.nba.dao.DocumentType.TAXON;
-import static nl.naturalis.nba.dao.util.es.ESUtil.disableAutoRefresh;
 import static nl.naturalis.nba.dao.util.es.ESUtil.refreshIndex;
-import static nl.naturalis.nba.dao.util.es.ESUtil.setAutoRefreshInterval;
 import static nl.naturalis.nba.etl.ETLConstants.SYS_PROP_ENRICH_READ_BATCH_SIZE;
 import static nl.naturalis.nba.etl.ETLConstants.SYS_PROP_ENRICH_SCROLL_TIMEOUT;
 import static nl.naturalis.nba.etl.ETLUtil.getLogger;
@@ -64,7 +62,6 @@ class TaxonNameImporter {
 		transformer = new TaxonNameTransformer();
 		BulkIndexer<ScientificNameGroup> indexer = new BulkIndexer<>(SCIENTIFIC_NAME_GROUP);
 		List<Taxon> batch = extractor.nextBatch();
-		disableAutoRefresh(SCIENTIFIC_NAME_GROUP.getIndexInfo());
 		int batchNo = 0;
 		while (batch != null) {
 			Collection<ScientificNameGroup> nameGroups = transformer.transform(batch);
@@ -86,7 +83,6 @@ class TaxonNameImporter {
 		}
 		indexer.index(Arrays.asList(transformer.getLastGroup()));
 		refreshIndex(SCIENTIFIC_NAME_GROUP.getIndexInfo());
-		setAutoRefreshInterval(SCIENTIFIC_NAME_GROUP.getIndexInfo(), "30s");
 		logger.info("Taxa processed: {}", extractor.getDocCounter());
 		logger.info("Name groups created: {}", transformer.getNumCreated());
 		logger.info("Name groups updated: {}", transformer.getNumUpdated());

@@ -16,20 +16,20 @@ import nl.naturalis.nba.api.model.TaxonomicIdentification;
 
 class SpecimenToNameGroupConverter {
 
-	private Collection<Specimen> specimens;
+	private int numIdentifications;
 
-	public SpecimenToNameGroupConverter(Collection<Specimen> specimens)
+	public SpecimenToNameGroupConverter()
 	{
-		this.specimens = specimens;
 	}
 
-	Collection<ScientificNameGroup> convert()
+	Collection<ScientificNameGroup> convert(Collection<Specimen> specimens)
 	{
 		// Assume about 3 identifications per specimen
 		List<ScientificNameGroup> result = new ArrayList<>(specimens.size() * 3);
 		for (Specimen specimen : specimens) {
 			List<SpecimenIdentification> identifications = specimen.getIdentifications();
 			if (identifications != null) {
+				numIdentifications += identifications.size();
 				sort(identifications);
 				String prevName = null;
 				for (TaxonomicIdentification si : identifications) {
@@ -46,6 +46,11 @@ class SpecimenToNameGroupConverter {
 			}
 		}
 		return result;
+	}
+
+	int getNumIdentifications()
+	{
+		return numIdentifications;
 	}
 
 	private static void sort(List<SpecimenIdentification> identifications)

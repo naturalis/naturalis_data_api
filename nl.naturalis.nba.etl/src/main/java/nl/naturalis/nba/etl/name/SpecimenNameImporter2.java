@@ -25,19 +25,21 @@ import nl.naturalis.nba.api.model.ScientificNameGroup;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.DaoRegistry;
+import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.util.es.DocumentIterator;
+import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.BulkIndexException;
 import nl.naturalis.nba.etl.BulkIndexer;
 import nl.naturalis.nba.etl.ETLRuntimeException;
 import nl.naturalis.nba.utils.FileUtil;
-import nl.naturalis.nba.utils.IOUtil;
 
 class SpecimenNameImporter2 {
 
 	public static void main(String[] args) throws Exception
 	{
 		try {
+			ESUtil.truncate(DocumentType.SCIENTIFIC_NAME_GROUP);
 			SpecimenNameImporter2 importer = new SpecimenNameImporter2();
 			importer.importNames();
 		}
@@ -46,6 +48,7 @@ class SpecimenNameImporter2 {
 			throw e;
 		}
 		finally {
+			ESUtil.refreshIndex(SCIENTIFIC_NAME_GROUP);
 			ESClientManager.getInstance().closeClient();
 		}
 	}
@@ -64,11 +67,13 @@ class SpecimenNameImporter2 {
 	{
 		long start = System.currentTimeMillis();
 		tempFile = getTempFile();
-		logger.info("Saving enriched specimens to temp file: " + tempFile.getAbsolutePath());
+		logger.info("Read batch size: {}", readBatchSize);
+		logger.info("Write batch size: {}", writeBatchSize);
+		logger.info("Writing name groups to {}", tempFile.getAbsolutePath());
 		saveToTempFile();
-		logger.info("Importing specimens from temp file");
+		logger.info("Reading name groups from {}", tempFile.getAbsolutePath());
 		importTempFile();
-		tempFile.delete();
+		//tempFile.delete();
 		logDuration(logger, getClass(), start);
 	}
 
@@ -76,39 +81,49 @@ class SpecimenNameImporter2 {
 	{
 		FileOutputStream fos = new FileOutputStream(tempFile);
 		BufferedOutputStream bos = new BufferedOutputStream(fos, 4096);
+		SpecimenToNameGroupConverter converter = new SpecimenToNameGroupConverter();
 		DocumentIterator<Specimen> extractor = new DocumentIterator<>(SPECIMEN);
 		extractor.setBatchSize(readBatchSize);
 		extractor.setTimeout(scrollTimeout);
 		List<Specimen> batch = extractor.nextBatch();
 		int batchNo = 0;
 		int processed = 0;
+		int written = 0;
 		try {
 			while (batch != null) {
-				SpecimenToNameGroupConverter converter = new SpecimenToNameGroupConverter(batch);
-				Collection<ScientificNameGroup> nameGroups = converter.convert();
+				Collection<ScientificNameGroup> nameGroups = converter.convert(batch);
 				for (ScientificNameGroup sng : nameGroups) {
 					byte[] json = JsonUtil.serialize(sng);
 					bos.write(json);
 					bos.write(NEW_LINE);
 				}
 				processed += batch.size();
+				written += nameGroups.size();
 				if ((++batchNo % 100) == 0) {
 					logger.info("Specimens processed: {}", processed);
+					logger.info("Specimen identifications processed: {}",
+							converter.getNumIdentifications());
+					logger.info("Name groups (lines) written: {}", written);
 				}
 				batch = extractor.nextBatch();
 			}
 		}
 		finally {
 			bos.close();
+			logger.info("Specimens processed: {}", processed);
+			logger.info("Specimen identifications processed: {}",
+					converter.getNumIdentifications());
+			logger.info("Name groups (lines) written: {}", written);
+			logger.info("N.B. name groups written to temp file are not unique!");
 		}
 	}
 
 	private void importTempFile() throws IOException, BulkIndexException
 	{
+		NameGroupMerger merger = new NameGroupMerger();
 		BulkIndexer<ScientificNameGroup> indexer = new BulkIndexer<>(SCIENTIFIC_NAME_GROUP);
 		List<ScientificNameGroup> batch = new ArrayList<>(writeBatchSize);
 		LineNumberReader lnr = null;
-		int processed = 0;
 		try {
 			FileReader fr = new FileReader(tempFile);
 			lnr = new LineNumberReader(fr, 4096);
@@ -117,18 +132,25 @@ class SpecimenNameImporter2 {
 				ScientificNameGroup sng = JsonUtil.deserialize(line, ScientificNameGroup.class);
 				batch.add(sng);
 				if (batch.size() == writeBatchSize) {
-					NameGroupMerger merger = new NameGroupMerger(batch);
-					indexer.index(merger.merge());
+					indexer.index(merger.merge(batch));
 					batch.clear();
 				}
-				if (++processed % 100000 == 0) {
-					logger.info("Records processed: {}", processed);
+				if (lnr.getLineNumber() % 100000 == 0) {
+					logger.info("Lines read: {}", lnr.getLineNumber());
+					logger.info("Name groups created: {}", merger.getNumCreated());
+					logger.info("Name groups merged: {}", merger.getNumMerged());
 				}
 			}
 		}
 		finally {
-			IOUtil.close(lnr);
+			lnr.close();
 		}
+		if (batch.size() != 0) {
+			indexer.index(merger.merge(batch));
+		}
+		logger.info("Lines read: {}", lnr.getLineNumber());
+		logger.info("Name groups created: {}", merger.getNumCreated());
+		logger.info("Name groups merged: {}", merger.getNumMerged());
 	}
 
 	public void configureWithSystemProperties()

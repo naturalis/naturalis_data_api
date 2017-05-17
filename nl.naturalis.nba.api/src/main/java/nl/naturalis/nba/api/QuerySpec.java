@@ -296,8 +296,8 @@ public class QuerySpec {
 	/**
 	 * Sets the logical operator ({@link LogicalOperator#AND AND} or
 	 * {@link LogicalOperator#AND OR}) with which to join the
-	 * {@link #getConditions() query conditions}. Note that any condition may
-	 * itself contain a list of sibling conditions.
+	 * {@link #getConditions() query conditions}. Defaults to {@code AND}. Note
+	 * that any condition may itself contain a list of sibling conditions.
 	 * 
 	 * @param operator
 	 */

@@ -1,14 +1,11 @@
 package nl.naturalis.nba.etl;
 
-import static nl.naturalis.nba.dao.DocumentType.GEO_AREA;
-import static nl.naturalis.nba.dao.DocumentType.MULTI_MEDIA_OBJECT;
-import static nl.naturalis.nba.dao.DocumentType.SCIENTIFIC_NAME_GROUP;
-import static nl.naturalis.nba.dao.DocumentType.SPECIMEN;
-import static nl.naturalis.nba.dao.DocumentType.TAXON;
+import java.util.Set;
 
 import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.dao.ESClientManager;
+import nl.naturalis.nba.dao.IndexInfo;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.brahms.BrahmsImportAll;
 import nl.naturalis.nba.etl.col.CoLImportAll;
@@ -84,11 +81,10 @@ public class NbaImportAll {
 			NameImportAll nameImporter = new NameImportAll();
 			nameImporter.importNames();
 
-			ESUtil.refreshIndex(TAXON);
-			ESUtil.refreshIndex(MULTI_MEDIA_OBJECT);
-			ESUtil.refreshIndex(SPECIMEN);
-			ESUtil.refreshIndex(GEO_AREA);
-			ESUtil.refreshIndex(SCIENTIFIC_NAME_GROUP);
+			Set<IndexInfo> indices = ESUtil.getDistinctIndices();
+			for (IndexInfo index : indices) {
+				ESUtil.refreshIndex(index);
+			}
 
 		}
 		catch (Throwable t) {

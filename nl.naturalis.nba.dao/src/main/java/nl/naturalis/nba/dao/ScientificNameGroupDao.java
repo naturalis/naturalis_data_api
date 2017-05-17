@@ -207,8 +207,8 @@ public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
 	 * specimen-specific. After all we are querying ScientificNameGroup
 	 * documents, not Specimen documents. This method will also sort the
 	 * specimens within each ScientificNameGroup document according the score
-	 * assigned to them by Elasticsearch if you would really query the Specimen
-	 * index using those specimen-specific query conditions.
+	 * assigned to them by Elasticsearch if you would use the same conditions to
+	 * query the Specimen index.
 	 */
 	private static void purgeAndSortByScore(QueryResult<ScientificNameGroup> result,
 			QuerySpec specimenQuerySpec) throws InvalidQueryException
@@ -333,7 +333,7 @@ public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
 		return comparees;
 	}
 
-	private static boolean sortByScore(QuerySpec qs) throws InvalidQueryException
+	private static boolean sortByScore(QuerySpec qs)
 	{
 		if (qs instanceof ScientificNameGroupQuerySpec) {
 			ScientificNameGroupQuerySpec sngQs = (ScientificNameGroupQuerySpec) qs;
@@ -341,12 +341,8 @@ public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
 				return true;
 			}
 			Iterator<SortField> iterator = sngQs.getSpecimensSortFields().iterator();
-			SortField sf = iterator.next();
-			if (iterator.hasNext()) {
-				throw new InvalidQueryException("When sorting by document score, no other "
-						+ "sort fields must be specified");
-			}
-			return sf.getPath().equals(SortField.SORT_FIELD_SCORE);
+			SortField sortField = iterator.next();
+			return sortField.getPath().equals(SortField.SORT_FIELD_SCORE);
 		}
 		return false;
 	}

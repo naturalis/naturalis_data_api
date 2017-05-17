@@ -135,7 +135,7 @@ class SpecimenNameImporter2 {
 					indexer.index(merger.merge(batch));
 					batch.clear();
 				}
-				if (lnr.getLineNumber() % 100000 == 0) {
+				if (lnr.getLineNumber() % 10000 == 0) {
 					logger.info("Lines read: {}", lnr.getLineNumber());
 					logger.info("Name groups created: {}", merger.getNumCreated());
 					logger.info("Name groups merged: {}", merger.getNumMerged());

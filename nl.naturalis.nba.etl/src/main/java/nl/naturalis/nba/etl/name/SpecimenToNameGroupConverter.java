@@ -2,10 +2,10 @@ package nl.naturalis.nba.etl.name;
 
 import static nl.naturalis.nba.etl.SummaryObjectUtil.copySpecimen;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 
 import nl.naturalis.nba.api.model.ScientificName;
@@ -25,7 +25,7 @@ class SpecimenToNameGroupConverter {
 	Collection<ScientificNameGroup> convert(Collection<Specimen> specimens)
 	{
 		// Assume about 3 identifications per specimen
-		List<ScientificNameGroup> result = new ArrayList<>(specimens.size() * 3);
+		HashMap<String, ScientificNameGroup> cache = new HashMap<>(specimens.size() * 3);
 		for (Specimen specimen : specimens) {
 			List<SpecimenIdentification> identifications = specimen.getIdentifications();
 			if (identifications != null) {
@@ -37,15 +37,18 @@ class SpecimenToNameGroupConverter {
 					if (prevName != null && name.equals(prevName)) {
 						continue;
 					}
-					ScientificNameGroup nameGroup = new ScientificNameGroup(name);
-					nameGroup.addSpecimen(copySpecimen(specimen, name));
-					nameGroup.setSpecimenCount(nameGroup.getSpecimens().size());
-					result.add(nameGroup);
+					ScientificNameGroup sng = cache.get(name);
+					if (sng == null) {
+						sng = new ScientificNameGroup(name);
+						cache.put(name, sng);
+					}
+					sng.addSpecimen(copySpecimen(specimen, name));
+					sng.setSpecimenCount(sng.getSpecimens().size());
 					prevName = name;
 				}
 			}
 		}
-		return result;
+		return cache.values();
 	}
 
 	int getNumIdentifications()
@@ -62,7 +65,8 @@ class SpecimenToNameGroupConverter {
 			{
 				ScientificName sn1 = si1.getScientificName();
 				ScientificName sn2 = si2.getScientificName();
-				return sn1.getScientificNameGroup().compareTo(sn2.getScientificNameGroup());
+				return sn1.getScientificNameGroup()
+						.compareTo(sn2.getScientificNameGroup());
 			}
 		});
 	}

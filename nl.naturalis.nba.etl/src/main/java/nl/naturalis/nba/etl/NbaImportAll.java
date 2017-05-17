@@ -13,8 +13,8 @@ import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.brahms.BrahmsImportAll;
 import nl.naturalis.nba.etl.col.CoLImportAll;
 import nl.naturalis.nba.etl.crs.CrsImportAll;
-import nl.naturalis.nba.etl.enrich.MultimediaTaxonomicEnricher;
-import nl.naturalis.nba.etl.enrich.SpecimenTaxonomicEnricher;
+import nl.naturalis.nba.etl.enrich.MultimediaTaxonomicEnricher2;
+import nl.naturalis.nba.etl.enrich.SpecimenTaxonomicEnricher2;
 import nl.naturalis.nba.etl.geo.GeoImporter;
 import nl.naturalis.nba.etl.name.NameImportAll;
 import nl.naturalis.nba.etl.nsr.NsrImporter;
@@ -71,12 +71,12 @@ public class NbaImportAll {
 			geoImporter.importAll();
 
 			logger.info("[>--- Starting Specimen enrichment ---<]");
-			SpecimenTaxonomicEnricher specimenEnricher = new SpecimenTaxonomicEnricher();
+			SpecimenTaxonomicEnricher2 specimenEnricher = new SpecimenTaxonomicEnricher2();
 			specimenEnricher.configureWithSystemProperties();
 			specimenEnricher.enrich();
 
 			logger.info("[>--- Starting MultiMediaObject enrichment ---<]");
-			MultimediaTaxonomicEnricher multimediaEnricher = new MultimediaTaxonomicEnricher();
+			MultimediaTaxonomicEnricher2 multimediaEnricher = new MultimediaTaxonomicEnricher2();
 			multimediaEnricher.configureWithSystemProperties();
 			multimediaEnricher.enrich();
 

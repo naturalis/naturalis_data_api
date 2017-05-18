@@ -61,6 +61,9 @@ public class BulkIndexer<T extends IDocumentObject> {
 			throws BulkIndexException
 	{
 		if (documents.size() == 0) {
+			/*
+			 * Contrary to Elasticsearch we are OK with saving 0 documents
+			 */
 			return;
 		}
 		Client client = ESClientManager.getInstance().getClient();

@@ -39,11 +39,7 @@ class NameGroupMerger {
 		for (ScientificNameGroup sng : existing) {
 			lookupTable.put(sng.getId(), sng);
 		}
-		boolean found = false;
 		for (ScientificNameGroup newNameGroup : nameGroups) {
-			if (newNameGroup.getId().equals("larus leucophthalmus")) {
-				found=true;
-			}
 			ScientificNameGroup oldNameGroup = lookupTable.get(newNameGroup.getId());
 			if (oldNameGroup == null) {
 				lookupTable.put(newNameGroup.getId(), newNameGroup);
@@ -53,10 +49,6 @@ class NameGroupMerger {
 				mergeNameGroups(oldNameGroup, newNameGroup);
 				++numMerged;
 			}
-		}
-		if(found) {
-			logger.info("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
-			return lookupTable.values();
 		}
 		return lookupTable.values();
 	}

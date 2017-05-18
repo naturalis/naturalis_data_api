@@ -40,6 +40,7 @@ class SpecimenNameImporter2 {
 	{
 		try {
 			ESUtil.truncate(DocumentType.SCIENTIFIC_NAME_GROUP);
+			ESUtil.refreshIndex(SCIENTIFIC_NAME_GROUP);
 			SpecimenNameImporter2 importer = new SpecimenNameImporter2();
 			importer.importNames();
 		}
@@ -73,7 +74,7 @@ class SpecimenNameImporter2 {
 		saveToTempFile();
 		logger.info("Reading name groups from {}", tempFile.getAbsolutePath());
 		importTempFile();
-		tempFile.delete();
+		//tempFile.delete();
 		logDuration(logger, getClass(), start);
 	}
 
@@ -132,10 +133,12 @@ class SpecimenNameImporter2 {
 				ScientificNameGroup sng = JsonUtil.deserialize(line, ScientificNameGroup.class);
 				batch.add(sng);
 				if (batch.size() == writeBatchSize) {
-					indexer.index(merger.merge(batch));
+					Collection<ScientificNameGroup> cc = merger.merge(batch);
+					logger.info("^^^^ merge size: " + cc.size());
+					indexer.index(cc);
 					batch.clear();
 				}
-				if (lnr.getLineNumber() % 100000 == 0) {
+				if (lnr.getLineNumber() % 10000 == 0) {
 					logger.info("Lines read: {}", lnr.getLineNumber());
 					logger.info("Name groups created: {}", merger.getNumCreated());
 					logger.info("Name groups merged: {}", merger.getNumMerged());

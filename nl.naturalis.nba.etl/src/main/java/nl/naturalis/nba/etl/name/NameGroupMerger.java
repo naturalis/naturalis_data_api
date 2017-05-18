@@ -3,6 +3,7 @@ package nl.naturalis.nba.etl.name;
 import static nl.naturalis.nba.etl.ETLUtil.getLogger;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -27,17 +28,22 @@ class NameGroupMerger {
 
 	Collection<ScientificNameGroup> merge(Collection<ScientificNameGroup> nameGroups)
 	{
-		HashSet<String> ids = new HashSet<>(nameGroups.size());
+		HashSet<String> idSet = new HashSet<>(nameGroups.size());
 		for (ScientificNameGroup sng : nameGroups) {
-			ids.add(sng.getId());
+			idSet.add(sng.getId());
 		}
 		ScientificNameGroupDao sngDao = new ScientificNameGroupDao();
-		ScientificNameGroup[] existing = sngDao.find(ids.toArray(new String[ids.size()]));
+		String[] ids = idSet.toArray(new String[idSet.size()]);
+		ScientificNameGroup[] existing = sngDao.find(ids);
 		HashMap<String, ScientificNameGroup> lookupTable = new HashMap<>(nameGroups.size() + 8, 1F);
 		for (ScientificNameGroup sng : existing) {
 			lookupTable.put(sng.getId(), sng);
 		}
+		boolean found = false;
 		for (ScientificNameGroup newNameGroup : nameGroups) {
+			if (newNameGroup.getId().equals("larus leucophthalmus")) {
+				found=true;
+			}
 			ScientificNameGroup oldNameGroup = lookupTable.get(newNameGroup.getId());
 			if (oldNameGroup == null) {
 				lookupTable.put(newNameGroup.getId(), newNameGroup);
@@ -47,6 +53,10 @@ class NameGroupMerger {
 				mergeNameGroups(oldNameGroup, newNameGroup);
 				++numMerged;
 			}
+		}
+		if(found) {
+			logger.info("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
+			return lookupTable.values();
 		}
 		return lookupTable.values();
 	}
@@ -109,7 +119,7 @@ class NameGroupMerger {
 		}
 		for (SummarySpecimen ss : specimens) {
 			if (ss.getId().equals(specimen.getId())) {
-				logger.warn("Duplicate taxon: {}", specimen.getId());
+				logger.warn("Duplicate specimen: {}", specimen.getId());
 				return true;
 			}
 		}

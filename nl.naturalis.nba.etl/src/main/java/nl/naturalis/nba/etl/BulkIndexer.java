@@ -23,7 +23,7 @@ public class BulkIndexer<T extends IDocumentObject> {
 
 	private static final TimeValue REQUEST_TIMEOUT = TimeValue.timeValueMinutes(5);
 
-	private final DocumentType<T> dt;
+	private DocumentType<T> dt;
 
 	public BulkIndexer(DocumentType<T> dt)
 	{
@@ -41,9 +41,9 @@ public class BulkIndexer<T extends IDocumentObject> {
 		}
 		String[] ids = new String[objs.size()];
 		/*
-		 * For some deeply mysterious reason defying anything I thought I understood about
-		 * Java it seems we have to do this in two separate loops, otherwise
-		 * objs.get(i).getId() returns null where it really really shouldn't:
+		 * For some deeply mysterious reason it seems we need two separate
+		 * loops, otherwise objs.get(i).getId() returns null where it really
+		 * really shouldn't:
 		 */
 		for (int i = 0; i < objs.size(); i++) {
 			ids[i] = objs.get(i).getId();
@@ -60,6 +60,9 @@ public class BulkIndexer<T extends IDocumentObject> {
 	public void index(List<T> documents, List<String> ids, List<String> parentIds)
 			throws BulkIndexException
 	{
+		if (documents.size() == 0) {
+			return;
+		}
 		Client client = ESClientManager.getInstance().getClient();
 		String index = dt.getIndexInfo().getName();
 		String type = dt.getName();

@@ -13,6 +13,7 @@ import nl.naturalis.nba.api.model.ScientificNameGroup;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.api.model.TaxonomicIdentification;
+import nl.naturalis.nba.utils.StringUtil;
 
 class SpecimenToNameGroupConverter {
 
@@ -31,10 +32,10 @@ class SpecimenToNameGroupConverter {
 			if (identifications != null) {
 				numIdentifications += identifications.size();
 				sort(identifications);
-				String prevName = null;
+				String prevName = StringUtil.EMPTY;
 				for (TaxonomicIdentification si : identifications) {
 					String name = si.getScientificName().getScientificNameGroup();
-					if (prevName != null && name.equals(prevName)) {
+					if (name.equals(prevName)) {
 						continue;
 					}
 					ScientificNameGroup sng = cache.get(name);
@@ -65,8 +66,7 @@ class SpecimenToNameGroupConverter {
 			{
 				ScientificName sn1 = si1.getScientificName();
 				ScientificName sn2 = si2.getScientificName();
-				return sn1.getScientificNameGroup()
-						.compareTo(sn2.getScientificNameGroup());
+				return sn1.getScientificNameGroup().compareTo(sn2.getScientificNameGroup());
 			}
 		});
 	}

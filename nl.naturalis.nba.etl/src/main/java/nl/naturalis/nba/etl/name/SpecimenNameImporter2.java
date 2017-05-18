@@ -58,7 +58,7 @@ class SpecimenNameImporter2 {
 	private static final byte[] NEW_LINE = "\n".getBytes();
 
 	private boolean suppressErrors;
-	private int readBatchSize = 2000;
+	private int readBatchSize = 1000;
 	private int writeBatchSize = 1000;
 	private int scrollTimeout = 60000;
 

@@ -1,26 +1,35 @@
 package nl.naturalis.nba.etl.brahms;
 
+import static nl.naturalis.nba.api.model.ServiceAccessPoint.Variant.MEDIUM_QUALITY;
 import static nl.naturalis.nba.api.model.SourceSystem.BRAHMS;
 import static nl.naturalis.nba.dao.DocumentType.SPECIMEN;
-import static nl.naturalis.nba.etl.ETLUtil.getSpecimenPurl;
 import static nl.naturalis.nba.etl.ETLConstants.BRAHMS_ABCD_COLLECTION_TYPE;
 import static nl.naturalis.nba.etl.ETLConstants.BRAHMS_ABCD_SOURCE_ID;
 import static nl.naturalis.nba.etl.ETLConstants.LICENCE;
 import static nl.naturalis.nba.etl.ETLConstants.LICENCE_TYPE;
 import static nl.naturalis.nba.etl.ETLConstants.SOURCE_INSTITUTION_ID;
+import static nl.naturalis.nba.etl.ETLUtil.getSpecimenPurl;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.CATEGORY;
+import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.COLLECTOR;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.DAYIDENT;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.DETBY;
+import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.IMAGELIST;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.MONTHIDENT;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.NOTONLINE;
+import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.NUMBER;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.PLANTDESC;
+import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.PREFIX;
+import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.SUFFIX;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.VERNACULAR;
-import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.*;
+import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.YEARIDENT;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getDefaultClassification;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getScientificName;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getSystemClassification;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getTaxonRank;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -29,6 +38,7 @@ import nl.naturalis.nba.api.model.Agent;
 import nl.naturalis.nba.api.model.DefaultClassification;
 import nl.naturalis.nba.api.model.GatheringEvent;
 import nl.naturalis.nba.api.model.ScientificName;
+import nl.naturalis.nba.api.model.ServiceAccessPoint;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.api.model.VernacularName;
@@ -93,6 +103,7 @@ class BrahmsSpecimenTransformer extends BrahmsTransformer<Specimen> {
 			specimen.setCollectorsFieldNumber(getCollectorsFieldNumber());
 			specimen.setGatheringEvent(getGatheringEvent(input));
 			specimen.addIndentification(getSpecimenIdentification(input));
+			specimen.setAssociatedMultiMediaUris(getServiceAccessPoints());
 			stats.objectsAccepted++;
 			return Arrays.asList(specimen);
 		}
@@ -172,6 +183,29 @@ class BrahmsSpecimenTransformer extends BrahmsTransformer<Specimen> {
 		sb.append(rec.get(NUMBER, false).trim()).append(' ');
 		sb.append(rec.get(SUFFIX, false).trim());
 		return sb.toString();
+	}
+
+	private List<ServiceAccessPoint> getServiceAccessPoints()
+	{
+		String images = input.get(IMAGELIST);
+		if (images == null) {
+			return null;
+		}
+		String[] urls = images.split(",");
+		List<ServiceAccessPoint> saps = new ArrayList<>(urls.length);
+		for (int i = 0; i < urls.length; ++i) {
+			String url = urls[i].trim().replaceAll(" ", "%20");
+			try {
+				URI uri = new URI(url);
+				saps.add(new ServiceAccessPoint(uri, "image/jpeg", MEDIUM_QUALITY));
+			}
+			catch (URISyntaxException e) {
+				if (!suppressErrors) {
+					warn("Invalid multimedia URL: " + url);
+				}
+			}
+		}
+		return saps.size() == 0 ? null : saps;
 	}
 
 }

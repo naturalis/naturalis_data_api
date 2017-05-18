@@ -11,6 +11,7 @@ import nl.naturalis.nba.etl.brahms.BrahmsImportAll;
 import nl.naturalis.nba.etl.col.CoLImportAll;
 import nl.naturalis.nba.etl.crs.CrsImportAll;
 import nl.naturalis.nba.etl.enrich.MultimediaTaxonomicEnricher2;
+import nl.naturalis.nba.etl.enrich.SpecimenMultimediaEnricher;
 import nl.naturalis.nba.etl.enrich.SpecimenTaxonomicEnricher2;
 import nl.naturalis.nba.etl.geo.GeoImporter;
 import nl.naturalis.nba.etl.name.NameImportAll;
@@ -67,15 +68,20 @@ public class NbaImportAll {
 			GeoImporter geoImporter = new GeoImporter();
 			geoImporter.importAll();
 
-			logger.info("[>--- Starting Specimen enrichment ---<]");
-			SpecimenTaxonomicEnricher2 specimenEnricher = new SpecimenTaxonomicEnricher2();
-			specimenEnricher.configureWithSystemProperties();
-			specimenEnricher.enrich();
+			logger.info("[>--- Starting multimedia enrichment of specimens ---<]");
+			SpecimenMultimediaEnricher specimenEnricherMM = new SpecimenMultimediaEnricher();
+			specimenEnricherMM.configureWithSystemProperties();
+			specimenEnricherMM.enrich();
 
-			logger.info("[>--- Starting MultiMediaObject enrichment ---<]");
-			MultimediaTaxonomicEnricher2 multimediaEnricher = new MultimediaTaxonomicEnricher2();
-			multimediaEnricher.configureWithSystemProperties();
-			multimediaEnricher.enrich();
+			logger.info("[>--- Starting taxonomic enrichment of specimens ---<]");
+			SpecimenTaxonomicEnricher2 specimenEnricherTE = new SpecimenTaxonomicEnricher2();
+			specimenEnricherTE.configureWithSystemProperties();
+			specimenEnricherTE.enrich();
+
+			logger.info("[>--- Starting taxonomic enrichment of multimedia ---<]");
+			MultimediaTaxonomicEnricher2 multimediaEnricherTE = new MultimediaTaxonomicEnricher2();
+			multimediaEnricherTE.configureWithSystemProperties();
+			multimediaEnricherTE.enrich();
 
 			logger.info("[>--- Starting ScientificNameGroup import ---<]");
 			NameImportAll nameImporter = new NameImportAll();

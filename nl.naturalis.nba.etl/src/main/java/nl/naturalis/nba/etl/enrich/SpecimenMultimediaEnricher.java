@@ -1,19 +1,12 @@
 package nl.naturalis.nba.etl.enrich;
 
+import static nl.naturalis.nba.api.ComparisonOperator.IN;
 import static nl.naturalis.nba.dao.DocumentType.SPECIMEN;
-import static nl.naturalis.nba.dao.DocumentType.TAXON;
-import static nl.naturalis.nba.dao.util.es.ESUtil.executeSearchRequest;
-import static nl.naturalis.nba.dao.util.es.ESUtil.newSearchRequest;
 import static nl.naturalis.nba.etl.ETLConstants.SYS_PROP_ENRICH_READ_BATCH_SIZE;
 import static nl.naturalis.nba.etl.ETLConstants.SYS_PROP_ENRICH_SCROLL_TIMEOUT;
 import static nl.naturalis.nba.etl.ETLConstants.SYS_PROP_ENRICH_WRITE_BATCH_SIZE;
 import static nl.naturalis.nba.etl.ETLUtil.getLogger;
 import static nl.naturalis.nba.etl.ETLUtil.logDuration;
-import static nl.naturalis.nba.etl.SummaryObjectUtil.copyScientificName;
-import static nl.naturalis.nba.etl.SummaryObjectUtil.copySourceSystem;
-import static nl.naturalis.nba.etl.SummaryObjectUtil.copySummaryVernacularName;
-import static org.elasticsearch.index.query.QueryBuilders.constantScoreQuery;
-import static org.elasticsearch.index.query.QueryBuilders.termsQuery;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -25,27 +18,22 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 
 import org.apache.logging.log4j.Logger;
-import org.elasticsearch.action.search.SearchRequestBuilder;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.index.query.TermsQueryBuilder;
-import org.elasticsearch.search.SearchHit;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import nl.naturalis.nba.api.model.ScientificName;
+import nl.naturalis.nba.api.InvalidQueryException;
+import nl.naturalis.nba.api.QueryCondition;
+import nl.naturalis.nba.api.QueryResult;
+import nl.naturalis.nba.api.QueryResultItem;
+import nl.naturalis.nba.api.QuerySpec;
+import nl.naturalis.nba.api.model.MultiMediaObject;
+import nl.naturalis.nba.api.model.ServiceAccessPoint;
 import nl.naturalis.nba.api.model.Specimen;
-import nl.naturalis.nba.api.model.Taxon;
-import nl.naturalis.nba.api.model.TaxonomicEnrichment;
-import nl.naturalis.nba.api.model.TaxonomicIdentification;
-import nl.naturalis.nba.api.model.VernacularName;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.DaoRegistry;
-import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.ESClientManager;
+import nl.naturalis.nba.dao.MultiMediaObjectDao;
 import nl.naturalis.nba.dao.util.es.DocumentIterator;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.BulkIndexException;
@@ -54,11 +42,11 @@ import nl.naturalis.nba.etl.ETLRuntimeException;
 import nl.naturalis.nba.utils.FileUtil;
 import nl.naturalis.nba.utils.IOUtil;
 
-public class SpecimenTaxonomicEnricher2 {
+public class SpecimenMultimediaEnricher {
 
 	public static void main(String[] args)
 	{
-		SpecimenTaxonomicEnricher2 enricher = new SpecimenTaxonomicEnricher2();
+		SpecimenMultimediaEnricher enricher = new SpecimenMultimediaEnricher();
 		try {
 			enricher.configureWithSystemProperties();
 			enricher.enrich();
@@ -75,7 +63,6 @@ public class SpecimenTaxonomicEnricher2 {
 	}
 
 	private static final Logger logger = getLogger(SpecimenTaxonomicEnricher.class);
-	private static final List<TaxonomicEnrichment> NONE = new ArrayList<>(0);
 	private static final byte[] NEW_LINE = "\n".getBytes();
 
 	private int readBatchSize = 1000;
@@ -100,7 +87,10 @@ public class SpecimenTaxonomicEnricher2 {
 	{
 		FileOutputStream fos = new FileOutputStream(tempFile);
 		BufferedOutputStream bos = new BufferedOutputStream(fos, 4096);
-		DocumentIterator<Specimen> extractor = new DocumentIterator<>(SPECIMEN);
+		QuerySpec query = new QuerySpec();
+		QueryCondition condition = new QueryCondition("sourceSystem.code", "=", "CRS");
+		query.addCondition(condition);
+		DocumentIterator<Specimen> extractor = new DocumentIterator<>(SPECIMEN, query);
 		extractor.setBatchSize(readBatchSize);
 		extractor.setTimeout(scrollTimeout);
 		int batchNo = 0;
@@ -214,131 +204,55 @@ public class SpecimenTaxonomicEnricher2 {
 	private static List<Specimen> enrichSpecimens(List<Specimen> specimens)
 	{
 		if (logger.isDebugEnabled()) {
-			logger.debug("Creating taxon lookup table");
+			logger.debug("Creating multimedia lookup table");
 		}
-		HashMap<String, List<Taxon>> taxonLookupTable = createLookupTable(specimens);
-		if (taxonLookupTable == null) {
+		HashMap<String, ArrayList<ServiceAccessPoint>> lookups = createLookupTable(specimens);
+		if (lookups.size() == 0) {
 			if (logger.isDebugEnabled()) {
-				logger.debug("No taxa found for current batch of specimens");
+				logger.debug("No multimedia found for current batch of specimens");
 			}
 			return Collections.emptyList();
 		}
-		if (logger.isDebugEnabled()) {
-			logger.debug("Lookup table created. {} unique name group(s) found in Taxon index",
-					taxonLookupTable.size());
-		}
-		HashMap<String, List<TaxonomicEnrichment>> cache = new HashMap<>(specimens.size());
-		List<Specimen> result = new ArrayList<>(specimens.size());
+		List<Specimen> enriched = new ArrayList<>(specimens.size());
 		for (Specimen specimen : specimens) {
-			boolean enriched = false;
-			if (specimen.getIdentifications() == null) {
-				continue;
-			}
-			for (TaxonomicIdentification si : specimen.getIdentifications()) {
-				String nameGroup = si.getScientificName().getScientificNameGroup();
-				List<TaxonomicEnrichment> enrichments = cache.get(nameGroup);
-				if (enrichments == null) {
-					List<Taxon> taxa = taxonLookupTable.get(nameGroup);
-					if (taxa == null) {
-						/*
-						 * There are no taxon documents with this
-						 * scientificNameGroup
-						 */
-						cache.put(nameGroup, NONE);
-					}
-					else {
-						enrichments = createEnrichments(taxa);
-						cache.put(nameGroup, enrichments);
-						if (enrichments != NONE) {
-							si.setTaxonomicEnrichments(enrichments);
-							enriched = true;
-						}
-						/*
-						 * Else there were taxon documents with this
-						 * scientificNameGroup, but none of them had vernacular
-						 * names and/or synonyms.
-						 */
-					}
-				}
-				else if (enrichments != NONE) {
-					si.setTaxonomicEnrichments(enrichments);
-					enriched = true;
-				}
-			}
-			if (enriched) {
-				result.add(specimen);
+			List<ServiceAccessPoint> uris = lookups.get(specimen.getId());
+			if (uris != null) {
+				specimen.setAssociatedMultiMediaUris(uris);
+				enriched.add(specimen);
 			}
 		}
-		return result;
+		return enriched;
 	}
 
-	private static List<TaxonomicEnrichment> createEnrichments(List<Taxon> taxa)
+	private static HashMap<String, ArrayList<ServiceAccessPoint>> createLookupTable(
+			List<Specimen> specimens)
 	{
-		List<TaxonomicEnrichment> enrichments = new ArrayList<>(taxa.size());
-		for (Taxon taxon : taxa) {
-			if (taxon.getVernacularNames() == null && taxon.getSynonyms() == null) {
-				continue;
-			}
-			TaxonomicEnrichment enrichment = new TaxonomicEnrichment();
-			if (taxon.getVernacularNames() != null) {
-				for (VernacularName vn : taxon.getVernacularNames()) {
-					enrichment.addVernacularName(copySummaryVernacularName(vn));
-				}
-			}
-			if (taxon.getSynonyms() != null) {
-				for (ScientificName sn : taxon.getSynonyms()) {
-					enrichment.addSynonym(copyScientificName(sn));
-				}
-			}
-			enrichment.setSourceSystem(copySourceSystem(taxon.getSourceSystem()));
-			enrichment.setTaxonId(taxon.getId());
-			enrichments.add(enrichment);
-		}
-		return enrichments.isEmpty() ? NONE : enrichments;
-	}
-
-	private static HashMap<String, List<Taxon>> createLookupTable(List<Specimen> specimens)
-	{
-		HashSet<String> groups = new HashSet<>(specimens.size());
+		ArrayList<String> ids = new ArrayList<>(specimens.size());
 		for (Specimen specimen : specimens) {
-			for (TaxonomicIdentification si : specimen.getIdentifications()) {
-				groups.add(si.getScientificName().getScientificNameGroup());
+			ids.add(specimen.getId());
+		}
+		QueryCondition qc = new QueryCondition("associatedSpecimenReference", IN, ids);
+		QuerySpec qs = new QuerySpec();
+		qs.addCondition(qc);
+		MultiMediaObjectDao dao = new MultiMediaObjectDao();
+		QueryResult<MultiMediaObject> result;
+		try {
+			result = dao.query(qs);
+		}
+		catch (InvalidQueryException e) {
+			throw new ETLRuntimeException(e);
+		}
+		HashMap<String, ArrayList<ServiceAccessPoint>> lookups = new HashMap<>(ids.size());
+		for (QueryResultItem<MultiMediaObject> item : result) {
+			String specimenId = item.getItem().getAssociatedSpecimenReference();
+			ArrayList<ServiceAccessPoint> uris = lookups.get(specimenId);
+			if (uris == null) {
+				uris = new ArrayList<>(4);
+				lookups.put(specimenId, uris);
 			}
+			uris.addAll(item.getItem().getServiceAccessPoints());
 		}
-		if (groups.size() > 1024) {
-			String fmt = "Number of unique names in batch (%s) exceed maximum of 1024. "
-					+ "Try decreasing read batch size";
-			String msg = String.format(fmt, groups.size());
-			throw new ETLRuntimeException(msg);
-		}
-		DocumentType<Taxon> dt = TAXON;
-		SearchRequestBuilder request = newSearchRequest(dt);
-		TermsQueryBuilder query = termsQuery("acceptedName.scientificNameGroup", groups);
-		request.setQuery(constantScoreQuery(query));
-		int maxNumTaxa = 10000;
-		request.setSize(maxNumTaxa);
-		SearchResponse response = executeSearchRequest(request);
-		SearchHit[] hits = response.getHits().getHits();
-		if (hits.length == 0) {
-			return null;
-		}
-		// Unlikely, but let's still trap it
-		if (response.getHits().getTotalHits() > maxNumTaxa) {
-			throw new ETLRuntimeException("Too many taxa found for current batch of specimens");
-		}
-		HashMap<String, List<Taxon>> table = new HashMap<>(groups.size());
-		ObjectMapper om = dt.getObjectMapper();
-		for (SearchHit hit : hits) {
-			Taxon taxon = om.convertValue(hit.getSource(), dt.getJavaType());
-			taxon.setId(hit.getId());
-			List<Taxon> taxa = table.get(taxon.getAcceptedName().getScientificNameGroup());
-			if (taxa == null) {
-				taxa = new ArrayList<>(2);
-				table.put(taxon.getAcceptedName().getScientificNameGroup(), taxa);
-			}
-			taxa.add(taxon);
-		}
-		return table;
+		return lookups;
 	}
 
 	private static File getTempFile() throws IOException
@@ -348,7 +262,7 @@ public class SpecimenTaxonomicEnricher2 {
 			tmpDir.mkdir();
 		}
 		int time = (int) (new Date().getTime() / 1000);
-		String fileName = String.format("SpecimenTaxonomicEnricher-%s.json", time);
+		String fileName = String.format("SpecimenMultiMediaEnricher-%s.json", time);
 		return FileUtil.newFile(tmpDir, fileName);
 	}
 

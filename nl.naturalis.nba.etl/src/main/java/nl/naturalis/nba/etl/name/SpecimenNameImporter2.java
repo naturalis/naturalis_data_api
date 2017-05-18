@@ -225,7 +225,7 @@ class SpecimenNameImporter2 {
 			tmpDir.mkdir();
 		}
 		int time = (int) (new Date().getTime() / 1000);
-		String fileName = String.format("sng-%s.json", time);
+		String fileName = String.format("SpecimenNameImporter-%s.json", time);
 		return FileUtil.newFile(tmpDir, fileName);
 	}
 

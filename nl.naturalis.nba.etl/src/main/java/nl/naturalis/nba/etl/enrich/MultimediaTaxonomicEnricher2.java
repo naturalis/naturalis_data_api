@@ -341,7 +341,7 @@ public class MultimediaTaxonomicEnricher2 {
 			tmpDir.mkdir();
 		}
 		int time = (int) (new Date().getTime() / 1000);
-		String fileName = String.format("enriched-multimedia-%s.json", time);
+		String fileName = String.format("MultimediaTaxonomicEnricher-%s.json", time);
 		return FileUtil.newFile(tmpDir, fileName);
 	}
 

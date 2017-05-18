@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Taxonomic enrichment of specimens
+
 . ./include.sh
 
 # The number of specimen documents to be read and processed
@@ -22,7 +24,7 @@ action="${1}"
 
 if [ "${action}" = nullify ]
 then
-	java -cp ${classpath} $JAVA_OPTS ${root_package}.enrich.SpecimenTaxonomicEnrichmentNullifier
+	java -cp ${classpath} $JAVA_OPTS ${root_package}.enrich.SpecimenEnrichmentNullifier -t
 else
 	JAVA_OPTS="$JAVA_OPTS -Dnl.naturalis.nba.etl.enrich.readBatchSize=${read_batch_size}"
 	JAVA_OPTS="$JAVA_OPTS -Dnl.naturalis.nba.etl.enrich.writeBatchSize=${write_batch_size}"

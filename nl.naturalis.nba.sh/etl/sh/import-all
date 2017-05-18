@@ -26,7 +26,8 @@ scripts=" \
 	brahms-import_multimedia \
 	crs-import_specimens \
 	crs-import_multimedia \
-	enrich-specimens \
+	enrich-specimens-mm \
+	enrich-specimens-te \
 	enrich-multimedia \
 	name-import \
 	"

@@ -1,14 +1,14 @@
 #!/bin/bash
 
-# Taxonomic enrichment of multimedia
+# Multimedia enrichment of specimens
 
 . ./include.sh
 
-# The number of multimedia documents to be read and processed
+# The number of specimen documents to be read and processed
 # at once
 read_batch_size=1000
 
-# The number of enriched multimedia documents to re-index at
+# The number of enriched specimen documents to re-index at
 # once. Not all documents can be taxonimically enriched. Only
 # once we have built up a buffer of ${write_batch_size} enriched
 # documents, a re-index action will take place.
@@ -16,7 +16,7 @@ write_batch_size=1000
 
 # The read timeout in milliseconds. Each batch MUST be processed
 # within this time. Since all processing basically goes into
-# re-indexing enriched multimedia, specifying a smaller
+# re-indexing enriched specimens, specifying a smaller
 # write_batch_size may also help to prevent timeouts. 
 scroll_timeout=60000
 
@@ -24,10 +24,10 @@ action="${1}"
 
 if [ "${action}" = nullify ]
 then
-	java -cp ${classpath} $JAVA_OPTS ${root_package}.enrich.MultimediaEnrichmentNullifier
+	java -cp ${classpath} $JAVA_OPTS ${root_package}.enrich.SpecimenEnrichmentNullifier -m
 else
 	JAVA_OPTS="$JAVA_OPTS -Dnl.naturalis.nba.etl.enrich.readBatchSize=${read_batch_size}"
 	JAVA_OPTS="$JAVA_OPTS -Dnl.naturalis.nba.etl.enrich.writeBatchSize=${write_batch_size}"
 	JAVA_OPTS="$JAVA_OPTS -Dnl.naturalis.nba.etl.enrich.scrollTimeout=${scroll_timeout}"
-	java -cp ${classpath} $JAVA_OPTS ${root_package}.enrich.MultimediaTaxonomicEnricher2
+	java -cp ${classpath} $JAVA_OPTS ${root_package}.enrich.SpecimenMultimediaEnricher
 fi

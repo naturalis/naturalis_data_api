@@ -76,9 +76,10 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 	protected String getObjectID()
 	{
 		/*
-		 * Side effect: set the database ID of the record as well, so we can provide both
-		 * the UnitID and the database ID of the specimen when logging messages. We
-		 * override messagePrefix() to also print out the database ID.
+		 * Side effect: set the database ID of the record as well, so we can
+		 * provide both the UnitID and the database ID of the specimen when
+		 * logging messages. We override messagePrefix() to also print out the
+		 * database ID.
 		 */
 		databaseID = val(input.getRecord(), "identifier");
 		return val(input.getRecord(), "abcd:UnitID");
@@ -138,18 +139,16 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 		stats.recordsAccepted++;
 		stats.objectsProcessed++;
 
-		Collections.sort(specimen.getIdentifications(),
-				new Comparator<SpecimenIdentification>() {
+		Collections.sort(specimen.getIdentifications(), new Comparator<SpecimenIdentification>() {
 
-					public int compare(SpecimenIdentification o1,
-							SpecimenIdentification o2)
-					{
-						if (o1.isPreferred()) {
-							return o2.isPreferred() ? 0 : -1;
-						}
-						return o2.isPreferred() ? 1 : 0;
-					}
-				});
+			public int compare(SpecimenIdentification o1, SpecimenIdentification o2)
+			{
+				if (o1.isPreferred()) {
+					return o2.isPreferred() ? 0 : -1;
+				}
+				return o2.isPreferred() ? 1 : 0;
+			}
+		});
 
 		try {
 			String tmp;
@@ -285,8 +284,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 		List<Element> elems = DOMUtil.getChildren(elem, "ncrsHighername");
 		if (elems == null)
 			return lowerClassification;
-		List<Monomial> classification = new ArrayList<>(
-				elems.size() + lowerClassification.size());
+		List<Monomial> classification = new ArrayList<>(elems.size() + lowerClassification.size());
 		for (Element e : elems) {
 			String rank = DOMUtil.getValue(e, "abcd:HigherTaxonRank");
 			String name = DOMUtil.getValue(e, "abcd:taxonCoverage");
@@ -425,8 +423,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 		if (lithoStratigraphyElements == null) {
 			return null;
 		}
-		List<LithoStratigraphy> result = new ArrayList<>(
-				lithoStratigraphyElements.size());
+		List<LithoStratigraphy> result = new ArrayList<>(lithoStratigraphyElements.size());
 		for (Element e : lithoStratigraphyElements) {
 			LithoStratigraphy one = getLithoStratigraphyObject(e);
 			result.add(one);
@@ -506,7 +503,8 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 	{
 		String raw = val(elem, "abcd:NomenclaturalTypeText");
 		if (raw == null) {
-			warn("Missing type status");
+			if (!suppressErrors)
+				warn("Missing type status");
 			return null;
 		}
 		try {

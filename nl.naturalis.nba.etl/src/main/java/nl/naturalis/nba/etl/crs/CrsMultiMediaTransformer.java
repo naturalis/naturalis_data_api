@@ -449,7 +449,8 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 	{
 		String raw = val(elem, "abcd:NomenclaturalTypeText");
 		if (raw == null) {
-			warn("Missing type status");
+			if (!suppressErrors)
+				warn("Missing type status");
 			return null;
 		}
 		try {

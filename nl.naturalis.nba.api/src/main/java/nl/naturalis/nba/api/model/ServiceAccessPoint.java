@@ -2,6 +2,7 @@ package nl.naturalis.nba.api.model;
 
 import java.net.URI;
 
+import nl.naturalis.nba.api.annotations.Analyzers;
 import nl.naturalis.nba.api.annotations.NotIndexed;
 
 public class ServiceAccessPoint implements INbaModelObject {
@@ -13,7 +14,9 @@ public class ServiceAccessPoint implements INbaModelObject {
 
 	@NotIndexed
 	private URI accessUri;
+	@Analyzers({})
 	private String format;
+	@Analyzers({})
 	private Variant variant;
 
 	public ServiceAccessPoint()

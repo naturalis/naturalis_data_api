@@ -4,6 +4,9 @@ import static nl.naturalis.nba.dao.DocumentType.SPECIMEN;
 import static nl.naturalis.nba.etl.ETLUtil.logDuration;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.logging.log4j.Logger;
 
@@ -25,12 +28,25 @@ import nl.naturalis.nba.etl.ETLRegistry;
  * @author Ayco Holleman
  *
  */
-public class SpecimenTaxonomicEnrichmentNullifier {
+public class SpecimenEnrichmentNullifier {
 
 	public static void main(String[] args) throws Exception
 	{
 		try {
-			SpecimenTaxonomicEnrichmentNullifier nullifier = new SpecimenTaxonomicEnrichmentNullifier();
+			SpecimenEnrichmentNullifier nullifier = new SpecimenEnrichmentNullifier();
+			if (args.length == 0 || args.length > 2) {
+				System.err.println("USAGE: java SpecimenEnrichmentNullifier -t|-m");
+				System.err.println("       -t  Nullify taxonomic enrichments");
+				System.err.println("       -m  Nullify multimedia enrichments");
+				System.exit(1);
+			}
+			Set<String> opts = new HashSet<>(Arrays.asList(args));
+			if (opts.contains("-t")) {
+				nullifier.setNullifyTaxonomicEnrichments(true);
+			}
+			if (opts.contains("-m")) {
+				nullifier.setNullifyMultiMediaUris(true);
+			}
 			nullifier.nullify();
 		}
 		finally {
@@ -40,17 +56,21 @@ public class SpecimenTaxonomicEnrichmentNullifier {
 	}
 
 	private static final Logger logger = ETLRegistry.getInstance()
-			.getLogger(SpecimenTaxonomicEnrichmentNullifier.class);
+			.getLogger(SpecimenEnrichmentNullifier.class);
 
-	public SpecimenTaxonomicEnrichmentNullifier()
+	public SpecimenEnrichmentNullifier()
 	{
 	}
 
 	private int batchSize = 1000;
+	private boolean nullifyTaxonomicEnrichments;
+	private boolean nullifyMultiMediaUris;
 
 	public void nullify() throws BulkIndexException
 	{
 		long start = System.currentTimeMillis();
+		logger.info("Nullify taxonomic enrichments: " + nullifyTaxonomicEnrichments);
+		logger.info("Nullify multimedia URIs: " + nullifyMultiMediaUris);
 		DocumentIterator<Specimen> iterator = new DocumentIterator<>(SPECIMEN);
 		iterator.setBatchSize(batchSize);
 		BulkIndexer<Specimen> indexer = new BulkIndexer<>(SPECIMEN);
@@ -60,9 +80,17 @@ public class SpecimenTaxonomicEnrichmentNullifier {
 		logger.info("Processing specimens");
 		for (Specimen specimen : iterator) {
 			boolean modified = false;
-			for (TaxonomicIdentification si : specimen.getIdentifications()) {
-				if (si.getTaxonomicEnrichments() != null) {
-					si.setTaxonomicEnrichments(null);
+			if (nullifyTaxonomicEnrichments) {
+				for (TaxonomicIdentification si : specimen.getIdentifications()) {
+					if (si.getTaxonomicEnrichments() != null) {
+						si.setTaxonomicEnrichments(null);
+						modified = true;
+					}
+				}
+			}
+			if (nullifyMultiMediaUris) {
+				if (specimen.getAssociatedMultiMediaUris() != null) {
+					specimen.setAssociatedMultiMediaUris(null);
 					modified = true;
 				}
 			}
@@ -95,6 +123,26 @@ public class SpecimenTaxonomicEnrichmentNullifier {
 	public void setBatchSize(int batchSize)
 	{
 		this.batchSize = batchSize;
+	}
+
+	public boolean isNullifyTaxonomicEnrichments()
+	{
+		return nullifyTaxonomicEnrichments;
+	}
+
+	public void setNullifyTaxonomicEnrichments(boolean nullifyTaxonomicEnrichments)
+	{
+		this.nullifyTaxonomicEnrichments = nullifyTaxonomicEnrichments;
+	}
+
+	public boolean isNullifyMultiMediaUris()
+	{
+		return nullifyMultiMediaUris;
+	}
+
+	public void setNullifyMultiMediaUris(boolean nullifyMultiMediaUris)
+	{
+		this.nullifyMultiMediaUris = nullifyMultiMediaUris;
 	}
 
 }

@@ -56,7 +56,7 @@ class InConditionTranslator extends ConditionTranslator {
 		}
 	}
 
-	private QueryBuilder isNullOrOneOf(List<?> values)
+	private QueryBuilder isNullOrOneOf(List<?> values) throws InvalidConditionException
 	{
 		BoolQueryBuilder boolQuery = boolQuery();
 		boolQuery.should(isOneOf(values));
@@ -64,8 +64,12 @@ class InConditionTranslator extends ConditionTranslator {
 		return boolQuery;
 	}
 
-	private TermsQueryBuilder isOneOf(List<?> values)
+	private TermsQueryBuilder isOneOf(List<?> values) throws InvalidConditionException
 	{
+		if (values.size() > 1024) {
+			String msg = "Too many values to compare using operator IN: " + values.size();
+			throw new InvalidConditionException(msg);
+		}
 		String field = condition.getField().toString();
 		return termsQuery(field, values);
 	}

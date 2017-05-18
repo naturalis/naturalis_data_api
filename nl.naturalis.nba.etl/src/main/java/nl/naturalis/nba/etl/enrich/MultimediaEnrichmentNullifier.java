@@ -25,12 +25,12 @@ import nl.naturalis.nba.etl.ETLRegistry;
  * @author Ayco Holleman
  *
  */
-public class MultimediaTaxonomicEnrichmentNullifier {
+public class MultimediaEnrichmentNullifier {
 
 	public static void main(String[] args) throws Exception
 	{
 		try {
-			MultimediaTaxonomicEnrichmentNullifier nullifier = new MultimediaTaxonomicEnrichmentNullifier();
+			MultimediaEnrichmentNullifier nullifier = new MultimediaEnrichmentNullifier();
 			nullifier.nullify();
 		}
 		finally {
@@ -40,9 +40,9 @@ public class MultimediaTaxonomicEnrichmentNullifier {
 	}
 
 	private static final Logger logger = ETLRegistry.getInstance()
-			.getLogger(MultimediaTaxonomicEnrichmentNullifier.class);
+			.getLogger(MultimediaEnrichmentNullifier.class);
 
-	public MultimediaTaxonomicEnrichmentNullifier()
+	public MultimediaEnrichmentNullifier()
 	{
 	}
 

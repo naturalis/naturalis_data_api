@@ -45,6 +45,7 @@ public class Specimen extends NbaTraceableObject implements IDocumentObject {
 	private Agent acquiredFrom;
 	private GatheringEvent gatheringEvent;
 	private List<SpecimenIdentification> identifications;
+	private List<ServiceAccessPoint> associatedMultiMediaUris;
 	private List<String> theme;
 
 	@NotStored
@@ -308,6 +309,16 @@ public class Specimen extends NbaTraceableObject implements IDocumentObject {
 	public void setIdentifications(List<SpecimenIdentification> identifications)
 	{
 		this.identifications = identifications;
+	}
+
+	public List<ServiceAccessPoint> getAssociatedMultiMediaUris()
+	{
+		return associatedMultiMediaUris;
+	}
+
+	public void setAssociatedMultiMediaUris(List<ServiceAccessPoint> associatedMultiMediaUris)
+	{
+		this.associatedMultiMediaUris = associatedMultiMediaUris;
 	}
 
 	public List<String> getTheme()

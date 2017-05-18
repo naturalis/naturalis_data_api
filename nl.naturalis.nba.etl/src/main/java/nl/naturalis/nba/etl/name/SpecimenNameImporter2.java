@@ -73,7 +73,7 @@ class SpecimenNameImporter2 {
 		saveToTempFile();
 		logger.info("Reading name groups from {}", tempFile.getAbsolutePath());
 		importTempFile();
-		//tempFile.delete();
+		tempFile.delete();
 		logDuration(logger, getClass(), start);
 	}
 

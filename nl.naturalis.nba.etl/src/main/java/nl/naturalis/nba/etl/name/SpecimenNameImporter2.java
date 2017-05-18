@@ -58,7 +58,7 @@ class SpecimenNameImporter2 {
 	private static final byte[] NEW_LINE = "\n".getBytes();
 
 	private boolean suppressErrors;
-	private int readBatchSize = 1000;
+	private int readBatchSize = 2000;
 	private int writeBatchSize = 1000;
 	private int scrollTimeout = 60000;
 
@@ -133,12 +133,10 @@ class SpecimenNameImporter2 {
 				ScientificNameGroup sng = JsonUtil.deserialize(line, ScientificNameGroup.class);
 				batch.add(sng);
 				if (batch.size() == writeBatchSize) {
-					Collection<ScientificNameGroup> cc = merger.merge(batch);
-					logger.info("^^^^ merge size: " + cc.size());
-					indexer.index(cc);
+					indexer.index(merger.merge(batch));
 					batch.clear();
 				}
-				if (lnr.getLineNumber() % 10000 == 0) {
+				if (lnr.getLineNumber() % 1000 == 0) {
 					logger.info("Lines read: {}", lnr.getLineNumber());
 					logger.info("Name groups created: {}", merger.getNumCreated());
 					logger.info("Name groups merged: {}", merger.getNumMerged());

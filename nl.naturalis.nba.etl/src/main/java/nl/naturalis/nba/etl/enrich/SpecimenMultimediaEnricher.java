@@ -62,7 +62,7 @@ public class SpecimenMultimediaEnricher {
 		System.exit(0);
 	}
 
-	private static final Logger logger = getLogger(SpecimenTaxonomicEnricher.class);
+	private static final Logger logger = getLogger(SpecimenMultimediaEnricher.class);
 	private static final byte[] NEW_LINE = "\n".getBytes();
 
 	private int readBatchSize = 1000;

@@ -75,7 +75,7 @@ public class MultimediaTaxonomicEnricher2 {
 		System.exit(0);
 	}
 
-	private static final Logger logger = getLogger(SpecimenTaxonomicEnricher.class);
+	private static final Logger logger = getLogger(MultimediaTaxonomicEnricher2.class);
 	private static final List<TaxonomicEnrichment> NONE = new ArrayList<>(0);
 	private static final byte[] NEW_LINE = "\n".getBytes();
 

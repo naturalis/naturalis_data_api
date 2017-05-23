@@ -5,6 +5,7 @@ import static nl.naturalis.nba.api.annotations.Analyzer.DEFAULT;
 import static nl.naturalis.nba.api.annotations.Analyzer.LIKE;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import nl.naturalis.nba.api.annotations.Analyzers;
 import nl.naturalis.nba.api.model.INbaModelObject;
@@ -22,7 +23,7 @@ public class SummaryOrganization implements INbaModelObject {
 	private String name;
 
 	@JsonCreator
-	public SummaryOrganization(String name)
+	public SummaryOrganization(@JsonProperty("name") String name)
 	{
 		this.name = name;
 	}

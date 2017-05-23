@@ -8,10 +8,11 @@ import java.util.Collection;
 
 /**
  * Indicates that the field decorated with this annotation is not mapped as a
- * nested object. By default arrays and {@link Collection} objects are mapped as
+ * nested object, i&#46;e&#46; it Elasticsearch datatype will be "object" rather
+ * than "nested". By default arrays and {@link Collection} objects are mapped as
  * nested objects. This annotation signifies that the annotated field is an
  * exception to this rule. Fields that are neither arrays nor collections are
- * never mapped as nested objects, so they don't need the
+ * never mapped to the "nested" datatype, so they don't need the
  * <code>&#64;NotNested</code> annotation.
  * 
  * @author Ayco Holleman

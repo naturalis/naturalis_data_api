@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import nl.naturalis.nba.api.model.GatheringEvent;
+import nl.naturalis.nba.api.model.Organization;
 import nl.naturalis.nba.api.model.Person;
 import nl.naturalis.nba.api.model.PhaseOrStage;
 import nl.naturalis.nba.api.model.ScientificName;
@@ -22,6 +23,7 @@ import nl.naturalis.nba.api.model.ScientificNameGroup;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.api.model.summary.SummaryGatheringEvent;
+import nl.naturalis.nba.api.model.summary.SummaryOrganization;
 import nl.naturalis.nba.api.model.summary.SummaryPerson;
 import nl.naturalis.nba.api.model.summary.SummaryScientificName;
 import nl.naturalis.nba.api.model.summary.SummarySpecimen;
@@ -1183,25 +1185,34 @@ public class ScientificNameGroupMock {
 		}
 		GatheringEvent ge = new GatheringEvent();
 		ge.setDateTimeBegin(sge.getDateTimeBegin());
-		ge.setDateTimeEnd(sge.getDateTimeEnd());
-		ge.setGatheringOrganizations(sge.getGatheringOrganizations());
-		ge.setGatheringPersons(copyGatheringPersons(sge.getGatheringPersons()));
+		ge.setGatheringOrganizations(copyOrganizations(sge.getGatheringOrganizations()));
+		ge.setGatheringPersons(copyPersons(sge.getGatheringPersons()));
 		ge.setLocalityText(sge.getLocalityText());
 		return ge;
 	}
 
-	private static List<Person> copyGatheringPersons(List<SummaryPerson> persons)
+	private static List<Person> copyPersons(List<SummaryPerson> summaries)
 	{
-		if (persons == null) {
+		if (summaries == null) {
 			return null;
 		}
-		List<Person> summaries = new ArrayList<>(persons.size());
-		for (SummaryPerson p : persons) {
-			Person sp = new Person();
-			sp.setFullName(p.getFullName());
-			summaries.add(sp);
+		List<Person> persons = new ArrayList<>(summaries.size());
+		for (SummaryPerson sp : summaries) {
+			persons.add(new Person(sp.getFullName()));
 		}
-		return summaries;
+		return persons;
+	}
+
+	private static List<Organization> copyOrganizations(List<SummaryOrganization> summaries)
+	{
+		if (summaries == null) {
+			return null;
+		}
+		List<Organization> organizations = new ArrayList<>(summaries.size());
+		for (SummaryOrganization so : summaries) {
+			organizations.add(new Organization(so.getName()));
+		}
+		return organizations;
 	}
 
 	// TODO share code with TransformUtil.setScientificNameGroup

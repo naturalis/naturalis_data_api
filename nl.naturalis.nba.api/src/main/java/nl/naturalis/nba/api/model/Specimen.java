@@ -29,7 +29,6 @@ public class Specimen extends NbaTraceableObject implements IDocumentObject {
 	private String license;
 	private String recordBasis;
 	private String kindOfUnit;
-	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String collectionType;
 	private Sex sex;
 	private PhaseOrStage phaseOrStage;

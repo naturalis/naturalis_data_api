@@ -111,6 +111,10 @@ class DataTypeMap {
 				break;
 			javaType = javaType.getSuperclass();
 		}
+		/*
+		 * TODO: We could make this more robust if we would also allow and check
+		 * for interfaces in the datatype map
+		 */
 		return esDataType;
 	}
 

@@ -9,6 +9,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import nl.naturalis.nba.api.ComparisonOperator;
 import nl.naturalis.nba.api.annotations.GeoShape;
 
+/*
+ * Ignore the geoShape field. It is stored in Elasticsearch to enable geo
+ * queries, but its value is always calculated from the lat/long fields
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GatheringSiteCoordinates implements INbaModelObject {
 
@@ -33,12 +37,9 @@ public class GatheringSiteCoordinates implements INbaModelObject {
 
 	/**
 	 * <p>
-	 * Returns the site coordinates as {@link GeoJsonObject}. Since the
-	 * {@code GatheringSiteCoordinates} still basically constitute a point
-	 * coordinate, the actual return type of this method is a GeoJson
-	 * {@link Point Point subclass}. Use the {@code geoShape} property for
-	 * queries using pre-indexed shapes using the {@link ComparisonOperator#IN}
-	 * operator. For example:
+	 * Returns the site coordinates as a {@link GeoJsonObject}. Use the
+	 * {@code geoShape} property for queries using pre-indexed shapes using the
+	 * {@link ComparisonOperator#IN} operator. For example:
 	 * </p>
 	 * <p>
 	 * <code>
@@ -50,7 +51,7 @@ public class GatheringSiteCoordinates implements INbaModelObject {
 	 */
 	@JsonProperty
 	@GeoShape(pointsOnly = true)
-	public GeoJsonObject getGeoShape()
+	public Point getGeoShape()
 	{
 		if (longitudeDecimal == null || latitudeDecimal == null) {
 			return null;

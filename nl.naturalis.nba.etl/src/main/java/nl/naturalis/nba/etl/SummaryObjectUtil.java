@@ -95,9 +95,8 @@ public class SummaryObjectUtil {
 		}
 		SummaryGatheringEvent summary = new SummaryGatheringEvent();
 		summary.setDateTimeBegin(ge.getDateTimeBegin());
-		summary.setDateTimeEnd(ge.getDateTimeEnd());
-		summary.setGatheringOrganizations(ge.getGatheringOrganizations());
-		summary.setGatheringPersons(copyGatheringPersons(ge.getGatheringPersons()));
+		summary.setGatheringOrganizations(copyOrganizations(ge.getGatheringOrganizations()));
+		summary.setGatheringPersons(copyPersons(ge.getGatheringPersons()));
 		summary.setLocalityText(ge.getLocalityText());
 		summary.setSiteCoordinates(copySiteCoordinates(ge.getSiteCoordinates()));
 		return summary;
@@ -112,9 +111,7 @@ public class SummaryObjectUtil {
 		List<SummaryGatheringSiteCoordinates> summaries = new ArrayList<>(coords.size());
 		SummaryGatheringSiteCoordinates summary;
 		for (GatheringSiteCoordinates coord : coords) {
-			Double lat = coord.getLatitudeDecimal();
-			Double lon = coord.getLongitudeDecimal();
-			summary = new SummaryGatheringSiteCoordinates(lat, lon);
+			summary = new SummaryGatheringSiteCoordinates(coord.getGeoShape());
 			summaries.add(summary);
 		}
 		return summaries;
@@ -130,7 +127,7 @@ public class SummaryObjectUtil {
 		return ssi;
 	}
 
-	private static List<SummaryPerson> copyGatheringPersons(List<Person> persons)
+	private static List<SummaryPerson> copyPersons(List<Person> persons)
 	{
 		if (persons == null) {
 			return null;
@@ -141,6 +138,18 @@ public class SummaryObjectUtil {
 			sp.setFullName(p.getFullName());
 			sp.setOrganization(copyOrganization(p.getOrganization()));
 			summaries.add(sp);
+		}
+		return summaries;
+	}
+
+	private static List<SummaryOrganization> copyOrganizations(List<Organization> organizations)
+	{
+		if (organizations == null) {
+			return null;
+		}
+		List<SummaryOrganization> summaries = new ArrayList<>(organizations.size());
+		for (Organization o : organizations) {
+			summaries.add(new SummaryOrganization(o.getName()));
 		}
 		return summaries;
 	}

@@ -22,6 +22,8 @@ public class SummarySpecimen implements INbaModelObject {
 	private String unitID;
 	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String collectorsFieldNumber;
+	private String assemblageID;
+	private String collectionType;
 	private Sex sex;
 	private PhaseOrStage phaseOrStage;
 	private SummaryGatheringEvent gatheringEvent;
@@ -51,7 +53,7 @@ public class SummarySpecimen implements INbaModelObject {
 			return true;
 		}
 		if (obj instanceof SummarySpecimen) {
-			return ((SummarySpecimen) obj).getId().equals(id);
+			return ((SummarySpecimen) obj).id.equals(id);
 		}
 		return false;
 	}
@@ -100,6 +102,26 @@ public class SummarySpecimen implements INbaModelObject {
 	public void setCollectorsFieldNumber(String collectorsFieldNumber)
 	{
 		this.collectorsFieldNumber = collectorsFieldNumber;
+	}
+
+	public String getAssemblageID()
+	{
+		return assemblageID;
+	}
+
+	public void setAssemblageID(String assemblageID)
+	{
+		this.assemblageID = assemblageID;
+	}
+
+	public String getCollectionType()
+	{
+		return collectionType;
+	}
+
+	public void setCollectionType(String collectionType)
+	{
+		this.collectionType = collectionType;
 	}
 
 	public Sex getSex()

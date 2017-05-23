@@ -1,58 +1,31 @@
 package nl.naturalis.nba.api.model.summary;
 
-import org.geojson.GeoJsonObject;
 import org.geojson.Point;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
 
-import nl.naturalis.nba.api.annotations.GeoShape;
+import nl.naturalis.nba.api.model.GatheringSiteCoordinates;
 import nl.naturalis.nba.api.model.INbaModelObject;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
+/**
+ * A miniature version of {@link GatheringSiteCoordinates}.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public class SummaryGatheringSiteCoordinates implements INbaModelObject {
 
-	private Double longitudeDecimal;
-	private Double latitudeDecimal;
+	private Point geoShape;
 
-	public SummaryGatheringSiteCoordinates()
+	@JsonCreator
+	public SummaryGatheringSiteCoordinates(Point geoShape)
 	{
+		this.geoShape = geoShape;
 	}
 
-	public SummaryGatheringSiteCoordinates(Double latitude, Double longitude)
+	public Point getGeoShape()
 	{
-		this.longitudeDecimal = longitude;
-		this.latitudeDecimal = latitude;
-	}
-
-	@JsonProperty
-	@GeoShape(pointsOnly = true)
-	public GeoJsonObject getGeoShape()
-	{
-		if (longitudeDecimal == null || latitudeDecimal == null) {
-			return null;
-		}
-		return new Point(longitudeDecimal, latitudeDecimal);
-	}
-
-	public Double getLongitudeDecimal()
-	{
-		return longitudeDecimal;
-	}
-
-	public void setLongitudeDecimal(Double longitudeDecimal)
-	{
-		this.longitudeDecimal = longitudeDecimal;
-	}
-
-	public Double getLatitudeDecimal()
-	{
-		return latitudeDecimal;
-	}
-
-	public void setLatitudeDecimal(Double latitudeDecimal)
-	{
-		this.latitudeDecimal = latitudeDecimal;
+		return geoShape;
 	}
 
 }

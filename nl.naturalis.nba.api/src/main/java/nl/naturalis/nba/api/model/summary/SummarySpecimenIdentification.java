@@ -4,18 +4,34 @@ import java.util.List;
 
 import nl.naturalis.nba.api.model.DefaultClassification;
 import nl.naturalis.nba.api.model.INbaModelObject;
-import nl.naturalis.nba.api.model.Monomial;
+import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.api.model.SpecimenTypeStatus;
 import nl.naturalis.nba.api.model.TaxonomicEnrichment;
 
+/**
+ * A miniature version of {@link SpecimenIdentification}.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public class SummarySpecimenIdentification implements INbaModelObject {
 
+	private boolean preferred;
 	private SpecimenTypeStatus typeStatus;
 	private SummaryScientificName scientificName;
 	private DefaultClassification defaultClassification;
-	private List<Monomial> systemClassification;
 	private List<SummaryVernacularName> vernacularNames;
 	private List<TaxonomicEnrichment> taxonomicEnrichments;
+
+	public boolean isPreferred()
+	{
+		return preferred;
+	}
+
+	public void setPreferred(boolean preferred)
+	{
+		this.preferred = preferred;
+	}
 
 	public SpecimenTypeStatus getTypeStatus()
 	{
@@ -45,16 +61,6 @@ public class SummarySpecimenIdentification implements INbaModelObject {
 	public void setDefaultClassification(DefaultClassification defaultClassification)
 	{
 		this.defaultClassification = defaultClassification;
-	}
-
-	public List<Monomial> getSystemClassification()
-	{
-		return systemClassification;
-	}
-
-	public void setSystemClassification(List<Monomial> systemClassification)
-	{
-		this.systemClassification = systemClassification;
 	}
 
 	public List<SummaryVernacularName> getVernacularNames()

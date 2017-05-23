@@ -34,6 +34,14 @@ public class SummaryObjectUtil {
 	{
 		SummarySpecimen summary = new SummarySpecimen();
 		summary.setId(specimen.getId());
+		summary.setSourceSystem(copySourceSystem(specimen.getSourceSystem()));
+		summary.setUnitID(specimen.getUnitID());
+		summary.setCollectorsFieldNumber(specimen.getCollectorsFieldNumber());
+		summary.setAssemblageID(specimen.getAssemblageID());
+		summary.setCollectionType(specimen.getCollectionType());
+		summary.setSex(specimen.getSex());
+		summary.setPhaseOrStage(specimen.getPhaseOrStage());
+		summary.setGatheringEvent(copyGatheringEvent(specimen.getGatheringEvent()));
 		for (SpecimenIdentification si : specimen.getIdentifications()) {
 			if (si.getScientificName().getScientificNameGroup().equals(nameGroup)) {
 				summary.addMatchingIdentification(copyIdentification(si));
@@ -42,12 +50,6 @@ public class SummaryObjectUtil {
 				summary.addOtherIdentification(copyIdentification(si));
 			}
 		}
-		summary.setCollectorsFieldNumber(specimen.getCollectorsFieldNumber());
-		summary.setPhaseOrStage(specimen.getPhaseOrStage());
-		summary.setSex(specimen.getSex());
-		summary.setSourceSystem(copySourceSystem(specimen.getSourceSystem()));
-		summary.setGatheringEvent(copyGatheringEvent(specimen.getGatheringEvent()));
-		summary.setUnitID(specimen.getUnitID());
 		return summary;
 	}
 
@@ -57,7 +59,6 @@ public class SummaryObjectUtil {
 		summary.setId(taxon.getId());
 		summary.setAcceptedName(copyScientificName(taxon.getAcceptedName()));
 		summary.setDefaultClassification(taxon.getDefaultClassification());
-		summary.setSystemClassification(taxon.getSystemClassification());
 		summary.setSourceSystem(copySourceSystem(taxon.getSourceSystem()));
 		return summary;
 	}

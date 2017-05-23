@@ -5,7 +5,6 @@ import java.util.List;
 import nl.naturalis.nba.api.annotations.NotIndexed;
 import nl.naturalis.nba.api.model.DefaultClassification;
 import nl.naturalis.nba.api.model.INbaModelObject;
-import nl.naturalis.nba.api.model.Monomial;
 
 /**
  * 
@@ -20,7 +19,6 @@ public class SummaryTaxon implements INbaModelObject {
 	private SummaryScientificName acceptedName;
 	private DefaultClassification defaultClassification;
 
-	private List<Monomial> systemClassification;
 	private List<SummaryScientificName> synonyms;
 	private List<SummaryVernacularName> vernacularNames;
 
@@ -62,16 +60,6 @@ public class SummaryTaxon implements INbaModelObject {
 	public void setDefaultClassification(DefaultClassification defaultClassification)
 	{
 		this.defaultClassification = defaultClassification;
-	}
-
-	public List<Monomial> getSystemClassification()
-	{
-		return systemClassification;
-	}
-
-	public void setSystemClassification(List<Monomial> systemClassification)
-	{
-		this.systemClassification = systemClassification;
 	}
 
 	public List<SummaryScientificName> getSynonyms()

@@ -69,10 +69,10 @@ class SingleDataSourceDwcaWriter implements IDwcaWriter {
 		logger.info(fmt, cfg.getDataSetName());
 		QuerySpec query = cfg.getDataSet().getSharedDataSource().getQuerySpec();
 		try {
-			RandomEntryZipOutputStream rezos = createZipStream();
+			RandomEntryZipOutputStream zip = createZipStream();
 			logger.info("Adding CSV files");
-			writeCsvFiles(query, rezos);
-			ZipOutputStream zos = rezos.mergeEntries();
+			writeCsvFiles(query, zip);
+			ZipOutputStream zos = zip.mergeEntries();
 			writeMetaXml(cfg, zos);
 			writeEmlXml(cfg, zos);
 			zos.finish();
@@ -95,11 +95,11 @@ class SingleDataSourceDwcaWriter implements IDwcaWriter {
 		logger.info(fmt, cfg.getDataSetName());
 	}
 
-	private void writeCsvFiles(QuerySpec query, RandomEntryZipOutputStream rezos)
+	private void writeCsvFiles(QuerySpec query, RandomEntryZipOutputStream zip)
 			throws DataSetConfigurationException, DataSetWriteException, IOException,
 			InvalidQueryException
 	{
-		SingleDataSourceSearchHitHandler handler = new SingleDataSourceSearchHitHandler(cfg, rezos);
+		SingleDataSourceSearchHitHandler handler = new SingleDataSourceSearchHitHandler(cfg, zip);
 		Scroller scroller;
 		if (cfg.getDataSetType() == DwcaDataSetType.TAXON) {
 			scroller = new Scroller(query, DocumentType.TAXON, handler);
@@ -115,7 +115,7 @@ class SingleDataSourceDwcaWriter implements IDwcaWriter {
 			String msg = "Unsupported data set type: " + cfg.getDataSetType();
 			throw new DaoException(msg);
 		}
-		scroller.setTimeout(1000);
+		scroller.setTimeout(10000);
 		handler.printHeaders();
 		try {
 			scroller.scroll();
@@ -124,7 +124,7 @@ class SingleDataSourceDwcaWriter implements IDwcaWriter {
 			throw (DataSetWriteException) e;
 		}
 		handler.logStatistics();
-		rezos.flush();
+		zip.flush();
 	}
 
 	private RandomEntryZipOutputStream createZipStream()

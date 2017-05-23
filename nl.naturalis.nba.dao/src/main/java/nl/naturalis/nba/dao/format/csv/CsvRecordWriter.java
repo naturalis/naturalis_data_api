@@ -50,8 +50,9 @@ public class CsvRecordWriter {
 	public void printRecord(EntityObject entity) throws DataSetWriteException
 	{
 		for (int i = 0; i < fields.length; ++i) {
-			if (i != 0)
+			if (i != 0) {
 				ps.print(',');
+			}
 			ps.print(fields[i].getValue(entity));
 		}
 		ps.println();

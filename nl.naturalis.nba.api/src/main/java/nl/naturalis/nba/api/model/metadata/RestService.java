@@ -1,5 +1,11 @@
 package nl.naturalis.nba.api.model.metadata;
 
+/**
+ * A standard Java bean encapsulating info about one of the NBA's REST services.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public class RestService {
 
 	private String endPoint;

@@ -48,7 +48,7 @@ import nl.naturalis.nba.dao.util.es.ESUtil;
 class MultiDataSourceDwcaWriter implements IDwcaWriter {
 
 	private static Logger logger = LogManager.getLogger(MultiDataSourceDwcaWriter.class);
-	private static TimeValue TIME_OUT = new TimeValue(500);
+	private static TimeValue TIME_OUT = new TimeValue(10000);
 
 	private DwcaConfig dwcaConfig;
 	private ZipOutputStream zos;

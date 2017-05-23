@@ -26,22 +26,22 @@ final class SingleDataSourceSearchHitHandler implements SearchHitHandler {
 
 	private static final Logger logger = getLogger(SingleDataSourceSearchHitHandler.class);
 
-	private final DwcaConfig dwcaConfig;
-	private final RandomEntryZipOutputStream rezos;
-	private final Entity[] entities;
-	private final String[] fileNames;
-	private final CsvRecordWriter[] printers;
-	private final DocumentFlattener[] flatteners;
+	private DwcaConfig dwcaConfig;
+	private RandomEntryZipOutputStream zip;
+	private Entity[] entities;
+	private String[] fileNames;
+	private CsvRecordWriter[] printers;
+	private DocumentFlattener[] flatteners;
 
 	private int processed = 0;
-	private final int[] written;
-	private final int[] filtered;
+	private int[] written;
+	private int[] filtered;
 
 	SingleDataSourceSearchHitHandler(DwcaConfig dwcaConfig, RandomEntryZipOutputStream rezos)
 			throws DataSetConfigurationException
 	{
 		this.dwcaConfig = dwcaConfig;
-		this.rezos = rezos;
+		this.zip = rezos;
 		entities = dwcaConfig.getDataSet().getEntities();
 		fileNames = getCsvFileNames();
 		printers = getPrinters(rezos);
@@ -65,19 +65,19 @@ final class SingleDataSourceSearchHitHandler implements SearchHitHandler {
 							continue ENTITY_OBJECT_LOOP;
 						}
 					}
-					rezos.setActiveEntry(fileNames[i]);
+					zip.setActiveEntry(fileNames[i]);
 					written[i] += 1;
 					printers[i].printRecord(eo);
 				}
 			}
 			if (++processed % 10000 == 0) {
-				rezos.flush();
+				zip.flush();
 			}
 		}
 		catch (IOException e) {
 			throw new DaoException(e);
 		}
-		if (logger.isDebugEnabled() && processed % 100000 == 0) {
+		if (logger.isDebugEnabled() && processed % 10000 == 0) {
 			logger.debug("Documents processed: " + processed);
 		}
 		return true;
@@ -86,7 +86,7 @@ final class SingleDataSourceSearchHitHandler implements SearchHitHandler {
 	void printHeaders() throws IOException
 	{
 		for (int i = 0; i < printers.length; i++) {
-			rezos.setActiveEntry(fileNames[i]);
+			zip.setActiveEntry(fileNames[i]);
 			printers[i].printBOM();
 			printers[i].printHeader();
 		}

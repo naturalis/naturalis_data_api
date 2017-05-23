@@ -18,7 +18,6 @@ import nl.naturalis.nba.dao.format.config.PluginParamXmlConfig;
 
 class FieldBuilder {
 
-	@SuppressWarnings("unused")
 	private static Logger logger = LogManager.getLogger(FieldBuilder.class);
 
 	/* Pick an arbitrary class from the package containing the calculators */
@@ -186,6 +185,9 @@ class FieldBuilder {
 			}
 		}
 		try {
+			if (logger.isDebugEnabled()) {
+				logger.debug("Creating calculator for field {}: {}", fieldName, cls.getName());
+			}
 			return (ICalculator) cls.newInstance();
 		}
 		catch (ClassCastException e) {

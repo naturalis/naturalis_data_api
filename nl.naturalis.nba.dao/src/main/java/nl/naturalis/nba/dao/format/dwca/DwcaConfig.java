@@ -75,7 +75,7 @@ public class DwcaConfig {
 			throws DataSetConfigurationException, NoSuchDataSetException
 	{
 		String type = dataSetType.name().toLowerCase();
-		logger.info("Loading configuration for data set \"{}\"", dataSetName);
+		logger.info("Configuring DwCA download for \"{}\"", dataSetName);
 		this.dataSetName = dataSetName;
 		this.dataSetType = dataSetType;
 		this.myConfig = dwcaConfig.getSection(type);

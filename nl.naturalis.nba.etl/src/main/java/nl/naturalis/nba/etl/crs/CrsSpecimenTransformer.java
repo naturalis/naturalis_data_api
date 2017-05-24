@@ -121,8 +121,9 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 
 		Specimen specimen = new Specimen();
 
+		String collectionType = val(record, "abcd:CollectionType");
 		for (Element e : elems) {
-			SpecimenIdentification si = getIdentification(e);
+			SpecimenIdentification si = getIdentification(e, collectionType);
 			if (si != null) {
 				specimen.addIndentification(si);
 			}
@@ -157,7 +158,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 			specimen.setLicense(LICENCE);
 			specimen.setRecordBasis(recordBasis);
 			specimen.setKindOfUnit(val(record, "abcd:KindOfUnit"));
-			specimen.setCollectionType(val(record, "abcd:CollectionType"));
+			specimen.setCollectionType(collectionType);
 			specimen.setTitle(val(record, "abcd:Title"));
 			specimen.setNumberOfSpecimen(ival(record, "abcd:AccessionSpecimenNumbers"));
 			tmp = val(record, "abcd:ObjectPublic");
@@ -183,13 +184,14 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 		}
 	}
 
-	private SpecimenIdentification getIdentification(Element elem)
+	private SpecimenIdentification getIdentification(Element elem, String collectionType)
 	{
 
-		ScientificName sn = getScientificName(elem);
+		ScientificName sn = getScientificName(elem, collectionType);
 		if (sn.getFullScientificName() == null) {
-			if (!suppressErrors)
+			if (!suppressErrors) {
 				warn("No scientific name in identification");
+			}
 			return null;
 		}
 		SpecimenIdentification si = new SpecimenIdentification();
@@ -201,7 +203,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 		si.setAssociatedMineralName(val(elem, "abcd:AssociatedMineralName"));
 		si.setRockMineralUsage(val(elem, "abcd:RockMineralUsage"));
 		si.setRockType(val(elem, "abcd:RockType"));
-		si.setScientificName(getScientificName(elem));
+		si.setScientificName(sn);
 		List<Monomial> sc = getSystemClassification(elem, si.getScientificName());
 		si.setSystemClassification(sc);
 		DefaultClassification dc = DefaultClassification.fromSystemClassification(sc);
@@ -222,7 +224,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 		return si;
 	}
 
-	private ScientificName getScientificName(Element elem)
+	private ScientificName getScientificName(Element elem, String collectionType)
 	{
 		ScientificName sn = new ScientificName();
 		sn.setFullScientificName(val(elem, "abcd:FullScientificNameString"));
@@ -264,7 +266,12 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 			if (sb.length() != 0)
 				sn.setFullScientificName(sb.toString().trim());
 		}
-		TransformUtil.setScientificNameGroup(sn);
+		if (collectionType.equals("Mineralogy and Petrology")) {
+			sn.setScientificNameGroup(sn.getFullScientificName());
+		}
+		else {
+			TransformUtil.setScientificNameGroup(sn);
+		}
 		return sn;
 	}
 

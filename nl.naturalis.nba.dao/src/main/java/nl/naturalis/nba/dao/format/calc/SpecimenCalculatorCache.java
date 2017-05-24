@@ -24,12 +24,11 @@ class SpecimenCalculatorCache {
 
 	SpecimenIdentification getPreferredOrFirstIdentitifcation(EntityObject entity)
 	{
+		/*
+		 * Assume identification are already sorted (preferred first). This is
+		 * indeed done during import.
+		 */
 		Specimen specimen = getSpecimen(entity);
-		for (SpecimenIdentification si : specimen.getIdentifications()) {
-			if (si.isPreferred()) {
-				return si;
-			}
-		}
 		return specimen.getIdentifications().iterator().next();
 	}
 

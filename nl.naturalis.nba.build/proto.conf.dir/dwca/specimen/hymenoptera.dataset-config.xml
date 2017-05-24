@@ -7,7 +7,7 @@
 				<condition>
 					<field>collectionType</field>
 					<operator>EQUALS</operator>
-					<value>Mammalia</value>
+					<value>Hymenoptera</value>
 				</condition>
 			</conditions>
 		</query-spec>

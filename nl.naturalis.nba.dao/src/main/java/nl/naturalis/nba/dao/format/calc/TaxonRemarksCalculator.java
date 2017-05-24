@@ -5,14 +5,14 @@ import static nl.naturalis.nba.dao.format.FormatUtil.EMPTY_STRING;
 import java.util.List;
 import java.util.Map;
 
-import nl.naturalis.nba.api.model.ServiceAccessPoint;
-import nl.naturalis.nba.api.model.Specimen;
+import nl.naturalis.nba.api.model.Reference;
+import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.dao.format.CalculationException;
 import nl.naturalis.nba.dao.format.CalculatorInitializationException;
 import nl.naturalis.nba.dao.format.EntityObject;
 import nl.naturalis.nba.dao.format.ICalculator;
 
-public class SpecimenMultiMediaCalculator implements ICalculator {
+public class TaxonRemarksCalculator implements ICalculator {
 
 	@Override
 	public void initialize(Map<String, String> args) throws CalculatorInitializationException
@@ -23,20 +23,19 @@ public class SpecimenMultiMediaCalculator implements ICalculator {
 	public Object calculateValue(EntityObject entity) throws CalculationException
 	{
 		SpecimenCalculatorCache cache = SpecimenCalculatorCache.instance;
-		Specimen specimen = cache.getSpecimen(entity);
-		List<ServiceAccessPoint> saps = specimen.getAssociatedMultiMediaUris();
-		if (saps == null) {
+		SpecimenIdentification si = cache.getPreferredOrFirstIdentitifcation(entity);
+		List<Reference> refs = si.getScientificName().getReferences();
+		if (refs == null) {
 			return EMPTY_STRING;
 		}
-		StringBuilder sb = new StringBuilder(80 * saps.size());
-		int i = 0;
-		for (ServiceAccessPoint sap : saps) {
-			if (i++ != 0) {
-				sb.append('|');
-			}
-			sb.append(sap.getAccessUri());
+		Reference ref = refs.iterator().next();
+		if (ref.getAuthor() == null) {
+			return EMPTY_STRING;
 		}
-		return sb.toString();
+		String fullName = ref.getAuthor().getFullName();
+		if (fullName == null) {
+			return EMPTY_STRING;
+		}
+		return fullName.replaceAll("[,\\[\\]]", "");
 	}
-
 }

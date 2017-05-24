@@ -2,18 +2,17 @@ package nl.naturalis.nba.etl.crs;
 
 import static nl.naturalis.nba.api.model.SourceSystem.CRS;
 import static nl.naturalis.nba.dao.DocumentType.SPECIMEN;
-import static nl.naturalis.nba.etl.ETLUtil.getTestGenera;
 import static nl.naturalis.nba.etl.ETLConstants.LICENCE;
 import static nl.naturalis.nba.etl.ETLConstants.LICENCE_TYPE;
 import static nl.naturalis.nba.etl.ETLConstants.SOURCE_INSTITUTION_ID;
+import static nl.naturalis.nba.etl.ETLUtil.getTestGenera;
+import static nl.naturalis.nba.etl.TransformUtil.sortIdentificationsPreferredFirst;
 import static nl.naturalis.nba.utils.StringUtil.rpad;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -139,16 +138,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 		stats.recordsAccepted++;
 		stats.objectsProcessed++;
 
-		Collections.sort(specimen.getIdentifications(), new Comparator<SpecimenIdentification>() {
-
-			public int compare(SpecimenIdentification o1, SpecimenIdentification o2)
-			{
-				if (o1.isPreferred()) {
-					return o2.isPreferred() ? 0 : -1;
-				}
-				return o2.isPreferred() ? 1 : 0;
-			}
-		});
+		sortIdentificationsPreferredFirst(specimen);
 
 		try {
 			String tmp;

@@ -9,6 +9,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -20,8 +22,10 @@ import nl.naturalis.nba.api.model.MultiMediaContentIdentification;
 import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.Specimen;
+import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.api.model.TaxonomicIdentification;
+import nl.naturalis.nba.utils.ObjectUtil;
 import nl.naturalis.nba.utils.StringUtil;
 
 /**
@@ -239,6 +243,37 @@ public class TransformUtil {
 			if (logger.isDebugEnabled())
 				logger.debug(String.format(EQUALIZE, SUBSPECIES, CLASSIFICATION, NAME,
 						sn.getInfraspecificEpithet()));
+		}
+	}
+
+	/**
+	 * Sorts the identifications of a {@link Specimen} according to whether they
+	 * are preferred (first) or not (last). Secundarily the specimens are sorted
+	 * by their full scientific name.
+	 * 
+	 * @param specimen
+	 */
+	public static void sortIdentificationsPreferredFirst(Specimen specimen)
+	{
+		if (specimen.getIdentifications() != null) {
+			Collections.sort(specimen.getIdentifications(),
+					new Comparator<SpecimenIdentification>() {
+
+						public int compare(SpecimenIdentification o1, SpecimenIdentification o2)
+						{
+							if (o1.isPreferred()) {
+								if (!o2.isPreferred()) {
+									return -1;
+								}
+							}
+							if (o2.isPreferred()) {
+								return 1;
+							}
+							String fsn1 = o1.getScientificName().getFullScientificName();
+							String fsn2 = o2.getScientificName().getFullScientificName();
+							return ObjectUtil.compare(fsn1, fsn2);
+						}
+					});
 		}
 	}
 

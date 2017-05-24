@@ -5,14 +5,14 @@ import static nl.naturalis.nba.dao.format.FormatUtil.EMPTY_STRING;
 import java.util.List;
 import java.util.Map;
 
-import nl.naturalis.nba.api.model.ServiceAccessPoint;
+import nl.naturalis.nba.api.model.GatheringSiteCoordinates;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.dao.format.CalculationException;
 import nl.naturalis.nba.dao.format.CalculatorInitializationException;
 import nl.naturalis.nba.dao.format.EntityObject;
 import nl.naturalis.nba.dao.format.ICalculator;
 
-public class SpecimenMultiMediaCalculator implements ICalculator {
+public class VerbatimCoordinatesCalculator implements ICalculator {
 
 	@Override
 	public void initialize(Map<String, String> args) throws CalculatorInitializationException
@@ -24,19 +24,23 @@ public class SpecimenMultiMediaCalculator implements ICalculator {
 	{
 		SpecimenCalculatorCache cache = SpecimenCalculatorCache.instance;
 		Specimen specimen = cache.getSpecimen(entity);
-		List<ServiceAccessPoint> saps = specimen.getAssociatedMultiMediaUris();
-		if (saps == null) {
+		List<GatheringSiteCoordinates> coords = specimen.getGatheringEvent().getSiteCoordinates();
+		if (coords == null || coords.size() == 1) {
 			return EMPTY_STRING;
 		}
-		StringBuilder sb = new StringBuilder(80 * saps.size());
+		StringBuilder lats = new StringBuilder(80);
+		StringBuilder lons = new StringBuilder(80);
 		int i = 0;
-		for (ServiceAccessPoint sap : saps) {
+		for (GatheringSiteCoordinates coord : coords) {
 			if (i++ != 0) {
-				sb.append('|');
+				lats.append(',');
+				lons.append(',');
 			}
-			sb.append(sap.getAccessUri());
+			lats.append(coord.getLatitudeDecimal());
+			lons.append(coord.getLongitudeDecimal());
 		}
-		return sb.toString();
+		lats.append('|').append(lons);
+		return lats.toString();
 	}
 
 }

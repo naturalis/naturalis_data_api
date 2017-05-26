@@ -1,3 +1,66 @@
+RELEASE NOTES V 2.4
+
+* NBAVTWO-7 Licence and copyright info for NSR is
+  now provided by and set from NSR source files.
+  
+* NBAVTWO-113 There is a service that allows you
+  to retrieve the names of all DwCA datasets for
+  occurence data: /specimen/dwca/getDataSetNames
+  
+* NBAVTWO-116 There is a service that allows you
+  to trieve the unitIDs of all specimens within
+  a "special" collection (e.g. Arts, Sybold):
+  /specimen/getIdsInCollection/{collection-name}.
+  Use in combination with /specimen/getNamedCollections
+  
+* NBAVTWO-131 Language now set for species
+  description within NSR Taxon documents
+  
+* NBAVTWO-147; NBAVTWO-148; NBAVTWO-149; NBAVTWO-150
+  There are two typical grouping queries exposed as
+  service:
+  /<document-type>/getDistinctValues/<field>
+  /<document-type>/getDistinctValuesPerGroup/<field>
+  See javadocs for INbaAccess for an explanation
+  
+* NBAVTWO-227 DwCA files for specimens now contain
+  urls for associated multimedia in occurrence.txt
+  
+* NBAVTWO-242 You can now search using "whole dates"
+  (format "yyyy-MM")
+  
+* NBAVTWO-380 There is a new metadata service that
+  tells you which date formats you are allowed to
+  use in queries: /metadata/getAllowedDateFormats
+  
+* NBAVTWO-289 collectors field number is now set
+
+* NBAVTWO-295; NBAVTWO-354 The ScientificNameGroup
+  document type has been extended with the following
+  fields:
+  specimens.collectionType
+  specimens.assemblageID
+  specimens.identifications.preferred
+  
+* NBAVTWO-353 type status is now also set for
+  multimedia objects
+  
+* NBAVTWO-356 The index.max_result_window configuration
+  settings has been raised to 5,000,000. In other words
+  you are now be able to specify a "from" parameter of
+  4,999,990 given the default "size" of 10 documents per
+  page (or 4,999,925 with a page size of 75 documents)
+  See also e.g. service /specimen/metadata/getSettings
+  
+* NBAVTWO-368 You can no specify a query condition which
+  is the equivalent of SQL's "WHERE 1 = 1" or "WHERE true":
+  just leave field, operator and value all blank
+  
+* NBAVTWO-370 URL-type fields no longer support the
+  LIKE operator
+  
+
+
 RELEASE NOTES V 2.3
 
 * NBAVTWO-263 There now is a metadata service that

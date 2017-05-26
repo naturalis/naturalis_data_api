@@ -162,16 +162,16 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
 	/**
 	 * <p>
 	 * Returns the unique values of the specified field. The result is returned
-	 * as a {@link Map} with the each key specifying a unique value and the
-	 * value specifying a document counte. Note that if the specified field is a
-	 * multi-valued field (i.e. it translates into a {@link Collection} or
-	 * array), the sum of the document counts may add up to more than the total
-	 * number of documents for the applicable document type. You may specify
-	 * {@code null} for the {@code querySpec} argument if you simply want a
-	 * total document count. Otherwise you should only set the query conditions
-	 * and (possibly) the {@link LogicalOperator logical operator} on the
-	 * {@code QuerySpec}. Setting anything else on the {@code QuerySpec} has no
-	 * effect.
+	 * as a {@link Map} with the each key specifying one of the unique values
+	 * and the value specifying a document count (the number of documents for
+	 * which the specified field has that value). Note that if the specified
+	 * field is an {@link Collection} or array, the sum of the document counts
+	 * may add up to more than the total number of documents in the index. You
+	 * may specify {@code null} for the {@code querySpec} argument if you simply
+	 * want a total document count. Otherwise you should only set the query
+	 * conditions and (possibly) the {@link LogicalOperator logical operator} on
+	 * the {@code QuerySpec}. Setting anything else on the {@code QuerySpec} has
+	 * no effect.
 	 * </p>
 	 * <h5>REST API</h5>
 	 * <p>
@@ -202,10 +202,10 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
 
 	/**
 	 * <p>
-	 * Returns the unique values of the specified field, grouping them using
-	 * another field . The field on which to group is specified using the
-	 * {@code groupField} argument. The field to collect the values from is
-	 * specified using the {@code valuesField}. The result is returned as a
+	 * Returns the unique values of the specified field, given the value of
+	 * another field. For example: return all different types statuses per
+	 * collection type. Here, the "collectionType" field is the groupField while
+	 * the typeStatus field is the valuesField. The result is returned as a
 	 * {@link Map} where each key is a group and each value is the set of unique
 	 * values for that group. Null values are excluded, both for the
 	 * {@code groupField} and for the {@code valuesField}.

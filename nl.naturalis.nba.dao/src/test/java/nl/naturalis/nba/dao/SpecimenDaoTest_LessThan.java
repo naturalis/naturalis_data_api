@@ -51,7 +51,7 @@ public class SpecimenDaoTest_LessThan {
 	}
 
 	@Test
-	public void test_01() throws InvalidQueryException
+	public void test_01a() throws InvalidQueryException
 	{
 		/*
 		 * All dateTimeBegin values of the test specimens lie past 2000-01-01,
@@ -59,6 +59,66 @@ public class SpecimenDaoTest_LessThan {
 		 * (LESS_THAN) we should get back nothing
 		 */
 		String to = "2000-01-01";
+		QueryCondition condition = new QueryCondition("gatheringEvent.dateTimeBegin", LT, to);
+		QuerySpec qs = new QuerySpec();
+		qs.addCondition(condition);
+		SpecimenDao dao = new SpecimenDao();
+		QueryResult<Specimen> result = dao.query(qs);
+		assertEquals("01", 0, result.size());
+	}
+
+	@Test
+	public void test_01b() throws InvalidQueryException
+	{
+		/*
+		 * Just test with some other of the allowed date formats
+		 */
+		String to = "2000-01";
+		QueryCondition condition = new QueryCondition("gatheringEvent.dateTimeBegin", LT, to);
+		QuerySpec qs = new QuerySpec();
+		qs.addCondition(condition);
+		SpecimenDao dao = new SpecimenDao();
+		QueryResult<Specimen> result = dao.query(qs);
+		assertEquals("01", 0, result.size());
+	}
+
+	@Test
+	public void test_01c() throws InvalidQueryException
+	{
+		/*
+		 * Just test with some other of the allowed date formats
+		 */
+		String to = "2000";
+		QueryCondition condition = new QueryCondition("gatheringEvent.dateTimeBegin", LT, to);
+		QuerySpec qs = new QuerySpec();
+		qs.addCondition(condition);
+		SpecimenDao dao = new SpecimenDao();
+		QueryResult<Specimen> result = dao.query(qs);
+		assertEquals("01", 0, result.size());
+	}
+
+	@Test
+	public void test_01d() throws InvalidQueryException
+	{
+		/*
+		 * Just test with some other of the allowed date formats
+		 */
+		String to = "2000-01-01 00:00:00";
+		QueryCondition condition = new QueryCondition("gatheringEvent.dateTimeBegin", LT, to);
+		QuerySpec qs = new QuerySpec();
+		qs.addCondition(condition);
+		SpecimenDao dao = new SpecimenDao();
+		QueryResult<Specimen> result = dao.query(qs);
+		assertEquals("01", 0, result.size());
+	}
+
+	@Test
+	public void test_01e() throws InvalidQueryException
+	{
+		/*
+		 * Just test with some other of the allowed date formats
+		 */
+		String to = "2000-01-01T00:00:00+200";
 		QueryCondition condition = new QueryCondition("gatheringEvent.dateTimeBegin", LT, to);
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
@@ -77,6 +137,54 @@ public class SpecimenDaoTest_LessThan {
 		 * null value).
 		 */
 		String from = "2000-01-01";
+		QueryCondition condition = new QueryCondition("gatheringEvent.dateTimeBegin", GT, from);
+		QuerySpec qs = new QuerySpec();
+		qs.addCondition(condition);
+		SpecimenDao dao = new SpecimenDao();
+		QueryResult<Specimen> result = dao.query(qs);
+		assertEquals("01", 4, result.size());
+	}
+
+	@Test
+	public void test_02b() throws InvalidQueryException
+	{
+		String from = "2000-01";
+		QueryCondition condition = new QueryCondition("gatheringEvent.dateTimeBegin", GT, from);
+		QuerySpec qs = new QuerySpec();
+		qs.addCondition(condition);
+		SpecimenDao dao = new SpecimenDao();
+		QueryResult<Specimen> result = dao.query(qs);
+		assertEquals("01", 4, result.size());
+	}
+
+	@Test
+	public void test_02c() throws InvalidQueryException
+	{
+		String from = "2000";
+		QueryCondition condition = new QueryCondition("gatheringEvent.dateTimeBegin", GT, from);
+		QuerySpec qs = new QuerySpec();
+		qs.addCondition(condition);
+		SpecimenDao dao = new SpecimenDao();
+		QueryResult<Specimen> result = dao.query(qs);
+		assertEquals("01", 4, result.size());
+	}
+
+	@Test
+	public void test_02d() throws InvalidQueryException
+	{
+		String from = "2000-01-01 00:00:00";
+		QueryCondition condition = new QueryCondition("gatheringEvent.dateTimeBegin", GT, from);
+		QuerySpec qs = new QuerySpec();
+		qs.addCondition(condition);
+		SpecimenDao dao = new SpecimenDao();
+		QueryResult<Specimen> result = dao.query(qs);
+		assertEquals("01", 4, result.size());
+	}
+
+	@Test
+	public void test_02e() throws InvalidQueryException
+	{
+		String from = "2000-01-01T00:00:00+200";
 		QueryCondition condition = new QueryCondition("gatheringEvent.dateTimeBegin", GT, from);
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);

@@ -160,6 +160,19 @@ public class NbaMetaDataResource {
 		}
 	}
 
+	@GET
+	@Path("/getAllowedDateFormats")
+	@Produces(JSON_CONTENT_TYPE)
+	public String[] getAllowedDateFormats(@Context UriInfo uriInfo)
+	{
+		try {
+			return new NbaMetaDataDao().getAllowedDateFormats();
+		}
+		catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
+
 	private static RestService[] restServices;
 
 	@GET

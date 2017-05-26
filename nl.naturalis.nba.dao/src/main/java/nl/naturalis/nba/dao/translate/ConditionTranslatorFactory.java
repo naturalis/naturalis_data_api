@@ -16,6 +16,14 @@ import nl.naturalis.nba.common.es.map.SimpleField;
 import nl.naturalis.nba.common.json.JsonDeserializationException;
 import nl.naturalis.nba.dao.DocumentType;
 
+/**
+ * A factory for {@link ConditionTranslator} instances. Creates a
+ * {@link ConditionTranslator} for the {@link QueryCondition} passed to its
+ * factory methods.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public class ConditionTranslatorFactory {
 
 	private static final Logger logger = getLogger(ConditionTranslatorFactory.class);
@@ -56,7 +64,10 @@ public class ConditionTranslatorFactory {
 		if (TranslatorUtil.isTrueCondition(condition)) {
 			return new TrueConditionTranslator(condition, mappingInfo);
 		}
-		new ConditionValidator(condition, mappingInfo).validateCondition();
+		ConditionValidator validator = new ConditionValidator(condition, mappingInfo);
+		validator.validateCondition();
+		ConditionPreprocessor preprocessor = new ConditionPreprocessor(condition, mappingInfo);
+		preprocessor.preprocessCondition();
 		ConditionTranslator translator = null;
 		switch (condition.getOperator()) {
 			case EQUALS:
@@ -128,9 +139,9 @@ public class ConditionTranslatorFactory {
 				break;
 		}
 		if (logger.isDebugEnabled()) {
-			String s = condition.getField().toString();
-			String t = translator.getClass().getSimpleName();
-			logger.debug("Condition on field {} translated using {}", s, t);
+			String s = translator.getClass().getSimpleName();
+			String t = condition.getField().toString();
+			logger.debug("Instantiating {} for condition on field {}", s, t);
 		}
 		return translator;
 	}

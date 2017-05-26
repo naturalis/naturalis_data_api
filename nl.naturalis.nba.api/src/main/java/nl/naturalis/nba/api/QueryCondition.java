@@ -71,21 +71,26 @@ import java.util.List;
  * querySpec.addCondition(new Condition(NOT, "sourceSystem.code", EQUALS, "CRS"));
  * </pre>
  * 
- * <h3>The "always true" query condition</h3>
+ * <h3>The ALWAYS TRUE query condition</h3>
  * 
  * <p>
  * Analogous to SQL query conditions that always evaluate to true (like
  * {@code WHERE 1 = 1}), a {@code QueryCondition} whose field, operator and
- * value are not set, will be interpreted as an "always true" query condition.
- * In other words: the following condition always evaluates to true:
+ * value are all {@code null}, will be interpreted as an ALWAYS TRUE query
+ * condition. In other words: the following condition always evaluates to true:
  * </p>
  * 
  * <pre>
  * 
- * QueryCondition alwaysTrue = new QueryCondition();
+ * QueryCondition TRUE = new QueryCondition();
  * </pre>
  * <p>
- * Note that you can still add AND and OR siblings to this query condition.
+ * Note that you can still add AND siblings to this query condition. (You could
+ * also add OR siblings, but it would be pointless because whatever OR sibling
+ * you add, the condition as a whole will still evaluate to true.) Also note
+ * that you can always write you {@link QuerySpec} without having to resort to
+ * the ALWAYS TRUE condition, but it might be easier to conceive your query
+ * with the ALWAYS TRUE condition at your disposal.
  * </p>
  * 
  * <h3>Scoring and non-scoring conditions</h3>

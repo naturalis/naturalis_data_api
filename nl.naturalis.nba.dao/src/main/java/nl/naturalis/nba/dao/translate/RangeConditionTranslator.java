@@ -1,6 +1,5 @@
 package nl.naturalis.nba.dao.translate;
 
-import static nl.naturalis.nba.dao.translate.TranslatorUtil.convertValueForDateField;
 import static nl.naturalis.nba.dao.translate.TranslatorUtil.ensureValueIsNotNull;
 import static nl.naturalis.nba.dao.translate.TranslatorUtil.getESField;
 import static nl.naturalis.nba.dao.translate.TranslatorUtil.invalidDataType;
@@ -37,7 +36,6 @@ abstract class RangeConditionTranslator extends ConditionTranslator {
 		ESField field = getESField(condition, mappingInfo);
 		switch (field.getType()) {
 			case DATE:
-				convertValueForDateField(condition);
 				break;
 			case INTEGER:
 			case BYTE:

@@ -1,9 +1,6 @@
 package nl.naturalis.nba.dao.translate;
 
-import static nl.naturalis.nba.common.es.map.ESDataType.DATE;
-import static nl.naturalis.nba.dao.translate.TranslatorUtil.convertValuesForDateField;
 import static nl.naturalis.nba.dao.translate.TranslatorUtil.ensureValueIsNotNull;
-import static nl.naturalis.nba.dao.translate.TranslatorUtil.getESField;
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.existsQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termsQuery;
@@ -16,7 +13,6 @@ import org.elasticsearch.index.query.TermsQueryBuilder;
 
 import nl.naturalis.nba.api.InvalidConditionException;
 import nl.naturalis.nba.api.QueryCondition;
-import nl.naturalis.nba.common.es.map.ESField;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 
 /**
@@ -50,10 +46,6 @@ class InConditionTranslator extends ConditionTranslator {
 	void preprocess() throws InvalidConditionException
 	{
 		ensureValueIsNotNull(condition);
-		ESField field = getESField(condition, mappingInfo);
-		if (field.getType() == DATE) {
-			convertValuesForDateField(condition);
-		}
 	}
 
 	private QueryBuilder isNullOrOneOf(List<?> values) throws InvalidConditionException
@@ -67,7 +59,9 @@ class InConditionTranslator extends ConditionTranslator {
 	private TermsQueryBuilder isOneOf(List<?> values) throws InvalidConditionException
 	{
 		if (values.size() > 1024) {
-			String msg = "Too many values to compare using operator IN: " + values.size();
+			/* Limit set by Elasticsearch termsQuery */
+			String msg = "Number of values passed to IN operator exceeds maximum of 1024: "
+					+ values.size();
 			throw new InvalidConditionException(msg);
 		}
 		String field = condition.getField().toString();

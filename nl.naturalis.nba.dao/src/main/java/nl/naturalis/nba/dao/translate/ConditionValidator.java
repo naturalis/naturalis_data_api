@@ -11,8 +11,12 @@ import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.common.es.map.SimpleField;
 
 /**
- * Ensures the a {@link QueryCondition} specifies an existing field and that it
- * is a primitive field (not an object).
+ * Executes some generic, operator-independent validations of a
+ * {@link QueryCondition}.
+ * <ul>
+ * <li>Ensures the a {@link QueryCondition} specifies an existing field
+ * <li>Ensures field is queryable
+ * </ul>
  * 
  * @author Ayco Holleman
  *

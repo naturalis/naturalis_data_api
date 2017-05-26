@@ -172,4 +172,25 @@ public interface INbaMetaData {
 	 */
 	TaxonomicStatus[] getControlledListTaxonomicStatus();
 
+	/**
+	 * Returns the date formats that you can use to query date fields. The
+	 * default date format is "yyyy-MM-dd'T'HH:mm:ss.SSSZ". Strings using one of
+	 * the other allowed date formats are first converted to this format before
+	 * being embedded in an Elasticsearch query.
+	 * </p>
+	 * <h5>REST API</h5>
+	 * <p>
+	 * The NBA REST API exposes this method through a GET request with the
+	 * following end point:
+	 * </p>
+	 * <p>
+	 * <code>
+	 * http://api.biodiversitydata.nl/v2/metadata/getAllowedDateFormats
+	 * </code>
+	 * </p>
+	 * 
+	 * @return
+	 */
+	String[] getAllowedDateFormats();
+
 }

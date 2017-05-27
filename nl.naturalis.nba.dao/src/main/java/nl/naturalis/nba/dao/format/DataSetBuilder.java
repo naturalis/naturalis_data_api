@@ -227,6 +227,9 @@ public class DataSetBuilder {
 			return root;
 		}
 		catch (JAXBException e) {
+			if(e.getMessage() == null) {
+				throw new DataSetConfigurationException(e);
+			}
 			if (e.getMessage().indexOf(
 					"unexpected element (uri:\"http://data.naturalis.nl/nba-dataset-config\", "
 							+ "local:\"dataset-config\")") != -1) {

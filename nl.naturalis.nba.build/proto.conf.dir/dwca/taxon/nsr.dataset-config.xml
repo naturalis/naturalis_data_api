@@ -17,6 +17,9 @@
 			<field name="taxonID" term="http://rs.tdwg.org/dwc/terms/taxonID">
 				<path>sourceSystemId</path>
 			</field>
+			<field name="acceptedNameUsageId" term="http://rs.tdwg.org/dwc/terms/acceptedNameUsageId">
+				<constant></constant>
+			</field>
 			<field name="scientificName" term="http://rs.tdwg.org/dwc/terms/scientificName">
 				<path>acceptedName.fullScientificName</path>
 			</field>
@@ -68,6 +71,9 @@
 		<path>synonyms</path>
 		<mapping>
 			<field name="taxonID" term="http://rs.tdwg.org/dwc/terms/taxonID">
+				<constant></constant>
+			</field>
+			<field name="acceptedNameUsageId" term="http://rs.tdwg.org/dwc/terms/acceptedNameUsageId">
 				<path>sourceSystemId</path>
 			</field>
 			<field name="scientificName" term="http://rs.tdwg.org/dwc/terms/scientificName">
@@ -77,7 +83,43 @@
 				<path relative="true">authorshipVerbatim</path>
 			</field>
 			<field name="taxonomicStatus" term="http://rs.tdwg.org/dwc/terms/taxonomicStatus">
-				<path relative="true">taxonomicStatus</path>
+				<constant>synonym</constant>
+			</field>
+			<field name="taxonRank" term="http://rs.tdwg.org/dwc/terms/taxonRank">
+				<constant></constant>
+			</field>
+			<field name="kingdom" term="http://rs.tdwg.org/dwc/terms/kingdom">
+				<path>defaultClassification.kingdom</path>
+			</field>
+			<field name="phylum" term="http://rs.tdwg.org/dwc/terms/phylum">
+				<constant></constant>
+			</field>
+			<field name="class" term="http://rs.tdwg.org/dwc/terms/class">
+				<constant></constant>
+			</field>
+			<field name="order" term="http://rs.tdwg.org/dwc/terms/order">
+				<constant></constant>
+			</field>
+			<field name="family" term="http://rs.tdwg.org/dwc/terms/family">
+				<constant></constant>
+			</field>
+			<field name="genus" term="http://rs.tdwg.org/dwc/terms/genus">
+				<path relative="true">genusOrMonomial</path>
+			</field>
+			<field name="subgenus" term="http://rs.tdwg.org/dwc/terms/subgenus">
+				<path relative="true">subgenus</path>
+			</field>
+			<field name="specificEpithet" term="http://rs.tdwg.org/dwc/terms/specificEpithet">
+				<path relative="true">specificEpithet</path>
+			</field>
+			<field name="infraspecificEpithet" term="http://rs.tdwg.org/dwc/terms/infraspecificEpithet">
+				<path relative="true">infraspecificEpithet</path>
+			</field>
+			<field name="occurrenceStatus" term="http://rs.tdwg.org/dwc/terms/occurrenceStatus">
+				<constant></constant>
+			</field>
+			<field name="references" term="http://purl.org/dc/terms/references">
+				<constant></constant>
 			</field>
 		</mapping>
 	</entity>

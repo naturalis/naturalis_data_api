@@ -38,12 +38,17 @@ import nl.naturalis.nba.dao.translate.QuerySpecTranslator;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 
 /**
- * Manages the assembly and creation of DarwinCore archives. Use this class if
- * you cannot generate all CSV files from a single query (each CSV file requires
- * a new query to be executed).
+ * Manages the assembly and creation of DarwinCore archives. Use this class if you cannot
+ * generate all CSV files from a single query (each CSV file requires a new query to be
+ * executed). With this class a separate query is issued for each entity.
  * 
  * @author Ayco Holleman
  *
+ */
+/*
+ * NB Since we currently don't have to deal with this situation this class has fallen a
+ * bit behind the SingleDataSourceDwcaWriter, so we need to update it once we run into
+ * this situation.
  */
 class MultiDataSourceDwcaWriter implements IDwcaWriter {
 
@@ -60,8 +65,8 @@ class MultiDataSourceDwcaWriter implements IDwcaWriter {
 	}
 
 	@Override
-	public void writeDwcaForQuery(QuerySpec querySpec)
-			throws InvalidQueryException, DataSetConfigurationException, DataSetWriteException
+	public void writeDwcaForQuery(QuerySpec querySpec) throws InvalidQueryException,
+			DataSetConfigurationException, DataSetWriteException
 	{
 		logger.info("Generating DarwinCore archive for user-defined query");
 		try {
@@ -77,7 +82,8 @@ class MultiDataSourceDwcaWriter implements IDwcaWriter {
 	}
 
 	@Override
-	public void writeDwcaForDataSet() throws DataSetConfigurationException, DataSetWriteException
+	public void writeDwcaForDataSet()
+			throws DataSetConfigurationException, DataSetWriteException
 	{
 		String fmt = "Generating DarwinCore archive for data set \"{}\"";
 		logger.info(fmt, dwcaConfig.getDataSetName());
@@ -119,10 +125,9 @@ class MultiDataSourceDwcaWriter implements IDwcaWriter {
 			}
 			catch (InvalidQueryException e) {
 				/*
-				 * Not the user's fault but the application maintainer's,
-				 * because we got the QuerySpec from the config file, so we
-				 * convert the InvalidQueryException to a
-				 * DataSetConfigurationException
+				 * Not the user's fault but the application maintainer's, because we got
+				 * the QuerySpec from the config file, so we convert the
+				 * InvalidQueryException to a DataSetConfigurationException
 				 */
 				String fmt = "Invalid query specification for entity %s:\n%s";
 				String queryString = JsonUtil.toPrettyJson(query);
@@ -172,7 +177,8 @@ class MultiDataSourceDwcaWriter implements IDwcaWriter {
 		zos.flush();
 	}
 
-	private static SearchResponse executeQuery(QuerySpec spec) throws InvalidQueryException
+	private static SearchResponse executeQuery(QuerySpec spec)
+			throws InvalidQueryException
 	{
 		QuerySpecTranslator qst = new QuerySpecTranslator(spec, DocumentType.TAXON);
 		SearchRequestBuilder request = qst.translate();

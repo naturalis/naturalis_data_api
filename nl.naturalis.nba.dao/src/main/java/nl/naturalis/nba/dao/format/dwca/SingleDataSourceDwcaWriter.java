@@ -6,6 +6,7 @@ import static nl.naturalis.nba.dao.format.dwca.DwcaUtil.writeMetaXml;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.HashSet;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.logging.log4j.Logger;
@@ -23,9 +24,9 @@ import nl.naturalis.nba.dao.util.RandomEntryZipOutputStream;
 import nl.naturalis.nba.dao.util.es.Scroller;
 
 /**
- * Manages the assembly and creation of DarwinCore archives. Use this class if
- * all CSV files in the archive can be generated from a single query (specified
- * using the &lt;shared-data-source&gt; element in the XML configuration file).
+ * Manages the assembly and creation of DarwinCore archives. Use this class if all CSV
+ * files in the archive can be generated from a single query (specified using the
+ * &lt;shared-data-source&gt; element in the XML configuration file).
  * 
  * @author Ayco Holleman
  *
@@ -44,8 +45,8 @@ class SingleDataSourceDwcaWriter implements IDwcaWriter {
 	}
 
 	@Override
-	public void writeDwcaForQuery(QuerySpec querySpec)
-			throws InvalidQueryException, DataSetConfigurationException, DataSetWriteException
+	public void writeDwcaForQuery(QuerySpec querySpec) throws InvalidQueryException,
+			DataSetConfigurationException, DataSetWriteException
 	{
 		logger.info("Generating DarwinCore archive for user-defined query");
 		try {
@@ -63,7 +64,8 @@ class SingleDataSourceDwcaWriter implements IDwcaWriter {
 	}
 
 	@Override
-	public void writeDwcaForDataSet() throws DataSetConfigurationException, DataSetWriteException
+	public void writeDwcaForDataSet()
+			throws DataSetConfigurationException, DataSetWriteException
 	{
 		String fmt = "Generating DarwinCore archive for data set \"{}\"";
 		logger.info(fmt, cfg.getDataSetName());
@@ -79,8 +81,8 @@ class SingleDataSourceDwcaWriter implements IDwcaWriter {
 		}
 		catch (InvalidQueryException e) {
 			/*
-			 * Not the user's fault but the application maintainer's: the query
-			 * was defined in the XML configuration file. So we convert the
+			 * Not the user's fault but the application maintainer's: the query was
+			 * defined in the XML configuration file. So we convert the
 			 * InvalidQueryException to a DataSetConfigurationException
 			 */
 			fmt = "Invalid query specification for shared data source:\n%s";
@@ -99,7 +101,8 @@ class SingleDataSourceDwcaWriter implements IDwcaWriter {
 			throws DataSetConfigurationException, DataSetWriteException, IOException,
 			InvalidQueryException
 	{
-		SingleDataSourceSearchHitHandler handler = new SingleDataSourceSearchHitHandler(cfg, zip);
+		SingleDataSourceSearchHitHandler handler = new SingleDataSourceSearchHitHandler(
+				cfg, zip);
 		Scroller scroller;
 		if (cfg.getDataSetType() == DwcaDataSetType.TAXON) {
 			scroller = new Scroller(query, DocumentType.TAXON, handler);
@@ -109,8 +112,7 @@ class SingleDataSourceDwcaWriter implements IDwcaWriter {
 		}
 		else {
 			/*
-			 * This really is a program error, so we don't throw a
-			 * DataSetWriteException
+			 * This really is a program error, so we don't throw a DataSetWriteException
 			 */
 			String msg = "Unsupported data set type: " + cfg.getDataSetType();
 			throw new DaoException(msg);
@@ -134,11 +136,21 @@ class SingleDataSourceDwcaWriter implements IDwcaWriter {
 		String fileName = cfg.getCsvFileName(coreEntity);
 		RandomEntryZipOutputStream rezos;
 		rezos = new RandomEntryZipOutputStream(out, fileName);
+		HashSet<String> fileNames = new HashSet<>();
 		for (Entity e : cfg.getDataSet().getEntities()) {
+			/*
+			 * NB Multiple entities may get written to the same zip entry (e.g. taxa and
+			 * synonyms are both written to taxa.txt. Thus we must make sure to create
+			 * only unique zip entries.
+			 */
+			fileName = cfg.getCsvFileName(e);
+			if (fileNames.contains(fileName)) {
+				continue;
+			}
+			fileNames.add(fileName);
 			if (e.getName().equals(coreEntity.getName())) {
 				continue;
 			}
-			fileName = cfg.getCsvFileName(e);
 			rezos.addEntry(fileName, 1024 * 1024);
 		}
 		return rezos;

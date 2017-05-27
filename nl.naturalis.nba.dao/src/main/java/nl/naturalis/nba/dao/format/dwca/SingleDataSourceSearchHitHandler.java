@@ -4,6 +4,7 @@ import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.HashSet;
 import java.util.List;
 
 import org.apache.logging.log4j.Logger;
@@ -24,7 +25,8 @@ import nl.naturalis.nba.dao.util.es.SearchHitHandler;
 
 final class SingleDataSourceSearchHitHandler implements SearchHitHandler {
 
-	private static final Logger logger = getLogger(SingleDataSourceSearchHitHandler.class);
+	private static final Logger logger = getLogger(
+			SingleDataSourceSearchHitHandler.class);
 
 	private DwcaConfig dwcaConfig;
 	private RandomEntryZipOutputStream zip;
@@ -37,8 +39,8 @@ final class SingleDataSourceSearchHitHandler implements SearchHitHandler {
 	private int[] written;
 	private int[] filtered;
 
-	SingleDataSourceSearchHitHandler(DwcaConfig dwcaConfig, RandomEntryZipOutputStream rezos)
-			throws DataSetConfigurationException
+	SingleDataSourceSearchHitHandler(DwcaConfig dwcaConfig,
+			RandomEntryZipOutputStream rezos) throws DataSetConfigurationException
 	{
 		this.dwcaConfig = dwcaConfig;
 		this.zip = rezos;
@@ -85,7 +87,16 @@ final class SingleDataSourceSearchHitHandler implements SearchHitHandler {
 
 	void printHeaders() throws IOException
 	{
+		/*
+		 * Note that multiple entities may get written to the same file name (see
+		 * dwca.properties), so we must make sure headers are printed just once.
+		 */
+		HashSet<String> done = new HashSet<>();
 		for (int i = 0; i < printers.length; i++) {
+			if (done.contains(fileNames[i])) {
+				continue;
+			}
+			done.add(fileNames[i]);
 			zip.setActiveEntry(fileNames[i]);
 			printers[i].printBOM();
 			printers[i].printHeader();
@@ -96,8 +107,10 @@ final class SingleDataSourceSearchHitHandler implements SearchHitHandler {
 	{
 		logger.info("Documents processed: {}", processed);
 		for (int i = 0; i < entities.length; i++) {
-			logger.info("Records written for entity {}  : {}", entities[i].getName(), written[i]);
-			logger.info("Records rejected for entity {} : {}", entities[i].getName(), filtered[i]);
+			logger.info("Records written for entity {}  : {}", entities[i].getName(),
+					written[i]);
+			logger.info("Records rejected for entity {} : {}", entities[i].getName(),
+					filtered[i]);
 		}
 	}
 

@@ -71,7 +71,9 @@
 		<path>synonyms</path>
 		<mapping>
 			<field name="taxonID" term="http://rs.tdwg.org/dwc/terms/taxonID">
-				<constant></constant>
+				<calculator>
+					<java-class>SynonymIdCalculator</java-class>
+				</calculator>
 			</field>
 			<field name="acceptedNameUsageId" term="http://rs.tdwg.org/dwc/terms/acceptedNameUsageId">
 				<path>sourceSystemId</path>

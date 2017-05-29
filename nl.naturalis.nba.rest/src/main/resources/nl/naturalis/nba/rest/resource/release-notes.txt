@@ -21,17 +21,13 @@ RELEASE NOTES V 2.4
   service:
   /<document-type>/getDistinctValues/<field>
   /<document-type>/getDistinctValuesPerGroup/<field>
-  See javadocs for INbaAccess for an explanation
+  See javadocs for INbaAccess
   
 * NBAVTWO-227 DwCA files for specimens now contain
   urls for associated multimedia in occurrence.txt
   
 * NBAVTWO-242 You can now search using "whole dates"
   (format "yyyy-MM")
-  
-* NBAVTWO-380 There is a new metadata service that
-  tells you which date formats you are allowed to
-  use in queries: /metadata/getAllowedDateFormats
   
 * NBAVTWO-289 collectors field number is now set
 
@@ -54,11 +50,16 @@ RELEASE NOTES V 2.4
   
 * NBAVTWO-368 You can no specify a query condition which
   is the equivalent of SQL's "WHERE 1 = 1" or "WHERE true":
-  just leave field, operator and value all blank
+  just leave field, operator and value all blank. See
+  also javadocs for QueryCondition
   
 * NBAVTWO-370 URL-type fields no longer support the
   LIKE operator
   
+* NBAVTWO-380 There is a new metadata service that
+  tells you which date formats you are allowed to
+  use in queries: /metadata/getAllowedDateFormats.
+  See also javadocs for INbaMetaData.
 
 
 RELEASE NOTES V 2.3

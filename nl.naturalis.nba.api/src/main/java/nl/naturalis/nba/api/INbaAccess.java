@@ -59,7 +59,8 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
 	/**
 	 * <p>
 	 * Returns the data model objects with the specified system IDs, or a
-	 * zero-length array no specimens were found.
+	 * zero-length array no specimens were found. Note that you cannot look up
+	 * more than 1024 IDs at a time.
 	 * </p>
 	 * <h5>REST API</h5>
 	 * <p>
@@ -203,12 +204,13 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
 	/**
 	 * <p>
 	 * Returns the unique values of the specified field, given the value of
-	 * another field. For example: return all different types statuses per
-	 * collection type. Here, the "collectionType" field is the groupField while
-	 * the typeStatus field is the valuesField. The result is returned as a
-	 * {@link Map} where each key is a group and each value is the set of unique
-	 * values for that group. Null values are excluded, both for the
-	 * {@code groupField} and for the {@code valuesField}.
+	 * another field. For example: return all localities per area type
+	 * (countries: U.S.A., Germany, France, ...; states: California, Texas, ...;
+	 * cities: New York, Chigago, ...) Here, the "areaType" field is the
+	 * groupField while the "locality" field is the valuesField. The result is
+	 * returned as a {@link Map} where each key is a group and each value is the
+	 * set of unique values for that group. Null values are excluded, both for
+	 * the {@code groupField} and for the {@code valuesField}.
 	 * </p>
 	 * <h5>REST API</h5>
 	 * <p>
@@ -247,6 +249,13 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
 	Map<Object, Set<Object>> getDistinctValuesPerGroup(String groupField, String valuesField,
 			QueryCondition... conditions) throws InvalidQueryException;
 
+	/**
+	 * 
+	 * @param groupByField
+	 * @param querySpec
+	 * @return
+	 * @throws InvalidQueryException
+	 */
 	List<KeyValuePair<Object, Integer>> getGroups(String groupByField, QuerySpec querySpec)
 			throws InvalidQueryException;
 

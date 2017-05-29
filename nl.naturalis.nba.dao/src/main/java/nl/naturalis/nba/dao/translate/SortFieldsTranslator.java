@@ -3,8 +3,6 @@ package nl.naturalis.nba.dao.translate;
 import static nl.naturalis.nba.api.LogicalOperator.OR;
 import static nl.naturalis.nba.api.SortField.SORT_FIELD_SCORE;
 import static nl.naturalis.nba.dao.translate.ConditionTranslatorFactory.getTranslator;
-import static org.elasticsearch.search.sort.SortOrder.ASC;
-import static org.elasticsearch.search.sort.SortOrder.DESC;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +30,12 @@ import nl.naturalis.nba.dao.DocumentType;
 
 class SortFieldsTranslator {
 
+	private static final org.elasticsearch.search.sort.SortOrder ES_ASC = org.elasticsearch.search.sort.SortOrder.ASC;
+	private static final org.elasticsearch.search.sort.SortOrder ES_DESC = org.elasticsearch.search.sort.SortOrder.DESC;
+
+	private static final nl.naturalis.nba.api.SortOrder NBA_ASC = nl.naturalis.nba.api.SortOrder.ASC;
+	private static final nl.naturalis.nba.api.SortOrder NBA_DESC = nl.naturalis.nba.api.SortOrder.DESC;
+
 	private QuerySpec querySpec;
 	private DocumentType<?> dt;
 
@@ -49,17 +53,28 @@ class SortFieldsTranslator {
 		int i = 0;
 		for (SortField sf : sortFields) {
 			Path path = sf.getPath();
+			nl.naturalis.nba.api.SortOrder order = sf.getSortOrder();
 			if (path.equals(SORT_FIELD_SCORE)) {
 				ScoreSortBuilder ssb = SortBuilders.scoreSort();
-				if (!sf.isAscending()) {
-					ssb.order(DESC);
-				}
+				/* Default sort order DESC! */
+				ssb.order(order == NBA_ASC ? ES_ASC : ES_DESC);
 				result[i++] = ssb;
+			}
+			else if (path.toString().equals("id")) {
+				FieldSortBuilder fsb = SortBuilders.fieldSort("_uid");
+				fsb.order(order == NBA_DESC ? ES_DESC : ES_ASC);
+				result[i++] = fsb;
 			}
 			else {
 				FieldSortBuilder fsb = SortBuilders.fieldSort(path.toString());
-				fsb.order(sf.isAscending() ? ASC : DESC);
-				fsb.sortMode(sf.isAscending() ? SortMode.MIN : SortMode.MAX);
+				fsb.order(order == NBA_DESC ? ES_DESC : ES_ASC);
+				/*
+				 * When sorting in ascending order on an array field, we sort on
+				 * the lowest value within the array. When sorting in descending
+				 * order on an array field, we sort on the highest value within
+				 * the array.
+				 */
+				fsb.sortMode(order == NBA_DESC ? SortMode.MAX : SortMode.MIN);
 				String nestedPath;
 				try {
 					ESField f = mappingInfo.getField(path);

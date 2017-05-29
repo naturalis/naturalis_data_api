@@ -29,6 +29,10 @@ RELEASE NOTES V 2.4
 * NBAVTWO-242 You can now search using "whole dates"
   (format "yyyy-MM")
   
+* NBAVTWO-282 For DwCA downloads of taxa synonyms
+  are now written to taxa.txt rather than to a
+  separate file.
+  
 * NBAVTWO-289 collectors field number is now set
 
 * NBAVTWO-295; NBAVTWO-354 The ScientificNameGroup

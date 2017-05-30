@@ -1,13 +1,12 @@
 package nl.naturalis.nba.dao.translate;
 
-import static nl.naturalis.nba.api.ComparisonOperator.LIKE;
-import static nl.naturalis.nba.api.ComparisonOperator.MATCHES;
 import static nl.naturalis.nba.api.ComparisonOperator.NOT_BETWEEN;
 import static nl.naturalis.nba.api.ComparisonOperator.NOT_IN;
 import static nl.naturalis.nba.api.ComparisonOperator.NOT_LIKE;
 import static nl.naturalis.nba.api.ComparisonOperator.NOT_MATCHES;
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
-import static nl.naturalis.nba.dao.translate.TranslatorUtil.*;
+import static nl.naturalis.nba.dao.translate.TranslatorUtil.getNestedPath;
+import static nl.naturalis.nba.dao.translate.TranslatorUtil.isTrueCondition;
 import static nl.naturalis.nba.utils.CollectionUtil.hasElements;
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.constantScoreQuery;
@@ -140,7 +139,7 @@ public abstract class ConditionTranslator {
 				query = not(query);
 			}
 		}
-		if (constantScoreQueryRequired()) {
+		if (condition.isConstantScore()) {
 			query = constantScoreQuery(query);
 		}
 		/*
@@ -189,18 +188,6 @@ public abstract class ConditionTranslator {
 	boolean hasNegativeOperator()
 	{
 		return negatingOperators.contains(condition.getOperator());
-	}
-
-	private boolean constantScoreQueryRequired()
-	{
-		QueryCondition c = condition;
-		if (c.getOperator() != MATCHES && c.getOperator() != LIKE) {
-			return false;
-		}
-		if (c.isNegated()) {
-			return false;
-		}
-		return c.isConstantScore();
 	}
 
 	private static QueryBuilder not(QueryBuilder query)

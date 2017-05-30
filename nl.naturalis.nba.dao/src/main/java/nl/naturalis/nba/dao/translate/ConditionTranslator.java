@@ -103,7 +103,11 @@ public abstract class ConditionTranslator {
 		else if (hasElements(condition.getOr())) {
 			query = generateOrSiblings(query);
 		}
-		return condition.isNegated() ? not(query) : query;
+		if(condition.isNegated()) {
+			query = not(query);
+		}
+		query.boost(condition.getBoost());
+		return query;
 	}
 
 	/*
@@ -142,12 +146,6 @@ public abstract class ConditionTranslator {
 		if (condition.isConstantScore()) {
 			query = constantScoreQuery(query);
 		}
-		/*
-		 * NB even if we created a constant_score query, we still need to honour
-		 * the condition's boost setting, because the condition might be
-		 * embedded in a bool query, which _is_ a scoring query.
-		 */
-		query.boost(condition.getBoost());
 		return query;
 	}
 

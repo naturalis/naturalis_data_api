@@ -25,7 +25,6 @@ import nl.naturalis.nba.api.model.ScientificNameGroup;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.DaoRegistry;
-import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.util.es.DocumentIterator;
 import nl.naturalis.nba.dao.util.es.ESUtil;
@@ -39,7 +38,7 @@ class SpecimenNameImporter2 {
 	public static void main(String[] args) throws Exception
 	{
 		try {
-			ESUtil.truncate(DocumentType.SCIENTIFIC_NAME_GROUP);
+			//ESUtil.truncate(DocumentType.SCIENTIFIC_NAME_GROUP);
 			ESUtil.refreshIndex(SCIENTIFIC_NAME_GROUP);
 			SpecimenNameImporter2 importer = new SpecimenNameImporter2();
 			importer.importNames();
@@ -115,7 +114,8 @@ class SpecimenNameImporter2 {
 			logger.info("Specimen identifications processed: {}",
 					converter.getNumIdentifications());
 			logger.info("Name groups (lines) written: {}", written);
-			logger.info("N.B. name groups written to temp file are not unique!");
+			logger.info("N.B. name groups written to temp file are "
+					+ "not unique and will be merged in next phase");
 		}
 	}
 
@@ -133,7 +133,8 @@ class SpecimenNameImporter2 {
 				ScientificNameGroup sng = JsonUtil.deserialize(line, ScientificNameGroup.class);
 				batch.add(sng);
 				if (batch.size() == writeBatchSize) {
-					indexer.index(merger.merge(batch));
+					Collection<ScientificNameGroup> merged = merger.merge(batch);
+					indexer.index(merged);
 					batch.clear();
 				}
 				if (lnr.getLineNumber() % 1000 == 0) {
@@ -147,7 +148,8 @@ class SpecimenNameImporter2 {
 			lnr.close();
 		}
 		if (batch.size() != 0) {
-			indexer.index(merger.merge(batch));
+			Collection<ScientificNameGroup> merged = merger.merge(batch);
+			indexer.index(merged);
 		}
 		logger.info("Lines read: {}", lnr.getLineNumber());
 		logger.info("Name groups created: {}", merger.getNumCreated());

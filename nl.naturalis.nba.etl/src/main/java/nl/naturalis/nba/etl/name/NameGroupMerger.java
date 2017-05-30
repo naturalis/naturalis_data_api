@@ -5,7 +5,6 @@ import static nl.naturalis.nba.etl.ETLUtil.getLogger;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 
 import org.apache.logging.log4j.Logger;
 
@@ -18,6 +17,9 @@ class NameGroupMerger {
 
 	private static final Logger logger = getLogger(NameGroupMerger.class);
 
+	private static final String ERR_DUP_TAXON = "Duplicate taxon id \"{}\" for name group {}";
+	private static final String ERR_DUP_SPECIMEN = "Duplicate specimen id \"{}\" for name group {}";
+
 	private int numCreated;
 	private int numMerged;
 
@@ -27,16 +29,27 @@ class NameGroupMerger {
 
 	Collection<ScientificNameGroup> merge(Collection<ScientificNameGroup> nameGroups)
 	{
+		if(logger.isDebugEnabled()) {
+			logger.debug("Merging name groups");
+		}
 		HashSet<String> idSet = new HashSet<>(nameGroups.size());
 		for (ScientificNameGroup sng : nameGroups) {
 			idSet.add(sng.getId());
 		}
 		ScientificNameGroupDao sngDao = new ScientificNameGroupDao();
 		String[] ids = idSet.toArray(new String[idSet.size()]);
-		ScientificNameGroup[] existing = sngDao.find(ids);
+		if (logger.isDebugEnabled()) {
+			logger.debug("Number of unique name groups in current batch: {}", ids.length);
+			logger.debug("Searching for already indexed name groups among {}", ids.length);
+		}
+		ScientificNameGroup[] oldNameGroups = sngDao.find(ids);
+		if (logger.isDebugEnabled()) {
+			logger.debug("Creating lookup table for {} already indexed name groups",
+					oldNameGroups.length);
+		}
 		HashMap<String, ScientificNameGroup> lookupTable = new HashMap<>(nameGroups.size() + 8, 1F);
-		for (ScientificNameGroup sng : existing) {
-			lookupTable.put(sng.getId(), sng);
+		for (ScientificNameGroup oldNameGroup : oldNameGroups) {
+			lookupTable.put(oldNameGroup.getId(), oldNameGroup);
 		}
 		for (ScientificNameGroup newNameGroup : nameGroups) {
 			ScientificNameGroup oldNameGroup = lookupTable.get(newNameGroup.getId());
@@ -62,59 +75,53 @@ class NameGroupMerger {
 		return numMerged;
 	}
 
-	private static void mergeNameGroups(ScientificNameGroup sng1, ScientificNameGroup sng2)
+	private static void mergeNameGroups(ScientificNameGroup oldNameGroup,
+			ScientificNameGroup newNameGroup)
 	{
-		if (sng2.getTaxa() != null) {
-			for (SummaryTaxon st : sng2.getTaxa()) {
-				if (!exists(st, sng1.getTaxa())) {
-					sng1.addTaxon(st);
-				}
-				else {
-					logger.warn("Encountered duplicate taxa for name group {}", sng1.getName());
+		if (newNameGroup.getTaxa() != null) {
+			for (SummaryTaxon taxon : newNameGroup.getTaxa()) {
+				if (!isNewTaxon(taxon, oldNameGroup)) {
+					oldNameGroup.addTaxon(taxon);
 				}
 			}
-			sng1.setTaxonCount(sng1.getTaxa().size());
+			oldNameGroup.setTaxonCount(oldNameGroup.getTaxa().size());
 		}
-		if (sng2.getSpecimens() != null) {
-			for (SummarySpecimen ss : sng2.getSpecimens()) {
-				if (!exists(ss, sng1.getSpecimens())) {
-					sng1.addSpecimen(ss);
-				}
-				else {
-					logger.warn("Encountered duplicate specimens for name group {}",
-							sng1.getName());
+		if (newNameGroup.getSpecimens() != null) {
+			for (SummarySpecimen specimen : newNameGroup.getSpecimens()) {
+				if (isNewSpecimen(specimen, oldNameGroup)) {
+					oldNameGroup.addSpecimen(specimen);
 				}
 			}
-			sng1.setSpecimenCount(sng1.getSpecimens().size());
+			oldNameGroup.setSpecimenCount(oldNameGroup.getSpecimens().size());
 		}
 	}
 
-	private static boolean exists(SummaryTaxon taxon, List<SummaryTaxon> taxa)
+	private static boolean isNewTaxon(SummaryTaxon taxon, ScientificNameGroup sng)
 	{
-		if (taxa == null) {
-			return false;
+		if (sng.getTaxa() == null) {
+			return true;
 		}
-		for (SummaryTaxon st : taxa) {
-			if (st.getId().equals(taxon.getId())) {
-				logger.warn("Duplicate taxon: {}", st.getId());
-				return true;
+		for (SummaryTaxon oldTaxon : sng.getTaxa()) {
+			if (oldTaxon.getId().equals(taxon.getId())) {
+				logger.warn(ERR_DUP_TAXON, taxon.getId(), sng);
+				return false;
 			}
 		}
-		return false;
+		return true;
 	}
 
-	private static boolean exists(SummarySpecimen specimen, List<SummarySpecimen> specimens)
+	private static boolean isNewSpecimen(SummarySpecimen specimen, ScientificNameGroup sng)
 	{
-		if (specimens == null) {
-			return false;
+		if (sng.getSpecimens() == null) {
+			return true;
 		}
-		for (SummarySpecimen ss : specimens) {
-			if (ss.getId().equals(specimen.getId())) {
-				logger.warn("Duplicate specimen: {}", specimen.getId());
-				return true;
+		for (SummarySpecimen oldSpecimen : sng.getSpecimens()) {
+			if (oldSpecimen.getId().equals(specimen.getId())) {
+				logger.warn(ERR_DUP_SPECIMEN, specimen.getId(), sng.getName());
+				return false;
 			}
 		}
-		return false;
+		return true;
 	}
 
 }

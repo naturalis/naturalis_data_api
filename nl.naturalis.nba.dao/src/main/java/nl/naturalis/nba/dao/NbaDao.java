@@ -106,6 +106,7 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 		IdsQueryBuilder query = QueryBuilders.idsQuery(type);
 		query.addIds(ids);
 		request.setQuery(query);
+		request.setSize(1024);
 		return processSearchRequest(request);
 	}
 

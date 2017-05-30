@@ -1,9 +1,6 @@
 package nl.naturalis.nba.etl.enrich;
 
 import static nl.naturalis.nba.dao.DocumentType.SPECIMEN;
-import static nl.naturalis.nba.dao.DocumentType.TAXON;
-import static nl.naturalis.nba.dao.util.es.ESUtil.executeSearchRequest;
-import static nl.naturalis.nba.dao.util.es.ESUtil.newSearchRequest;
 import static nl.naturalis.nba.etl.ETLConstants.SYS_PROP_ENRICH_READ_BATCH_SIZE;
 import static nl.naturalis.nba.etl.ETLConstants.SYS_PROP_ENRICH_SCROLL_TIMEOUT;
 import static nl.naturalis.nba.etl.ETLConstants.SYS_PROP_ENRICH_WRITE_BATCH_SIZE;
@@ -12,8 +9,6 @@ import static nl.naturalis.nba.etl.ETLUtil.logDuration;
 import static nl.naturalis.nba.etl.SummaryObjectUtil.copyScientificName;
 import static nl.naturalis.nba.etl.SummaryObjectUtil.copySourceSystem;
 import static nl.naturalis.nba.etl.SummaryObjectUtil.copySummaryVernacularName;
-import static org.elasticsearch.index.query.QueryBuilders.constantScoreQuery;
-import static org.elasticsearch.index.query.QueryBuilders.termsQuery;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -29,13 +24,12 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.apache.logging.log4j.Logger;
-import org.elasticsearch.action.search.SearchRequestBuilder;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.index.query.TermsQueryBuilder;
-import org.elasticsearch.search.SearchHit;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
+import nl.naturalis.nba.api.InvalidQueryException;
+import nl.naturalis.nba.api.QueryCondition;
+import nl.naturalis.nba.api.QueryResult;
+import nl.naturalis.nba.api.QueryResultItem;
+import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.Taxon;
@@ -44,8 +38,8 @@ import nl.naturalis.nba.api.model.TaxonomicIdentification;
 import nl.naturalis.nba.api.model.VernacularName;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.DaoRegistry;
-import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.ESClientManager;
+import nl.naturalis.nba.dao.TaxonDao;
 import nl.naturalis.nba.dao.util.es.DocumentIterator;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.BulkIndexException;
@@ -217,15 +211,14 @@ public class SpecimenTaxonomicEnricher2 {
 			logger.debug("Creating taxon lookup table");
 		}
 		HashMap<String, List<Taxon>> taxonLookupTable = createLookupTable(specimens);
-		if (taxonLookupTable == null) {
+		if (taxonLookupTable.isEmpty()) {
 			if (logger.isDebugEnabled()) {
 				logger.debug("No taxa found for current batch of specimens");
 			}
 			return Collections.emptyList();
 		}
 		if (logger.isDebugEnabled()) {
-			logger.debug("Lookup table created. {} unique name group(s) found in Taxon index",
-					taxonLookupTable.size());
+			logger.debug("Lookup table size: {}", taxonLookupTable.size());
 		}
 		HashMap<String, List<TaxonomicEnrichment>> cache = new HashMap<>(specimens.size());
 		List<Specimen> result = new ArrayList<>(specimens.size());
@@ -299,38 +292,29 @@ public class SpecimenTaxonomicEnricher2 {
 
 	private static HashMap<String, List<Taxon>> createLookupTable(List<Specimen> specimens)
 	{
-		HashSet<String> groups = new HashSet<>(specimens.size());
+		HashSet<String> names = new HashSet<>(specimens.size());
 		for (Specimen specimen : specimens) {
 			for (TaxonomicIdentification si : specimen.getIdentifications()) {
-				groups.add(si.getScientificName().getScientificNameGroup());
+				names.add(si.getScientificName().getScientificNameGroup());
 			}
 		}
-		if (groups.size() > 1024) {
-			String fmt = "Number of unique names in batch (%s) exceed maximum of 1024. "
-					+ "Try decreasing read batch size";
-			String msg = String.format(fmt, groups.size());
-			throw new ETLRuntimeException(msg);
+		String field = "acceptedName.scientificNameGroup";
+		QueryCondition condition = new QueryCondition(field, "IN", names);
+		QuerySpec query = new QuerySpec();
+		query.addCondition(condition);
+		query.setConstantScore(true);
+		query.setSize(1024);
+		TaxonDao taxonDao = new TaxonDao();
+		QueryResult<Taxon> result;
+		try {
+			result = taxonDao.query(query);
 		}
-		DocumentType<Taxon> dt = TAXON;
-		SearchRequestBuilder request = newSearchRequest(dt);
-		TermsQueryBuilder query = termsQuery("acceptedName.scientificNameGroup", groups);
-		request.setQuery(constantScoreQuery(query));
-		int maxNumTaxa = 10000;
-		request.setSize(maxNumTaxa);
-		SearchResponse response = executeSearchRequest(request);
-		SearchHit[] hits = response.getHits().getHits();
-		if (hits.length == 0) {
-			return null;
+		catch (InvalidQueryException e) {
+			throw new ETLRuntimeException(e);
 		}
-		// Unlikely, but let's still trap it
-		if (response.getHits().getTotalHits() > maxNumTaxa) {
-			throw new ETLRuntimeException("Too many taxa found for current batch of specimens");
-		}
-		HashMap<String, List<Taxon>> table = new HashMap<>(groups.size());
-		ObjectMapper om = dt.getObjectMapper();
-		for (SearchHit hit : hits) {
-			Taxon taxon = om.convertValue(hit.getSource(), dt.getJavaType());
-			taxon.setId(hit.getId());
+		HashMap<String, List<Taxon>> table = new HashMap<>(result.size() + 8, 1F);
+		for (QueryResultItem<Taxon> item : result) {
+			Taxon taxon = item.getItem();
 			List<Taxon> taxa = table.get(taxon.getAcceptedName().getScientificNameGroup());
 			if (taxa == null) {
 				taxa = new ArrayList<>(2);

@@ -60,8 +60,8 @@ class InConditionTranslator extends ConditionTranslator {
 	{
 		if (values.size() > 1024) {
 			/* Limit set by Elasticsearch termsQuery */
-			String msg = "Number of values passed to IN operator exceeds maximum of 1024: "
-					+ values.size();
+			String fmt = "Number of values passed to IN operator exceeds maximum of 1024: %s";
+			String msg = String.format(fmt, values.size());
 			throw new InvalidConditionException(msg);
 		}
 		String field = condition.getField().toString();

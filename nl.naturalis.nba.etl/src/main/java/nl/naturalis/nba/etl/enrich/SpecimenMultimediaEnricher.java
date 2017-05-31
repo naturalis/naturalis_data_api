@@ -231,13 +231,14 @@ public class SpecimenMultimediaEnricher {
 		for (Specimen specimen : specimens) {
 			ids.add(specimen.getId());
 		}
-		QueryCondition qc = new QueryCondition("associatedSpecimenReference", IN, ids);
-		QuerySpec qs = new QuerySpec();
-		qs.addCondition(qc);
+		QueryCondition condition = new QueryCondition("associatedSpecimenReference", IN, ids);
+		QuerySpec query = new QuerySpec();
+		query.addCondition(condition);
+		query.setSize(ids.size());
 		MultiMediaObjectDao dao = new MultiMediaObjectDao();
 		QueryResult<MultiMediaObject> result;
 		try {
-			result = dao.query(qs);
+			result = dao.query(query);
 		}
 		catch (InvalidQueryException e) {
 			throw new ETLRuntimeException(e);

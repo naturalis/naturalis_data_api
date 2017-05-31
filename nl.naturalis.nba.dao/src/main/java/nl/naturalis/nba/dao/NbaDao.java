@@ -97,7 +97,7 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 			logger.debug(printCall("find", ids));
 		}
 		if (ids.length > 1024) {
-			String fmt = "Number of ids must not exceed 1024 (was %s)";
+			String fmt = "Number of ids to look up exceeds maximum of 1024: %s";
 			String msg = String.format(fmt, ids.length);
 			throw new DaoException(msg);
 		}
@@ -106,7 +106,7 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 		IdsQueryBuilder query = QueryBuilders.idsQuery(type);
 		query.addIds(ids);
 		request.setQuery(query);
-		request.setSize(1024);
+		request.setSize(ids.length);
 		return processSearchRequest(request);
 	}
 

@@ -1,3 +1,24 @@
+RELEASE NOTES V 2.5
+
+NBAVTWO-375 constantScore setting on QueryCondition
+  now passed on to Elasticsearch without exception
+  
+NBAVTWO-377 boost now always set on outermost ES
+  query
+  
+NBAVTWO-381 You can now sort on the id field
+
+NBAVTWO-383 NbaDao.find(String[] ids) now sets size
+  the length of the ids array
+  
+NBAVTWO-387 querySpecial service now significantly
+  faster b/c
+  
+NBAVTWO-388 Fixed bug in extracting QuerySpec for
+  Specimen from QuerySpec for ScientificNameGroup
+  
+
+
 RELEASE NOTES V 2.4
 
 * NBAVTWO-7 Licence and copyright info for NSR is

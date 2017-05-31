@@ -23,6 +23,7 @@ import nl.naturalis.nba.api.ScientificNameGroupQuerySpec;
 import nl.naturalis.nba.api.SortField;
 import nl.naturalis.nba.api.model.ScientificNameGroup;
 import nl.naturalis.nba.api.model.Specimen;
+import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.api.model.summary.SummarySpecimen;
 import nl.naturalis.nba.common.PathValueComparator;
 import nl.naturalis.nba.common.PathValueComparator.PathValueComparee;
@@ -61,7 +62,7 @@ public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
 		QuerySpec specimenQuerySpec = createQuerySpecForSpecimens(querySpec);
 		if (specimenQuerySpec.getConditions() != null) {
 			if (sortByScore(querySpec)) {
-				purgeAndSortByScore(result, specimenQuerySpec);
+				purgeAndSortByScore2(result, specimenQuerySpec);
 			}
 			else {
 				purge(result, specimenQuerySpec);
@@ -257,6 +258,70 @@ public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
 			ArrayList<SummarySpecimen> purgedAndSorted = new ArrayList<>(realSpecimens.size());
 			for (int i = 0; i < realSpecimens.size(); i++) {
 				String specimenId = realSpecimens.get(i).getItem().getId();
+				SummarySpecimen summarySpecimen = lookupTable.get(specimenId);
+				if (summarySpecimen != null) {
+					purgedAndSorted.add(summarySpecimen);
+				}
+			}
+			if (logger.isDebugEnabled()) {
+				String fmt = "Number of specimens purged from name group {}: {}";
+				int count = nameGroup.getSpecimens().size() - purgedAndSorted.size();
+				logger.debug(fmt, nameGroup.getName(), count);
+			}
+			nameGroup.setSpecimens(purgedAndSorted);
+			nameGroup.setSpecimenCount(purgedAndSorted.size());
+		}
+	}
+
+	private static void purgeAndSortByScore2(QueryResult<ScientificNameGroup> result,
+			QuerySpec specimenQuerySpec) throws InvalidQueryException
+	{
+		List<String> names = new ArrayList<>(result.size());
+		int size = 0;
+		for (QueryResultItem<ScientificNameGroup> item : result) {
+			names.add(item.getItem().getName());
+			size += item.getItem().getSpecimenCount();
+		}
+		String field = "identifications.scientificName.scientificNameGroup";
+		QueryCondition extraCondition = new QueryCondition(field, "IN", names);
+		extraCondition.setConstantScore(true);
+		specimenQuerySpec.addCondition(extraCondition);
+		List<QueryCondition> conditions = new ArrayList<>(
+				specimenQuerySpec.getConditions().size() + 1);
+		conditions.add(extraCondition);
+		conditions.addAll(specimenQuerySpec.getConditions());
+		specimenQuerySpec.setConditions(conditions);
+		specimenQuerySpec.setSize(size);
+		SpecimenDao specimenDao = new SpecimenDao();
+		QueryResult<Specimen> specimens = specimenDao.query(specimenQuerySpec);
+		HashMap<String, ArrayList<Specimen>> specimenLookups = new HashMap<>(result.size());
+		for (QueryResultItem<Specimen> item : specimens) {
+			Specimen specimen = item.getItem();
+			for (SpecimenIdentification si : specimen.getIdentifications()) {
+				String sng = si.getScientificName().getScientificNameGroup();
+				ArrayList<Specimen> list = specimenLookups.get(sng);
+				if (list == null) {
+					list = new ArrayList<>(32);
+					specimenLookups.put(sng, list);
+				}
+				list.add(specimen);
+			}
+		}
+		for (QueryResultItem<ScientificNameGroup> item : result) {
+			ScientificNameGroup nameGroup = item.getItem();
+			HashMap<String, SummarySpecimen> lookupTable = new HashMap<>(
+					nameGroup.getSpecimenCount() + 8, 1F);
+			for (SummarySpecimen specimen : nameGroup.getSpecimens()) {
+				lookupTable.put(specimen.getId(), specimen);
+			}
+			ArrayList<Specimen> realSpecimens = specimenLookups.get(nameGroup.getName());
+			if (realSpecimens == null) {
+				// Should not happen. TODO remove when sure
+				continue;
+			}
+			ArrayList<SummarySpecimen> purgedAndSorted = new ArrayList<>(realSpecimens.size());
+			for (int i = 0; i < realSpecimens.size(); i++) {
+				String specimenId = realSpecimens.get(i).getId();
 				SummarySpecimen summarySpecimen = lookupTable.get(specimenId);
 				if (summarySpecimen != null) {
 					purgedAndSorted.add(summarySpecimen);

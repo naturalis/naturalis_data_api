@@ -26,7 +26,7 @@ import nl.naturalis.nba.api.model.ScientificNameGroup;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.summary.SummarySpecimen;
 import nl.naturalis.nba.common.PathValueComparator;
-import nl.naturalis.nba.common.PathValueComparator.Comparee;
+import nl.naturalis.nba.common.PathValueComparator.PathValueComparee;
 
 public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
 		implements IScientificNameGroupAccess {
@@ -278,7 +278,7 @@ public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
 		boolean mustSort = qs.getSpecimensSortFields() != null && !sortByScore(qs);
 		PathValueComparator<SummarySpecimen> comparator = null;
 		if (mustSort) {
-			Comparee[] comparees = sortFieldsToComparees(qs.getSpecimensSortFields());
+			PathValueComparee[] comparees = sortFieldsToComparees(qs.getSpecimensSortFields());
 			comparator = new PathValueComparator<>(comparees);
 		}
 		for (QueryResultItem<ScientificNameGroup> item : result) {
@@ -313,10 +313,10 @@ public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
 		}
 	}
 
-	private static Comparee[] sortFieldsToComparees(List<SortField> sortFields)
+	private static PathValueComparee[] sortFieldsToComparees(List<SortField> sortFields)
 			throws InvalidQueryException
 	{
-		Comparee[] comparees = new Comparee[sortFields.size()];
+		PathValueComparee[] comparees = new PathValueComparee[sortFields.size()];
 		for (int i = 0; i < sortFields.size(); i++) {
 			SortField sf = sortFields.get(i);
 			if (sf.getPath().getElement(0).equals("specimens")) {
@@ -328,7 +328,7 @@ public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
 				throw new InvalidQueryException(msg);
 
 			}
-			comparees[i] = new Comparee(sf.getPath(), !sf.isAscending());
+			comparees[i] = new PathValueComparee(sf.getPath(), !sf.isAscending());
 		}
 		return comparees;
 	}

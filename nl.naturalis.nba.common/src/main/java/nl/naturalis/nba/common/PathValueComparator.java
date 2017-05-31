@@ -38,7 +38,7 @@ public class PathValueComparator<T> implements Comparator<T> {
 	 * @author Ayco Holleman
 	 *
 	 */
-	public static class Comparee {
+	public static class PathValueComparee {
 
 		private Path path;
 		private boolean inverted;
@@ -51,7 +51,7 @@ public class PathValueComparator<T> implements Comparator<T> {
 		 * 
 		 * @param path
 		 */
-		public Comparee(Path path)
+		public PathValueComparee(Path path)
 		{
 			this(path, false, false);
 		}
@@ -69,7 +69,7 @@ public class PathValueComparator<T> implements Comparator<T> {
 		 * @param path
 		 * @param inverted
 		 */
-		public Comparee(Path path, boolean inverted)
+		public PathValueComparee(Path path, boolean inverted)
 		{
 			this(path, inverted, inverted);
 		}
@@ -88,7 +88,7 @@ public class PathValueComparator<T> implements Comparator<T> {
 		 * @param inverted
 		 * @param last
 		 */
-		public Comparee(Path path, boolean inverted, boolean last)
+		public PathValueComparee(Path path, boolean inverted, boolean last)
 		{
 			this.path = path;
 			this.inverted = inverted;
@@ -97,27 +97,27 @@ public class PathValueComparator<T> implements Comparator<T> {
 
 	}
 
-	private Comparee[] comparees;
+	private PathValueComparee[] comparees;
 
 	/**
-	 * See {@link Comparee#Comparee(Path)}.
+	 * See {@link PathValueComparee#Comparee(Path)}.
 	 * 
 	 * @param path
 	 */
 	public PathValueComparator(Path path)
 	{
-		comparees = new Comparee[] { new Comparee(path) };
+		comparees = new PathValueComparee[] { new PathValueComparee(path) };
 	}
 
 	/**
-	 * See {@link Comparee#Comparee(Path, boolean)}.
+	 * See {@link PathValueComparee#Comparee(Path, boolean)}.
 	 * 
 	 * @param path
 	 * @param inverted
 	 */
 	public PathValueComparator(Path path, boolean inverted)
 	{
-		comparees = new Comparee[] { new Comparee(path, inverted) };
+		comparees = new PathValueComparee[] { new PathValueComparee(path, inverted) };
 	}
 
 	/**
@@ -126,7 +126,7 @@ public class PathValueComparator<T> implements Comparator<T> {
 	 * 
 	 * @param comparees
 	 */
-	public PathValueComparator(Comparee[] comparees)
+	public PathValueComparator(PathValueComparee[] comparees)
 	{
 		this.comparees = comparees;
 	}
@@ -135,7 +135,7 @@ public class PathValueComparator<T> implements Comparator<T> {
 	public int compare(T o1, T o2)
 	{
 		int i;
-		for (Comparee comparee : comparees) {
+		for (PathValueComparee comparee : comparees) {
 			if ((i = compare(o1, o2, comparee)) != 0) {
 				return sign(i);
 			}
@@ -143,7 +143,7 @@ public class PathValueComparator<T> implements Comparator<T> {
 		return 0;
 	}
 
-	private static int compare(Object o1, Object o2, Comparee comparee)
+	private static int compare(Object o1, Object o2, PathValueComparee comparee)
 	{
 		if (o1 == null)
 			return o2 == null ? 0 : Integer.MAX_VALUE;

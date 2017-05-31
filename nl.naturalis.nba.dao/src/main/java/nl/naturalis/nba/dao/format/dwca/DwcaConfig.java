@@ -182,7 +182,7 @@ public class DwcaConfig {
 			if (!myConfig.hasSection(section)) {
 				String[] definedEntities = myConfig.getSubsections("entity");
 				String s = ArrayUtil.implode(definedEntities);
-				String fmt = "Entity %s defined in {} but not in dwca.properties. "
+				String fmt = "Entity %s defined in %s but not in dwca.properties. "
 						+ "Entities defined by dwca.properties: %s";
 				String msg = String.format(fmt, entity.getName(), fileName, s);
 				throw new DataSetConfigurationException(msg);

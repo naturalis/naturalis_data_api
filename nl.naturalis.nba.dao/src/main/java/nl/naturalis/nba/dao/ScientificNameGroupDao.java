@@ -46,8 +46,7 @@ public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
 	}
 
 	@Override
-	public QueryResult<ScientificNameGroup> query(QuerySpec querySpec)
-			throws InvalidQueryException
+	public QueryResult<ScientificNameGroup> query(QuerySpec querySpec) throws InvalidQueryException
 	{
 		QueryResult<ScientificNameGroup> result = super.query(querySpec);
 		if (querySpec instanceof ScientificNameGroupQuerySpec) {
@@ -60,31 +59,32 @@ public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
 	}
 
 	@Override
-	public QueryResult<ScientificNameGroup> querySpecial(QuerySpec querySpec)
+	public QueryResult<ScientificNameGroup> querySpecial(QuerySpec sngQuery)
 			throws InvalidQueryException
 	{
-		QueryResult<ScientificNameGroup> result = super.query(querySpec);
-		QuerySpec specimenQuerySpec = createQuerySpecForSpecimens(querySpec);
-		if (querySpec instanceof ScientificNameGroupQuerySpec) {
-			processExtraQueryOptions(result, (ScientificNameGroupQuerySpec) querySpec);
+		QueryResult<ScientificNameGroup> result = super.query(sngQuery);
+		QuerySpec specimenQuery = createQuerySpecForSpecimens(sngQuery);
+		if (sngQuery instanceof ScientificNameGroupQuerySpec) {
+			processExtraQueryOptions(result, (ScientificNameGroupQuerySpec) sngQuery);
 		}
 		else {
 			limitSpecimens(result);
 		}
-		if (specimenQuerySpec.getConditions() != null) {
-			if (mustSortSpecimensByScore(querySpec)) {
-				purgeAndSortByScore(result, specimenQuerySpec);
-			}
-			else {
-				purge(result, specimenQuerySpec);
-			}
+		if (specimenQuery.getConditions() != null) {
+			purge(result, specimenQuery);
+//			if (mustSortSpecimensByScore(sngQuery)) {
+//				purgeAndSortByScore(result, specimenQuery);
+//			}
+//			else {
+//				purge(result, specimenQuery);
+//			}
 		}
 		return result;
 	}
 
 	/*
-	 * Processed the QuerySpec for the ScientificNameGroup index and churns out a
-	 * QuerySpec that is suitable to query the Specimen index with.
+	 * Processed the QuerySpec for the ScientificNameGroup index and churns out
+	 * a QuerySpec that is suitable to query the Specimen index with.
 	 */
 	private static QuerySpec createQuerySpecForSpecimens(QuerySpec sngQuery)
 			throws InvalidQueryException
@@ -98,8 +98,8 @@ public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
 		return specimenQuery;
 	}
 
-	private static ArrayList<QueryCondition> processConditions(
-			List<QueryCondition> conditions) throws InvalidQueryException
+	private static ArrayList<QueryCondition> processConditions(List<QueryCondition> conditions)
+			throws InvalidQueryException
 	{
 		if (conditions == null) {
 			return null;
@@ -113,8 +113,8 @@ public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
 			}
 			else {
 				/*
-				 * Ignore this condition, but first make sure it doesn't have any siblings
-				 * that ARE specimen-specific query conditions.
+				 * Ignore this condition, but first make sure it doesn't have
+				 * any siblings that ARE specimen-specific query conditions.
 				 */
 				QueryCondition descendant = findDescendantWithSpecimenField(condition);
 				if (descendant != null) {
@@ -122,8 +122,7 @@ public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
 							+ "condition on field %s. Specimen-related conditions must "
 							+ "be top-level conditions or nested within another "
 							+ "specimen-related, top-level condition";
-					String msg = String.format(fmt, descendant.getField(),
-							condition.getField());
+					String msg = String.format(fmt, descendant.getField(), condition.getField());
 					throw new InvalidQueryException(msg);
 				}
 			}
@@ -132,11 +131,10 @@ public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
 	}
 
 	/*
-	 * Maps a query condition for the ScientificNameGroup index to a query condition for
-	 * the Specimen index.
+	 * Maps a query condition for the ScientificNameGroup index to a query
+	 * condition for the Specimen index.
 	 */
-	private static void processCondition(QueryCondition condition)
-			throws InvalidQueryException
+	private static void processCondition(QueryCondition condition) throws InvalidQueryException
 	{
 		// Chop off the "specimens" path element
 		condition.setField(condition.getField().shift());
@@ -151,11 +149,10 @@ public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
 	}
 
 	/*
-	 * Check if the specified QueryCondition has a descendant that is a condition on a
-	 * specimen-related field.
+	 * Check if the specified QueryCondition has a descendant that is a
+	 * condition on a specimen-related field.
 	 */
-	private static QueryCondition findDescendantWithSpecimenField(
-			QueryCondition condition)
+	private static QueryCondition findDescendantWithSpecimenField(QueryCondition condition)
 	{
 		if (condition.getAnd() != null) {
 			for (QueryCondition c : condition.getAnd()) {
@@ -182,15 +179,20 @@ public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
 	}
 
 	/*
-	 * Purges specimens from a ScientificNameGroup document that do no satisfy the
-	 * specimen-specific query conditions in the QuerySpec. It does this by copying all
-	 * specimen-specific query conditions to a new QuerySpec and use that one to query the
-	 * Specimen index. The Specimen objects coming back from that query are then used to
-	 * purge the specimens in the ScientificNameGroup document.
+	 * Purges specimens from a ScientificNameGroup document that do no satisfy
+	 * the specimen-specific query conditions in the QuerySpec. It does this by
+	 * copying all specimen-specific query conditions to a new QuerySpec and use
+	 * that one to query the Specimen index. The Specimen objects coming back
+	 * from that query are then used to purge the specimens in the
+	 * ScientificNameGroup document.
 	 */
-	private static void purge(QueryResult<ScientificNameGroup> result,
-			QuerySpec specimenQuery) throws InvalidQueryException
+	private static void purge(QueryResult<ScientificNameGroup> result, QuerySpec specimenQuery)
+			throws InvalidQueryException
 	{
+		/*
+		 * The null value is going to be replaced for each name group we process
+		 * in the loop below.
+		 */
 		QueryCondition extraCondition = new QueryCondition("unitID", "IN", null);
 		extraCondition.setConstantScore(true);
 		specimenQuery.addCondition(extraCondition);
@@ -208,12 +210,11 @@ public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
 			specimenQuery.setSize(sz);
 			extraCondition.setValue(unitIDs);
 			QueryResult<Specimen> specimens = specimenDao.query(specimenQuery);
-			List<String> ids = new ArrayList<>(specimens.size());
+			Set<String> idSet = new HashSet<>(specimens.size() + 8, 1F);
 			for (int i = 0; i < specimens.size(); i++) {
-				ids.add(specimens.get(i).getItem().getId());
+				idSet.add(specimens.get(i).getItem().getId());
 			}
-			Set<String> idSet = new HashSet<>(ids);
-			List<SummarySpecimen> purged = new ArrayList<>(ids.size());
+			List<SummarySpecimen> purged = new ArrayList<>(idSet.size());
 			for (SummarySpecimen ss : nameGroup.getSpecimens()) {
 				if (idSet.contains(ss.getId())) {
 					purged.add(ss);
@@ -230,21 +231,21 @@ public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
 	}
 
 	/*
-	 * Purges specimens from a ScientificNameGroup document that do no satisfy the
-	 * specimen-specific query conditions in the QuerySpec. This method will also sort the
-	 * specimens within each ScientificNameGroup document according the score assigned to
-	 * them by Elasticsearch if you would use those query conditions to query the Specimen
-	 * index.
+	 * Purges specimens from a ScientificNameGroup document that do no satisfy
+	 * the specimen-specific query conditions in the QuerySpec. This method will
+	 * also sort the specimens within each ScientificNameGroup document
+	 * according the score assigned to them by Elasticsearch if you would use
+	 * those query conditions to query the Specimen index.
 	 */
 	private static void purgeAndSortByScore(QueryResult<ScientificNameGroup> result,
 			QuerySpec specimenQuery) throws InvalidQueryException
 	{
 		/*
-		 * For each ScientificNameGroup document in the result set we are going to execute
-		 * an extra query against the Specimen index using all conditions in the specified
-		 * QuerySpec object PLUS an extra condition limiting the specimens to those who
-		 * have a scientific name corresponding to the ScientificNameGroup document we are
-		 * currently processing.
+		 * For each name group in the result set we are going to execute an
+		 * extra query against the Specimen index using all conditions in the
+		 * specified QuerySpec object PLUS an extra filter limiting the
+		 * specimens to those whose unitIDs belong to the specimens in the name
+		 * group.
 		 */
 		QueryCondition extraCondition = new QueryCondition("unitID", "IN", null);
 		extraCondition.setConstantScore(true);
@@ -256,8 +257,8 @@ public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
 				continue;
 			}
 			/*
-			 * First convert the name group's specimens to a lookup table allowing for
-			 * quick lookup-by-id
+			 * First convert the name group's specimens to a lookup table
+			 * allowing for quick lookup by ID.
 			 */
 			int sz = nameGroup.getSpecimens().size();
 			Map<String, SummarySpecimen> lookupTable = new HashMap<>(sz + 8, 1F);
@@ -273,8 +274,9 @@ public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
 			extraCondition.setValue(unitIDs);
 			QueryResult<Specimen> realSpecimens = specimenDao.query(specimenQuery);
 			/*
-			 * Now filter and sort the specimens within the ScientificNameGroup document
-			 * just like the "real" specimens coming back from the query
+			 * Now filter and sort the specimens within the ScientificNameGroup
+			 * document just like the "real" specimens coming back from the
+			 * query
 			 */
 			List<SummarySpecimen> purged = new ArrayList<>(realSpecimens.size());
 			for (int i = 0; i < realSpecimens.size(); i++) {
@@ -295,8 +297,8 @@ public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
 	}
 
 	/*
-	 * Processes the extra fields in ScientificNameGroupQuerySpec (noTaxa, specimensFrom,
-	 * specimensSize, etc.)
+	 * Processes the extra fields in ScientificNameGroupQuerySpec (noTaxa,
+	 * specimensFrom, specimensSize, etc.)
 	 */
 	private static void processExtraQueryOptions(QueryResult<ScientificNameGroup> result,
 			ScientificNameGroupQuerySpec qs) throws InvalidQueryException
@@ -308,8 +310,7 @@ public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
 		boolean mustSort = mustSortSpecimensByField(qs);
 		PathValueComparator<SummarySpecimen> comparator = null;
 		if (mustSort) {
-			PathValueComparee[] comparees = sortFieldsToComparees(
-					qs.getSpecimensSortFields());
+			PathValueComparee[] comparees = sortFieldsToComparees(qs.getSpecimensSortFields());
 			comparator = new PathValueComparator<>(comparees);
 		}
 		for (QueryResultItem<ScientificNameGroup> item : result) {
@@ -320,7 +321,14 @@ public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
 			if (sng.getSpecimenCount() == 0) {
 				continue;
 			}
-			if (maxSpecimens == 0 || sng.getSpecimenCount() < offset) {
+			if (maxSpecimens == 0) {
+				sng.setSpecimens(null);
+			}
+			else if (sng.getSpecimenCount() < offset) {
+				if (logger.isDebugEnabled()) {
+					logger.debug("Nullifying specimens for name group {}: "
+							+ "offset beyond specimen count");
+				}
 				sng.setSpecimens(null);
 			}
 			else {
@@ -338,6 +346,10 @@ public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
 					else {
 						to = Math.min(sng.getSpecimenCount(), offset + maxSpecimens);
 					}
+					if (logger.isDebugEnabled()) {
+						logger.debug("Extracting specimens {} - {} from name group {}", offset, to,
+								sng.getName());
+					}
 					sng.setSpecimens(sng.getSpecimens().subList(offset, to));
 				}
 			}
@@ -348,8 +360,12 @@ public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
 	{
 		for (QueryResultItem<ScientificNameGroup> item : result) {
 			ScientificNameGroup sng = item.getItem();
-			int sz = Math.min(10, sng.getSpecimens().size());
-			sng.setSpecimens(sng.getSpecimens().subList(0, sz));
+			if (sng.getSpecimens() != null && sng.getSpecimens().size() > 10) {
+				if (logger.isDebugEnabled()) {
+					logger.debug("Limiting number of specimens in name group {} to 10");
+				}
+				sng.setSpecimens(sng.getSpecimens().subList(0, 10));
+			}
 		}
 	}
 

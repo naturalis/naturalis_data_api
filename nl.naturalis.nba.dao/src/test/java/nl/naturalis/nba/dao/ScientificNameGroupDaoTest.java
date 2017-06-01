@@ -235,54 +235,6 @@ public class ScientificNameGroupDaoTest {
 		}
 	}
 
-	@Test
-	public void testQuerySpecial_10() throws InvalidQueryException
-	{
-		ScientificNameGroupQuerySpec qs = new ScientificNameGroupQuerySpec();
-		qs.setConstantScore(true);
-		QueryCondition condition = new QueryCondition("name", "=", sngLarusFuscusFuscus.getName());
-		qs.addCondition(condition);
-		String field = "specimens.gatheringEvent.gatheringPersons.fullName";
-		condition = new QueryCondition(field, "=", "Kirsten Dunst");
-		condition.or(new QueryCondition(field, "=", "Robert Redford"));
-		qs.addCondition(condition);
-		qs.setSpecimensSortFields(Arrays.asList(new SortField("unitID")));
-		qs.setSpecimensSize(-1);
-		QueryResult<ScientificNameGroup> result = dao().querySpecial(qs);
-		List<SummarySpecimen> specimens = result.get(0).getItem().getSpecimens();
-		int size = specimens.size();
-		qs.setSpecimensFrom(1);
-		result = dao().querySpecial(qs);
-		specimens = result.get(0).getItem().getSpecimens();
-		assertEquals("01", size, specimens.size() + 1);
-	}
-
-	@Test
-	public void testQuerySpecial_11() throws InvalidQueryException
-	{
-		ScientificNameGroupQuerySpec qs = new ScientificNameGroupQuerySpec();
-		qs.setConstantScore(true);
-		QueryCondition condition = new QueryCondition("name", "=", sngLarusFuscusFuscus.getName());
-		qs.addCondition(condition);
-		String field = "specimens.gatheringEvent.gatheringPersons.fullName";
-		condition = new QueryCondition(field, "=", "Kirsten Dunst");
-		condition.or(new QueryCondition(field, "=", "Robert Redford"));
-		qs.addCondition(condition);
-		qs.setSpecimensSortFields(Arrays.asList(new SortField("unitID")));
-		qs.setSpecimensSize(-1);
-		QueryResult<ScientificNameGroup> result = dao().querySpecial(qs);
-		List<SummarySpecimen> specimens = result.get(0).getItem().getSpecimens();
-		String unitID = specimens.get(1).getUnitID();
-		qs.setSpecimensFrom(1);
-		result = dao().querySpecial(qs);
-		specimens = result.get(0).getItem().getSpecimens();
-		assertEquals("01", unitID, specimens.get(0).getUnitID());
-		unitID = specimens.get(1).getUnitID();
-		qs.setSpecimensFrom(2);
-		result = dao().querySpecial(qs);
-		specimens = result.get(0).getItem().getSpecimens();
-		assertEquals("02", unitID, specimens.get(0).getUnitID());
-	}
 
 	private static ScientificNameGroupDao dao()
 	{

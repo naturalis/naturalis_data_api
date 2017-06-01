@@ -160,13 +160,6 @@ public class QuerySpecTranslator {
 				resetToScoring(c);
 			}
 		}
-		else {
-			for (QueryCondition c : spec.getConditions()) {
-				if (c.isNegated()) {
-					resetToScoring(c);
-				}
-			}
-		}
 	}
 
 	private static void resetToScoring(QueryCondition condition)
@@ -176,8 +169,8 @@ public class QuerySpecTranslator {
 			if (logger.isDebugEnabled()) {
 				String field = condition.getField().toString();
 				String msg = "constantScore field for Condition on field {} "
-						+ "reset to false because it is a negated condition "
-						+ "or because it is already embedded  within a " + "non-scoring context";
+						+ "reset to false because one of its ancestors "
+						+ "already has its constantScore attribute set to true";
 				logger.debug(msg, field);
 			}
 		}

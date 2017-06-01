@@ -167,7 +167,14 @@ class BrahmsImportUtil {
 			ScientificName sn)
 	{
 		DefaultClassification dc = TransformUtil.extractClassificiationFromName(sn);
-		dc.setKingdom("Plantae");
+		// There is no field for Kingdom, so all specimens are asigned to Plantae,
+		// except for those that have className Fungi (fieldname FAMCLASS).
+		if (record.get(FAMCLASS).toLowerCase().equals("fungi")) {
+			dc.setKingdom("Fungi");
+		}
+		else {
+			dc.setKingdom("Plantae");
+		}
 		// Phylum deliberately not set
 		dc.setClassName(record.get(FAMCLASS));
 		dc.setOrder(record.get(ORDER));

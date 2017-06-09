@@ -23,14 +23,6 @@ public class ScientificNameGroupClient extends NbaClient<ScientificNameGroup>
 	}
 
 	@Override
-	public QueryResult<ScientificNameGroup> query(QuerySpec querySpec)
-			throws InvalidQueryException
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public QueryResult<ScientificNameGroup> querySpecial(
 			QuerySpec querySpec) throws InvalidQueryException
 	{

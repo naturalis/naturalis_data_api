@@ -4,8 +4,11 @@ import static nl.naturalis.nba.api.annotations.Analyzer.CASE_INSENSITIVE;
 import static nl.naturalis.nba.api.annotations.Analyzer.DEFAULT;
 import static nl.naturalis.nba.api.annotations.Analyzer.LIKE;
 
+import java.util.Objects;
+
 import nl.naturalis.nba.api.annotations.Analyzers;
 import nl.naturalis.nba.api.model.INbaModelObject;
+import nl.naturalis.nba.api.model.Person;
 
 public class SummaryPerson implements INbaModelObject {
 
@@ -17,6 +20,24 @@ public class SummaryPerson implements INbaModelObject {
 	{
 	}
 
+	/**
+	 * Determines whether this object is the summary of a given
+	 * {@code Person} object, i.e. if the (nested) fields of
+	 * the  {@code SummaryPerson} object all match the given 
+	 * {@code Person} object.
+	 * 
+	 * @param sp the {@code Person} object to compare to
+	 * @return true of this object is a summary of the object given in argument 
+	 */
+	public boolean isSummaryOf(Person p) 
+	{
+	    	boolean result = true;
+	    	result &= Objects.equals(this.getFullName(), p.getFullName());	    		    		    	
+	    	result &= this.getOrganization() == null ? p.getOrganization() == null : this.getOrganization().isSummaryOf(p.getOrganization());	    	
+
+	    	return result;
+	}
+	
 	public String getFullName()
 	{
 		return fullName;

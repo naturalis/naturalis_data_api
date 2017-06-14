@@ -4,6 +4,8 @@ import static nl.naturalis.nba.api.annotations.Analyzer.CASE_INSENSITIVE;
 import static nl.naturalis.nba.api.annotations.Analyzer.DEFAULT;
 import static nl.naturalis.nba.api.annotations.Analyzer.LIKE;
 
+import java.util.Objects;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -28,9 +30,23 @@ public class SummaryOrganization implements INbaModelObject {
 		this.name = name;
 	}
 
+	/**
+	 * Determines whether this object is the summary of a given
+	 * {@code Organization} object, i.e. if the (nested) fields of
+	 * the  {@code SummaryOrganization} object all match the given 
+	 * {@code Organization} object.
+	 * 
+	 * @param sp the {@code Organization} object to compare to
+	 * @return true of this object is a summary of the object given in argument 
+	 */
+	public boolean isSummaryOf(Organization o) 
+	{		    
+	    return Objects.equals(this.getName(), o.getName());
+	}
+	
 	public String getName()
 	{
-		return name;
+	    return name;
 	}
 
 }

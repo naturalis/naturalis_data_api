@@ -18,6 +18,21 @@ public class SummaryGatheringSiteCoordinates implements INbaModelObject {
 
 	private Point geoShape;
 
+	/**
+	 * Determines whether this object is the summary of a given
+	 * {@code GatheringSiteCoordinates} object, i.e. if the (nested) fields of
+	 * the  {@code SummaryGatheringSiteCoordinates} object all match the given 
+	 * {@code GatheringSiteCoordinates} object.
+	 * 
+	 * @param sp the {@code GatheringSiteCoordinates} object to compare to
+	 * @return true of this object is a summary of the object given in argument 
+	 */
+	public boolean isSummaryOf(GatheringSiteCoordinates gsc)
+	{	    	    
+	    return this.getGeoShape().equals(gsc.getGeoShape());
+	}
+	    
+	    
 	@JsonCreator
 	public SummaryGatheringSiteCoordinates(@JsonProperty("geoShape") Point geoShape)
 	{

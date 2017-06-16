@@ -1,12 +1,16 @@
 package nl.naturalis.nba.api.model.summary;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 import nl.naturalis.nba.api.model.DefaultClassification;
 import nl.naturalis.nba.api.model.INbaModelObject;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.api.model.SpecimenTypeStatus;
 import nl.naturalis.nba.api.model.TaxonomicEnrichment;
+import nl.naturalis.nba.api.model.VernacularName;
 
 /**
  * A miniature version of {@link SpecimenIdentification}.
@@ -23,6 +27,69 @@ public class SummarySpecimenIdentification implements INbaModelObject {
 	private List<SummaryVernacularName> vernacularNames;
 	private List<TaxonomicEnrichment> taxonomicEnrichments;
 
+	/**
+	 * Determines whether this object is the summary of a given
+	 * {@code SpecimenIdentification} object, i.e. if the (nested) fields of
+	 * the  {@code SummarySpecimenIdentification} object all match the given 
+	 * {@code SpecimenIdentification} object.
+	 * 
+	 * @param sp the {@code SpecimenIdentification} object to compare to
+	 * @return 
+	 * @return true of this object is a summary of the object given in argument 
+	 */
+	public boolean isSummaryOf(SpecimenIdentification id) 
+	{
+	    	boolean result = true;
+		result &= this.isPreferred() == id.isPreferred();
+		// System.out.println("SNG preferred id : " + this.isPreferred() + " specimen preferred: " + id.isPreferred());
+		result &= Objects.equals(this.getScientificName().getFullScientificName(), id.getScientificName().getFullScientificName());
+		result &= Objects.equals(this.getTypeStatus(), id.getTypeStatus());
+
+		// compare enrichments
+		List<TaxonomicEnrichment> summaryEnrichments = this.getTaxonomicEnrichments();
+		List<TaxonomicEnrichment> enrichments = id.getTaxonomicEnrichments();
+		if (summaryEnrichments == null ^ enrichments == null) {
+	    		return false;
+	    	}
+	    	else if (summaryEnrichments != null && enrichments != null) {
+        		// TODO: Could comparing of enrichments be done with the PathValue comparator?		
+        		Comparator<TaxonomicEnrichment> enrichCompare = new Comparator<TaxonomicEnrichment>(){
+        		    	@Override
+        	    		public int compare(TaxonomicEnrichment t1, TaxonomicEnrichment t2) {
+        		    	    return t1.toString().compareTo(t2.toString());
+        		    	}};
+        		summaryEnrichments.sort(enrichCompare);
+        		enrichments.sort(enrichCompare);
+        	    	
+        		result &= summaryEnrichments.size() == enrichments.size();    	    
+        	    	for (int i=0; i<summaryEnrichments.size(); i++){
+        	    	    result &= summaryEnrichments.get(i).equals(enrichments.get(i));
+        	    	}
+	    	}
+		// compare vernacular names		
+		List<SummaryVernacularName> summaryNames = this.getVernacularNames();
+	    	List<VernacularName> names = id.getVernacularNames();
+	    	if (summaryNames == null ^ names == null) {
+	    	    	return false;
+	    	}
+	    	else if (summaryNames != null && names != null) {
+			Collections.sort(summaryNames, new Comparator<SummaryVernacularName>(){
+		    		public int compare (SummaryVernacularName n1, SummaryVernacularName n2){ 		    
+		    		    return (n1.getName().compareTo(n2.getName()));
+		    		}});
+
+			Collections.sort(names, new Comparator<VernacularName>(){
+        	    		public int compare (VernacularName n1, VernacularName n2){ 		    
+        	    		    return (n1.getName().compareTo(n2.getName()));
+        	    		}});
+        		result &= summaryNames.size() == names.size();    	    
+        	    	for (int i=0; i<summaryNames.size(); i++){
+        	    	    result &= summaryNames.get(i).isSummaryOf(names.get(i));
+        	    	}
+	    	}	    	
+		return result;
+	}
+	
 	public boolean isPreferred()
 	{
 		return preferred;

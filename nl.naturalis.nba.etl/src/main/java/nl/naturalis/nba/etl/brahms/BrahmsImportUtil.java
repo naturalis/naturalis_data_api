@@ -169,16 +169,35 @@ class BrahmsImportUtil {
 		DefaultClassification dc = TransformUtil.extractClassificiationFromName(sn);
 		// There is no field for Kingdom, so all specimens are asigned to Plantae,
 		// except for those that have className Fungi (fieldname FAMCLASS).
+		boolean fungus = false;
 		if (record.get(FAMCLASS).toLowerCase().equals("fungi")) {
+			fungus = true;
+		}
+		dc.setKingdom("Plantae");
+		if (fungus) {
 			dc.setKingdom("Fungi");
 		}
-		else {
-			dc.setKingdom("Plantae");
-		}
 		// Phylum deliberately not set
-		dc.setClassName(record.get(FAMCLASS));
+
+		// Note: fungi specimen import records are identified by FAMCLASS == "fungi"
+		// This is NOT the value to be here. Hence, null for all fungi specimens.
+		if (!fungus)
+			dc.setClassName(record.get(FAMCLASS));
+
 		dc.setOrder(record.get(ORDER));
-		dc.setFamily(record.get(FAMILY));
+		
+		// Note: the field family names of fungi specimens can --but most often does 
+		// not-- contain a family name. This is then prefixed with "Fungi-". 
+		// E.g.: "Fungi-Boletaceae"
+		// This prefix needs to be removed.
+		if (!fungus) { 
+			dc.setFamily(record.get(FAMILY));
+		}
+		else {
+			String prefix = "(?i)(fungi-)";
+			if (record.get(FAMILY).matches(prefix))
+				dc.setFamily(record.get(FAMILY).replaceFirst(prefix, ""));
+		}
 		return dc;
 	}
 

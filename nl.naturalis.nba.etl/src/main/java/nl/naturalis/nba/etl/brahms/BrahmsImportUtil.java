@@ -195,8 +195,10 @@ class BrahmsImportUtil {
 		}
 		else {
 			String prefix = "(?i)(fungi-)";
-			if (record.get(FAMILY).matches(prefix))
-				dc.setFamily(record.get(FAMILY).replaceFirst(prefix, ""));
+			String familyName = record.get(FAMILY);
+			if (familyName.matches(prefix))
+				logger.info("FUNGI - familyName:" + familyName + ", corrected: " + familyName.replaceFirst(prefix, ""));
+				dc.setFamily(familyName.replaceFirst(prefix, ""));
 		}
 		return dc;
 	}

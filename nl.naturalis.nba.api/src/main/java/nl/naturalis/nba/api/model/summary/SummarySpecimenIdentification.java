@@ -34,15 +34,13 @@ public class SummarySpecimenIdentification implements INbaModelObject {
 	 * {@code SpecimenIdentification} object.
 	 * 
 	 * @param sp the {@code SpecimenIdentification} object to compare to
-	 * @return 
 	 * @return true of this object is a summary of the object given in argument 
 	 */
 	public boolean isSummaryOf(SpecimenIdentification id) 
 	{
 	    	boolean result = true;
 		result &= this.isPreferred() == id.isPreferred();
-		// System.out.println("SNG preferred id : " + this.isPreferred() + " specimen preferred: " + id.isPreferred());
-		result &= Objects.equals(this.getScientificName().getFullScientificName(), id.getScientificName().getFullScientificName());
+		result &= this.getScientificName().isSummaryOf(id.getScientificName());
 		result &= Objects.equals(this.getTypeStatus(), id.getTypeStatus());
 
 		// compare enrichments
@@ -83,7 +81,7 @@ public class SummarySpecimenIdentification implements INbaModelObject {
         	    		    return (n1.getName().compareTo(n2.getName()));
         	    		}});
         		result &= summaryNames.size() == names.size();    	    
-        	    	for (int i=0; i<summaryNames.size(); i++){
+        	    	for (int i=0; i<summaryNames.size(); i++) {
         	    	    result &= summaryNames.get(i).isSummaryOf(names.get(i));
         	    	}
 	    	}	    	

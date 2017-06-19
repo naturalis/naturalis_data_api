@@ -7,6 +7,7 @@ import static org.junit.Assume.assumeNoException;
 import static org.junit.Assume.assumeTrue;
 
 import java.util.Iterator;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Ignore;
@@ -18,17 +19,20 @@ import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QueryResultItem;
+import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.ScientificNameGroupQuerySpec;
 import nl.naturalis.nba.api.model.ScientificNameGroup;
 import nl.naturalis.nba.api.model.Sex;
 import nl.naturalis.nba.api.model.Specimen;
+import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.api.model.summary.SummarySpecimen;
+import nl.naturalis.nba.api.model.summary.SummaryTaxon;
 
 public class ScientificNameGroupClientTest {
 
     // define global variables used by all tests
     // private String baseUrl = "http://localhost:8080/v2";
-    private String baseUrl = "http://145.136.242.164:8080/v2";
+    private String baseUrl = "http://145.136.242.167:8080/v2";
     private NbaSession session;
     private IScientificNameGroupAccess client;
 
@@ -120,9 +124,9 @@ public class ScientificNameGroupClientTest {
 	// now we should find only male specimens
 	assertTrue(allMale);
     }
-
+        
     @Ignore
-    public void testSpecimenInNameGroup() throws InvalidQueryException
+    public void testSummarySpecimenInNameGroup() throws InvalidQueryException
     {
 	/*
 	 * A ScientificNameGroup document can have associated specimens,
@@ -158,7 +162,77 @@ public class ScientificNameGroupClientTest {
 	    }
 	}
     }
+    
+    @Ignore
+    public void testSummaryTaxaInNameGroup() throws InvalidQueryException {
+	/*
+	 * A ScientificNameGroup document can have associated taxa,
+	 * represented by a thinner version of a Taxon (SummaryTaxon)
+	 * document nested under the ScientificNameGroup. Here we test (for some
+	 * of them) on real data, if all fields of the Taxon in the
+	 * ScientificNameGroup match the corresponding fields in the respective
+	 * Taxon document
+	 * TODO: Ignored because behavior is not as expected!
+	 */
+	TaxonClient tc = session.getTaxonClient();
+	ScientificNameGroupQuerySpec qs = new ScientificNameGroupQuerySpec();
+	// only select SNGs with one or more specimen
+	qs.addCondition(new QueryCondition("taxonCount", ComparisonOperator.GT, 0));
+	qs.setSize(100); // caution magic number
+	QueryResult<ScientificNameGroup> result = client.query(qs);
+	for (Iterator<QueryResultItem<ScientificNameGroup>> it1 = result.iterator(); it1.hasNext();) {
+	    // extract summary taxa
+	    ScientificNameGroup sng = it1.next().getItem();
+	    List<SummaryTaxon> summaryTaxa = sng.getTaxa();
+	    
+	    for (Iterator<SummaryTaxon> it2 = summaryTaxa.iterator(); it2.hasNext();) {
+		SummaryTaxon st = it2.next();
+    	    
+		// test that all SummaryTaxon objects from an SNG match their Taxon counterpart 
+    	    	Taxon t = tc.find(st.getId());
+    	    	System.out.println(t.getId());
+    	    	System.out.println(sng.getId());
+    	    	assertTrue(st.isSummaryOf(t));		    	    	    	    
+	    }		
+	}
+    }
+    
+    @Test
+    public void testNameGroupForTaxa() throws InvalidQueryException {
+	/* 
+	 * Tests if every taxon has a SNG and that this SNG is 
+	 * listed in the scientificNameGroup field of the taxon
+	 */
+	TaxonClient tc = session.getTaxonClient();
 
+	QuerySpec tqs = new QuerySpec();
+	tqs.setSize(1000); //caution magic number
+	QueryResult<Taxon> allTaxa = tc.query(tqs);
+	for (Iterator<QueryResultItem<Taxon>> it = allTaxa.iterator(); it.hasNext();) {
+	    Taxon tax = it.next().getItem();
+	    String taxonSNG = tax.getAcceptedName().getScientificNameGroup();
+
+	    // check if we find back that scientific name group by querying for the SNG 
+	    ScientificNameGroupQuerySpec qs = new ScientificNameGroupQuerySpec();
+	    qs.addCondition(new QueryCondition("name", ComparisonOperator.EQUALS, taxonSNG));
+	    QueryResult<ScientificNameGroup> sngs = client.query(qs);
+	    assertTrue("SNG found for taxon", sngs.size() > 0);
+	    
+	    boolean sngStringMatches = false;
+	    // iterate over scientific name groups and identify the one that matches our taxon 
+	    for (Iterator<QueryResultItem<ScientificNameGroup>> it2 = sngs.iterator(); it2.hasNext();) {
+		ScientificNameGroup sng = it2.next().getItem();
+		
+		// test if the scientificNameGroup field from the taxon documents occurs in the names of the result SNGs
+		if (sng.getName().equals(taxonSNG)) {
+		    sngStringMatches = true;		    
+		    break;
+		}			    
+	    }
+	    assertTrue("SNG names match", sngStringMatches);	    
+	}	
+    }
+    
     @Ignore("InvalidQueryException never thrown - due to design (@override)? ") // @Test(expected
 										// =
     // InvalidQueryException.class)

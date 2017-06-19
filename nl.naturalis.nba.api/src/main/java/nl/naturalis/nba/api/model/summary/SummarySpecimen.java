@@ -42,7 +42,6 @@ public class SummarySpecimen implements INbaModelObject {
 	 * {@code Specimen} object.
 	 * 
 	 * @param sp the {@code Specimen} object to compare to
-	 * @return 
 	 * @return true of this object is a summary of the object given in argument 
 	 */
 	public boolean isSummaryOf(Specimen sp)

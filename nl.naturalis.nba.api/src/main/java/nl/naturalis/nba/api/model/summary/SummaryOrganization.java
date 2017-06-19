@@ -36,7 +36,7 @@ public class SummaryOrganization implements INbaModelObject {
 	 * the  {@code SummaryOrganization} object all match the given 
 	 * {@code Organization} object.
 	 * 
-	 * @param sp the {@code Organization} object to compare to
+	 * @param o the {@code Organization} object to compare to
 	 * @return true of this object is a summary of the object given in argument 
 	 */
 	public boolean isSummaryOf(Organization o) 

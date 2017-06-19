@@ -38,7 +38,7 @@ public class SummaryGatheringEvent implements INbaModelObject {
 	 * the  {@code SummaryGatheringEvent} object all match the given 
 	 * {@code GatheringEvent} object.
 	 * 
-	 * @param sp the {@code GatheringEvent} object to compare to
+	 * @param ge the {@code GatheringEvent} object to compare to
 	 * @return true of this object is a summary of the object given in argument 
 	 */
 	public boolean isSummaryOf(GatheringEvent ge)

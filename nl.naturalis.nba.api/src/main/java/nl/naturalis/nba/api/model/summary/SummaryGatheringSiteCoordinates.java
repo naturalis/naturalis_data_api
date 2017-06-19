@@ -24,7 +24,7 @@ public class SummaryGatheringSiteCoordinates implements INbaModelObject {
 	 * the  {@code SummaryGatheringSiteCoordinates} object all match the given 
 	 * {@code GatheringSiteCoordinates} object.
 	 * 
-	 * @param sp the {@code GatheringSiteCoordinates} object to compare to
+	 * @param gsc the {@code GatheringSiteCoordinates} object to compare to
 	 * @return true of this object is a summary of the object given in argument 
 	 */
 	public boolean isSummaryOf(GatheringSiteCoordinates gsc)

@@ -4,8 +4,11 @@ import static nl.naturalis.nba.api.annotations.Analyzer.CASE_INSENSITIVE;
 import static nl.naturalis.nba.api.annotations.Analyzer.DEFAULT;
 import static nl.naturalis.nba.api.annotations.Analyzer.LIKE;
 
+import java.util.Objects;
+
 import nl.naturalis.nba.api.annotations.Analyzers;
 import nl.naturalis.nba.api.model.INbaModelObject;
+import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.TaxonomicStatus;
 
 /**
@@ -32,6 +35,29 @@ public class SummaryScientificName implements INbaModelObject {
 	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String authorshipVerbatim;
 
+	/**
+	 * Determines whether this object is the summary of a given
+	 * {@code ScientificName} object, i.e. if the (nested) fields of
+	 * the  {@code SummaryScientificName} object all match the given 
+	 * {@code ScientificName} object.
+	 * 
+	 * @param sn the {@code ScientificName} object to compare to
+	 * @return true of this object is a summary of the object given in argument 
+	 */
+	public boolean isSummaryOf(ScientificName sn)
+	{
+	    	boolean result = true;
+	    	result &= Objects.equals(this.getAuthorshipVerbatim(), sn.getAuthorshipVerbatim());
+	    	result &= Objects.equals(this.getFullScientificName(), sn.getFullScientificName());
+	    	result &= Objects.equals(this.getGenusOrMonomial(), sn.getGenusOrMonomial());
+	    	result &= Objects.equals(this.getInfraspecificEpithet(), sn.getInfraspecificEpithet());
+	    	result &= Objects.equals(this.getSpecificEpithet(), sn.getSpecificEpithet());
+	    	result &= Objects.equals(this.getSubgenus(), sn.getSubgenus());
+	    	result &= this.getTaxonomicStatus().equals(sn.getTaxonomicStatus());
+
+	    	return result;
+	}
+	
 	public String getFullScientificName()
 	{
 		return fullScientificName;

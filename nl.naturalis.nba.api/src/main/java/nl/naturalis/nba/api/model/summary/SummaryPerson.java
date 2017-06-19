@@ -26,7 +26,7 @@ public class SummaryPerson implements INbaModelObject {
 	 * the  {@code SummaryPerson} object all match the given 
 	 * {@code Person} object.
 	 * 
-	 * @param sp the {@code Person} object to compare to
+	 * @param p the {@code Person} object to compare to
 	 * @return true of this object is a summary of the object given in argument 
 	 */
 	public boolean isSummaryOf(Person p) 

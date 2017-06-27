@@ -8,7 +8,7 @@ import java.util.Set;
 import nl.naturalis.nba.api.model.IDocumentObject;
 
 /**
- * Specifies a common set of data access methods that can be called against any
+ * Specifies a set of common data access methods that can be called against any
  * type of document within the NBA document store.
  * 
  * @author Ayco Holleman
@@ -21,13 +21,12 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
 
 	/**
 	 * <p>
-	 * Returns the data model object with the specified system ID, or
-	 * {@code null} if there is no data model object with the specified system
-	 * ID. The system ID is not part of the Elasticsearch document from which
-	 * the data model object was created. It corresponds with the {@code _id}
-	 * field, which is retrieved separately from the document source. You can
-	 * get the value of this field through {@link IDocumentObject#getId()
-	 * IDocumentObject.getId}.
+	 * Returns the document with the specified document ID, or {@code null} if
+	 * there is no document with the specified document ID. Note that the
+	 * document ID is not part of the document itself. It corresponds with the
+	 * Elasticsearch {@code _id} field, which is retrieved separately from the
+	 * document source. You can get the value of this field through
+	 * {@link IDocumentObject#getId() IDocumentObject.getId}.
 	 * </p>
 	 * <h5>REST API</h5>
 	 * <p>
@@ -103,20 +102,7 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
 	 * </p>
 	 * <p>
 	 * See {@link QuerySpec} for an explanation of how to encode the
-	 * {@code QuerySpec} object in the URL (for GET requests) or in the request
-	 * body (for POST requests). When using a POST request you actually have two
-	 * options:
-	 * <ol>
-	 * <li>Set the Content-Type header of the request to
-	 * application/x-www-form-urlencoded (or leave it empty) and encode the
-	 * {@code QuerySpec} object in the request body using form parameters as
-	 * described in {@link here}.
-	 * <li>Set the Content-Type header of the request to application/json and
-	 * set the request body to the JSON represention of the {@code QuerySpec}
-	 * object (<i>without</i> using the {@code _querySpec} form parameter). In
-	 * other words, the request body consists of nothing but the JSON
-	 * representing the {@code QuerySpec} object.
-	 * </ol>
+	 * {@code QuerySpec} object in the request.
 	 * </p>
 	 * 
 	 * @param querySpec
@@ -136,8 +122,8 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
 	 * </p>
 	 * <h5>REST API</h5>
 	 * <p>
-	 * The NBA REST API exposes this method through a GET request with the
-	 * following endpoint:
+	 * The NBA REST API exposes this method through a GET or POST request with
+	 * the following endpoint:
 	 * </p>
 	 * <p>
 	 * <code>
@@ -152,6 +138,10 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
 	 * http://api.biodiversitydata.nl/v2/taxon/count<br>
 	 * http://api.biodiversitydata.nl/v2/specimen/count/?sourceSystem.code=BRAHMS
 	 * </code>
+	 * </p>
+	 * <p>
+	 * See {@link QuerySpec} for an explanation of how to encode the
+	 * {@code QuerySpec} object in the request.
 	 * </p>
 	 * 
 	 * @param querySpec
@@ -191,6 +181,10 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
 	 * <code>
 	 * http://api.biodiversitydata.nl/v2/specimen/getDistinctValues/recordBasis<br>
 	 * </code>
+	 * </p>
+	 * <p>
+	 * See {@link QuerySpec} for an explanation of how to encode the
+	 * {@code QuerySpec} object in the request.
 	 * </p>
 	 * 
 	 * @param forField

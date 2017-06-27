@@ -15,10 +15,16 @@ import nl.naturalis.nba.api.model.Taxon;
  * <h3>Providing query specifications through the REST API</h3>
  * <p>
  * Whenever a method in the formal API takes a {@code QuerySpec} object, the
- * corresponding REST API gives you two options the encode the {@code QuerySpec}
- * object in the URL. One option is to provide a {@code _querySpec} query
- * parameter whose value is the JSON-encoded {@code QuerySpec} object (i.e. the
- * {@code QuerySpec} object serialized to JSON). For example:
+ * REST API lets you access that method using either a GET or a POST request.
+ * </p>
+ * <p>
+ * <b>Encoding a {@code QuerySpec} in a GET request</b>
+ * </p>
+ * <p>
+ * With GET requests you have two options the encode the {@code QuerySpec}
+ * object in the URL. One option is to provide a query parameter named
+ * "_querySpec" whose value is the JSON-encoded {@code QuerySpec} object (i.e.
+ * the {@code QuerySpec} object serialized to JSON). For example:
  * </p>
  * 
  * <pre>
@@ -66,6 +72,24 @@ import nl.naturalis.nba.api.model.Taxon;
  * parameters listed above. Complex queries with operators other than
  * {@link ComparisonOperator#EQUALS} or with nested query conditions are not
  * possible with the second option.
+ * </p>
+ * <p>
+ * <b>Encoding a {@code QuerySpec} in a POST request</b>
+ * </p>
+ * <p>
+ * When using a POST requests you again have two options to encode the
+ * {@code QuerySpec} object;
+ * <ol>
+ * <li>Set the Content-Type header of the request to
+ * application/x-www-form-urlencoded (or leave it empty) and provide a
+ * "_querySpec" form parameter in the request body whose value is the
+ * JSON-encoded {@code QuerySpec} object.
+ * <li>Set the Content-Type header of the request to application/json and set
+ * the request body to the JSON represention of the {@code QuerySpec} object
+ * (<i>without</i> using the {@code _querySpec} form parameter). In other words,
+ * the request body consists of nothing but the JSON representing the
+ * {@code QuerySpec} object.
+ * </ol>
  * </p>
  * <h3>Non-scoring queries</h3>
  * <p>

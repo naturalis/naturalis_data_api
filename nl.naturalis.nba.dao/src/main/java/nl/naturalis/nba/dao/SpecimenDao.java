@@ -10,6 +10,7 @@ import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.OutputStream;
+import java.util.Set;
 
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.search.SearchRequestBuilder;
@@ -66,10 +67,22 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 		return processSearchRequest(request);
 	}
 
+	private static String[] namedCollections;
+
 	@Override
 	public String[] getNamedCollections()
 	{
-		return new String[] { "Living Dinos", "Strange Plants" };
+		if (namedCollections == null) {
+			try {
+				Set<String> themes = getDistinctValues("theme", null).keySet();
+				namedCollections = themes.toArray(new String[themes.size()]);
+			}
+			catch (InvalidQueryException e) {
+				assert (false);
+				return null;
+			}
+		}
+		return namedCollections;
 	}
 
 	@Override

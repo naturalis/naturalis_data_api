@@ -30,11 +30,11 @@ public class ScientificNameGroupQuerySpec extends QuerySpec {
 	}
 
 	/**
-	 * Sets the offset within the {@link List} of specimens. Default 0. This
-	 * enables paging through specimens within a single
-	 * {@code ScientificNameGroup}. For each {@code ScientificNameGroup}
-	 * returned from the query, only specimens at or after the offset are
-	 * included.
+	 * Sets the offset within the {@link List} of specimens within the retrieved
+	 * {@link ScientificNameGroup} documents. Default 0. This enables paging
+	 * through specimens within a single {@code ScientificNameGroup}. For each
+	 * {@code ScientificNameGroup} returned from the query, only specimens at or
+	 * after the offset are included.
 	 * 
 	 * @param specimensFrom
 	 */

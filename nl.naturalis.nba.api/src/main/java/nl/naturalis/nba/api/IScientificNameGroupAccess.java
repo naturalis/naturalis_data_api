@@ -15,12 +15,28 @@ import nl.naturalis.nba.api.model.ScientificNameGroup;
 public interface IScientificNameGroupAccess extends INbaAccess<ScientificNameGroup> {
 
 	/**
+	 * <p>
 	 * Returns {@link ScientificNameGroup} documents conforming to the provided
 	 * query specification. This method duplicates
 	 * {@link INbaAccess#query(QuerySpec)}, just to point out that when querying
 	 * {@code ScientificNameGroup} documents you can optionally provide a
 	 * subclass of {@link QuerySpec}, namely
 	 * {@link ScientificNameGroupQuerySpec}.
+	 * </p>
+	 * <h5>REST API</h5>
+	 * <p>
+	 * The NBA REST API exposes this method through a GET and a POST request
+	 * with the following endpoint:
+	 * </p>
+	 * <p>
+	 * <code>
+	 * http://api.biodiversitydata.nl/v2/names/query
+	 * </code>
+	 * </p>
+	 * <p>
+	 * See {@link QuerySpec} for an explanation of how to encode the
+	 * {@code QuerySpec} object in the request.
+	 * </p>
 	 * 
 	 * @param querySpec
 	 * @return
@@ -78,11 +94,24 @@ public interface IScientificNameGroupAccess extends INbaAccess<ScientificNameGro
 	 * never</b> be nested within a non-specimen-related query condition.
 	 * Otherwise an {@link InvalidQueryException} is thrown.
 	 * </p>
+	 * <h5>REST API</h5>
+	 * <p>
+	 * The NBA REST API exposes this method through a GET and a POST request
+	 * with the following endpoint:
+	 * </p>
+	 * <p>
+	 * <code>
+	 * http://api.biodiversitydata.nl/v2/names/querySpecial
+	 * </code>
+	 * </p>
+	 * <p>
+	 * See {@link QuerySpec} for an explanation of how to encode the
+	 * {@code QuerySpec} object in the request.
+	 * </p>
 	 * 
 	 * @param querySpec
 	 * @return
 	 */
-	QueryResult<ScientificNameGroup> querySpecial(QuerySpec querySpec)
-			throws InvalidQueryException;
+	QueryResult<ScientificNameGroup> querySpecial(QuerySpec querySpec) throws InvalidQueryException;
 
 }

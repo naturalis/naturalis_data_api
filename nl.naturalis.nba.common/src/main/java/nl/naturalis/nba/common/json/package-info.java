@@ -1,5 +1,5 @@
 /**
- * Interfaces and classes 
+ * Package providing functionality for reading and writing JSON.
  * 
  * @author Ayco Holleman
  * 

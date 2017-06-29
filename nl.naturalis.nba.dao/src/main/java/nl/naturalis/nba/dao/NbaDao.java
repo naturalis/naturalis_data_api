@@ -54,7 +54,7 @@ import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.exception.DaoException;
 import nl.naturalis.nba.dao.translate.QuerySpecTranslator;
 import nl.naturalis.nba.dao.util.es.ESUtil;
-import nl.naturalis.nba.dao.util.es.Scroller;
+import nl.naturalis.nba.dao.util.es.TransactionSafeScroller;
 
 abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 
@@ -175,9 +175,9 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 		querySpec.addCondition(new QueryCondition(groupByField, NOT_EQUALS, null));
 		querySpec.sortBy(groupByField);
 		GetGroupsSearchHitHandler handler = new GetGroupsSearchHitHandler(groupByField, from, size);
-		Scroller scroller = new Scroller(querySpec, dt, handler);
+		TransactionSafeScroller scroller = new TransactionSafeScroller(querySpec, dt);
 		try {
-			scroller.scroll();
+			scroller.scroll(handler);
 		}
 		catch (NbaException e) {
 			// Should not happen - handler does not throw exceptions
@@ -250,9 +250,9 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 		qs.addCondition(new QueryCondition(keyField, "!=", null));
 		qs.addCondition(new QueryCondition(valuesField, "!=", null));
 		qs.sortBy(keyField, SortOrder.DESC);
-		Scroller scroller = new Scroller(qs, dt, handler);
+		TransactionSafeScroller scroller = new TransactionSafeScroller(qs, dt);
 		try {
-			scroller.scroll();
+			scroller.scroll(handler);
 		}
 		catch (NbaException e) {
 			throw (InvalidQueryException) e;

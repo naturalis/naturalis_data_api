@@ -7,13 +7,19 @@ import java.io.OutputStream;
 
 import org.apache.logging.log4j.Logger;
 
+import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.NoSuchDataSetException;
+import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.dao.DaoRegistry;
+import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.format.DataSet;
 import nl.naturalis.nba.dao.format.DataSetBuilder;
 import nl.naturalis.nba.dao.format.DataSetConfigurationException;
 import nl.naturalis.nba.dao.format.Entity;
 import nl.naturalis.nba.dao.format.csv.CsvFieldFactory;
+import nl.naturalis.nba.dao.util.es.DirtyScroller;
+import nl.naturalis.nba.dao.util.es.IScroller;
+import nl.naturalis.nba.dao.util.es.TransactionSafeScroller;
 import nl.naturalis.nba.utils.ArrayUtil;
 import nl.naturalis.nba.utils.ConfigObject;
 import nl.naturalis.nba.utils.ConfigObject.MissingPropertyException;
@@ -165,6 +171,36 @@ public class DwcaConfig {
 		return dataSet.getEntity(dataSetType.name().toLowerCase());
 	}
 
+	/*
+	 * If we iterate over less than 10000 documents we will use a
+	 * TransactionSafeScroller (i.e. the Elasticsearch scroll API) because it
+	 * will honour the sort order specified in the QuerySpec. Otherwise we will
+	 * use the DirtyScroller (i.e. the "search after" technique) to avoid the
+	 * timeouts that you can easily get with the scroll API.
+	 */
+	IScroller createScroller(QuerySpec query) throws InvalidQueryException
+	{
+		/*
+		 * TODO: Maybe softcode the integer constants here in dwca.properties or
+		 * nba.properties
+		 */
+		if (query.getSize() == null || query.getSize() > 10000) {
+			if (dataSetType == DwcaDataSetType.TAXON) {
+				return new DirtyScroller(query, DocumentType.TAXON);
+			}
+			return new DirtyScroller(query, DocumentType.SPECIMEN);
+		}
+		TransactionSafeScroller scroller;
+		if (dataSetType == DwcaDataSetType.TAXON) {
+			scroller = new TransactionSafeScroller(query, DocumentType.TAXON);
+		}
+		else {
+			scroller = new TransactionSafeScroller(query, DocumentType.SPECIMEN);
+		}
+		scroller.setTimeout(30000);
+		return scroller;
+	}
+
 	private DataSet buildDataSet() throws DataSetConfigurationException, NoSuchDataSetException
 	{
 		File confDir = getHome();
@@ -203,7 +239,7 @@ public class DwcaConfig {
 		File file = getHome();
 		if (!file.isDirectory()) {
 			String fmt = "Missing directory %s for DwCA dataset %s";
-			String msg = String.format(fmt, file.getAbsolutePath(), dataSetName);			
+			String msg = String.format(fmt, file.getAbsolutePath(), dataSetName);
 			throw new DataSetConfigurationException(msg);
 		}
 		file = getEmlFile();

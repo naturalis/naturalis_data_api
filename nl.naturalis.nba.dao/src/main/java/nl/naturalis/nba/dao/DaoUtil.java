@@ -1,5 +1,7 @@
 package nl.naturalis.nba.dao;
 
+import static nl.naturalis.nba.utils.StringUtil.zpad;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,12 +37,42 @@ public class DaoUtil {
 	}
 
 	/**
+	 * Get the duration between {@code start} and now, formatted as HH:mm:ss.
+	 * 
+	 * @param start
+	 * @return
+	 */
+	public static String getDuration(long start)
+	{
+		return getDuration(start, System.currentTimeMillis());
+	}
+
+	/**
+	 * Get the duration between {@code start} and {@code end}, formatted as
+	 * HH:mm:ss.
+	 * 
+	 * @param start
+	 * @param end
+	 * @return
+	 */
+	public static String getDuration(long start, long end)
+	{
+		int millis = (int) (end - start);
+		int hours = millis / (60 * 60 * 1000);
+		millis = millis % (60 * 60 * 1000);
+		int minutes = millis / (60 * 1000);
+		millis = millis % (60 * 1000);
+		int seconds = millis / 1000;
+		return zpad(hours, 2, ":") + zpad(minutes, 2, ":") + zpad(seconds, 2);
+	}
+
+	/**
 	 * Creates a copy of the specified {@link QuerySpec} with conditions that
-	 * only contain reasonably-sized {@link QueryCondition#getValue() search terms}.
-	 * Some type of search terms (especially GeoJSON strings for complicated
-	 * shapes) can easily become so large that even printing them as part of a
-	 * DEBUG message is too expensive. This method is meant for debug purposes
-	 * only, notably when passing a {@code QuerySpec} object to
+	 * only contain reasonably-sized {@link QueryCondition#getValue() search
+	 * terms}. Some type of search terms (especially GeoJSON strings for
+	 * complicated shapes) can easily become so large that even printing them as
+	 * part of a DEBUG message is too expensive. This method is meant for debug
+	 * purposes only, notably when passing a {@code QuerySpec} object to
 	 * {@code logger.debug()}.
 	 * 
 	 * @param qs

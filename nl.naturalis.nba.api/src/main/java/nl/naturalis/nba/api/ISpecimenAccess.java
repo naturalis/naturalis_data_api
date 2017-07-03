@@ -2,6 +2,7 @@ package nl.naturalis.nba.api;
 
 import java.io.OutputStream;
 
+import nl.naturalis.nba.api.model.ScientificNameGroup2;
 import nl.naturalis.nba.api.model.Specimen;
 
 /**
@@ -200,6 +201,9 @@ public interface ISpecimenAccess extends INbaAccess<Specimen> {
 	 * @return
 	 */
 	String[] getIdsInCollection(String collectionName);
+
+	QueryResult<ScientificNameGroup2> groupByScientificName(ScientificNameGroupQuerySpec querySpec)
+			throws InvalidQueryException;
 
 	/**
 	 * Saves the specified specimen to the NBA data store. N.B. although this

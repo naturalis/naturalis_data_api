@@ -72,12 +72,12 @@ public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
 		}
 		if (specimenQuery.getConditions() != null) {
 			purge(result, specimenQuery);
-//			if (mustSortSpecimensByScore(sngQuery)) {
-//				purgeAndSortByScore(result, specimenQuery);
-//			}
-//			else {
-//				purge(result, specimenQuery);
-//			}
+			//			if (mustSortSpecimensByScore(sngQuery)) {
+			//				purgeAndSortByScore(result, specimenQuery);
+			//			}
+			//			else {
+			//				purge(result, specimenQuery);
+			//			}
 		}
 		return result;
 	}
@@ -321,14 +321,7 @@ public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
 			if (sng.getSpecimenCount() == 0) {
 				continue;
 			}
-			if (maxSpecimens == 0) {
-				sng.setSpecimens(null);
-			}
-			else if (sng.getSpecimenCount() < offset) {
-				if (logger.isDebugEnabled()) {
-					logger.debug("Nullifying specimens for name group {}: "
-							+ "offset beyond specimen count");
-				}
+			if (maxSpecimens == 0 || offset >= sng.getSpecimenCount()) {
 				sng.setSpecimens(null);
 			}
 			else {

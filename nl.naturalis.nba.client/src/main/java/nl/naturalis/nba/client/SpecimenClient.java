@@ -20,6 +20,8 @@ import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.NoSuchDataSetException;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QuerySpec;
+import nl.naturalis.nba.api.ScientificNameGroupQuerySpec;
+import nl.naturalis.nba.api.model.ScientificNameGroup2;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.utils.IOUtil;
@@ -165,6 +167,14 @@ public class SpecimenClient extends NbaClient<Specimen> implements ISpecimenAcce
 			throw newServerException(status, request.getResponseBody());
 		}
 		return getObject(request.getResponseBody(), String[].class);
+	}
+
+	@Override
+	public QueryResult<ScientificNameGroup2> groupByScientificName(
+			ScientificNameGroupQuerySpec querySpec) throws InvalidQueryException
+	{
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override

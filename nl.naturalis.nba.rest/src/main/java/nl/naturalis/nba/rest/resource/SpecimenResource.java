@@ -38,6 +38,8 @@ import nl.naturalis.nba.api.NoSuchDataSetException;
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QuerySpec;
+import nl.naturalis.nba.api.ScientificNameGroupQuerySpec;
+import nl.naturalis.nba.api.model.ScientificNameGroup2;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.SpecimenDao;
@@ -45,6 +47,7 @@ import nl.naturalis.nba.rest.exception.HTTP400Exception;
 import nl.naturalis.nba.rest.exception.HTTP404Exception;
 import nl.naturalis.nba.rest.exception.RESTException;
 import nl.naturalis.nba.rest.util.HttpQuerySpecBuilder;
+import nl.naturalis.nba.rest.util.HttpScientificNameGroupQuerySpecBuilder;
 import nl.naturalis.nba.utils.StringUtil;
 
 @Path("/specimen")
@@ -378,4 +381,21 @@ public class SpecimenResource {
 			throw handleError(uriInfo, t);
 		}
 	}
+
+	@GET
+	@Path("/groupByScientificName")
+	@Produces(JSON_CONTENT_TYPE)
+	public QueryResult<ScientificNameGroup2> groupByScientificName_GET(@Context UriInfo uriInfo)
+	{
+		try {
+			ScientificNameGroupQuerySpec qs = new HttpScientificNameGroupQuerySpecBuilder(uriInfo)
+					.build();
+			SpecimenDao dao = new SpecimenDao();
+			return dao.groupByScientificName(qs);
+		}
+		catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
+
 }

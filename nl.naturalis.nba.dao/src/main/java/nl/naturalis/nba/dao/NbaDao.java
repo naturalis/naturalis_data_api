@@ -53,7 +53,9 @@ import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.exception.DaoException;
 import nl.naturalis.nba.dao.translate.QuerySpecTranslator;
+import nl.naturalis.nba.dao.util.es.DirtyScroller;
 import nl.naturalis.nba.dao.util.es.ESUtil;
+import nl.naturalis.nba.dao.util.es.IScroller;
 import nl.naturalis.nba.dao.util.es.TransactionSafeScroller;
 
 abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
@@ -250,7 +252,7 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 		qs.addCondition(new QueryCondition(keyField, "!=", null));
 		qs.addCondition(new QueryCondition(valuesField, "!=", null));
 		qs.sortBy(keyField, SortOrder.DESC);
-		TransactionSafeScroller scroller = new TransactionSafeScroller(qs, dt);
+		IScroller scroller = new DirtyScroller(qs, dt);
 		try {
 			scroller.scroll(handler);
 		}

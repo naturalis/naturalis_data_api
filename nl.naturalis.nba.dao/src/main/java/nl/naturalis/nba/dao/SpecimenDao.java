@@ -204,6 +204,7 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 		querySpec.setSize(querySpec.getSpecimensSize());
 		querySpec.setSortFields(sortFields);
 		QueryCondition extraCondition = new QueryCondition(sngField, "=", null);
+		extraCondition.setConstantScore(true);
 		querySpec.addCondition(extraCondition);
 		List<QueryResultItem<ScientificNameGroup2>> resultSet = new ArrayList<>(to);
 		for (int i = f; i < to; i++) {
@@ -219,21 +220,26 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 			item = new QueryResultItem<ScientificNameGroup2>(sng, 0);
 			resultSet.add(item);
 			if (!querySpec.isNoTaxa()) {
-				TaxonDao taxonDao = new TaxonDao();
-				QuerySpec taxonQuery = new QuerySpec();
-				taxonQuery.setConstantScore(true);
-				QueryCondition taxonCondition = new QueryCondition(
-						"acceptedName.scientificNameGroup", "=", name);
-				taxonQuery.addCondition(taxonCondition);
-				QueryResult<Taxon> taxa = taxonDao.query(taxonQuery);
-				sng.setTaxonCount((int) taxa.getTotalSize());
-				for (QueryResultItem<Taxon> taxon : taxa) {
-					sng.addTaxon(taxon.getItem());
-				}
+				addTaxaToGroup(sng);
 			}
 		}
 		result.setResultSet(resultSet);
 		return result;
+	}
+
+	private static void addTaxaToGroup(ScientificNameGroup2 sng) throws InvalidQueryException
+	{
+		TaxonDao taxonDao = new TaxonDao();
+		QuerySpec taxonQuery = new QuerySpec();
+		taxonQuery.setConstantScore(true);
+		String field = "acceptedName.scientificNameGroup";
+		QueryCondition taxonCondition = new QueryCondition(field, "=", sng.getName());
+		taxonQuery.addCondition(taxonCondition);
+		QueryResult<Taxon> taxa = taxonDao.query(taxonQuery);
+		sng.setTaxonCount((int) taxa.getTotalSize());
+		for (QueryResultItem<Taxon> taxon : taxa) {
+			sng.addTaxon(taxon.getItem());
+		}
 	}
 
 	@Override

@@ -178,6 +178,9 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 			ScientificNameGroupQuerySpec querySpec) throws InvalidQueryException
 	{
 		QueryResult<ScientificNameGroup2> result = new QueryResult<>();
+		/*
+		 * First, just get ALL groups a.k.a. buckets without anything else.
+		 */
 		Integer from = querySpec.getFrom();
 		Integer size = querySpec.getSize();
 		List<SortField> sortFields = querySpec.getSortFields();
@@ -187,6 +190,9 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 		QuerySpecTranslator translator = new QuerySpecTranslator(querySpec, SPECIMEN);
 		SearchRequestBuilder request = translator.translate();
 		TermsAggregationBuilder tab = terms("TERMS");
+		/*
+		 * Each group/bucket is a scientific name
+		 */
 		String sngField = "identifications.scientificName.scientificNameGroup";
 		tab.field(sngField);
 		tab.size(1000000);
@@ -197,6 +203,9 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 		Nested nested = response.getAggregations().get("NESTED");
 		Terms terms = nested.getAggregations().get("TERMS");
 		List<Bucket> buckets = terms.getBuckets();
+		/*
+		 * Now extract the from-th to size-th bucket
+		 */
 		result.setTotalSize(buckets.size());
 		int f = from == null ? 0 : from.intValue();
 		int s = size == null ? 10 : size.intValue();
@@ -208,8 +217,16 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 		extraCondition.setConstantScore(true);
 		querySpec.addCondition(extraCondition);
 		List<QueryResultItem<ScientificNameGroup2>> resultSet = new ArrayList<>(to);
+		/*
+		 * And for each bucket retrieve the specimens satisfying the original
+		 * search criteria
+		 */
 		for (int i = f; i < to; i++) {
 			String name = buckets.get(i).getKeyAsString();
+			/*
+			 * Plus an extra condition limiting the specimens to those whose
+			 * scientific name equals the value of the bucket
+			 */
 			extraCondition.setValue(name);
 			QueryResult<Specimen> specimens = query(querySpec);
 			ScientificNameGroup2 sng = new ScientificNameGroup2(name);

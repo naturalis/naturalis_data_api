@@ -2,6 +2,7 @@ package nl.naturalis.nba.api;
 
 import java.io.OutputStream;
 
+import nl.naturalis.nba.api.model.ScientificNameGroup2;
 import nl.naturalis.nba.api.model.Taxon;
 
 /**
@@ -88,4 +89,8 @@ public interface ITaxonAccess extends INbaAccess<Taxon> {
 	 * @return
 	 */
 	String[] dwcaGetDataSetNames();
+
+	QueryResult<ScientificNameGroup2> groupByScientificName(ScientificNameGroupQuerySpec querySpec)
+			throws InvalidQueryException;
+
 }

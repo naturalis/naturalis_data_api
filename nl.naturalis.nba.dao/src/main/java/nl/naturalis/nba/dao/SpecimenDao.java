@@ -197,6 +197,7 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 		Nested nested = response.getAggregations().get("NESTED");
 		Terms terms = nested.getAggregations().get("TERMS");
 		List<Bucket> buckets = terms.getBuckets();
+		result.setTotalSize(buckets.size());
 		int f = from == null ? 0 : from.intValue();
 		int s = size == null ? 10 : size.intValue();
 		int to = Math.min(buckets.size(), f + s);

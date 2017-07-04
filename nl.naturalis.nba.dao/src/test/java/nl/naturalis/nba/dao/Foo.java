@@ -11,14 +11,19 @@ public class Foo {
 
 	public static void main(String[] args) throws InvalidQueryException
 	{
+		long start = System.currentTimeMillis();
 		SpecimenDao dao = new SpecimenDao();
 		ScientificNameGroupQuerySpec qs = new ScientificNameGroupQuerySpec();
-		//QueryCondition condition0 = new QueryCondition("recordBasis", "=", "PreservedSpecimen");
-		QueryCondition condition0 = new QueryCondition(
-				"identifications.scientificName.scientificNameGroup", "=", "larus fuscus");
+		qs.setFrom(10000);
+		qs.setSize(30);
+		qs.setSpecimensSize(5);
+		
+		QueryCondition condition0 = new QueryCondition("collectionType", "=", "Botany");
+		condition0.setConstantScore(false);
 		qs.addCondition(condition0);
-		QueryResult<ScientificNameGroup2> result = dao.groupByScientificName(qs);
-		//System.out.println(JsonUtil.toPrettyJson(result));
+		
+		dao.groupByScientificName(qs);
+		System.out.println("********* groupByScientificName took: " + DaoUtil.getDuration(start));
 	}
 
 }

@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.logging.log4j.Logger;
@@ -97,6 +98,7 @@ public class TaxonDao extends NbaDao<Taxon> implements ITaxonAccess {
 			String name = files[i].getName();
 			names[i] = name.substring(0, name.indexOf('.'));
 		}
+		Arrays.sort(names);
 		return names;
 	}
 

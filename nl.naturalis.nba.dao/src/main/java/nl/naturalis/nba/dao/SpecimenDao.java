@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -170,6 +171,7 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 			String name = files[i].getName();
 			names[i] = name.substring(0, name.indexOf('.'));
 		}
+		Arrays.sort(names);
 		return names;
 	}
 

@@ -1,3 +1,8 @@
+RELEASE NOTES v 2.6
+
+NBAVTWO-416 DwCA download service now more stable
+  and not at risk of timing out
+
 RELEASE NOTES V 2.5
 
 NBAVTWO-375 constantScore setting on QueryCondition

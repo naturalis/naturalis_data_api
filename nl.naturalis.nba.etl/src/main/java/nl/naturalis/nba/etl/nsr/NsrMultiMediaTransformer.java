@@ -173,7 +173,8 @@ class NsrMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 		mmci.setTaxonRank(t.getTaxonRank());
 		mmci.setScientificName(t.getAcceptedName());
 		mmci.setDefaultClassification(t.getDefaultClassification());
-		mmci.setSystemClassification(t.getSystemClassification());
+		// System classification disabled for specimens and multimedia
+		// mmci.setSystemClassification(t.getSystemClassification());
 		mmci.setVernacularNames(t.getVernacularNames());
 		return mmci;
 	}

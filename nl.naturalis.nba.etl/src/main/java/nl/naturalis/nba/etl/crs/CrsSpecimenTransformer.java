@@ -205,7 +205,8 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 		si.setRockType(val(elem, "abcd:RockType"));
 		si.setScientificName(sn);
 		List<Monomial> sc = getSystemClassification(elem, si.getScientificName());
-		si.setSystemClassification(sc);
+		// System classification disabled for specimens and multimedia
+		// si.setSystemClassification(sc);
 		DefaultClassification dc = DefaultClassification.fromSystemClassification(sc);
 		si.setDefaultClassification(dc);
 		String infraspecificRank = val(elem, "abcd:InfrasubspecificRank");

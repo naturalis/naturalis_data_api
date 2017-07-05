@@ -24,7 +24,6 @@ import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.VERNACULAR;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.YEARIDENT;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getDefaultClassification;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getScientificName;
-import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getSystemClassification;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getTaxonRank;
 
 import java.net.URI;
@@ -143,7 +142,8 @@ class BrahmsSpecimenTransformer extends BrahmsTransformer<Specimen> {
 		identification.setTaxonRank(getTaxonRank(record));
 		identification.setScientificName(sn);
 		identification.setDefaultClassification(dc);
-		identification.setSystemClassification(getSystemClassification(dc));
+		// System classification disabled for specimens and multimedia
+		// identification.setSystemClassification(getSystemClassification(dc));
 		return identification;
 	}
 

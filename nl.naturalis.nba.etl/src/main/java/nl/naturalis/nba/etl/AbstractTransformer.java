@@ -184,9 +184,15 @@ public abstract class AbstractTransformer<INPUT, OUTPUT extends IDocumentObject>
 		stats.objectsRejected++;
 		/* Let's not leave ourselves in the dark about the dreaded NPE */
 		if (t instanceof NullPointerException) {
-			StackTraceElement ste = t.getStackTrace()[0];
-			String msg = "NullPointerException at " + ste.toString();
-			error(msg);
+			if (t.getStackTrace().length > 0) {
+				StackTraceElement ste = t.getStackTrace()[0];
+				String msg = "NullPointerException at " + ste.toString();
+				error(msg);
+			}
+			else {
+				// We give up
+				error("NullPointerException");
+			}
 		}
 		else {
 			error(t.toString());

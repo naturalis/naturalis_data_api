@@ -108,33 +108,33 @@ public class TaxonDao extends NbaDao<Taxon> implements ITaxonAccess {
 		QuerySpecTranslator translator = new QuerySpecTranslator(sngQuery, TAXON);
 		SearchRequestBuilder request = translator.translate();
 		TermsAggregationBuilder tab = terms("TERMS");
-		String sngField = "acceptedName.scientificNameGroup";
-		tab.field(sngField);
-		tab.size(1000000);
+		String groupBy = "acceptedName.scientificNameGroup";
+		tab.field(groupBy);
+		tab.size(10000000);
 		request.addAggregation(tab);
 		SearchResponse response = executeSearchRequest(request);
 		Terms terms = response.getAggregations().get("TERMS");
 		List<Bucket> buckets = terms.getBuckets();
 		result.setTotalSize(buckets.size());
-		int f = sngQuery.getFrom() == null ? 0 : sngQuery.getFrom();
-		int s = sngQuery.getSize() == null ? 10 : sngQuery.getSize();
-		int to = Math.min(buckets.size(), f + s);
-		QueryCondition extraCondition = new QueryCondition(sngField, "=", null);
+		int from = sngQuery.getFrom() == null ? 0 : sngQuery.getFrom();
+		int size = sngQuery.getSize() == null ? 10 : sngQuery.getSize();
+		int to = Math.min(buckets.size(), from + size);
+		QueryCondition extraCondition = new QueryCondition(groupBy, "=", null);
 		extraCondition.setConstantScore(true);
 		sngQuery.addCondition(extraCondition);
-		List<QueryResultItem<ScientificNameGroup2>> resultSet = new ArrayList<>(to);
-		for (int i = f; i < to; i++) {
+		List<QueryResultItem<ScientificNameGroup2>> resultSet = new ArrayList<>(size);
+		for (int i = from; i < to; i++) {
 			String name = buckets.get(i).getKeyAsString();
-			extraCondition.setValue(name);
-			QueryResult<Taxon> taxa = query(sngQuery);
 			ScientificNameGroup2 sng = new ScientificNameGroup2(name);
-			sng.setTaxonCount((int) taxa.getTotalSize());
-			for (QueryResultItem<Taxon> taxon : taxa) {
-				sng.addTaxon(taxon.getItem());
+			resultSet.add(new QueryResultItem<ScientificNameGroup2>(sng, 0));
+			if (!sngQuery.isNoTaxa()) {
+				extraCondition.setValue(name);
+				QueryResult<Taxon> taxa = query(sngQuery);
+				sng.setTaxonCount((int) taxa.getTotalSize());
+				for (QueryResultItem<Taxon> taxon : taxa) {
+					sng.addTaxon(taxon.getItem());
+				}
 			}
-			QueryResultItem<ScientificNameGroup2> item;
-			item = new QueryResultItem<ScientificNameGroup2>(sng, 0);
-			resultSet.add(item);
 			if (sngQuery.getSpecimensSize() == null || sngQuery.getSpecimensSize() > 0) {
 				addSpecimens(sng, sngQuery);
 			}

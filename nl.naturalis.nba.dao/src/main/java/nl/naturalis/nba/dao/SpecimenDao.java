@@ -175,27 +175,32 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 
 	@Override
 	public QueryResult<ScientificNameGroup2> groupByScientificName(
-			ScientificNameGroupQuerySpec querySpec) throws InvalidQueryException
+			ScientificNameGroupQuerySpec sngQuery) throws InvalidQueryException
 	{
 		QueryResult<ScientificNameGroup2> result = new QueryResult<>();
 		/*
 		 * First, just get ALL groups a.k.a. buckets without anything else.
 		 */
-		Integer from = querySpec.getFrom();
-		Integer size = querySpec.getSize();
-		List<SortField> sortFields = querySpec.getSortFields();
-		querySpec.setFrom(null);
-		querySpec.setSize(0);
-		querySpec.setSortFields(null);
-		QuerySpecTranslator translator = new QuerySpecTranslator(querySpec, SPECIMEN);
+		int from = sngQuery.getFrom() == null ? 0 : sngQuery.getFrom();
+		int size = sngQuery.getSize() == null ? 10 : sngQuery.getSize();
+		List<SortField> sortFields = sngQuery.getSortFields();
+		sngQuery.setFrom(null);
+		sngQuery.setSize(0);
+		/*
+		 * Elasticsearch is probably intelligent enough to not bother sorting
+		 * when size equals 0, but just to be sure ... (we put the sort fields
+		 * back on the QuerySpec later on)
+		 */
+		sngQuery.setSortFields(null);
+		QuerySpecTranslator translator = new QuerySpecTranslator(sngQuery, SPECIMEN);
 		SearchRequestBuilder request = translator.translate();
 		TermsAggregationBuilder tab = terms("TERMS");
 		/*
 		 * Each group/bucket is a scientific name
 		 */
-		String sngField = "identifications.scientificName.scientificNameGroup";
-		tab.field(sngField);
-		tab.size(1000000);
+		String groupBy = "identifications.scientificName.scientificNameGroup";
+		tab.field(groupBy);
+		tab.size(10000000);
 		NestedAggregationBuilder nab = nested("NESTED", "identifications");
 		nab.subAggregation(tab);
 		request.addAggregation(nab);
@@ -203,41 +208,36 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 		Nested nested = response.getAggregations().get("NESTED");
 		Terms terms = nested.getAggregations().get("TERMS");
 		List<Bucket> buckets = terms.getBuckets();
-		/*
-		 * Now extract the from-th to size-th bucket
-		 */
 		result.setTotalSize(buckets.size());
-		int f = from == null ? 0 : from.intValue();
-		int s = size == null ? 10 : size.intValue();
-		int to = Math.min(buckets.size(), f + s);
-		querySpec.setFrom(querySpec.getSpecimensFrom());
-		querySpec.setSize(querySpec.getSpecimensSize());
-		querySpec.setSortFields(sortFields);
-		QueryCondition extraCondition = new QueryCondition(sngField, "=", null);
-		extraCondition.setConstantScore(true);
-		querySpec.addCondition(extraCondition);
-		List<QueryResultItem<ScientificNameGroup2>> resultSet = new ArrayList<>(to);
 		/*
-		 * And for each bucket retrieve the specimens satisfying the original
-		 * search criteria
+		 * Now extract the from-th to size-th bucket and for each bucket
+		 * retrieve the specimens satisfying the original search criteria PLUS
+		 * an extra condition limiting the specimens to those whose scientific
+		 * name equals the value of the bucket. NB from is the offset in the
+		 * list of buckets, while specimensFrom is the offset in the list of
+		 * specimens for each bucket.
 		 */
-		for (int i = f; i < to; i++) {
+		sngQuery.setFrom(sngQuery.getSpecimensFrom());
+		sngQuery.setSize(sngQuery.getSpecimensSize());
+		sngQuery.setSortFields(sortFields);
+		QueryCondition extraCondition = new QueryCondition(groupBy, "=", null);
+		extraCondition.setConstantScore(true);
+		sngQuery.addCondition(extraCondition);
+		int to = Math.min(buckets.size(), from + size);
+		List<QueryResultItem<ScientificNameGroup2>> resultSet = new ArrayList<>(size);
+		for (int i = from; i < to; i++) {
 			String name = buckets.get(i).getKeyAsString();
-			/*
-			 * Plus an extra condition limiting the specimens to those whose
-			 * scientific name equals the value of the bucket
-			 */
-			extraCondition.setValue(name);
-			QueryResult<Specimen> specimens = query(querySpec);
 			ScientificNameGroup2 sng = new ScientificNameGroup2(name);
-			sng.setSpecimenCount((int) specimens.getTotalSize());
-			for (QueryResultItem<Specimen> specimen : specimens) {
-				sng.addSpecimen(specimen.getItem());
+			resultSet.add(new QueryResultItem<ScientificNameGroup2>(sng, 0));
+			if (sngQuery.getSpecimensSize() == null || sngQuery.getSpecimensSize() > 0) {
+				extraCondition.setValue(name);
+				QueryResult<Specimen> specimens = query(sngQuery);
+				sng.setSpecimenCount((int) specimens.getTotalSize());
+				for (QueryResultItem<Specimen> specimen : specimens) {
+					sng.addSpecimen(specimen.getItem());
+				}
 			}
-			QueryResultItem<ScientificNameGroup2> item;
-			item = new QueryResultItem<ScientificNameGroup2>(sng, 0);
-			resultSet.add(item);
-			if (!querySpec.isNoTaxa()) {
+			if (!sngQuery.isNoTaxa()) {
 				addTaxaToGroup(sng);
 			}
 		}

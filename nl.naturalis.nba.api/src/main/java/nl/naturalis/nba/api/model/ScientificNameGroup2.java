@@ -3,8 +3,6 @@ package nl.naturalis.nba.api.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import nl.naturalis.nba.api.annotations.NotStored;
-
 /**
  * A ScientificNameGroup contains a scientific name and the specimens, taxa and
  * various statistics associated with that name. The ScientificNameGroup index
@@ -23,10 +21,8 @@ import nl.naturalis.nba.api.annotations.NotStored;
  * @author Ayco Holleman
  *
  */
-public class ScientificNameGroup2 implements IDocumentObject {
+public class ScientificNameGroup2 {
 
-	@NotStored
-	private String id;
 	private String name;
 	private int specimenCount;
 	private int taxonCount;
@@ -39,7 +35,6 @@ public class ScientificNameGroup2 implements IDocumentObject {
 
 	public ScientificNameGroup2(String name)
 	{
-		this.id = name;
 		this.name = name;
 	}
 
@@ -57,18 +52,6 @@ public class ScientificNameGroup2 implements IDocumentObject {
 			taxa = new ArrayList<>(2);
 		}
 		taxa.add(taxon);
-	}
-
-	@Override
-	public String getId()
-	{
-		return id;
-	}
-
-	@Override
-	public void setId(String id)
-	{
-		this.id = id;
 	}
 
 	/**

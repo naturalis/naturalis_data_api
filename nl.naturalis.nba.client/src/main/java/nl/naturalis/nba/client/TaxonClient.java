@@ -17,8 +17,8 @@ import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.NoSuchDataSetException;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QuerySpec;
-import nl.naturalis.nba.api.ScientificNameGroupQuerySpec;
-import nl.naturalis.nba.api.model.ScientificNameGroup2;
+import nl.naturalis.nba.api.GroupByScientificNameQuerySpec;
+import nl.naturalis.nba.api.model.ScientificNameGroup;
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.utils.IOUtil;
@@ -116,8 +116,8 @@ public class TaxonClient extends NbaClient<Taxon> implements ITaxonAccess {
 	}
 
 	@Override
-	public QueryResult<ScientificNameGroup2> groupByScientificName(
-			ScientificNameGroupQuerySpec querySpec) throws InvalidQueryException
+	public QueryResult<ScientificNameGroup> groupByScientificName(
+			GroupByScientificNameQuerySpec querySpec) throws InvalidQueryException
 	{
 		// TODO Auto-generated method stub
 		return null;

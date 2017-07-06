@@ -21,21 +21,21 @@ import nl.naturalis.nba.api.ComparisonOperator;
 import nl.naturalis.nba.api.LogicalOperator;
 import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.api.QueryCondition;
-import nl.naturalis.nba.api.ScientificNameGroupQuerySpec;
+import nl.naturalis.nba.api.GroupByScientificNameQuerySpec;
 import nl.naturalis.nba.api.SortField;
 import nl.naturalis.nba.rest.exception.HTTP400Exception;
 import nl.naturalis.nba.utils.CollectionUtil;
 import nl.naturalis.nba.utils.ConfigObject;
 
 /**
- * Extracts {@link ScientificNameGroupQuerySpec} objects from HTTP requests.
+ * Extracts {@link GroupByScientificNameQuerySpec} objects from HTTP requests.
  * 
- * @see ScientificNameGroupQuerySpec
+ * @see GroupByScientificNameQuerySpec
  * 
  * @author Ayco Holleman
  *
  */
-public class HttpScientificNameGroupQuerySpecBuilder {
+public class HttpGroupByScientificNameQuerySpecBuilder {
 
 	public static final String PARAM_QUERY_SPEC = "_querySpec";
 	public static final String PARAM_FIELDS = "_fields";
@@ -59,38 +59,38 @@ public class HttpScientificNameGroupQuerySpecBuilder {
 	private static final String ERR_BAD_PARAM_COMBI = "Parameter _querySpec cannot be combined with %s";
 
 	private static final Logger logger = LogManager
-			.getLogger(HttpScientificNameGroupQuerySpecBuilder.class);
+			.getLogger(HttpGroupByScientificNameQuerySpecBuilder.class);
 
 	private UriInfo uriInfo;
 	private MultivaluedMap<String, String> params;
 
 	/**
-	 * Creates a {@link ScientificNameGroupQuerySpec} from the query parameters
+	 * Creates a {@link GroupByScientificNameQuerySpec} from the query parameters
 	 * present in the URL.
 	 * 
 	 * @param uriInfo
 	 */
-	public HttpScientificNameGroupQuerySpecBuilder(UriInfo uriInfo)
+	public HttpGroupByScientificNameQuerySpecBuilder(UriInfo uriInfo)
 	{
 		this.uriInfo = uriInfo;
 		this.params = uriInfo.getQueryParameters();
 	}
 
 	/**
-	 * Creates a {@link ScientificNameGroupQuerySpec} from the form data in a
+	 * Creates a {@link GroupByScientificNameQuerySpec} from the form data in a
 	 * x-www-form-urlencoded request body.
 	 * 
 	 * @param formData
 	 * @param uriInfo
 	 */
-	public HttpScientificNameGroupQuerySpecBuilder(MultivaluedMap<String, String> formData,
+	public HttpGroupByScientificNameQuerySpecBuilder(MultivaluedMap<String, String> formData,
 			UriInfo uriInfo)
 	{
 		this.params = formData;
 		this.uriInfo = uriInfo;
 	}
 
-	public ScientificNameGroupQuerySpec build()
+	public GroupByScientificNameQuerySpec build()
 	{
 		logger.info("Extracting NameGroupQuerySpec object from request");
 		checkParams(uriInfo);
@@ -98,7 +98,7 @@ public class HttpScientificNameGroupQuerySpecBuilder {
 		if (values != null) {
 			return buildFromQuerySpecParam(values);
 		}
-		ScientificNameGroupQuerySpec qs = new ScientificNameGroupQuerySpec();
+		GroupByScientificNameQuerySpec qs = new GroupByScientificNameQuerySpec();
 		ComparisonOperator operator = getComparisonOperator();
 		for (String param : params.keySet()) {
 			values = params.get(param);
@@ -152,7 +152,7 @@ public class HttpScientificNameGroupQuerySpecBuilder {
 		return qs;
 	}
 
-	private ScientificNameGroupQuerySpec buildFromQuerySpecParam(List<String> values)
+	private GroupByScientificNameQuerySpec buildFromQuerySpecParam(List<String> values)
 	{
 		if (values.size() != 1) {
 			String msg = String.format(ERR_DUPLICATE_PARAM, PARAM_QUERY_SPEC);
@@ -163,7 +163,7 @@ public class HttpScientificNameGroupQuerySpecBuilder {
 			String msg = String.format(ERR_BAD_PARAM, PARAM_QUERY_SPEC, json);
 			throw new HTTP400Exception(uriInfo, msg);
 		}
-		return deserialize(json, ScientificNameGroupQuerySpec.class);
+		return deserialize(json, GroupByScientificNameQuerySpec.class);
 	}
 
 	private void checkParams(UriInfo uriInfo)

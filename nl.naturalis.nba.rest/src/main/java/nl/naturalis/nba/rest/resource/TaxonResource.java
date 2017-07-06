@@ -36,8 +36,8 @@ import nl.naturalis.nba.api.NoSuchDataSetException;
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QuerySpec;
-import nl.naturalis.nba.api.ScientificNameGroupQuerySpec;
-import nl.naturalis.nba.api.model.ScientificNameGroup2;
+import nl.naturalis.nba.api.GroupByScientificNameQuerySpec;
+import nl.naturalis.nba.api.model.ScientificNameGroup;
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.TaxonDao;
@@ -45,7 +45,7 @@ import nl.naturalis.nba.rest.exception.HTTP400Exception;
 import nl.naturalis.nba.rest.exception.HTTP404Exception;
 import nl.naturalis.nba.rest.exception.RESTException;
 import nl.naturalis.nba.rest.util.HttpQuerySpecBuilder;
-import nl.naturalis.nba.rest.util.HttpScientificNameGroupQuerySpecBuilder;
+import nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder;
 import nl.naturalis.nba.utils.StringUtil;
 
 @SuppressWarnings("static-method")
@@ -310,10 +310,10 @@ public class TaxonResource {
 	@GET
 	@Path("/groupByScientificName")
 	@Produces(JSON_CONTENT_TYPE)
-	public QueryResult<ScientificNameGroup2> groupByScientificName_GET(@Context UriInfo uriInfo)
+	public QueryResult<ScientificNameGroup> groupByScientificName_GET(@Context UriInfo uriInfo)
 	{
 		try {
-			ScientificNameGroupQuerySpec qs = new HttpScientificNameGroupQuerySpecBuilder(uriInfo)
+			GroupByScientificNameQuerySpec qs = new HttpGroupByScientificNameQuerySpecBuilder(uriInfo)
 					.build();
 			TaxonDao dao = new TaxonDao();
 			return dao.groupByScientificName(qs);

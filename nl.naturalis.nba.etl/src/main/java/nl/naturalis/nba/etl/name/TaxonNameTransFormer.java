@@ -8,16 +8,16 @@ import java.util.Collection;
 
 import org.apache.logging.log4j.Logger;
 
-import nl.naturalis.nba.api.model.ScientificNameGroup;
+import nl.naturalis.nba.api.model.ScientificNameGroup_old;
 import nl.naturalis.nba.api.model.Taxon;
 
 class TaxonNameTransformer {
 
 	@SuppressWarnings("unused")
 	private static final Logger logger = getLogger(TaxonNameTransformer.class);
-	private static final ScientificNameGroup DUMMY = new ScientificNameGroup("__dummy__");
+	private static final ScientificNameGroup_old DUMMY = new ScientificNameGroup_old("__dummy__");
 
-	private ScientificNameGroup previousGroup = DUMMY;
+	private ScientificNameGroup_old previousGroup = DUMMY;
 
 	private int created;
 	private int updated;
@@ -26,7 +26,7 @@ class TaxonNameTransformer {
 	{
 	}
 
-	Collection<ScientificNameGroup> transform(Collection<Taxon> batch)
+	Collection<ScientificNameGroup_old> transform(Collection<Taxon> batch)
 	{
 		ArrayList<Taxon> taxa;
 		if (batch.getClass() == ArrayList.class) {
@@ -35,11 +35,11 @@ class TaxonNameTransformer {
 		else {
 			taxa = new ArrayList<>(batch);
 		}
-		ArrayList<ScientificNameGroup> groups = new ArrayList<>(batch.size());
+		ArrayList<ScientificNameGroup_old> groups = new ArrayList<>(batch.size());
 		if (previousGroup != DUMMY) {
 			groups.add(previousGroup);
 		}
-		ScientificNameGroup group;
+		ScientificNameGroup_old group;
 		String name;
 		for (int i = 0; i < batch.size(); i++) {
 			Taxon taxon = taxa.get(i);
@@ -50,7 +50,7 @@ class TaxonNameTransformer {
 			}
 			else {
 				++created;
-				group = new ScientificNameGroup(name);
+				group = new ScientificNameGroup_old(name);
 			}
 			group.addTaxon(copyTaxon(taxon));
 			group.setTaxonCount(group.getTaxa().size());
@@ -68,7 +68,7 @@ class TaxonNameTransformer {
 		return groups;
 	}
 
-	ScientificNameGroup getLastGroup()
+	ScientificNameGroup_old getLastGroup()
 	{
 		return previousGroup;
 	}

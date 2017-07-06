@@ -26,8 +26,8 @@ import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QueryResultItem;
 import nl.naturalis.nba.api.QuerySpec;
-import nl.naturalis.nba.api.ScientificNameGroupQuerySpec;
-import nl.naturalis.nba.api.model.ScientificNameGroup2;
+import nl.naturalis.nba.api.GroupByScientificNameQuerySpec;
+import nl.naturalis.nba.api.model.ScientificNameGroup;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.dao.exception.DaoException;
@@ -103,10 +103,10 @@ public class TaxonDao extends NbaDao<Taxon> implements ITaxonAccess {
 	}
 
 	@Override
-	public QueryResult<ScientificNameGroup2> groupByScientificName(
-			ScientificNameGroupQuerySpec sngQuery) throws InvalidQueryException
+	public QueryResult<ScientificNameGroup> groupByScientificName(
+			GroupByScientificNameQuerySpec sngQuery) throws InvalidQueryException
 	{
-		QueryResult<ScientificNameGroup2> result = new QueryResult<>();
+		QueryResult<ScientificNameGroup> result = new QueryResult<>();
 		QuerySpecTranslator translator = new QuerySpecTranslator(sngQuery, TAXON);
 		SearchRequestBuilder request = translator.translate();
 		TermsAggregationBuilder tab = terms("TERMS");
@@ -124,11 +124,11 @@ public class TaxonDao extends NbaDao<Taxon> implements ITaxonAccess {
 		QueryCondition extraCondition = new QueryCondition(groupBy, "=", null);
 		extraCondition.setConstantScore(true);
 		sngQuery.addCondition(extraCondition);
-		List<QueryResultItem<ScientificNameGroup2>> resultSet = new ArrayList<>(size);
+		List<QueryResultItem<ScientificNameGroup>> resultSet = new ArrayList<>(size);
 		for (int i = from; i < to; i++) {
 			String name = buckets.get(i).getKeyAsString();
-			ScientificNameGroup2 sng = new ScientificNameGroup2(name);
-			resultSet.add(new QueryResultItem<ScientificNameGroup2>(sng, 0));
+			ScientificNameGroup sng = new ScientificNameGroup(name);
+			resultSet.add(new QueryResultItem<ScientificNameGroup>(sng, 0));
 			if (!sngQuery.isNoTaxa()) {
 				extraCondition.setValue(name);
 				QueryResult<Taxon> taxa = query(sngQuery);
@@ -145,8 +145,8 @@ public class TaxonDao extends NbaDao<Taxon> implements ITaxonAccess {
 		return result;
 	}
 
-	private static void addSpecimens(ScientificNameGroup2 sng,
-			ScientificNameGroupQuerySpec sngQuery) throws InvalidQueryException
+	private static void addSpecimens(ScientificNameGroup sng,
+			GroupByScientificNameQuerySpec sngQuery) throws InvalidQueryException
 	{
 		SpecimenDao specimenDao = new SpecimenDao();
 		QuerySpec specimenQuery = new QuerySpec();

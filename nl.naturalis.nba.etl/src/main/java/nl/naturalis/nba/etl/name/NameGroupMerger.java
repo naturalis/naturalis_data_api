@@ -8,7 +8,7 @@ import java.util.HashSet;
 
 import org.apache.logging.log4j.Logger;
 
-import nl.naturalis.nba.api.model.ScientificNameGroup;
+import nl.naturalis.nba.api.model.ScientificNameGroup_old;
 import nl.naturalis.nba.api.model.summary.SummarySpecimen;
 import nl.naturalis.nba.api.model.summary.SummaryTaxon;
 import nl.naturalis.nba.dao.ScientificNameGroupDao;
@@ -27,13 +27,13 @@ class NameGroupMerger {
 	{
 	}
 
-	Collection<ScientificNameGroup> merge(Collection<ScientificNameGroup> nameGroups)
+	Collection<ScientificNameGroup_old> merge(Collection<ScientificNameGroup_old> nameGroups)
 	{
 		if(logger.isDebugEnabled()) {
 			logger.debug("Merging name groups");
 		}
 		HashSet<String> idSet = new HashSet<>(nameGroups.size());
-		for (ScientificNameGroup sng : nameGroups) {
+		for (ScientificNameGroup_old sng : nameGroups) {
 			idSet.add(sng.getId());
 		}
 		ScientificNameGroupDao sngDao = new ScientificNameGroupDao();
@@ -42,17 +42,17 @@ class NameGroupMerger {
 			logger.debug("Number of unique name groups in current batch: {}", ids.length);
 			logger.debug("Searching for already indexed name groups among {}", ids.length);
 		}
-		ScientificNameGroup[] oldNameGroups = sngDao.find(ids);
+		ScientificNameGroup_old[] oldNameGroups = sngDao.find(ids);
 		if (logger.isDebugEnabled()) {
 			logger.debug("Creating lookup table for {} already indexed name groups",
 					oldNameGroups.length);
 		}
-		HashMap<String, ScientificNameGroup> lookupTable = new HashMap<>(nameGroups.size() + 8, 1F);
-		for (ScientificNameGroup oldNameGroup : oldNameGroups) {
+		HashMap<String, ScientificNameGroup_old> lookupTable = new HashMap<>(nameGroups.size() + 8, 1F);
+		for (ScientificNameGroup_old oldNameGroup : oldNameGroups) {
 			lookupTable.put(oldNameGroup.getId(), oldNameGroup);
 		}
-		for (ScientificNameGroup newNameGroup : nameGroups) {
-			ScientificNameGroup oldNameGroup = lookupTable.get(newNameGroup.getId());
+		for (ScientificNameGroup_old newNameGroup : nameGroups) {
+			ScientificNameGroup_old oldNameGroup = lookupTable.get(newNameGroup.getId());
 			if (oldNameGroup == null) {
 				lookupTable.put(newNameGroup.getId(), newNameGroup);
 				++numCreated;
@@ -75,8 +75,8 @@ class NameGroupMerger {
 		return numMerged;
 	}
 
-	private static void mergeNameGroups(ScientificNameGroup oldNameGroup,
-			ScientificNameGroup newNameGroup)
+	private static void mergeNameGroups(ScientificNameGroup_old oldNameGroup,
+			ScientificNameGroup_old newNameGroup)
 	{
 		if (newNameGroup.getTaxa() != null) {
 			for (SummaryTaxon taxon : newNameGroup.getTaxa()) {
@@ -96,7 +96,7 @@ class NameGroupMerger {
 		}
 	}
 
-	private static boolean isNewTaxon(SummaryTaxon taxon, ScientificNameGroup sng)
+	private static boolean isNewTaxon(SummaryTaxon taxon, ScientificNameGroup_old sng)
 	{
 		if (sng.getTaxa() == null) {
 			return true;
@@ -110,7 +110,7 @@ class NameGroupMerger {
 		return true;
 	}
 
-	private static boolean isNewSpecimen(SummarySpecimen specimen, ScientificNameGroup sng)
+	private static boolean isNewSpecimen(SummarySpecimen specimen, ScientificNameGroup_old sng)
 	{
 		if (sng.getSpecimens() == null) {
 			return true;

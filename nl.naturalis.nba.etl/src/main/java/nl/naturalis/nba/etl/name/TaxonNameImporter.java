@@ -15,7 +15,7 @@ import java.util.List;
 import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.api.QuerySpec;
-import nl.naturalis.nba.api.model.ScientificNameGroup;
+import nl.naturalis.nba.api.model.ScientificNameGroup_old;
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.util.es.DocumentIterator;
@@ -60,11 +60,11 @@ class TaxonNameImporter {
 		extractor.setBatchSize(readBatchSize);
 		extractor.setTimeout(scrollTimeout);
 		transformer = new TaxonNameTransformer();
-		BulkIndexer<ScientificNameGroup> indexer = new BulkIndexer<>(SCIENTIFIC_NAME_GROUP);
+		BulkIndexer<ScientificNameGroup_old> indexer = new BulkIndexer<>(SCIENTIFIC_NAME_GROUP);
 		List<Taxon> batch = extractor.nextBatch();
 		int batchNo = 0;
 		while (batch != null) {
-			Collection<ScientificNameGroup> nameGroups = transformer.transform(batch);
+			Collection<ScientificNameGroup_old> nameGroups = transformer.transform(batch);
 			if (logger.isDebugEnabled()) {
 				logger.debug("Creating/updating ScientificNameGroup documents");
 			}

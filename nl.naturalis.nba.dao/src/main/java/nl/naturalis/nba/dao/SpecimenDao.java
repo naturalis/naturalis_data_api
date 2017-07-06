@@ -36,9 +36,9 @@ import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QueryResultItem;
 import nl.naturalis.nba.api.QuerySpec;
-import nl.naturalis.nba.api.ScientificNameGroupQuerySpec;
+import nl.naturalis.nba.api.GroupByScientificNameQuerySpec;
 import nl.naturalis.nba.api.SortField;
-import nl.naturalis.nba.api.model.ScientificNameGroup2;
+import nl.naturalis.nba.api.model.ScientificNameGroup;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.dao.exception.DaoException;
@@ -176,10 +176,10 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 	}
 
 	@Override
-	public QueryResult<ScientificNameGroup2> groupByScientificName(
-			ScientificNameGroupQuerySpec sngQuery) throws InvalidQueryException
+	public QueryResult<ScientificNameGroup> groupByScientificName(
+			GroupByScientificNameQuerySpec sngQuery) throws InvalidQueryException
 	{
-		QueryResult<ScientificNameGroup2> result = new QueryResult<>();
+		QueryResult<ScientificNameGroup> result = new QueryResult<>();
 		/*
 		 * First, just get ALL groups a.k.a. buckets without anything else.
 		 */
@@ -226,11 +226,11 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 		extraCondition.setConstantScore(true);
 		sngQuery.addCondition(extraCondition);
 		int to = Math.min(buckets.size(), from + size);
-		List<QueryResultItem<ScientificNameGroup2>> resultSet = new ArrayList<>(size);
+		List<QueryResultItem<ScientificNameGroup>> resultSet = new ArrayList<>(size);
 		for (int i = from; i < to; i++) {
 			String name = buckets.get(i).getKeyAsString();
-			ScientificNameGroup2 sng = new ScientificNameGroup2(name);
-			resultSet.add(new QueryResultItem<ScientificNameGroup2>(sng, 0));
+			ScientificNameGroup sng = new ScientificNameGroup(name);
+			resultSet.add(new QueryResultItem<ScientificNameGroup>(sng, 0));
 			if (sngQuery.getSpecimensSize() == null || sngQuery.getSpecimensSize() > 0) {
 				extraCondition.setValue(name);
 				QueryResult<Specimen> specimens = query(sngQuery);
@@ -247,7 +247,7 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 		return result;
 	}
 
-	private static void addTaxaToGroup(ScientificNameGroup2 sng) throws InvalidQueryException
+	private static void addTaxaToGroup(ScientificNameGroup sng) throws InvalidQueryException
 	{
 		TaxonDao taxonDao = new TaxonDao();
 		QuerySpec taxonQuery = new QuerySpec();

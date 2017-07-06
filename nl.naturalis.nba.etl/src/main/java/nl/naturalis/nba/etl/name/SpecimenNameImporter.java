@@ -12,7 +12,7 @@ import java.util.List;
 import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.api.QuerySpec;
-import nl.naturalis.nba.api.model.ScientificNameGroup;
+import nl.naturalis.nba.api.model.ScientificNameGroup_old;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.dao.ESClientManager;
@@ -57,11 +57,11 @@ class SpecimenNameImporter {
 		extractor.setBatchSize(batchSize);
 		extractor.setTimeout(timeout);
 		transformer = new SpecimenNameTransformer(batchSize);
-		BulkIndexer<ScientificNameGroup> indexer = new BulkIndexer<>(SCIENTIFIC_NAME_GROUP);
+		BulkIndexer<ScientificNameGroup_old> indexer = new BulkIndexer<>(SCIENTIFIC_NAME_GROUP);
 		List<Specimen> batch = extractor.nextBatch();
 		int batchNo = 0;
 		while (batch != null) {
-			Collection<ScientificNameGroup> nameGroups = transformer.transform(batch);
+			Collection<ScientificNameGroup_old> nameGroups = transformer.transform(batch);
 			if (nameGroups != null) {
 				if (logger.isDebugEnabled()) {
 					logger.debug("Indexing {} new/updated name group(s)", nameGroups.size());

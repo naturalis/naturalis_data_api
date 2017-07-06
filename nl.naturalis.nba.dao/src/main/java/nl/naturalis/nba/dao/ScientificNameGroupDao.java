@@ -21,15 +21,15 @@ import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QueryResultItem;
 import nl.naturalis.nba.api.QuerySpec;
-import nl.naturalis.nba.api.ScientificNameGroupQuerySpec;
+import nl.naturalis.nba.api.GroupByScientificNameQuerySpec;
 import nl.naturalis.nba.api.SortField;
-import nl.naturalis.nba.api.model.ScientificNameGroup;
+import nl.naturalis.nba.api.model.ScientificNameGroup_old;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.summary.SummarySpecimen;
 import nl.naturalis.nba.common.PathValueComparator;
 import nl.naturalis.nba.common.PathValueComparator.PathValueComparee;
 
-public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
+public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup_old>
 		implements IScientificNameGroupAccess {
 
 	private static final Logger logger = getLogger(ScientificNameGroupDao.class);
@@ -40,17 +40,17 @@ public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
 	}
 
 	@Override
-	ScientificNameGroup[] createDocumentObjectArray(int length)
+	ScientificNameGroup_old[] createDocumentObjectArray(int length)
 	{
-		return new ScientificNameGroup[length];
+		return new ScientificNameGroup_old[length];
 	}
 
 	@Override
-	public QueryResult<ScientificNameGroup> query(QuerySpec querySpec) throws InvalidQueryException
+	public QueryResult<ScientificNameGroup_old> query(QuerySpec querySpec) throws InvalidQueryException
 	{
-		QueryResult<ScientificNameGroup> result = super.query(querySpec);
-		if (querySpec instanceof ScientificNameGroupQuerySpec) {
-			processExtraQueryOptions(result, (ScientificNameGroupQuerySpec) querySpec);
+		QueryResult<ScientificNameGroup_old> result = super.query(querySpec);
+		if (querySpec instanceof GroupByScientificNameQuerySpec) {
+			processExtraQueryOptions(result, (GroupByScientificNameQuerySpec) querySpec);
 		}
 		else {
 			limitSpecimens(result);
@@ -59,13 +59,13 @@ public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
 	}
 
 	@Override
-	public QueryResult<ScientificNameGroup> querySpecial(QuerySpec sngQuery)
+	public QueryResult<ScientificNameGroup_old> querySpecial(QuerySpec sngQuery)
 			throws InvalidQueryException
 	{
-		QueryResult<ScientificNameGroup> result = super.query(sngQuery);
+		QueryResult<ScientificNameGroup_old> result = super.query(sngQuery);
 		QuerySpec specimenQuery = createQuerySpecForSpecimens(sngQuery);
-		if (sngQuery instanceof ScientificNameGroupQuerySpec) {
-			processExtraQueryOptions(result, (ScientificNameGroupQuerySpec) sngQuery);
+		if (sngQuery instanceof GroupByScientificNameQuerySpec) {
+			processExtraQueryOptions(result, (GroupByScientificNameQuerySpec) sngQuery);
 		}
 		else {
 			limitSpecimens(result);
@@ -186,7 +186,7 @@ public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
 	 * from that query are then used to purge the specimens in the
 	 * ScientificNameGroup document.
 	 */
-	private static void purge(QueryResult<ScientificNameGroup> result, QuerySpec specimenQuery)
+	private static void purge(QueryResult<ScientificNameGroup_old> result, QuerySpec specimenQuery)
 			throws InvalidQueryException
 	{
 		/*
@@ -197,8 +197,8 @@ public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
 		extraCondition.setConstantScore(true);
 		specimenQuery.addCondition(extraCondition);
 		SpecimenDao specimenDao = new SpecimenDao();
-		for (QueryResultItem<ScientificNameGroup> item : result) {
-			ScientificNameGroup nameGroup = item.getItem();
+		for (QueryResultItem<ScientificNameGroup_old> item : result) {
+			ScientificNameGroup_old nameGroup = item.getItem();
 			if (nameGroup.getSpecimens() == null) {
 				continue;
 			}
@@ -237,7 +237,7 @@ public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
 	 * according the score assigned to them by Elasticsearch if you would use
 	 * those query conditions to query the Specimen index.
 	 */
-	private static void purgeAndSortByScore(QueryResult<ScientificNameGroup> result,
+	private static void purgeAndSortByScore(QueryResult<ScientificNameGroup_old> result,
 			QuerySpec specimenQuery) throws InvalidQueryException
 	{
 		/*
@@ -251,8 +251,8 @@ public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
 		extraCondition.setConstantScore(true);
 		specimenQuery.addCondition(extraCondition);
 		SpecimenDao specimenDao = new SpecimenDao();
-		for (QueryResultItem<ScientificNameGroup> item : result) {
-			ScientificNameGroup nameGroup = item.getItem();
+		for (QueryResultItem<ScientificNameGroup_old> item : result) {
+			ScientificNameGroup_old nameGroup = item.getItem();
 			if (nameGroup.getSpecimens() == null) {
 				continue;
 			}
@@ -300,8 +300,8 @@ public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
 	 * Processes the extra fields in ScientificNameGroupQuerySpec (noTaxa,
 	 * specimensFrom, specimensSize, etc.)
 	 */
-	private static void processExtraQueryOptions(QueryResult<ScientificNameGroup> result,
-			ScientificNameGroupQuerySpec qs) throws InvalidQueryException
+	private static void processExtraQueryOptions(QueryResult<ScientificNameGroup_old> result,
+			GroupByScientificNameQuerySpec qs) throws InvalidQueryException
 	{
 		Integer f = qs.getSpecimensFrom();
 		Integer s = qs.getSpecimensSize();
@@ -313,8 +313,8 @@ public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
 			PathValueComparee[] comparees = sortFieldsToComparees(qs.getSpecimensSortFields());
 			comparator = new PathValueComparator<>(comparees);
 		}
-		for (QueryResultItem<ScientificNameGroup> item : result) {
-			ScientificNameGroup sng = item.getItem();
+		for (QueryResultItem<ScientificNameGroup_old> item : result) {
+			ScientificNameGroup_old sng = item.getItem();
 			if (qs.isNoTaxa()) {
 				sng.setTaxa(null);
 			}
@@ -349,10 +349,10 @@ public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
 		}
 	}
 
-	private static void limitSpecimens(QueryResult<ScientificNameGroup> result)
+	private static void limitSpecimens(QueryResult<ScientificNameGroup_old> result)
 	{
-		for (QueryResultItem<ScientificNameGroup> item : result) {
-			ScientificNameGroup sng = item.getItem();
+		for (QueryResultItem<ScientificNameGroup_old> item : result) {
+			ScientificNameGroup_old sng = item.getItem();
 			if (sng.getSpecimens() != null && sng.getSpecimens().size() > 10) {
 				if (logger.isDebugEnabled()) {
 					logger.debug("Limiting number of specimens in name group {} to 10");
@@ -382,15 +382,15 @@ public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
 		return comparees;
 	}
 
-	private static boolean mustSortSpecimensByField(ScientificNameGroupQuerySpec query)
+	private static boolean mustSortSpecimensByField(GroupByScientificNameQuerySpec query)
 	{
 		return query.getSpecimensSortFields() != null && !mustSortSpecimensByScore(query);
 	}
 
 	private static boolean mustSortSpecimensByScore(QuerySpec query)
 	{
-		if (query instanceof ScientificNameGroupQuerySpec) {
-			ScientificNameGroupQuerySpec sngQuery = (ScientificNameGroupQuerySpec) query;
+		if (query instanceof GroupByScientificNameQuerySpec) {
+			GroupByScientificNameQuerySpec sngQuery = (GroupByScientificNameQuerySpec) query;
 			if (sngQuery.getSpecimensSortFields() == null) {
 				return true;
 			}

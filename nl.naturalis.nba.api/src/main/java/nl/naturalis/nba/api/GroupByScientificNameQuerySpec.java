@@ -2,17 +2,17 @@ package nl.naturalis.nba.api;
 
 import java.util.List;
 
-import nl.naturalis.nba.api.model.ScientificNameGroup;
+import nl.naturalis.nba.api.model.ScientificNameGroup_old;
 import nl.naturalis.nba.api.model.summary.SummarySpecimen;
 
 /**
  * An extension of the {@link QuerySpec} class specifically meant for queries
- * against the {@link ScientificNameGroup} index.
+ * against the {@link ScientificNameGroup_old} index.
  * 
  * @author Ayco Holleman
  *
  */
-public class ScientificNameGroupQuerySpec extends QuerySpec {
+public class GroupByScientificNameQuerySpec extends QuerySpec {
 
 	private Integer specimensFrom;
 	private Integer specimensSize;
@@ -31,7 +31,7 @@ public class ScientificNameGroupQuerySpec extends QuerySpec {
 
 	/**
 	 * Sets the offset within the {@link List} of specimens within the retrieved
-	 * {@link ScientificNameGroup} documents. Default 0. This enables paging
+	 * {@link ScientificNameGroup_old} documents. Default 0. This enables paging
 	 * through specimens within a single {@code ScientificNameGroup}. For each
 	 * {@code ScientificNameGroup} returned from the query, only specimens at or
 	 * after the offset are included.
@@ -85,7 +85,7 @@ public class ScientificNameGroupQuerySpec extends QuerySpec {
 	 * Sets the sort order within the {@link List} of specimens. Sort fields
 	 * must be specified relative to the specimens field within the
 	 * {@code ScientificNameGroup} document. In other words: they must
-	 * <i>not</i> start with {@link ScientificNameGroup#getSpecimens()
+	 * <i>not</i> start with {@link ScientificNameGroup_old#getSpecimens()
 	 * "specimens"}. For example, if you want to sort on the specimen's unitID,
 	 * specify "unitID"; do not specify "specimens.unitID". For each
 	 * {@code ScientificNameGroup}, specimens are sorted on the sort fields

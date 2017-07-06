@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import nl.naturalis.nba.api.model.ScientificName;
-import nl.naturalis.nba.api.model.ScientificNameGroup;
+import nl.naturalis.nba.api.model.ScientificNameGroup_old;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.api.model.TaxonomicIdentification;
@@ -23,10 +23,10 @@ class SpecimenToNameGroupConverter {
 	{
 	}
 
-	Collection<ScientificNameGroup> convert(Collection<Specimen> specimens)
+	Collection<ScientificNameGroup_old> convert(Collection<Specimen> specimens)
 	{
 		// Assume about 3 identifications per specimen
-		HashMap<String, ScientificNameGroup> cache = new HashMap<>(specimens.size() * 3);
+		HashMap<String, ScientificNameGroup_old> cache = new HashMap<>(specimens.size() * 3);
 		for (Specimen specimen : specimens) {
 			List<SpecimenIdentification> identifications = specimen.getIdentifications();
 			if (identifications != null) {
@@ -38,9 +38,9 @@ class SpecimenToNameGroupConverter {
 					if (name.equals(prevName)) {
 						continue;
 					}
-					ScientificNameGroup sng = cache.get(name);
+					ScientificNameGroup_old sng = cache.get(name);
 					if (sng == null) {
-						sng = new ScientificNameGroup(name);
+						sng = new ScientificNameGroup_old(name);
 						cache.put(name, sng);
 					}
 					sng.addSpecimen(copySpecimen(specimen, name));

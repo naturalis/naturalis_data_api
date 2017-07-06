@@ -21,7 +21,7 @@ import java.util.List;
 
 import org.apache.logging.log4j.Logger;
 
-import nl.naturalis.nba.api.model.ScientificNameGroup;
+import nl.naturalis.nba.api.model.ScientificNameGroup_old;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.DaoRegistry;
@@ -91,8 +91,8 @@ class SpecimenNameImporter2 {
 		int written = 0;
 		try {
 			while (batch != null) {
-				Collection<ScientificNameGroup> nameGroups = converter.convert(batch);
-				for (ScientificNameGroup sng : nameGroups) {
+				Collection<ScientificNameGroup_old> nameGroups = converter.convert(batch);
+				for (ScientificNameGroup_old sng : nameGroups) {
 					byte[] json = JsonUtil.serialize(sng);
 					bos.write(json);
 					bos.write(NEW_LINE);
@@ -122,18 +122,18 @@ class SpecimenNameImporter2 {
 	private void importTempFile() throws IOException, BulkIndexException
 	{
 		NameGroupMerger merger = new NameGroupMerger();
-		BulkIndexer<ScientificNameGroup> indexer = new BulkIndexer<>(SCIENTIFIC_NAME_GROUP);
-		List<ScientificNameGroup> batch = new ArrayList<>(writeBatchSize);
+		BulkIndexer<ScientificNameGroup_old> indexer = new BulkIndexer<>(SCIENTIFIC_NAME_GROUP);
+		List<ScientificNameGroup_old> batch = new ArrayList<>(writeBatchSize);
 		LineNumberReader lnr = null;
 		try {
 			FileReader fr = new FileReader(tempFile);
 			lnr = new LineNumberReader(fr, 4096);
 			String line;
 			while ((line = lnr.readLine()) != null) {
-				ScientificNameGroup sng = JsonUtil.deserialize(line, ScientificNameGroup.class);
+				ScientificNameGroup_old sng = JsonUtil.deserialize(line, ScientificNameGroup_old.class);
 				batch.add(sng);
 				if (batch.size() == writeBatchSize) {
-					Collection<ScientificNameGroup> merged = merger.merge(batch);
+					Collection<ScientificNameGroup_old> merged = merger.merge(batch);
 					indexer.index(merged);
 					batch.clear();
 				}
@@ -148,7 +148,7 @@ class SpecimenNameImporter2 {
 			lnr.close();
 		}
 		if (batch.size() != 0) {
-			Collection<ScientificNameGroup> merged = merger.merge(batch);
+			Collection<ScientificNameGroup_old> merged = merger.merge(batch);
 			indexer.index(merged);
 		}
 		logger.info("Lines read: {}", lnr.getLineNumber());

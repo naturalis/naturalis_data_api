@@ -16,10 +16,10 @@ import org.junit.Test;
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QueryResult;
-import nl.naturalis.nba.api.ScientificNameGroupQuerySpec;
+import nl.naturalis.nba.api.GroupByScientificNameQuerySpec;
 import nl.naturalis.nba.api.SortField;
 import nl.naturalis.nba.api.SortOrder;
-import nl.naturalis.nba.api.model.ScientificNameGroup;
+import nl.naturalis.nba.api.model.ScientificNameGroup_old;
 import nl.naturalis.nba.api.model.summary.SummarySpecimen;
 import nl.naturalis.nba.dao.mock.ScientificNameGroupMock;
 
@@ -46,12 +46,12 @@ public class ScientificNameGroupDaoTest {
 	@Test
 	public void testQuerySpecial_01() throws InvalidQueryException
 	{
-		ScientificNameGroupQuerySpec qs = new ScientificNameGroupQuerySpec();
+		GroupByScientificNameQuerySpec qs = new GroupByScientificNameQuerySpec();
 		// constantScore *** true ***
 		qs.setConstantScore(true);
 		QueryCondition condition = new QueryCondition("name", "=", sngLarusFuscus.getName());
 		qs.addCondition(condition);
-		QueryResult<ScientificNameGroup> result = dao().querySpecial(qs);
+		QueryResult<ScientificNameGroup_old> result = dao().querySpecial(qs);
 		assertEquals("01", 1, result.getTotalSize());
 		int expected = sngLarusFuscus.getSpecimenCount();
 		int actual = result.get(0).getItem().getSpecimenCount();
@@ -65,12 +65,12 @@ public class ScientificNameGroupDaoTest {
 	@Test
 	public void testQuerySpecial_02() throws InvalidQueryException
 	{
-		ScientificNameGroupQuerySpec qs = new ScientificNameGroupQuerySpec();
+		GroupByScientificNameQuerySpec qs = new GroupByScientificNameQuerySpec();
 		// constantScore *** false ***
 		qs.setConstantScore(false);
 		QueryCondition condition = new QueryCondition("name", "=", sngLarusFuscus.getName());
 		qs.addCondition(condition);
-		QueryResult<ScientificNameGroup> result = dao().querySpecial(qs);
+		QueryResult<ScientificNameGroup_old> result = dao().querySpecial(qs);
 		assertEquals("01", 1, result.getTotalSize());
 		int expected = sngLarusFuscus.getSpecimenCount();
 		int actual = result.get(0).getItem().getSpecimenCount();
@@ -84,13 +84,13 @@ public class ScientificNameGroupDaoTest {
 	@Test
 	public void testQuerySpecial_03() throws InvalidQueryException
 	{
-		ScientificNameGroupQuerySpec qs = new ScientificNameGroupQuerySpec();
+		GroupByScientificNameQuerySpec qs = new GroupByScientificNameQuerySpec();
 		qs.setConstantScore(true);
 		QueryCondition condition = new QueryCondition("name", "=", sngLarusFuscus.getName());
 		qs.addCondition(condition);
 		// Lift the limit on the number of specimens per name group
 		qs.setSpecimensSize(-1);
-		QueryResult<ScientificNameGroup> result = dao().querySpecial(qs);
+		QueryResult<ScientificNameGroup_old> result = dao().querySpecial(qs);
 		assertEquals("01", 1, result.getTotalSize());
 		int expected = sngLarusFuscus.getSpecimenCount();
 		int actual = result.get(0).getItem().getSpecimenCount();
@@ -103,13 +103,13 @@ public class ScientificNameGroupDaoTest {
 	@Test
 	public void testQuerySpecial_04() throws InvalidQueryException
 	{
-		ScientificNameGroupQuerySpec qs = new ScientificNameGroupQuerySpec();
+		GroupByScientificNameQuerySpec qs = new GroupByScientificNameQuerySpec();
 		qs.setConstantScore(true);
 		QueryCondition condition = new QueryCondition("name", "=", sngLarusFuscus.getName());
 		qs.addCondition(condition);
 		// Choose some other max size value
 		qs.setSpecimensSize(2);
-		QueryResult<ScientificNameGroup> result = dao().querySpecial(qs);
+		QueryResult<ScientificNameGroup_old> result = dao().querySpecial(qs);
 		assertEquals("01", 1, result.getTotalSize());
 		int expected = sngLarusFuscus.getSpecimenCount();
 		int actual = result.get(0).getItem().getSpecimenCount();
@@ -122,7 +122,7 @@ public class ScientificNameGroupDaoTest {
 	@Test
 	public void testQuerySpecial_05() throws InvalidQueryException
 	{
-		ScientificNameGroupQuerySpec qs = new ScientificNameGroupQuerySpec();
+		GroupByScientificNameQuerySpec qs = new GroupByScientificNameQuerySpec();
 		qs.setConstantScore(true);
 		QueryCondition condition = new QueryCondition("name", "=", sngLarusFuscus.getName());
 		qs.addCondition(condition);
@@ -130,7 +130,7 @@ public class ScientificNameGroupDaoTest {
 		condition = new QueryCondition(field, "=", "Aalten");
 		qs.addCondition(condition);
 		qs.setSpecimensSize(-1);
-		QueryResult<ScientificNameGroup> result = dao().querySpecial(qs);
+		QueryResult<ScientificNameGroup_old> result = dao().querySpecial(qs);
 		assertEquals("01", 1, result.getTotalSize());
 		int expected = 5;
 		int actual = result.get(0).getItem().getSpecimenCount();
@@ -142,7 +142,7 @@ public class ScientificNameGroupDaoTest {
 	@Test
 	public void testQuerySpecial_06() throws InvalidQueryException
 	{
-		ScientificNameGroupQuerySpec qs = new ScientificNameGroupQuerySpec();
+		GroupByScientificNameQuerySpec qs = new GroupByScientificNameQuerySpec();
 		qs.setConstantScore(true);
 		QueryCondition condition = new QueryCondition("name", "=", sngMalusSylvestris.getName());
 		qs.addCondition(condition);
@@ -150,7 +150,7 @@ public class ScientificNameGroupDaoTest {
 		condition = new QueryCondition(field, "=", "Rotterdam");
 		qs.addCondition(condition);
 		qs.setSpecimensSize(-1);
-		QueryResult<ScientificNameGroup> result = dao().querySpecial(qs);
+		QueryResult<ScientificNameGroup_old> result = dao().querySpecial(qs);
 		assertEquals("01", 1, result.getTotalSize());
 		int expected = 4;
 		int actual = result.get(0).getItem().getSpecimenCount();
@@ -162,14 +162,14 @@ public class ScientificNameGroupDaoTest {
 	@Test
 	public void testQuerySpecial_07() throws InvalidQueryException
 	{
-		ScientificNameGroupQuerySpec qs = new ScientificNameGroupQuerySpec();
+		GroupByScientificNameQuerySpec qs = new GroupByScientificNameQuerySpec();
 		qs.setConstantScore(true);
 		QueryCondition condition = new QueryCondition("name", "=", sngFelixFelix.getName());
 		qs.addCondition(condition);
 		qs.setSpecimensSize(-1);
 		String field = "gatheringEvent.localityText";
 		qs.setSpecimensSortFields(Arrays.asList(new SortField(field)));
-		QueryResult<ScientificNameGroup> result = dao().querySpecial(qs);
+		QueryResult<ScientificNameGroup_old> result = dao().querySpecial(qs);
 		List<SummarySpecimen> specimens = result.get(0).getItem().getSpecimens();
 		assertEquals("01", 5, specimens.size());
 		String locality = specimens.get(0).getGatheringEvent().getLocalityText();
@@ -187,14 +187,14 @@ public class ScientificNameGroupDaoTest {
 	@Test
 	public void testQuerySpecial_08() throws InvalidQueryException
 	{
-		ScientificNameGroupQuerySpec qs = new ScientificNameGroupQuerySpec();
+		GroupByScientificNameQuerySpec qs = new GroupByScientificNameQuerySpec();
 		qs.setConstantScore(true);
 		QueryCondition condition = new QueryCondition("name", "=", sngFelixFelix.getName());
 		qs.addCondition(condition);
 		qs.setSpecimensSize(-1);
 		String field = "gatheringEvent.localityText";
 		qs.setSpecimensSortFields(Arrays.asList(new SortField(field, SortOrder.DESC)));
-		QueryResult<ScientificNameGroup> result = dao().querySpecial(qs);
+		QueryResult<ScientificNameGroup_old> result = dao().querySpecial(qs);
 		List<SummarySpecimen> specimens = result.get(0).getItem().getSpecimens();
 		assertEquals("01", 5, specimens.size());
 		String locality = specimens.get(0).getGatheringEvent().getLocalityText();
@@ -212,7 +212,7 @@ public class ScientificNameGroupDaoTest {
 	@Test
 	public void testQuerySpecial_09() throws InvalidQueryException
 	{
-		ScientificNameGroupQuerySpec qs = new ScientificNameGroupQuerySpec();
+		GroupByScientificNameQuerySpec qs = new GroupByScientificNameQuerySpec();
 		qs.setConstantScore(true);
 		QueryCondition condition = new QueryCondition("name", "=", sngLarusFuscusFuscus.getName());
 		qs.addCondition(condition);
@@ -222,7 +222,7 @@ public class ScientificNameGroupDaoTest {
 		qs.addCondition(condition);
 		qs.setSpecimensSortFields(Arrays.asList(new SortField("unitID", SortOrder.DESC)));
 		qs.setSpecimensSize(-1);
-		QueryResult<ScientificNameGroup> result = dao().querySpecial(qs);
+		QueryResult<ScientificNameGroup_old> result = dao().querySpecial(qs);
 		String unitID = null;
 		List<SummarySpecimen> specimens = result.get(0).getItem().getSpecimens();
 		for (SummarySpecimen specimen : specimens) {

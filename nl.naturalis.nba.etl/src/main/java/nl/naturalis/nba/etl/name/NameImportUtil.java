@@ -20,7 +20,7 @@ import org.elasticsearch.search.SearchHit;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import nl.naturalis.nba.api.model.ScientificNameGroup;
+import nl.naturalis.nba.api.model.ScientificNameGroup_old;
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.util.es.ESUtil;
@@ -29,12 +29,12 @@ public class NameImportUtil {
 
 	private static final Logger logger = getLogger(NameImportUtil.class);
 
-	static List<ScientificNameGroup> loadNameGroupsById(Collection<String> names)
+	static List<ScientificNameGroup_old> loadNameGroupsById(Collection<String> names)
 	{
 		if (logger.isDebugEnabled()) {
 			logger.debug("Loading ScientificNameGroup documents for {} names", names.size());
 		}
-		DocumentType<ScientificNameGroup> dt = SCIENTIFIC_NAME_GROUP;
+		DocumentType<ScientificNameGroup_old> dt = SCIENTIFIC_NAME_GROUP;
 		SearchRequestBuilder request = ESUtil.newSearchRequest(dt);
 		IdsQueryBuilder query = QueryBuilders.idsQuery(dt.getName());
 		query.addIds(names.toArray(new String[names.size()]));
@@ -45,22 +45,22 @@ public class NameImportUtil {
 		if (hits.length == 0) {
 			return Collections.emptyList();
 		}
-		List<ScientificNameGroup> result = new ArrayList<>(hits.length);
+		List<ScientificNameGroup_old> result = new ArrayList<>(hits.length);
 		ObjectMapper om = dt.getObjectMapper();
 		for (SearchHit hit : hits) {
-			ScientificNameGroup sns = om.convertValue(hit.getSource(), dt.getJavaType());
+			ScientificNameGroup_old sns = om.convertValue(hit.getSource(), dt.getJavaType());
 			sns.setId(hit.getId());
 			result.add(sns);
 		}
 		return result;
 	}
 
-	static List<ScientificNameGroup> loadNameGroupsByName(Collection<String> names)
+	static List<ScientificNameGroup_old> loadNameGroupsByName(Collection<String> names)
 	{
 		if (logger.isDebugEnabled()) {
 			logger.debug("Loading ScientificNameGroup documents for {} names", names.size());
 		}
-		DocumentType<ScientificNameGroup> dt = SCIENTIFIC_NAME_GROUP;
+		DocumentType<ScientificNameGroup_old> dt = SCIENTIFIC_NAME_GROUP;
 		SearchRequestBuilder request = ESUtil.newSearchRequest(dt);
 		TermsQueryBuilder query = QueryBuilders.termsQuery("name", names);
 		request.setQuery(QueryBuilders.constantScoreQuery(query));
@@ -70,10 +70,10 @@ public class NameImportUtil {
 		if (hits.length == 0) {
 			return Collections.emptyList();
 		}
-		List<ScientificNameGroup> result = new ArrayList<>(hits.length);
+		List<ScientificNameGroup_old> result = new ArrayList<>(hits.length);
 		ObjectMapper om = dt.getObjectMapper();
 		for (SearchHit hit : hits) {
-			ScientificNameGroup sng = om.convertValue(hit.getSource(), dt.getJavaType());
+			ScientificNameGroup_old sng = om.convertValue(hit.getSource(), dt.getJavaType());
 			sng.setId(hit.getId());
 			result.add(sng);
 		}

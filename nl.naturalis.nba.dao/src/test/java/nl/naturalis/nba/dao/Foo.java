@@ -3,8 +3,8 @@ package nl.naturalis.nba.dao;
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QueryResult;
-import nl.naturalis.nba.api.ScientificNameGroupQuerySpec;
-import nl.naturalis.nba.api.model.ScientificNameGroup2;
+import nl.naturalis.nba.api.GroupByScientificNameQuerySpec;
+import nl.naturalis.nba.api.model.ScientificNameGroup;
 import nl.naturalis.nba.common.json.JsonUtil;
 
 public class Foo {
@@ -13,7 +13,7 @@ public class Foo {
 	{
 		long start = System.currentTimeMillis();
 		SpecimenDao dao = new SpecimenDao();
-		ScientificNameGroupQuerySpec qs = new ScientificNameGroupQuerySpec();
+		GroupByScientificNameQuerySpec qs = new GroupByScientificNameQuerySpec();
 		qs.setFrom(10000);
 		qs.setSize(30);
 		qs.setSpecimensSize(5);

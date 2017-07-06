@@ -3,10 +3,6 @@ package nl.naturalis.nba.api.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import nl.naturalis.nba.api.annotations.NotStored;
-import nl.naturalis.nba.api.model.summary.SummarySpecimen;
-import nl.naturalis.nba.api.model.summary.SummaryTaxon;
-
 /**
  * A ScientificNameGroup contains a scientific name and the specimens, taxa and
  * various statistics associated with that name. The ScientificNameGroup index
@@ -25,15 +21,13 @@ import nl.naturalis.nba.api.model.summary.SummaryTaxon;
  * @author Ayco Holleman
  *
  */
-public class ScientificNameGroup implements IDocumentObject {
+public class ScientificNameGroup {
 
-	@NotStored
-	private String id;
 	private String name;
 	private int specimenCount;
 	private int taxonCount;
-	private List<SummarySpecimen> specimens;
-	private List<SummaryTaxon> taxa;
+	private List<Specimen> specimens;
+	private List<Taxon> taxa;
 
 	public ScientificNameGroup()
 	{
@@ -41,11 +35,10 @@ public class ScientificNameGroup implements IDocumentObject {
 
 	public ScientificNameGroup(String name)
 	{
-		this.id = name;
 		this.name = name;
 	}
 
-	public void addSpecimen(SummarySpecimen specimen)
+	public void addSpecimen(Specimen specimen)
 	{
 		if (specimens == null) {
 			specimens = new ArrayList<>();
@@ -53,24 +46,12 @@ public class ScientificNameGroup implements IDocumentObject {
 		specimens.add(specimen);
 	}
 
-	public void addTaxon(SummaryTaxon taxon)
+	public void addTaxon(Taxon taxon)
 	{
 		if (taxa == null) {
 			taxa = new ArrayList<>(2);
 		}
 		taxa.add(taxon);
-	}
-
-	@Override
-	public String getId()
-	{
-		return id;
-	}
-
-	@Override
-	public void setId(String id)
-	{
-		this.id = id;
 	}
 
 	/**
@@ -136,7 +117,7 @@ public class ScientificNameGroup implements IDocumentObject {
 	 * 
 	 * @return
 	 */
-	public List<SummarySpecimen> getSpecimens()
+	public List<Specimen> getSpecimens()
 	{
 		return specimens;
 	}
@@ -146,7 +127,7 @@ public class ScientificNameGroup implements IDocumentObject {
 	 * 
 	 * @param specimens
 	 */
-	public void setSpecimens(List<SummarySpecimen> specimens)
+	public void setSpecimens(List<Specimen> specimens)
 	{
 		this.specimens = specimens;
 	}
@@ -156,7 +137,7 @@ public class ScientificNameGroup implements IDocumentObject {
 	 * 
 	 * @return
 	 */
-	public List<SummaryTaxon> getTaxa()
+	public List<Taxon> getTaxa()
 	{
 		return taxa;
 	}
@@ -166,7 +147,7 @@ public class ScientificNameGroup implements IDocumentObject {
 	 * 
 	 * @param taxa
 	 */
-	public void setTaxa(List<SummaryTaxon> taxa)
+	public void setTaxa(List<Taxon> taxa)
 	{
 		this.taxa = taxa;
 	}

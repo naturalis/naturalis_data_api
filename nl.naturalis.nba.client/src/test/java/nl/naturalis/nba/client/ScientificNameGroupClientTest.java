@@ -20,8 +20,8 @@ import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QueryResultItem;
 import nl.naturalis.nba.api.QuerySpec;
-import nl.naturalis.nba.api.ScientificNameGroupQuerySpec;
-import nl.naturalis.nba.api.model.ScientificNameGroup;
+import nl.naturalis.nba.api.GroupByScientificNameQuerySpec;
+import nl.naturalis.nba.api.model.ScientificNameGroup_old;
 import nl.naturalis.nba.api.model.Sex;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.Taxon;
@@ -45,7 +45,7 @@ public class ScientificNameGroupClientTest {
 	// Only run test if we can successfully retrieve SNG documents
 	long ndocs;
 	try {
-	    ndocs = client.query(new ScientificNameGroupQuerySpec()).getTotalSize();
+	    ndocs = client.query(new GroupByScientificNameQuerySpec()).getTotalSize();
 	    assumeTrue(ndocs > 0);
 	} catch (InvalidQueryException e) {
 	    assumeNoException(e);
@@ -58,8 +58,8 @@ public class ScientificNameGroupClientTest {
 	/*
 	 * Basic test of query function
 	 */
-	ScientificNameGroupQuerySpec qs = new ScientificNameGroupQuerySpec();
-	QueryResult<ScientificNameGroup> result = client.query(qs);
+	GroupByScientificNameQuerySpec qs = new GroupByScientificNameQuerySpec();
+	QueryResult<ScientificNameGroup_old> result = client.query(qs);
 	// test return type
 	assertEquals(result.getClass(), QueryResult.class);
 	// we should find some sng's
@@ -72,8 +72,8 @@ public class ScientificNameGroupClientTest {
 	/*
 	 * Basic test of querySpecial function
 	 */
-	ScientificNameGroupQuerySpec qs = new ScientificNameGroupQuerySpec();
-	QueryResult<ScientificNameGroup> result = client.querySpecial(qs);
+	GroupByScientificNameQuerySpec qs = new GroupByScientificNameQuerySpec();
+	QueryResult<ScientificNameGroup_old> result = client.querySpecial(qs);
 	// test return type
 	assertEquals(result.getClass(), QueryResult.class);
 	// we should find some sng's
@@ -97,13 +97,13 @@ public class ScientificNameGroupClientTest {
 	 * This is documented in IScientificNameGroupAccess. Here we test
 	 * exactly this example
 	 */
-	ScientificNameGroupQuerySpec qs = new ScientificNameGroupQuerySpec();
+	GroupByScientificNameQuerySpec qs = new GroupByScientificNameQuerySpec();
 	qs.addCondition(new QueryCondition("specimens.sex", ComparisonOperator.EQUALS, "male"));
-	QueryResult<ScientificNameGroup> resultNonspecial = client.query(qs);
+	QueryResult<ScientificNameGroup_old> resultNonspecial = client.query(qs);
 
 	// loop over all specimens and check if we have a female specimen
 	boolean allMale = true;
-	for (Iterator<QueryResultItem<ScientificNameGroup>> it1 = resultNonspecial.iterator(); it1.hasNext();) {
+	for (Iterator<QueryResultItem<ScientificNameGroup_old>> it1 = resultNonspecial.iterator(); it1.hasNext();) {
 	    for (Iterator<SummarySpecimen> it2 = it1.next().getItem().getSpecimens().iterator(); it2.hasNext();) {
 		SummarySpecimen sp = it2.next();
 		allMale = allMale && sp.getSex().equals(Sex.MALE);
@@ -113,9 +113,9 @@ public class ScientificNameGroupClientTest {
 	assertTrue(!allMale);
 
 	// same query as above but with QuerySpecial
-	QueryResult<ScientificNameGroup> resultSpecial = client.querySpecial(qs);
+	QueryResult<ScientificNameGroup_old> resultSpecial = client.querySpecial(qs);
 	allMale = true;
-	for (Iterator<QueryResultItem<ScientificNameGroup>> it1 = resultSpecial.iterator(); it1.hasNext();) {
+	for (Iterator<QueryResultItem<ScientificNameGroup_old>> it1 = resultSpecial.iterator(); it1.hasNext();) {
 	    for (Iterator<SummarySpecimen> it2 = it1.next().getItem().getSpecimens().iterator(); it2.hasNext();) {
 		SummarySpecimen sp = it2.next();
 		allMale = allMale && sp.getSex().equals(Sex.MALE);
@@ -138,14 +138,14 @@ public class ScientificNameGroupClientTest {
 	 * TODO: Ignored because behavior is not as expected!
 	 */
 	SpecimenClient sc = session.getSpecimenClient();
-	ScientificNameGroupQuerySpec qs = new ScientificNameGroupQuerySpec();
+	GroupByScientificNameQuerySpec qs = new GroupByScientificNameQuerySpec();
 
 	// only select SNGs with one or more specimen
 	qs.addCondition(new QueryCondition("specimenCount", ComparisonOperator.GT, 0));
 	// System.out.println(JsonUtil.toJson(qs));
 	qs.setSize(1000); // caution magic number
-	QueryResult<ScientificNameGroup> result = client.query(qs);
-	for (Iterator<QueryResultItem<ScientificNameGroup>> it1 = result.iterator(); it1.hasNext();) {
+	QueryResult<ScientificNameGroup_old> result = client.query(qs);
+	for (Iterator<QueryResultItem<ScientificNameGroup_old>> it1 = result.iterator(); it1.hasNext();) {
 	    // extract summary specimens
 	    for (Iterator<SummarySpecimen> it2 = it1.next().getItem().getSpecimens().iterator(); it2.hasNext();) {
 		SummarySpecimen sSpecimen = it2.next();
@@ -175,14 +175,14 @@ public class ScientificNameGroupClientTest {
 	 * TODO: Ignored because behavior is not as expected!
 	 */
 	TaxonClient tc = session.getTaxonClient();
-	ScientificNameGroupQuerySpec qs = new ScientificNameGroupQuerySpec();
+	GroupByScientificNameQuerySpec qs = new GroupByScientificNameQuerySpec();
 	// only select SNGs with one or more specimen
 	qs.addCondition(new QueryCondition("taxonCount", ComparisonOperator.GT, 0));
 	qs.setSize(100); // caution magic number
-	QueryResult<ScientificNameGroup> result = client.query(qs);
-	for (Iterator<QueryResultItem<ScientificNameGroup>> it1 = result.iterator(); it1.hasNext();) {
+	QueryResult<ScientificNameGroup_old> result = client.query(qs);
+	for (Iterator<QueryResultItem<ScientificNameGroup_old>> it1 = result.iterator(); it1.hasNext();) {
 	    // extract summary taxa
-	    ScientificNameGroup sng = it1.next().getItem();
+	    ScientificNameGroup_old sng = it1.next().getItem();
 	    List<SummaryTaxon> summaryTaxa = sng.getTaxa();
 	    
 	    for (Iterator<SummaryTaxon> it2 = summaryTaxa.iterator(); it2.hasNext();) {
@@ -213,15 +213,15 @@ public class ScientificNameGroupClientTest {
 	    String taxonSNG = tax.getAcceptedName().getScientificNameGroup();
 
 	    // check if we find back that scientific name group by querying for the SNG 
-	    ScientificNameGroupQuerySpec qs = new ScientificNameGroupQuerySpec();
+	    GroupByScientificNameQuerySpec qs = new GroupByScientificNameQuerySpec();
 	    qs.addCondition(new QueryCondition("name", ComparisonOperator.EQUALS, taxonSNG));
-	    QueryResult<ScientificNameGroup> sngs = client.query(qs);
+	    QueryResult<ScientificNameGroup_old> sngs = client.query(qs);
 	    assertTrue("SNG found for taxon", sngs.size() > 0);
 	    
 	    boolean sngStringMatches = false;
 	    // iterate over scientific name groups and identify the one that matches our taxon 
-	    for (Iterator<QueryResultItem<ScientificNameGroup>> it2 = sngs.iterator(); it2.hasNext();) {
-		ScientificNameGroup sng = it2.next().getItem();
+	    for (Iterator<QueryResultItem<ScientificNameGroup_old>> it2 = sngs.iterator(); it2.hasNext();) {
+		ScientificNameGroup_old sng = it2.next().getItem();
 		
 		// test if the scientificNameGroup field from the taxon documents occurs in the names of the result SNGs
 		if (sng.getName().equals(taxonSNG)) {
@@ -242,7 +242,7 @@ public class ScientificNameGroupClientTest {
 	 * Test the exception behavior of query. TODO: Ignored because behavior
 	 * is not as expected!
 	 */
-	ScientificNameGroupQuerySpec qs = new ScientificNameGroupQuerySpec();
+	GroupByScientificNameQuerySpec qs = new GroupByScientificNameQuerySpec();
 	// make invalid query
 	qs.addCondition(new QueryCondition("nonsense", "=", "morenonsense"));
 	client.query(qs);

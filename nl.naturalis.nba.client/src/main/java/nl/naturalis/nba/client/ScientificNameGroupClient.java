@@ -10,11 +10,11 @@ import nl.naturalis.nba.api.IScientificNameGroupAccess;
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QuerySpec;
-import nl.naturalis.nba.api.model.ScientificNameGroup;
+import nl.naturalis.nba.api.model.ScientificNameGroup_old;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.utils.http.SimpleHttpGet;
 
-public class ScientificNameGroupClient extends NbaClient<ScientificNameGroup>
+public class ScientificNameGroupClient extends NbaClient<ScientificNameGroup_old>
 		implements IScientificNameGroupAccess {
 
 	ScientificNameGroupClient(ClientConfig cfg, String rootPath)
@@ -23,7 +23,7 @@ public class ScientificNameGroupClient extends NbaClient<ScientificNameGroup>
 	}
 
 	@Override
-	public QueryResult<ScientificNameGroup> querySpecial(
+	public QueryResult<ScientificNameGroup_old> querySpecial(
 			QuerySpec querySpec) throws InvalidQueryException
 	{
 		SimpleHttpGet request = new SimpleHttpGet();
@@ -39,21 +39,21 @@ public class ScientificNameGroupClient extends NbaClient<ScientificNameGroup>
 	}
 
 	@Override
-	Class<ScientificNameGroup> documentObjectClass()
+	Class<ScientificNameGroup_old> documentObjectClass()
 	{
-		return ScientificNameGroup.class;
+		return ScientificNameGroup_old.class;
 	}
 
 	@Override
-	Class<ScientificNameGroup[]> documentObjectArrayClass()
+	Class<ScientificNameGroup_old[]> documentObjectArrayClass()
 	{
-		return ScientificNameGroup[].class;
+		return ScientificNameGroup_old[].class;
 	}
 
 	@Override
-	TypeReference<QueryResult<ScientificNameGroup>> queryResultTypeReference()
+	TypeReference<QueryResult<ScientificNameGroup_old>> queryResultTypeReference()
 	{
-		return new TypeReference<QueryResult<ScientificNameGroup>>() {};
+		return new TypeReference<QueryResult<ScientificNameGroup_old>>() {};
 	}
 
 }

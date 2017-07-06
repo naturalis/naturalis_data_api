@@ -3,6 +3,10 @@ package nl.naturalis.nba.api.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import nl.naturalis.nba.api.annotations.NotStored;
+import nl.naturalis.nba.api.model.summary.SummarySpecimen;
+import nl.naturalis.nba.api.model.summary.SummaryTaxon;
+
 /**
  * A ScientificNameGroup contains a scientific name and the specimens, taxa and
  * various statistics associated with that name. The ScientificNameGroup index
@@ -21,24 +25,27 @@ import java.util.List;
  * @author Ayco Holleman
  *
  */
-public class ScientificNameGroup2 {
+public class ScientificNameGroup_old implements IDocumentObject {
 
+	@NotStored
+	private String id;
 	private String name;
 	private int specimenCount;
 	private int taxonCount;
-	private List<Specimen> specimens;
-	private List<Taxon> taxa;
+	private List<SummarySpecimen> specimens;
+	private List<SummaryTaxon> taxa;
 
-	public ScientificNameGroup2()
+	public ScientificNameGroup_old()
 	{
 	}
 
-	public ScientificNameGroup2(String name)
+	public ScientificNameGroup_old(String name)
 	{
+		this.id = name;
 		this.name = name;
 	}
 
-	public void addSpecimen(Specimen specimen)
+	public void addSpecimen(SummarySpecimen specimen)
 	{
 		if (specimens == null) {
 			specimens = new ArrayList<>();
@@ -46,12 +53,24 @@ public class ScientificNameGroup2 {
 		specimens.add(specimen);
 	}
 
-	public void addTaxon(Taxon taxon)
+	public void addTaxon(SummaryTaxon taxon)
 	{
 		if (taxa == null) {
 			taxa = new ArrayList<>(2);
 		}
 		taxa.add(taxon);
+	}
+
+	@Override
+	public String getId()
+	{
+		return id;
+	}
+
+	@Override
+	public void setId(String id)
+	{
+		this.id = id;
 	}
 
 	/**
@@ -117,7 +136,7 @@ public class ScientificNameGroup2 {
 	 * 
 	 * @return
 	 */
-	public List<Specimen> getSpecimens()
+	public List<SummarySpecimen> getSpecimens()
 	{
 		return specimens;
 	}
@@ -127,7 +146,7 @@ public class ScientificNameGroup2 {
 	 * 
 	 * @param specimens
 	 */
-	public void setSpecimens(List<Specimen> specimens)
+	public void setSpecimens(List<SummarySpecimen> specimens)
 	{
 		this.specimens = specimens;
 	}
@@ -137,7 +156,7 @@ public class ScientificNameGroup2 {
 	 * 
 	 * @return
 	 */
-	public List<Taxon> getTaxa()
+	public List<SummaryTaxon> getTaxa()
 	{
 		return taxa;
 	}
@@ -147,7 +166,7 @@ public class ScientificNameGroup2 {
 	 * 
 	 * @param taxa
 	 */
-	public void setTaxa(List<Taxon> taxa)
+	public void setTaxa(List<SummaryTaxon> taxa)
 	{
 		this.taxa = taxa;
 	}

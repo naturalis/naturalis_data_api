@@ -10,7 +10,7 @@ import java.util.List;
 
 import org.apache.logging.log4j.Logger;
 
-import nl.naturalis.nba.api.model.ScientificNameGroup;
+import nl.naturalis.nba.api.model.ScientificNameGroup_old;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.api.model.TaxonomicIdentification;
@@ -31,9 +31,9 @@ class SpecimenNameTransformer {
 		this.batchSize = batchSize;
 	}
 
-	Collection<ScientificNameGroup> transform(Collection<Specimen> specimens)
+	Collection<ScientificNameGroup_old> transform(Collection<Specimen> specimens)
 	{
-		HashMap<String, ScientificNameGroup> lookupTable = createLookupTable(specimens);
+		HashMap<String, ScientificNameGroup_old> lookupTable = createLookupTable(specimens);
 		if (lookupTable == null) {
 			return null;
 		}
@@ -42,7 +42,7 @@ class SpecimenNameTransformer {
 			if (identifications != null) {
 				for (TaxonomicIdentification si : identifications) {
 					String name = si.getScientificName().getScientificNameGroup();
-					ScientificNameGroup nameGroup = lookupTable.get(name);
+					ScientificNameGroup_old nameGroup = lookupTable.get(name);
 					if (!exists(specimen, nameGroup)) {
 						nameGroup.addSpecimen(copySpecimen(specimen, name));
 						nameGroup.setSpecimenCount(nameGroup.getSpecimens().size());
@@ -63,7 +63,7 @@ class SpecimenNameTransformer {
 		return updated;
 	}
 
-	private static boolean exists(Specimen specimen, ScientificNameGroup group)
+	private static boolean exists(Specimen specimen, ScientificNameGroup_old group)
 	{
 		if (group.getSpecimens() == null) {
 			return false;
@@ -76,7 +76,7 @@ class SpecimenNameTransformer {
 		return false;
 	}
 
-	private HashMap<String, ScientificNameGroup> createLookupTable(Collection<Specimen> specimens)
+	private HashMap<String, ScientificNameGroup_old> createLookupTable(Collection<Specimen> specimens)
 	{
 		HashSet<String> names = new HashSet<>(batchSize);
 		for (Specimen specimen : specimens) {
@@ -100,12 +100,12 @@ class SpecimenNameTransformer {
 			String fmt = "Number of unique names in current batch: {}";
 			logger.debug(fmt, names.size());
 		}
-		List<ScientificNameGroup> groups = NameImportUtil.loadNameGroupsById(names);
+		List<ScientificNameGroup_old> groups = NameImportUtil.loadNameGroupsById(names);
 		int newGroups = names.size() - groups.size();
 		created += newGroups;
 		updated += groups.size();
-		HashMap<String, ScientificNameGroup> lookupTable = new HashMap<>(names.size() + 4, 1F);
-		for (ScientificNameGroup group : groups) {
+		HashMap<String, ScientificNameGroup_old> lookupTable = new HashMap<>(names.size() + 4, 1F);
+		for (ScientificNameGroup_old group : groups) {
 			lookupTable.put(group.getName(), group);
 		}
 		if (logger.isDebugEnabled() && newGroups != 0) {
@@ -113,7 +113,7 @@ class SpecimenNameTransformer {
 		}
 		for (String name : names) {
 			if (!lookupTable.containsKey(name)) {
-				lookupTable.put(name, new ScientificNameGroup(name));
+				lookupTable.put(name, new ScientificNameGroup_old(name));
 			}
 		}
 		return lookupTable;

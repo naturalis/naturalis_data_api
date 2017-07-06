@@ -19,7 +19,7 @@ import nl.naturalis.nba.api.model.Organization;
 import nl.naturalis.nba.api.model.Person;
 import nl.naturalis.nba.api.model.PhaseOrStage;
 import nl.naturalis.nba.api.model.ScientificName;
-import nl.naturalis.nba.api.model.ScientificNameGroup;
+import nl.naturalis.nba.api.model.ScientificNameGroup_old;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.api.model.summary.SummaryGatheringEvent;
@@ -33,12 +33,12 @@ import nl.naturalis.nba.dao.IndexInfo;
 
 public class ScientificNameGroupMock {
 
-	public static ScientificNameGroup sngLarusFuscus;
-	public static ScientificNameGroup sngLarusFuscusFuscus;
-	public static ScientificNameGroup sngLarusFuscusArgentatus;
-	public static ScientificNameGroup sngParusMajor;
-	public static ScientificNameGroup sngFelixFelix;
-	public static ScientificNameGroup sngMalusSylvestris;
+	public static ScientificNameGroup_old sngLarusFuscus;
+	public static ScientificNameGroup_old sngLarusFuscusFuscus;
+	public static ScientificNameGroup_old sngLarusFuscusArgentatus;
+	public static ScientificNameGroup_old sngParusMajor;
+	public static ScientificNameGroup_old sngFelixFelix;
+	public static ScientificNameGroup_old sngMalusSylvestris;
 
 	private static final String ZMA_MAM = "ZMA.MAM.";
 	private static final String WAG = "WAG.";
@@ -80,10 +80,10 @@ public class ScientificNameGroupMock {
 	/* ************* SCIENTIFIC NAME GROUPS ************ */
 	/* ************************************************* */
 
-	public static ScientificNameGroup sngLarusFuscus()
+	public static ScientificNameGroup_old sngLarusFuscus()
 	{
 		// NB name groups are always all lowercase
-		ScientificNameGroup sng = new ScientificNameGroup("larus fuscus");
+		ScientificNameGroup_old sng = new ScientificNameGroup_old("larus fuscus");
 		addSpecimen(sng, larusFuscusAalten1());
 		addSpecimen(sng, larusFuscusAalten2());
 		addSpecimen(sng, larusFuscusAalten3());
@@ -103,9 +103,9 @@ public class ScientificNameGroupMock {
 		return sng;
 	}
 
-	public static ScientificNameGroup sngLarusFuscusFuscus()
+	public static ScientificNameGroup_old sngLarusFuscusFuscus()
 	{
-		ScientificNameGroup sng = new ScientificNameGroup("larus fuscus fuscus");
+		ScientificNameGroup_old sng = new ScientificNameGroup_old("larus fuscus fuscus");
 		addSpecimen(sng, larusFuscusFuscusDenHelder1());
 		addSpecimen(sng, larusFuscusFuscusDenHelder2());
 		addSpecimen(sng, larusFuscusFuscusDenHelder3());
@@ -125,17 +125,17 @@ public class ScientificNameGroupMock {
 		return sng;
 	}
 
-	public static ScientificNameGroup sngLarusFuscusArgentatus()
+	public static ScientificNameGroup_old sngLarusFuscusArgentatus()
 	{
-		ScientificNameGroup sng = new ScientificNameGroup("larus fuscus argentatus");
+		ScientificNameGroup_old sng = new ScientificNameGroup_old("larus fuscus argentatus");
 		addSpecimen(sng, larusFuscusArgentatusAmsterdam1());
 		addSpecimen(sng, larusFuscusArgentatusAmsterdam2());
 		return sng;
 	}
 
-	public static ScientificNameGroup sngParusMajor()
+	public static ScientificNameGroup_old sngParusMajor()
 	{
-		ScientificNameGroup sng = new ScientificNameGroup("parus major");
+		ScientificNameGroup_old sng = new ScientificNameGroup_old("parus major");
 		addSpecimen(sng, parusMajorAmsterdam1());
 		addSpecimen(sng, parusMajorAmsterdam2());
 		addSpecimen(sng, parusMajorAmsterdam3());
@@ -145,9 +145,9 @@ public class ScientificNameGroupMock {
 		return sng;
 	}
 
-	public static ScientificNameGroup sngFelixFelix()
+	public static ScientificNameGroup_old sngFelixFelix()
 	{
-		ScientificNameGroup sng = new ScientificNameGroup("felix felix");
+		ScientificNameGroup_old sng = new ScientificNameGroup_old("felix felix");
 		addSpecimen(sng, felixFelixBreda1());
 		addSpecimen(sng, felixFelixBreda2());
 		addSpecimen(sng, felixFelixBreda3());
@@ -156,9 +156,9 @@ public class ScientificNameGroupMock {
 		return sng;
 	}
 
-	public static ScientificNameGroup sngMalusSylvestris()
+	public static ScientificNameGroup_old sngMalusSylvestris()
 	{
-		ScientificNameGroup sng = new ScientificNameGroup("malus sylvestris");
+		ScientificNameGroup_old sng = new ScientificNameGroup_old("malus sylvestris");
 		addSpecimen(sng, malusSylvestrusApeldoorn1());
 		addSpecimen(sng, malusSylvestrusApeldoorn2());
 		addSpecimen(sng, malusSylvestrusApeldoorn3());
@@ -174,7 +174,7 @@ public class ScientificNameGroupMock {
 		return sng;
 	}
 
-	private static void addSpecimen(ScientificNameGroup sng, SummarySpecimen ss)
+	private static void addSpecimen(ScientificNameGroup_old sng, SummarySpecimen ss)
 	{
 		sng.addSpecimen(ss);
 		sng.setSpecimenCount(sng.getSpecimens().size());

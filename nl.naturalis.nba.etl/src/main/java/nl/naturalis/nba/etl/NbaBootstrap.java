@@ -47,9 +47,9 @@ public class NbaBootstrap {
 		if (documentTypes.length == 0) {
 			throw new IllegalArgumentException("At least one document type name required");
 		}
-		LinkedHashSet<String> indices = new LinkedHashSet<>(Arrays.asList(documentTypes));
-		if (indices.contains("all")) {
-			if (indices.size() != 1) {
+		LinkedHashSet<String> docTypeList = new LinkedHashSet<>(Arrays.asList(documentTypes));
+		if (docTypeList.contains("all")) {
+			if (docTypeList.size() != 1) {
 				throw new IllegalArgumentException(
 						"\"all\" cannot be combined with other arguments");
 			}
@@ -57,8 +57,8 @@ public class NbaBootstrap {
 			ESUtil.createAllIndices();
 		}
 		else {
-			for (String index : indices) {
-				DocumentType<?> dt = DocumentType.forName(index);
+			for (String docType : docTypeList) {
+				DocumentType<?> dt = DocumentType.forName(docType);
 				ESUtil.deleteIndex(dt);
 				ESUtil.createIndex(dt);
 			}

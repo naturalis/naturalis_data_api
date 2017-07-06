@@ -90,6 +90,17 @@ public class DocumentType<T extends IDocumentObject> {
 			logger.fatal("Error while retrieving index info", t);
 			throw t;
 		}
+
+		for (DocumentType<?> one : all) {
+			if (one.getIndexInfo() == null) {
+				Logger logger = DaoRegistry.getInstance().getLogger(DocumentType.class);
+				String fmt = "Missing configurarion for docment type %s in %s";
+				String msg = String.format(fmt, one.name, DaoRegistry.CONFIG_FILE_NAME);
+				logger.fatal(msg);
+				throw new InitializationException(msg);
+			}
+		}
+
 	}
 
 	/**

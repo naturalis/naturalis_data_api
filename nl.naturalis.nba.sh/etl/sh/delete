@@ -1,6 +1,22 @@
 #!/bin/bash
 
-# WATCH OUT! Running this script will delete all NBA indexes.
+# Deletes Elasticsearch indices corresponding to NBA document
+# types. Each command line argument is taken to be an NBA
+# document type name (NOT an index name). If the NBA is
+# configured such that one index hosts multiple document types,
+# you can specify any of document types to delete the index.
+#
+# Example:
+# ./delete Taxon Specimen
+#
+# To delete ALL indices managed by the NBA, use the --all
+# switch:
+# ./delete --all
+#
+# You can also simply delete indices by name (in which case
+# you can delete any index, not just those managed by the NBA).
+# To do so, use the --raw switch:
+# ./delete --raw taxon_integration_test
 
 . ./include.sh
 

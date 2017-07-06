@@ -2,6 +2,7 @@ package nl.naturalis.nba.etl;
 
 import java.util.Arrays;
 import java.util.LinkedHashSet;
+import java.util.Set;
 
 import org.apache.logging.log4j.Logger;
 
@@ -20,7 +21,30 @@ public class NbaDeleteIndex {
 	public static void main(String[] args)
 	{
 		try {
-			new NbaDeleteIndex().deleteIndex(args);
+			Set<String> argList = new LinkedHashSet<>(Arrays.asList(args));
+			if (argList.contains("--all")) {
+				if (argList.size() != 1) {
+					String msg = "--all switch cannot be combined with other arguments";
+					throw new IllegalArgumentException(msg);
+				}
+				ESUtil.deleteAllIndices();
+			}
+			else if (argList.contains("--raw")) {
+				argList.remove("--raw");
+				if (argList.size() == 0) {
+					String msg = "At least one index name required with --raw switch";
+					throw new IllegalArgumentException(msg);
+				}
+				for (String name : argList) {
+					ESUtil.deleteIndex(name);
+				}
+			}
+			else {
+				for (String docType : argList) {
+					DocumentType<?> dt = DocumentType.forName(docType);
+					ESUtil.deleteIndex(dt);
+				}
+			}
 		}
 		catch (Throwable t) {
 			logger.error(t.getMessage(), t);
@@ -32,34 +56,4 @@ public class NbaDeleteIndex {
 
 	private static final Logger logger = ETLRegistry.getInstance().getLogger(NbaDeleteIndex.class);
 
-	/**
-	 * Creates or re-creates indices hosting the specified document types. Each
-	 * element in the specified array must be the name of a
-	 * {@link DocumentType#getName() document type}. Casing is ignored. You can
-	 * also provide a single-element array containing the value "*" or "all".
-	 * This will cause all indices the be (re-)created.
-	 * 
-	 * @param documentTypes
-	 */
-	@SuppressWarnings("static-method")
-	public void deleteIndex(String... documentTypes)
-	{
-		if (documentTypes.length == 0) {
-			throw new IllegalArgumentException("At least one document type name required");
-		}
-		LinkedHashSet<String> indices = new LinkedHashSet<>(Arrays.asList(documentTypes));
-		if (indices.contains("all")) {
-			if (indices.size() != 1) {
-				throw new IllegalArgumentException(
-						"\"all\" cannot be combined with other arguments");
-			}
-			ESUtil.deleteAllIndices();
-		}
-		else {
-			for (String index : indices) {
-				DocumentType<?> dt = DocumentType.forName(index);
-				ESUtil.deleteIndex(dt);
-			}
-		}
-	}
 }

@@ -38,7 +38,7 @@ public class DirtyDocumentIterator<T extends IDocumentObject> implements Iterato
 
 	// Whether or not we've already issued our initial query request
 	private boolean ready = false;
-	// Number of documents of the requested document type
+	// Totsl number of documents to iterate over
 	private long size;
 	// Counts documents across batches
 	private long docCounter;

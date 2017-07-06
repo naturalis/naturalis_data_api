@@ -228,7 +228,16 @@ public class ESUtil {
 	 */
 	public static void deleteIndex(IndexInfo indexInfo)
 	{
-		String index = indexInfo.getName();
+		deleteIndex(indexInfo.getName());
+	}
+
+	/**
+	 * Deletes the specified Elasticsearch index.
+	 * 
+	 * @param indexInfo
+	 */
+	public static void deleteIndex(String index)
+	{
 		logger.info("Deleting index {}", index);
 		DeleteIndexRequestBuilder request = indices().prepareDelete(index);
 		try {

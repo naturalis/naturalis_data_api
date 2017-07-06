@@ -1,5 +1,8 @@
 package nl.naturalis.nba.dao;
 
+import static nl.naturalis.nba.api.GroupByScientificNameQuerySpec.GroupSort.COUNT_ASC;
+import static nl.naturalis.nba.api.GroupByScientificNameQuerySpec.GroupSort.NAME_ASC;
+import static nl.naturalis.nba.api.GroupByScientificNameQuerySpec.GroupSort.NAME_DESC;
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static nl.naturalis.nba.dao.DocumentType.SPECIMEN;
 import static nl.naturalis.nba.dao.util.es.ESUtil.executeSearchRequest;
@@ -203,6 +206,15 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 		String groupBy = "identifications.scientificName.scientificNameGroup";
 		tab.field(groupBy);
 		tab.size(10000000);
+		if (sngQuery.getGroupSort() == NAME_ASC) {
+			tab.order(Terms.Order.term(true));
+		}
+		else if (sngQuery.getGroupSort() == NAME_DESC) {
+			tab.order(Terms.Order.term(false));
+		}
+		else if (sngQuery.getGroupSort() == COUNT_ASC) {
+			tab.order(Terms.Order.count(true));
+		}
 		NestedAggregationBuilder nab = nested("NESTED", "identifications");
 		nab.subAggregation(tab);
 		request.addAggregation(nab);

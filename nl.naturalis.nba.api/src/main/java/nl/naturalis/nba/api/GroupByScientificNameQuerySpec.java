@@ -2,25 +2,85 @@ package nl.naturalis.nba.api;
 
 import java.util.List;
 
-import nl.naturalis.nba.api.model.ScientificNameGroup_old;
-import nl.naturalis.nba.api.model.summary.SummarySpecimen;
+import nl.naturalis.nba.api.model.ScientificNameGroup;
 
 /**
- * An extension of the {@link QuerySpec} class specifically meant for queries
- * against the {@link ScientificNameGroup_old} index.
+ * An extension of the {@link QuerySpec} class specifically meant for
+ * {@link ITaxonAccess#groupByScientificName(GroupByScientificNameQuerySpec)
+ * ITaxonAccess.groupByScientificName} and
+ * {@link ISpecimenAccess#groupByScientificName(GroupByScientificNameQuerySpec)
+ * ISpecimenAccess.groupByScientificName}.
  * 
  * @author Ayco Holleman
  *
  */
 public class GroupByScientificNameQuerySpec extends QuerySpec {
 
+	/**
+	 * Enumerates options for sorting the {@link ScientificNameGroup} objects
+	 * returned from the {@code groupByScientificName} APIs.
+	 * 
+	 * @author Ayco Holleman
+	 *
+	 */
+	public static enum GroupSort
+	{
+		/**
+		 * Sorts the {@link ScientificNameGroup} objects in descending order of
+		 * the number of specimens c.q. taxa associated with a scientific name.
+		 * This is the default sort order.
+		 */
+		COUNT_DESC,
+		/**
+		 * Sorts the {@link ScientificNameGroup} objects in ascending order of
+		 * the number of specimens c.q. taxa associated with a scientific name.
+		 * Note that Elasticsearch discourages this as it error margin on
+		 * document counts.
+		 */
+		COUNT_ASC,
+		/**
+		 * Sorts the {@link ScientificNameGroup} objects by scientific name
+		 * (ascending).
+		 */
+		NAME_ASC,
+		/**
+		 * Sorts the {@link ScientificNameGroup} objects by scientific name
+		 * (descending).
+		 */
+		NAME_DESC
+	}
+
+	private GroupSort groupSort;
 	private Integer specimensFrom;
 	private Integer specimensSize;
 	private List<SortField> specimensSortFields;
 	private boolean noTaxa;
 
 	/**
-	 * Returns the offset within the {@link List} of specimens. Default 0.
+	 * Returns which way the {@link ScientificNameGroup} objects returned by
+	 * {code groupByScientificName} are sorted.
+	 * 
+	 * @return
+	 */
+	public GroupSort getGroupSort()
+	{
+		return groupSort;
+	}
+
+	/**
+	 * Determins which way the {@link ScientificNameGroup} objects returned by
+	 * {code groupByScientificName} are sorted.
+	 * 
+	 * @param groupSort
+	 */
+	public void setGroupSort(GroupSort groupSort)
+	{
+		this.groupSort = groupSort;
+	}
+
+	/**
+	 * Returns the desired offset within the {@link List} of specimens
+	 * associated with a scientific name.
 	 * 
 	 * @return
 	 */
@@ -30,11 +90,14 @@ public class GroupByScientificNameQuerySpec extends QuerySpec {
 	}
 
 	/**
-	 * Sets the offset within the {@link List} of specimens within the retrieved
-	 * {@link ScientificNameGroup_old} documents. Default 0. This enables paging
-	 * through specimens within a single {@code ScientificNameGroup}. For each
-	 * {@code ScientificNameGroup} returned from the query, only specimens at or
-	 * after the offset are included.
+	 * Sets the desired offset within the {@link List} of specimens associated
+	 * with a scientific name. Default 0. In other words, the regular
+	 * {@link QuerySpec#getFrom() from} property of the {@link QuerySpec} object
+	 * determines the offset within the list of scientific names while the
+	 * {@code specimensFrom} property determines the offset in the list of
+	 * specimens associated with each scientific name. If the specified offset
+	 * is beyond the number of specimens for a particular scientific name, the
+	 * list of specimens for that scientific name will be empty.
 	 * 
 	 * @param specimensFrom
 	 */
@@ -44,8 +107,7 @@ public class GroupByScientificNameQuerySpec extends QuerySpec {
 	}
 
 	/**
-	 * Returns the maxmimum number of specimens to include per
-	 * {@code ScientificNameGroup} document.
+	 * Returns the number of specimens to be retrieved per scientific name.
 	 * 
 	 * @return
 	 */
@@ -55,13 +117,12 @@ public class GroupByScientificNameQuerySpec extends QuerySpec {
 	}
 
 	/**
-	 * Sets the maxmimum number of specimens to include per
-	 * {@code ScientificNameGroup} document. Default 10. Specify -1 (minus one)
-	 * to indicate that you do not want to limit the number of specimens per
-	 * {@code ScientificNameGroup}. Note though that this may degrade query
-	 * performance. Specify 0 (zero) to indicate that you are only interested in
-	 * the taxa associated with the name group's name, or only in statistics
-	 * like the total specimen count for the name.
+	 * Determines how many specimens to retrieve per scientific name. Default
+	 * 10. You can specify 0 (zero) if you want to suppress the retrieval of
+	 * specimens (i.e. if you are only interested in the taxa). Note though that
+	 * in that case, no specimen count will be calculated either. The
+	 * {@link ScientificNameGroup#getSpecimenCount() specimenCount} property of
+	 * the {@link ScientificNameGroup} object
 	 * 
 	 * @return
 	 */
@@ -71,8 +132,8 @@ public class GroupByScientificNameQuerySpec extends QuerySpec {
 	}
 
 	/**
-	 * Returns the sort order within the {@link List} of specimens. Default
-	 * {@link SummarySpecimen#getUnitID() unitID}.
+	 * Returns the sort order within the {@link List} of specimens associated
+	 * with a scientific name.
 	 * 
 	 * @return
 	 */
@@ -82,18 +143,12 @@ public class GroupByScientificNameQuerySpec extends QuerySpec {
 	}
 
 	/**
-	 * Sets the sort order within the {@link List} of specimens. Sort fields
-	 * must be specified relative to the specimens field within the
-	 * {@code ScientificNameGroup} document. In other words: they must
-	 * <i>not</i> start with {@link ScientificNameGroup_old#getSpecimens()
-	 * "specimens"}. For example, if you want to sort on the specimen's unitID,
-	 * specify "unitID"; do not specify "specimens.unitID". For each
-	 * {@code ScientificNameGroup}, specimens are sorted on the sort fields
-	 * specified through this method. Thus, you can sort the
-	 * {@code ScientificNameGroup} documents according to one set of sort fields
-	 * (using {@link QuerySpec#setSortFields(List) QuerySpec.setSortFields})
-	 * while sorting the specimens within each of them according to another set
-	 * of sort fields.
+	 * Sets the sort order within the {@link List} of specimens associated with
+	 * a scientific name. This property is ignored when calling
+	 * {@link ISpecimenAccess#groupByScientificName(GroupByScientificNameQuerySpec)
+	 * ISpecimenAccess.groupByScientificName}. It is only applicable for
+	 * {@link ITaxonAccess#groupByScientificName(GroupByScientificNameQuerySpec)
+	 * ITaxonAccess.groupByScientificName}.
 	 * 
 	 * @param specimensSortFields
 	 */
@@ -103,7 +158,8 @@ public class GroupByScientificNameQuerySpec extends QuerySpec {
 	}
 
 	/**
-	 * Returns whether or not to include the taxa associated with this name.
+	 * Returns whether or not to suppress the retrieval of the taxa associated
+	 * with a scientific name.
 	 * 
 	 * @return
 	 */
@@ -113,8 +169,10 @@ public class GroupByScientificNameQuerySpec extends QuerySpec {
 	}
 
 	/**
-	 * Determines whether or not to include the taxa associated with the name
-	 * group's name.
+	 * Determines whether or not to suppress the retrieval of the taxa
+	 * associated with a scientific name.
+	 * 
+	 * @param noTaxa
 	 */
 	public void setNoTaxa(boolean noTaxa)
 	{

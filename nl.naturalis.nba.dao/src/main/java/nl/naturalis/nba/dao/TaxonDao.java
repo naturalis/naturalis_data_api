@@ -39,6 +39,8 @@ import nl.naturalis.nba.dao.format.dwca.DwcaUtil;
 import nl.naturalis.nba.dao.format.dwca.IDwcaWriter;
 import nl.naturalis.nba.dao.translate.QuerySpecTranslator;
 
+import static nl.naturalis.nba.api.GroupByScientificNameQuerySpec.GroupSort.*;
+
 public class TaxonDao extends NbaDao<Taxon> implements ITaxonAccess {
 
 	@SuppressWarnings("unused")
@@ -113,6 +115,15 @@ public class TaxonDao extends NbaDao<Taxon> implements ITaxonAccess {
 		String groupBy = "acceptedName.scientificNameGroup";
 		tab.field(groupBy);
 		tab.size(10000000);
+		if (sngQuery.getGroupSort() == NAME_ASC) {
+			tab.order(Terms.Order.term(true));
+		}
+		else if (sngQuery.getGroupSort() == NAME_DESC) {
+			tab.order(Terms.Order.term(false));
+		}
+		else if (sngQuery.getGroupSort() == COUNT_ASC) {
+			tab.order(Terms.Order.count(true));
+		}
 		request.addAggregation(tab);
 		SearchResponse response = executeSearchRequest(request);
 		Terms terms = response.getAggregations().get("TERMS");

@@ -13,7 +13,6 @@ import org.elasticsearch.index.query.QueryBuilder;
 
 import nl.naturalis.nba.api.model.GeoArea;
 import nl.naturalis.nba.api.model.IDocumentObject;
-import nl.naturalis.nba.api.model.ScientificNameGroup_old;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.util.es.ESUtil;
@@ -122,29 +121,6 @@ public class DaoTestUtil {
 		}
 	}
 
-	public static void saveScientificNameGroups(ScientificNameGroup_old... groups)
-	{
-		DocumentType<?> dt = DocumentType.forClass(ScientificNameGroup_old.class);
-		ESUtil.disableAutoRefresh(dt.getIndexInfo());
-		for (ScientificNameGroup_old group : groups) {
-			saveScientificNameGroup(group, false);
-		}
-		ESUtil.refreshIndex(dt.getIndexInfo());
-	}
-
-	public static void saveScientificNameGroup(ScientificNameGroup_old group, boolean refreshIndex)
-	{
-		if (group.getId() == null) {
-			String id = group.getName();
-			saveObject(id, null, group, refreshIndex);
-		}
-		else {
-			String id = group.getName();
-			group.setId(null);
-			saveObject(id, null, group, refreshIndex);
-			group.setId(id);
-		}
-	}
 
 	public static void saveObject(IDocumentObject object, boolean refreshIndex)
 	{

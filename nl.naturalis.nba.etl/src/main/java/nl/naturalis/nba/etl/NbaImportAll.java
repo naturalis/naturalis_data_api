@@ -14,7 +14,6 @@ import nl.naturalis.nba.etl.enrich.MultimediaTaxonomicEnricher2;
 import nl.naturalis.nba.etl.enrich.SpecimenMultimediaEnricher;
 import nl.naturalis.nba.etl.enrich.SpecimenTaxonomicEnricher2;
 import nl.naturalis.nba.etl.geo.GeoImporter;
-import nl.naturalis.nba.etl.name.NameImportAll;
 import nl.naturalis.nba.etl.nsr.NsrImporter;
 
 /**
@@ -82,10 +81,6 @@ public class NbaImportAll {
 			MultimediaTaxonomicEnricher2 multimediaEnricherTE = new MultimediaTaxonomicEnricher2();
 			multimediaEnricherTE.configureWithSystemProperties();
 			multimediaEnricherTE.enrich();
-
-			logger.info("[>--- Starting ScientificNameGroup import ---<]");
-			NameImportAll nameImporter = new NameImportAll();
-			nameImporter.importNames();
 
 			Set<IndexInfo> indices = ESUtil.getDistinctIndices();
 			for (IndexInfo index : indices) {

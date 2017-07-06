@@ -10,7 +10,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.naturalis.nba.api.model.GeoArea;
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.api.model.MultiMediaObject;
-import nl.naturalis.nba.api.model.ScientificNameGroup_old;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.common.es.map.Mapping;
@@ -51,11 +50,6 @@ public class DocumentType<T extends IDocumentObject> {
 	 * A {@code DocumentType} instance representing the GeoArea document type.
 	 */
 	public static final DocumentType<GeoArea> GEO_AREA;
-	/**
-	 * A {@code DocumentType} instance representing the ScientificNameGroup
-	 * document type.
-	 */
-	public static final DocumentType<ScientificNameGroup_old> SCIENTIFIC_NAME_GROUP;
 
 	private static final DocumentType<?>[] all;
 
@@ -65,10 +59,8 @@ public class DocumentType<T extends IDocumentObject> {
 		TAXON = new DocumentType<>(Taxon.class);
 		MULTI_MEDIA_OBJECT = new DocumentType<>(MultiMediaObject.class);
 		GEO_AREA = new DocumentType<>(GeoArea.class);
-		SCIENTIFIC_NAME_GROUP = new DocumentType<>("ScientificNameGroup", ScientificNameGroup_old.class);
 
-		all = new DocumentType[] { SPECIMEN, TAXON, MULTI_MEDIA_OBJECT, GEO_AREA,
-				SCIENTIFIC_NAME_GROUP };
+		all = new DocumentType[] { SPECIMEN, TAXON, MULTI_MEDIA_OBJECT, GEO_AREA };
 
 		try {
 			for (ConfigObject cfg : getIndexSections()) {

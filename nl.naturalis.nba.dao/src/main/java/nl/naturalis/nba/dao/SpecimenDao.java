@@ -32,6 +32,7 @@ import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 
+import nl.naturalis.nba.api.GroupByScientificNameQuerySpec;
 import nl.naturalis.nba.api.ISpecimenAccess;
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.NoSuchDataSetException;
@@ -39,7 +40,6 @@ import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QueryResultItem;
 import nl.naturalis.nba.api.QuerySpec;
-import nl.naturalis.nba.api.GroupByScientificNameQuerySpec;
 import nl.naturalis.nba.api.SortField;
 import nl.naturalis.nba.api.model.ScientificNameGroup;
 import nl.naturalis.nba.api.model.Specimen;
@@ -199,25 +199,7 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 		sngQuery.setSortFields(null);
 		QuerySpecTranslator translator = new QuerySpecTranslator(sngQuery, SPECIMEN);
 		SearchRequestBuilder request = translator.translate();
-		TermsAggregationBuilder tab = terms("TERMS");
-		/*
-		 * Each group/bucket is a scientific name
-		 */
-		String groupBy = "identifications.scientificName.scientificNameGroup";
-		tab.field(groupBy);
-		tab.size(10000000);
-		if (sngQuery.getGroupSort() == NAME_ASC) {
-			tab.order(Terms.Order.term(true));
-		}
-		else if (sngQuery.getGroupSort() == NAME_DESC) {
-			tab.order(Terms.Order.term(false));
-		}
-		else if (sngQuery.getGroupSort() == COUNT_ASC) {
-			tab.order(Terms.Order.count(true));
-		}
-		NestedAggregationBuilder nab = nested("NESTED", "identifications");
-		nab.subAggregation(tab);
-		request.addAggregation(nab);
+		request.addAggregation(createAggregation(sngQuery));
 		SearchResponse response = executeSearchRequest(request);
 		Nested nested = response.getAggregations().get("NESTED");
 		Terms terms = nested.getAggregations().get("TERMS");
@@ -234,29 +216,52 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 		sngQuery.setFrom(sngQuery.getSpecimensFrom());
 		sngQuery.setSize(sngQuery.getSpecimensSize());
 		sngQuery.setSortFields(sortFields);
-		QueryCondition extraCondition = new QueryCondition(groupBy, "=", null);
+		String field = "identifications.scientificName.scientificNameGroup";
+		QueryCondition extraCondition = new QueryCondition(field, "=", null);
 		extraCondition.setConstantScore(true);
 		sngQuery.addCondition(extraCondition);
 		int to = Math.min(buckets.size(), from + size);
 		List<QueryResultItem<ScientificNameGroup>> resultSet = new ArrayList<>(size);
 		for (int i = from; i < to; i++) {
 			String name = buckets.get(i).getKeyAsString();
-			ScientificNameGroup sng = new ScientificNameGroup(name);
-			resultSet.add(new QueryResultItem<ScientificNameGroup>(sng, 0));
-			if (sngQuery.getSpecimensSize() == null || sngQuery.getSpecimensSize() > 0) {
-				extraCondition.setValue(name);
-				QueryResult<Specimen> specimens = query(sngQuery);
-				sng.setSpecimenCount((int) specimens.getTotalSize());
-				for (QueryResultItem<Specimen> specimen : specimens) {
-					sng.addSpecimen(specimen.getItem());
+			if (sngQuery.getGroupFilter() != null && sngQuery.getGroupFilter().contains(name)) {
+				ScientificNameGroup sng = new ScientificNameGroup(name);
+				resultSet.add(new QueryResultItem<ScientificNameGroup>(sng, 0));
+				if (sngQuery.getSpecimensSize() == null || sngQuery.getSpecimensSize() > 0) {
+					extraCondition.setValue(name);
+					QueryResult<Specimen> specimens = query(sngQuery);
+					sng.setSpecimenCount((int) specimens.getTotalSize());
+					for (QueryResultItem<Specimen> specimen : specimens) {
+						sng.addSpecimen(specimen.getItem());
+					}
 				}
-			}
-			if (!sngQuery.isNoTaxa()) {
-				addTaxaToGroup(sng);
+				if (!sngQuery.isNoTaxa()) {
+					addTaxaToGroup(sng);
+				}
 			}
 		}
 		result.setResultSet(resultSet);
 		return result;
+	}
+
+	private static NestedAggregationBuilder createAggregation(
+			GroupByScientificNameQuerySpec sngQuery)
+	{
+		TermsAggregationBuilder tab = terms("TERMS");
+		tab.field("identifications.scientificName.scientificNameGroup");
+		tab.size(10000000);
+		if (sngQuery.getGroupSort() == NAME_ASC) {
+			tab.order(Terms.Order.term(true));
+		}
+		else if (sngQuery.getGroupSort() == NAME_DESC) {
+			tab.order(Terms.Order.term(false));
+		}
+		else if (sngQuery.getGroupSort() == COUNT_ASC) {
+			tab.order(Terms.Order.count(true));
+		}
+		NestedAggregationBuilder nab = nested("NESTED", "identifications");
+		nab.subAggregation(tab);
+		return nab;
 	}
 
 	private static void addTaxaToGroup(ScientificNameGroup sng) throws InvalidQueryException

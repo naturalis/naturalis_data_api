@@ -1,6 +1,7 @@
 package nl.naturalis.nba.api;
 
 import java.util.List;
+import java.util.Set;
 
 import nl.naturalis.nba.api.model.ScientificNameGroup;
 
@@ -47,10 +48,24 @@ public class GroupByScientificNameQuerySpec extends QuerySpec {
 		 * Sorts the {@link ScientificNameGroup} objects by scientific name
 		 * (descending).
 		 */
-		NAME_DESC
+		NAME_DESC;
+
+		public static GroupSort parse(String name)
+		{
+			if (name == null) {
+				return null;
+			}
+			for (GroupSort gs : values()) {
+				if (gs.name().equalsIgnoreCase(name)) {
+					return gs;
+				}
+			}
+			throw new IllegalArgumentException("Invalid GroupSort: " + name);
+		}
 	}
 
 	private GroupSort groupSort;
+	private Set<String> groupFilter;
 	private Integer specimensFrom;
 	private Integer specimensSize;
 	private List<SortField> specimensSortFields;
@@ -68,7 +83,7 @@ public class GroupByScientificNameQuerySpec extends QuerySpec {
 	}
 
 	/**
-	 * Determins which way the {@link ScientificNameGroup} objects returned by
+	 * Determines which way the {@link ScientificNameGroup} objects returned by
 	 * {code groupByScientificName} are sorted.
 	 * 
 	 * @param groupSort
@@ -76,6 +91,32 @@ public class GroupByScientificNameQuerySpec extends QuerySpec {
 	public void setGroupSort(GroupSort groupSort)
 	{
 		this.groupSort = groupSort;
+	}
+
+	/**
+	 * Returns the desired filter for the returned {@link ScientificNameGroup}
+	 * objects.
+	 * 
+	 * @return
+	 */
+	public Set<String> getGroupFilter()
+	{
+		return groupFilter;
+	}
+
+	/**
+	 * This method allows you to set an extra filter on the
+	 * {@link ScientificNameGroup} objects to be returned. Only
+	 * {@code ScientificNameGroup} objects whose name property corresponds to
+	 * one of the specified strings are returned. The filtering is done by the
+	 * NBA rather than by Elasticsearch and happens in the final stage of the
+	 * {code groupByScientificName} implementation.
+	 * 
+	 * @param groupFilter
+	 */
+	public void setGroupFilter(Set<String> groupFilter)
+	{
+		this.groupFilter = groupFilter;
 	}
 
 	/**

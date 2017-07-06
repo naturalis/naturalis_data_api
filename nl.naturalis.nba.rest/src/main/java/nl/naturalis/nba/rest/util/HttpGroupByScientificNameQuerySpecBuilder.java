@@ -9,6 +9,7 @@ import static nl.naturalis.nba.utils.ConfigObject.isTrueValue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import javax.ws.rs.core.MultivaluedMap;
@@ -18,10 +19,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.api.ComparisonOperator;
+import nl.naturalis.nba.api.GroupByScientificNameQuerySpec;
+import nl.naturalis.nba.api.GroupByScientificNameQuerySpec.GroupSort;
 import nl.naturalis.nba.api.LogicalOperator;
 import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.api.QueryCondition;
-import nl.naturalis.nba.api.GroupByScientificNameQuerySpec;
 import nl.naturalis.nba.api.SortField;
 import nl.naturalis.nba.rest.exception.HTTP400Exception;
 import nl.naturalis.nba.utils.CollectionUtil;
@@ -44,6 +46,8 @@ public class HttpGroupByScientificNameQuerySpecBuilder {
 	public static final String PARAM_OPERATOR = "_logicalOperator";
 	public static final String PARAM_SORT_FIELDS = "_sortFields";
 	public static final String PARAM_IGNORE_CASE = "_ignoreCase";
+	public static final String PARAM_GROUP_SORT = "_groupSort";
+	public static final String PARAM_GROUP_FILTER = "_groupFilter";
 	public static final String PARAM_SPECIMENS_FROM = "_specimensFrom";
 	public static final String PARAM_SPECIMENS_SIZE = "_specimensSize";
 	public static final String PARAM_SPECIMENS_SORT_FIELDS = "_specimensSortFields";
@@ -65,8 +69,8 @@ public class HttpGroupByScientificNameQuerySpecBuilder {
 	private MultivaluedMap<String, String> params;
 
 	/**
-	 * Creates a {@link GroupByScientificNameQuerySpec} from the query parameters
-	 * present in the URL.
+	 * Creates a {@link GroupByScientificNameQuerySpec} from the query
+	 * parameters present in the URL.
 	 * 
 	 * @param uriInfo
 	 */
@@ -127,6 +131,15 @@ public class HttpGroupByScientificNameQuerySpecBuilder {
 					break;
 				case PARAM_FIELDS:
 					qs.setFields(getFields(value));
+					break;
+				case PARAM_GROUP_SORT:
+					qs.setGroupSort(GroupSort.parse(value));
+					break;
+				case PARAM_GROUP_FILTER:
+					if (value.length() != 0) {
+						String[] filters = value.split(",");
+						qs.setGroupFilter(new LinkedHashSet<>(Arrays.asList(filters)));
+					}
 					break;
 				case PARAM_SPECIMENS_FROM:
 					qs.setSpecimensFrom(getIntParam(param, value));

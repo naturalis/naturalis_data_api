@@ -447,7 +447,7 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 
 	private SpecimenTypeStatus getTypeStatus(Element elem)
 	{
-		String raw = val(elem, "abcd:NomenclaturalTypeText");
+		String raw = val(elem, "abcd:TypeStatus");
 		if (raw == null) {
 			if (!suppressErrors)
 				warn("Missing type status");

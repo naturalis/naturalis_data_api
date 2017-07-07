@@ -112,6 +112,7 @@ class BrahmsMultiMediaTransformer extends BrahmsTransformer<MultiMediaObject> {
 	private MultiMediaContentIdentification getIdentification()
 	{
 		MultiMediaContentIdentification identification = new MultiMediaContentIdentification();
+		identification.setTypeStatus(getTypeStatus());
 		String s = input.get(VERNACULAR);
 		if (s != null) {
 			identification.setVernacularNames(Arrays.asList(new VernacularName(s)));

@@ -202,41 +202,29 @@ public interface ISpecimenAccess extends INbaAccess<Specimen> {
 	 */
 	String[] getIdsInCollection(String collectionName);
 
+	/**
+	 * <p>
+	 * Groups specimens by their scientific name. Although this method will
+	 * optionally also retrieve the taxa associated with a scientific name, any
+	 * query conditions and sort fields specified through the {@link QuerySpec}
+	 * must reference {@link Specimen} fields only.
+	 * </p>
+	 * <h5>REST API</h5>
+	 * <p>
+	 * The NBA REST API exposes this method through a GET request with the
+	 * following end point:
+	 * </p>
+	 * <p>
+	 * <code>
+	 * http://api.biodiversitydata.nl/v2/specimen/groupByScientificName
+	 * </code>
+	 * </p>
+	 * 
+	 * @param querySpec
+	 * @return
+	 * @throws InvalidQueryException
+	 */
 	QueryResult<ScientificNameGroup> groupByScientificName(GroupByScientificNameQuerySpec querySpec)
 			throws InvalidQueryException;
-
-	/**
-	 * Saves the specified specimen to the NBA data store. N.B. although this
-	 * method is part of the API, NBA clients will get an HTTP 403 (FORBIDDEN)
-	 * error when calling it unless they reside on the same server as the NBA
-	 * itself. If you specify an ID for the specimen (using
-	 * {@link Specimen#setId(String) Specimen.setId()}), that ID will used as
-	 * the Elasticsearch document ID. Otherwise an Elasticsearch-generated ID
-	 * will be used <i>and</i> set (using {@link Specimen#setId(String)
-	 * Specimen.setId()}) on the provided specimen instance.
-	 * 
-	 * @param specimen
-	 *            The specimen to save
-	 * @param immediate
-	 *            Whether or not the specimen should become available for
-	 *            retrieval immediately.
-	 * @return The ID of the newly created specimen.
-	 */
-	String save(Specimen specimen, boolean immediate);
-
-	/**
-	 * Deletes the specimen with the specified system ID (as can be retrieved
-	 * using {@link Specimen#getId()}). N.B. although this method is part of the
-	 * API, NBA clients will get an HTTP 403 (FORBIDDEN) error when calling it
-	 * unless they reside on the same server as the NBA itself.
-	 * 
-	 * @param id
-	 *            The ID of the specimen
-	 * @param immediate
-	 *            Whether or not to refresh the index immediately after the
-	 *            deletion.
-	 * @return Whether or not there was a specimen with the specified ID
-	 */
-	boolean delete(String id, boolean immediate);
 
 }

@@ -1,9 +1,7 @@
 package nl.naturalis.nba.api;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import nl.naturalis.nba.api.model.IDocumentObject;
 
@@ -195,62 +193,62 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
 	Map<String, Long> getDistinctValues(String forField, QuerySpec querySpec)
 			throws InvalidQueryException;
 
-	/**
-	 * <p>
-	 * Returns the unique values of the specified field, given the value of
-	 * another field. For example: return all localities per area type
-	 * (countries: U.S.A., Germany, France, ...; states: California, Texas, ...;
-	 * cities: New York, Chigago, ...) Here, the "areaType" field is the
-	 * groupField while the "locality" field is the valuesField. The result is
-	 * returned as a {@link Map} where each key is a group and each value is the
-	 * set of unique values for that group. Null values are excluded, both for
-	 * the {@code groupField} and for the {@code valuesField}.
-	 * </p>
-	 * <h5>REST API</h5>
-	 * <p>
-	 * The NBA REST API exposes this method through a GET request with the
-	 * following end point:
-	 * </p>
-	 * <p>
-	 * <code>
-	 * http://api.biodiversitydata.nl/v2/&lt;document-type&gt;/getDistinctValuesPerGroup/{groupField}/{valuesField}
-	 * </code>
-	 * </p>
-	 * <p>
-	 * For example:
-	 * </p>
-	 * <p>
-	 * <code>
-	 * http://api.biodiversitydata.nl/v2/geo/getDistinctValuesPerGroup/areaType/locality<br>
-	 * http://api.biodiversitydata.nl/v2/specimen/getDistinctValuesPerGroup/recordBasis/phaseOrStage
-	 * </code>
-	 * </p>
-	 * <p>
-	 * For consistency's sake, even though you can only pass
-	 * {@link QueryCondition conditions} to this method, when accessing this
-	 * method through the REST API you still can and should do so via the
-	 * {@code _querySpec} query parameter, as described {@link QuerySpec here}.
-	 * Only the conditions of the URL-encoded {@code QuerySpec} object are taken
-	 * into account; all other properties are ignored).
-	 * </p>
-	 * 
-	 * @param groupField
-	 * @param valuesField
-	 * @param conditions
-	 * @return
-	 * @throws InvalidQueryException
-	 */
-	Map<Object, Set<Object>> getDistinctValuesPerGroup(String groupField, String valuesField,
-			QueryCondition... conditions) throws InvalidQueryException;
-
-	/**
-	 * 
-	 * @param groupByField
-	 * @param querySpec
-	 * @return
-	 * @throws InvalidQueryException
-	 */
-	List<KeyValuePair<Object, Integer>> getGroups(String groupByField, QuerySpec querySpec)
-			throws InvalidQueryException;
+//	/**
+//	 * <p>
+//	 * Returns the unique values of the specified field, given the value of
+//	 * another field. For example: return all localities per area type
+//	 * (countries: U.S.A., Germany, France, ...; states: California, Texas, ...;
+//	 * cities: New York, Chigago, ...) Here, the "areaType" field is the
+//	 * groupField while the "locality" field is the valuesField. The result is
+//	 * returned as a {@link Map} where each key is a group and each value is the
+//	 * set of unique values for that group. Null values are excluded, both for
+//	 * the {@code groupField} and for the {@code valuesField}.
+//	 * </p>
+//	 * <h5>REST API</h5>
+//	 * <p>
+//	 * The NBA REST API exposes this method through a GET request with the
+//	 * following end point:
+//	 * </p>
+//	 * <p>
+//	 * <code>
+//	 * http://api.biodiversitydata.nl/v2/&lt;document-type&gt;/getDistinctValuesPerGroup/{groupField}/{valuesField}
+//	 * </code>
+//	 * </p>
+//	 * <p>
+//	 * For example:
+//	 * </p>
+//	 * <p>
+//	 * <code>
+//	 * http://api.biodiversitydata.nl/v2/geo/getDistinctValuesPerGroup/areaType/locality<br>
+//	 * http://api.biodiversitydata.nl/v2/specimen/getDistinctValuesPerGroup/recordBasis/phaseOrStage
+//	 * </code>
+//	 * </p>
+//	 * <p>
+//	 * For consistency's sake, even though you can only pass
+//	 * {@link QueryCondition conditions} to this method, when accessing this
+//	 * method through the REST API you still can and should do so via the
+//	 * {@code _querySpec} query parameter, as described {@link QuerySpec here}.
+//	 * Only the conditions of the URL-encoded {@code QuerySpec} object are taken
+//	 * into account; all other properties are ignored).
+//	 * </p>
+//	 * 
+//	 * @param groupField
+//	 * @param valuesField
+//	 * @param conditions
+//	 * @return
+//	 * @throws InvalidQueryException
+//	 */
+//	Map<Object, Set<Object>> getDistinctValuesPerGroup(String groupField, String valuesField,
+//			QueryCondition... conditions) throws InvalidQueryException;
+//
+//	/**
+//	 * 
+//	 * @param groupByField
+//	 * @param querySpec
+//	 * @return
+//	 * @throws InvalidQueryException
+//	 */
+//	List<KeyValuePair<Object, Integer>> getGroups(String groupByField, QuerySpec querySpec)
+//			throws InvalidQueryException;
 
 }

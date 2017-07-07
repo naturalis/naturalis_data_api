@@ -5,7 +5,6 @@ import static nl.naturalis.nba.rest.util.ResourceUtil.JSON_CONTENT_TYPE;
 import static nl.naturalis.nba.rest.util.ResourceUtil.handleError;
 
 import java.util.Map;
-import java.util.Set;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -24,7 +23,6 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.MultiMediaObject;
@@ -182,28 +180,6 @@ public class MultiMediaObjectResource {
 			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
 			MultiMediaObjectDao dao = new MultiMediaObjectDao();
 			return dao.getDistinctValues(field, qs);
-		}
-		catch (Throwable t) {
-			throw handleError(uriInfo, t);
-		}
-	}
-
-	@GET
-	@Path("/getDistinctValuesPerGroup/{keyField}/{valuesField}")
-	@Produces(JSON_CONTENT_TYPE)
-	public Map<Object, Set<Object>> getDistinctValuesPerGroup(
-			@PathParam("keyField") String keyField, @PathParam("valuesField") String valuesField,
-			@Context UriInfo uriInfo)
-	{
-		try {
-			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
-			QueryCondition[] conditions = null;
-			if (qs.getConditions() != null && qs.getConditions().size() > 0) {
-				conditions = qs.getConditions()
-						.toArray(new QueryCondition[qs.getConditions().size()]);
-			}
-			MultiMediaObjectDao dao = new MultiMediaObjectDao();
-			return dao.getDistinctValuesPerGroup(keyField, valuesField, conditions);
 		}
 		catch (Throwable t) {
 			throw handleError(uriInfo, t);

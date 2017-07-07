@@ -1,6 +1,5 @@
 package nl.naturalis.nba.dao;
 
-import static nl.naturalis.nba.api.ComparisonOperator.NOT_EQUALS;
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static nl.naturalis.nba.dao.util.es.ESUtil.executeSearchRequest;
 import static nl.naturalis.nba.dao.util.es.ESUtil.newSearchRequest;
@@ -9,11 +8,9 @@ import static org.elasticsearch.search.aggregations.AggregationBuilders.nested;
 import static org.elasticsearch.search.aggregations.AggregationBuilders.terms;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.DocWriteResponse.Result;
@@ -40,23 +37,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import nl.naturalis.nba.api.INbaAccess;
 import nl.naturalis.nba.api.InvalidQueryException;
-import nl.naturalis.nba.api.KeyValuePair;
-import nl.naturalis.nba.api.NbaException;
 import nl.naturalis.nba.api.NoSuchFieldException;
-import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QueryResultItem;
 import nl.naturalis.nba.api.QuerySpec;
-import nl.naturalis.nba.api.SortOrder;
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.exception.DaoException;
 import nl.naturalis.nba.dao.translate.QuerySpecTranslator;
-import nl.naturalis.nba.dao.util.es.DirtyScroller;
 import nl.naturalis.nba.dao.util.es.ESUtil;
-import nl.naturalis.nba.dao.util.es.IScroller;
-import nl.naturalis.nba.dao.util.es.TransactionSafeScroller;
 
 abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 
@@ -141,53 +131,6 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 		return response.getHits().totalHits();
 	}
 
-	/*
-	 * NB Paging is notoriously not possible for aggregations. See
-	 * https://github.com/elastic/elasticsearch/issues/4915. Also note Byron's
-	 * contribution/solution on that page. This solution is not practical for us
-	 * since we often want to group on fields with very high cardinality (e.g.
-	 * the scientific name field), where the number of groups is close to the
-	 * total number of documents. In other words you might as well do a regular
-	 * (non-aggregation) query and then collect the documents per group
-	 * manually.
-	 */
-	@Override
-	public List<KeyValuePair<Object, Integer>> getGroups(String groupByField, QuerySpec querySpec)
-			throws InvalidQueryException
-	{
-		if (logger.isDebugEnabled()) {
-			logger.debug(printCall("group", groupByField, querySpec));
-		}
-		int from = 0;
-		int size = 0;
-		if (querySpec != null) {
-			if (querySpec.getFrom() != null) {
-				from = querySpec.getFrom();
-				querySpec.setFrom(null);
-			}
-			if (querySpec.getSize() != null) {
-				size = querySpec.getSize();
-				querySpec.setSize(null);
-			}
-		}
-		else {
-			querySpec = new QuerySpec();
-		}
-		querySpec.addFields(groupByField);
-		querySpec.addCondition(new QueryCondition(groupByField, NOT_EQUALS, null));
-		querySpec.sortBy(groupByField);
-		GetGroupsSearchHitHandler handler = new GetGroupsSearchHitHandler(groupByField, from, size);
-		TransactionSafeScroller scroller = new TransactionSafeScroller(querySpec, dt);
-		try {
-			scroller.scroll(handler);
-		}
-		catch (NbaException e) {
-			// Should not happen - handler does not throw exceptions
-			throw new DaoException(e);
-		}
-		return handler.getGroups();
-	}
-
 	@Override
 	public Map<String, Long> getDistinctValues(String forField, QuerySpec querySpec)
 			throws InvalidQueryException
@@ -233,33 +176,6 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 			result.put(bucket.getKeyAsString(), bucket.getDocCount());
 		}
 		return result;
-	}
-
-	@Override
-	public Map<Object, Set<Object>> getDistinctValuesPerGroup(String keyField, String valuesField,
-			QueryCondition... conditions) throws InvalidQueryException
-	{
-		if (logger.isDebugEnabled()) {
-			logger.debug(printCall("getDistinctValuesPerGroup", keyField, valuesField, conditions));
-		}
-		DistinctValuesPerGroupSearchHitHandler handler;
-		handler = new DistinctValuesPerGroupSearchHitHandler(keyField, valuesField);
-		QuerySpec qs = new QuerySpec();
-		qs.addFields(keyField, valuesField);
-		if (conditions != null && conditions.length != 0) {
-			qs.setConditions(Arrays.asList(conditions));
-		}
-		qs.addCondition(new QueryCondition(keyField, "!=", null));
-		qs.addCondition(new QueryCondition(valuesField, "!=", null));
-		qs.sortBy(keyField, SortOrder.DESC);
-		IScroller scroller = new DirtyScroller(qs, dt);
-		try {
-			scroller.scroll(handler);
-		}
-		catch (NbaException e) {
-			throw (InvalidQueryException) e;
-		}
-		return handler.getDistinctValuesPerGroup();
 	}
 
 	public String save(T apiObject, boolean immediate)

@@ -90,6 +90,28 @@ public interface ITaxonAccess extends INbaAccess<Taxon> {
 	 */
 	String[] dwcaGetDataSetNames();
 
+	/**
+	 * <p>
+	 * Groups taxa by their scientific name. Although this method will
+	 * optionally also retrieve the specimens associated with a scientific name,
+	 * any query conditions and sort fields specified through the
+	 * {@link QuerySpec} must reference {@link Taxon} fields only.
+	 * </p>
+	 * <h5>REST API</h5>
+	 * <p>
+	 * The NBA REST API exposes this method through a GET request with the
+	 * following end point:
+	 * </p>
+	 * <p>
+	 * <code>
+	 * http://api.biodiversitydata.nl/v2/taxon/groupByScientificName
+	 * </code>
+	 * </p>
+	 * 
+	 * @param querySpec
+	 * @return
+	 * @throws InvalidQueryException
+	 */
 	QueryResult<ScientificNameGroup> groupByScientificName(GroupByScientificNameQuerySpec querySpec)
 			throws InvalidQueryException;
 

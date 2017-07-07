@@ -2,9 +2,7 @@ package nl.naturalis.nba.client;
 
 import static nl.naturalis.nba.client.ClientUtil.getBoolean;
 import static nl.naturalis.nba.client.ClientUtil.getObject;
-import static nl.naturalis.nba.client.ClientUtil.getString;
 import static nl.naturalis.nba.client.ServerException.newServerException;
-import static nl.naturalis.nba.common.json.JsonUtil.toJson;
 import static nl.naturalis.nba.utils.http.SimpleHttpRequest.HTTP_OK;
 
 import java.io.InputStream;
@@ -15,12 +13,12 @@ import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
+import nl.naturalis.nba.api.GroupByScientificNameQuerySpec;
 import nl.naturalis.nba.api.ISpecimenAccess;
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.NoSuchDataSetException;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QuerySpec;
-import nl.naturalis.nba.api.GroupByScientificNameQuerySpec;
 import nl.naturalis.nba.api.model.ScientificNameGroup;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.common.json.JsonUtil;
@@ -85,30 +83,6 @@ public class SpecimenClient extends NbaClient<Specimen> implements ISpecimenAcce
 			throw newServerException(status, request.getResponseBody());
 		}
 		return getObject(request.getResponseBody(), String[].class);
-	}
-
-	@Override
-	public String save(Specimen specimen, boolean immediate)
-	{
-		String json = toJson(specimen);
-		SimpleHttpGet request;
-		if (immediate) {
-			request = getJson("specimen/save/immediate/" + json);
-		}
-		else {
-			request = getJson("specimen/save/" + json);
-		}
-		int status = request.getStatus();
-		if (status != HTTP_OK) {
-			throw newServerException(status, request.getResponseBody());
-		}
-		return getString(request.getResponseBody());
-	}
-
-	@Override
-	public boolean delete(String id, boolean immediate)
-	{
-		return false;
 	}
 
 	@Override

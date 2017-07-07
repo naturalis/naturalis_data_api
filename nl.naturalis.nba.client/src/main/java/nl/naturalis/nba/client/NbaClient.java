@@ -9,9 +9,7 @@ import static nl.naturalis.nba.utils.http.SimpleHttpRequest.HTTP_OK;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,8 +18,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 
 import nl.naturalis.nba.api.INbaAccess;
 import nl.naturalis.nba.api.InvalidQueryException;
-import nl.naturalis.nba.api.KeyValuePair;
-import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.IDocumentObject;
@@ -154,22 +150,6 @@ abstract class NbaClient<T extends IDocumentObject> implements INbaAccess<T> {
 
 	@Override
 	public Map<String, Long> getDistinctValues(String forField, QuerySpec spec)
-			throws InvalidQueryException
-	{
-		// TODO: implement
-		return null;
-	}
-
-	@Override
-	public Map<Object, Set<Object>> getDistinctValuesPerGroup(String groupField, String valuesField,
-			QueryCondition... conditions) throws InvalidQueryException
-	{
-		// TODO: implement
-		return null;
-	}
-
-	@Override
-	public List<KeyValuePair<Object, Integer>> getGroups(String groupByField, QuerySpec querySpec)
 			throws InvalidQueryException
 	{
 		// TODO: implement

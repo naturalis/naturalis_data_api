@@ -3,18 +3,18 @@ package nl.naturalis.nba.api.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import nl.naturalis.nba.api.ISpecimenAccess;
+import nl.naturalis.nba.api.ITaxonAccess;
+
 /**
- * A ScientificNameGroup contains a scientific name and the specimens, taxa and
- * various statistics associated with that name. The ScientificNameGroup index
- * is a "frozen" aggregation query on the {@link Specimen} index and the
- * {@link Taxon} index. It groups specimens and taxa on their full scientific
- * name. In other words, each ScientificNameGroup document represents a group
- * (a.k.a. bucket) with the full scientific name as the group value. To be more
- * precise: specimens and taxa are actually grouped on the combination of their
- * genus, specific eptithet and infraspecific epithet (rather than their full
- * scientific name, which may include an author). Each ScientificNameGroup
- * document contains one such combination, which is guaranteed to be unique
- * within the ScientificNameGroup index as a whole.
+ * The ScientificNameGroup class is used to capture the output from
+ * {@link ITaxonAccess#groupByScientificName(nl.naturalis.nba.api.GroupByScientificNameQuerySpec)
+ * ITaxonAccess.groupByScientificName} and
+ * {@link ISpecimenAccess#groupByScientificName(nl.naturalis.nba.api.GroupByScientificNameQuerySpec)
+ * ISpecimenAccess.groupByScientificName}. Each instance represents a single
+ * group returned from the GROUP BY query. It contains a {@link #getName()
+ * name}, which is the scientific name and a list of specimens and taxa
+ * associated with that name.
  * 
  * @see ScientificName#getScientificNameGroup()
  * 

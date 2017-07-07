@@ -132,7 +132,7 @@ public class GroupByScientificNameQuerySpec extends QuerySpec {
 
 	/**
 	 * Sets the desired offset within the {@link List} of specimens associated
-	 * with a scientific name. Default 0. In other words, the regular
+	 * with a scientific name. Default 0. In other words: the regular
 	 * {@link QuerySpec#getFrom() from} property of the {@link QuerySpec} object
 	 * determines the offset within the list of scientific names while the
 	 * {@code specimensFrom} property determines the offset in the list of
@@ -159,11 +159,15 @@ public class GroupByScientificNameQuerySpec extends QuerySpec {
 
 	/**
 	 * Determines how many specimens to retrieve per scientific name. Default
-	 * 10. You can specify 0 (zero) if you want to suppress the retrieval of
-	 * specimens (i.e. if you are only interested in the taxa). Note though that
-	 * in that case, no specimen count will be calculated either. The
-	 * {@link ScientificNameGroup#getSpecimenCount() specimenCount} property of
-	 * the {@link ScientificNameGroup} object
+	 * 10. In other words: the regular {@link QuerySpec#getSize() size} property
+	 * of the {@link QuerySpec} objects determines the desired number of
+	 * {@link ScientificNameGroup} instances while the {@code specimensSize}
+	 * property determines the desired number of specimens per
+	 * {@link ScientificNameGroup}. You can specify 0 (zero) if you want to
+	 * suppress the retrieval of specimens (i.e. if you are only interested in
+	 * the taxa). If you suppress the retrieval of specimens, no
+	 * {@link ScientificNameGroup#getSpecimenCount() specimen count} will be
+	 * calculated.
 	 * 
 	 * @return
 	 */
@@ -211,7 +215,9 @@ public class GroupByScientificNameQuerySpec extends QuerySpec {
 
 	/**
 	 * Determines whether or not to suppress the retrieval of the taxa
-	 * associated with a scientific name.
+	 * associated with a scientific name. If you suppress the retrieval of taxa,
+	 * no {@link ScientificNameGroup#getTaxonCount() taxon count} is calculated
+	 * either.
 	 * 
 	 * @param noTaxa
 	 */

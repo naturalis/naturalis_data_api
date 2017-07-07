@@ -7,9 +7,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -32,13 +30,11 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import nl.naturalis.nba.api.GroupByScientificNameQuerySpec;
 import nl.naturalis.nba.api.InvalidQueryException;
-import nl.naturalis.nba.api.KeyValuePair;
 import nl.naturalis.nba.api.NoSuchDataSetException;
-import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QuerySpec;
-import nl.naturalis.nba.api.GroupByScientificNameQuerySpec;
 import nl.naturalis.nba.api.model.ScientificNameGroup;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.dao.DocumentType;
@@ -46,8 +42,8 @@ import nl.naturalis.nba.dao.SpecimenDao;
 import nl.naturalis.nba.rest.exception.HTTP400Exception;
 import nl.naturalis.nba.rest.exception.HTTP404Exception;
 import nl.naturalis.nba.rest.exception.RESTException;
-import nl.naturalis.nba.rest.util.HttpQuerySpecBuilder;
 import nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder;
+import nl.naturalis.nba.rest.util.HttpQuerySpecBuilder;
 import nl.naturalis.nba.utils.StringUtil;
 
 @Path("/specimen")
@@ -233,44 +229,6 @@ public class SpecimenResource {
 	}
 
 	@GET
-	@Path("/getDistinctValuesPerGroup/{keyField}/{valuesField}")
-	@Produces(JSON_CONTENT_TYPE)
-	public Map<Object, Set<Object>> getDistinctValuesPerGroup(
-			@PathParam("keyField") String keyField, @PathParam("valuesField") String valuesField,
-			@Context UriInfo uriInfo)
-	{
-		try {
-			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
-			QueryCondition[] conditions = null;
-			if (qs.getConditions() != null && qs.getConditions().size() > 0) {
-				conditions = qs.getConditions()
-						.toArray(new QueryCondition[qs.getConditions().size()]);
-			}
-			SpecimenDao dao = new SpecimenDao();
-			return dao.getDistinctValuesPerGroup(keyField, valuesField, conditions);
-		}
-		catch (Throwable t) {
-			throw handleError(uriInfo, t);
-		}
-	}
-
-	@GET
-	@Path("/getGroups/{groupByField}")
-	@Produces(JSON_CONTENT_TYPE)
-	public List<KeyValuePair<Object, Integer>> getGroups(
-			@PathParam("groupByField") String groupByField, @Context UriInfo uriInfo)
-	{
-		try {
-			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
-			SpecimenDao dao = new SpecimenDao();
-			return dao.getGroups(groupByField, qs);
-		}
-		catch (Throwable t) {
-			throw handleError(uriInfo, t);
-		}
-	}
-
-	@GET
 	@Path("/dwca/query")
 	@Produces("application/zip")
 	public Response dwcaQuery(@Context UriInfo uriInfo)
@@ -305,7 +263,7 @@ public class SpecimenResource {
 	}
 
 	@GET
-	@Path("/dwca/dataset/{dataset}")
+	@Path("/dwca/getDataSet/{dataset}")
 	@Produces("application/zip")
 	public Response dwcaGetDataSet(@PathParam("dataset") String name, @Context UriInfo uriInfo)
 	{

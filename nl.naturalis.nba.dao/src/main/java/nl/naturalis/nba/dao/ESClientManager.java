@@ -73,6 +73,7 @@ public class ESClientManager {
 				addr = new InetSocketTransportAddress(host, port);
 				((TransportClient) client).addTransportAddress(addr);
 			}
+			logger.info("Connected");
 			//ping();
 		}
 		return client;

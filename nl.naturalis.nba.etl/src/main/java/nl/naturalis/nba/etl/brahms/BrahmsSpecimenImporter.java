@@ -2,10 +2,11 @@ package nl.naturalis.nba.etl.brahms;
 
 import static nl.naturalis.nba.api.model.SourceSystem.BRAHMS;
 import static nl.naturalis.nba.dao.DocumentType.SPECIMEN;
-import static nl.naturalis.nba.etl.ETLUtil.getLogger;
-import static nl.naturalis.nba.etl.ETLUtil.logDuration;
 import static nl.naturalis.nba.etl.ETLConstants.SYSPROP_LOADER_QUEUE_SIZE;
 import static nl.naturalis.nba.etl.ETLConstants.SYSPROP_SUPPRESS_ERRORS;
+import static nl.naturalis.nba.etl.ETLConstants.SYSPROP_TRUNCATE;
+import static nl.naturalis.nba.etl.ETLUtil.getLogger;
+import static nl.naturalis.nba.etl.ETLUtil.logDuration;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getCsvFiles;
 
 import java.io.File;
@@ -74,7 +75,9 @@ public class BrahmsSpecimenImporter {
 		SpecimenTypeStatusNormalizer.getInstance().resetStatistics();
 		ThemeCache.getInstance().resetMatchCounters();
 		ETLStatistics stats = new ETLStatistics();
-		ESUtil.truncate(SPECIMEN, BRAHMS);
+		if (ConfigObject.isEnabled(SYSPROP_TRUNCATE, true)) {
+			ESUtil.truncate(SPECIMEN, BRAHMS);
+		}
 		for (File f : csvFiles) {
 			processFile(f, stats);
 		}

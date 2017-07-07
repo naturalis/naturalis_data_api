@@ -2,10 +2,11 @@ package nl.naturalis.nba.etl.brahms;
 
 import static nl.naturalis.nba.dao.DocumentType.MULTI_MEDIA_OBJECT;
 import static nl.naturalis.nba.dao.DocumentType.SPECIMEN;
+import static nl.naturalis.nba.etl.ETLConstants.*;
+import static nl.naturalis.nba.etl.ETLConstants.SYSPROP_SUPPRESS_ERRORS;
+import static nl.naturalis.nba.etl.ETLConstants.SYSPROP_TRUNCATE;
 import static nl.naturalis.nba.etl.ETLUtil.getDuration;
 import static nl.naturalis.nba.etl.ETLUtil.logDuration;
-import static nl.naturalis.nba.etl.ETLConstants.SYSPROP_LOADER_QUEUE_SIZE;
-import static nl.naturalis.nba.etl.ETLConstants.SYSPROP_SUPPRESS_ERRORS;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.backup;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getCsvFiles;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.removeBackupExtension;
@@ -139,8 +140,10 @@ public class BrahmsImportAll {
 		ETLStatistics mStats = new ETLStatistics();
 		mStats.setOneToMany(true);
 		try {
-			ESUtil.truncate(DocumentType.SPECIMEN, SourceSystem.BRAHMS);
-			ESUtil.truncate(DocumentType.MULTI_MEDIA_OBJECT, SourceSystem.BRAHMS);
+			if (ConfigObject.isEnabled(SYSPROP_TRUNCATE, true)) {
+				ESUtil.truncate(DocumentType.SPECIMEN, SourceSystem.BRAHMS);
+				ESUtil.truncate(DocumentType.MULTI_MEDIA_OBJECT, SourceSystem.BRAHMS);
+			}
 			for (File f : csvFiles) {
 				processFile(f, sStats, mStats);
 			}

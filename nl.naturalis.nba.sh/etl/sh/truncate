@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # USAGE: truncate <document_type> [<source_system>]
-# Deletes all document of the specified type and source system.
+# Deletes all documents of the specified type and source system.
 # For help, just type truncate.
 
 . ./include.sh

@@ -3,14 +3,15 @@
 . ./include.sh
 
 action="${1}"
+file="${2}"
 
 if [ "$action" = specimens ]
 then
-    java -cp ${classpath} ${JAVA_OPTS} ${root_package}.brahms.BrahmsSpecimenImporter
+    java -cp ${classpath} ${JAVA_OPTS} ${root_package}.brahms.BrahmsSpecimenImporter ${file}
 	echo "WARNING: When loading only specimens or only multimedia file backup is disabled"
 elif [ "$action" = multimedia ]
 then
-    java -cp ${classpath} ${JAVA_OPTS} ${root_package}.brahms.BrahmsMultiMediaImporter
+    java -cp ${classpath} ${JAVA_OPTS} ${root_package}.brahms.BrahmsMultiMediaImporter ${file}
 	echo "WARNING: When not loading only specimens or only multimedia file backup is disabled"
 elif [ "$action" = backup ]
 then

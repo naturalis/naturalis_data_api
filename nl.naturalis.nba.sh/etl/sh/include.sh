@@ -20,7 +20,7 @@ queue_size=1000
 # Whether or not to delete all documents from a particular source
 # system and document type before importing the data for that source
 # system and document type (currently only picked up by Brahms
-# importers; other importers just do it.
+# importers; other importers just do it).
 truncate=true
 
 # Provide a comma-separated list of genera to import. This will create a

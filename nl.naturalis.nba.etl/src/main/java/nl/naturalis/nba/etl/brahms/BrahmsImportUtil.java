@@ -272,7 +272,7 @@ class BrahmsImportUtil {
 		return record.get(RANK2);
 	}
 
-	private static File getDataDir()
+	static File getDataDir()
 	{
 		return DaoRegistry.getInstance().getConfiguration().getDirectory("brahms.data.dir");
 	}

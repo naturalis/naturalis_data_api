@@ -7,7 +7,7 @@ import static nl.naturalis.nba.etl.ETLConstants.SYSPROP_SUPPRESS_ERRORS;
 import static nl.naturalis.nba.etl.ETLConstants.SYSPROP_TRUNCATE;
 import static nl.naturalis.nba.etl.ETLUtil.getLogger;
 import static nl.naturalis.nba.etl.ETLUtil.logDuration;
-import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getCsvFiles;
+import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.*;
 
 import java.io.File;
 import java.nio.charset.Charset;
@@ -18,10 +18,12 @@ import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.CSVExtractor;
 import nl.naturalis.nba.etl.CSVRecordInfo;
+import nl.naturalis.nba.etl.ETLRuntimeException;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.ThemeCache;
 import nl.naturalis.nba.etl.normalize.SpecimenTypeStatusNormalizer;
 import nl.naturalis.nba.utils.ConfigObject;
+import nl.naturalis.nba.utils.FileUtil;
 import nl.naturalis.nba.utils.IOUtil;
 
 /**
@@ -36,7 +38,12 @@ public class BrahmsSpecimenImporter {
 	{
 		try {
 			BrahmsSpecimenImporter importer = new BrahmsSpecimenImporter();
-			importer.importCsvFiles();
+			if (args.length == 0 || args[0].trim().length() == 0) {
+				importer.importCsvFiles();
+			}
+			else {
+				importer.importCsvFile(args[0]);
+			}
 		}
 		catch (Throwable t) {
 			logger.error("BrahmsSpecimenImporter terminated unexpectedly!", t);
@@ -60,14 +67,33 @@ public class BrahmsSpecimenImporter {
 		loaderQueueSize = Integer.parseInt(val);
 	}
 
+	public void importCsvFile(String path)
+	{
+		File file;
+		if (path.startsWith("/")) {
+			file = new File(path);
+		}
+		else {
+			file = FileUtil.newFile(getDataDir(), path);
+		}
+		if (!file.isFile()) {
+			throw new ETLRuntimeException("No such file: " + file.getAbsolutePath());
+		}
+		importCsvFiles(new File[] { file });
+	}
+
 	/**
 	 * Iterates over the CSV files in the brahms data directory and imports
 	 * them.
 	 */
 	public void importCsvFiles()
 	{
+		importCsvFiles(getCsvFiles());
+	}
+
+	public void importCsvFiles(File[] csvFiles)
+	{
 		long start = System.currentTimeMillis();
-		File[] csvFiles = getCsvFiles();
 		if (csvFiles.length == 0) {
 			logger.info("No CSV files to process");
 			return;

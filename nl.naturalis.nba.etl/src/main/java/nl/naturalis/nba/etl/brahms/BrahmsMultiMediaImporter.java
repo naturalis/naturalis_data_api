@@ -8,6 +8,7 @@ import static nl.naturalis.nba.etl.ETLConstants.SYSPROP_TRUNCATE;
 import static nl.naturalis.nba.etl.ETLUtil.getLogger;
 import static nl.naturalis.nba.etl.ETLUtil.logDuration;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getCsvFiles;
+import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getDataDir;
 
 import java.io.File;
 import java.nio.charset.Charset;
@@ -18,10 +19,12 @@ import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.CSVExtractor;
 import nl.naturalis.nba.etl.CSVRecordInfo;
+import nl.naturalis.nba.etl.ETLRuntimeException;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.ThemeCache;
 import nl.naturalis.nba.etl.normalize.SpecimenTypeStatusNormalizer;
 import nl.naturalis.nba.utils.ConfigObject;
+import nl.naturalis.nba.utils.FileUtil;
 import nl.naturalis.nba.utils.IOUtil;
 
 /**
@@ -36,7 +39,12 @@ public class BrahmsMultiMediaImporter {
 	{
 		try {
 			BrahmsMultiMediaImporter importer = new BrahmsMultiMediaImporter();
-			importer.importCsvFiles();
+			if (args.length == 0 || args[0].trim().length() == 0) {
+				importer.importCsvFiles();
+			}
+			else {
+				importer.importCsvFile(args[0]);
+			}
 		}
 		catch (Throwable t) {
 			logger.error("BrahmsMultiMediaImporter terminated unexpectedly!", t);
@@ -60,13 +68,36 @@ public class BrahmsMultiMediaImporter {
 		loaderQueueSize = Integer.parseInt(val);
 	}
 
+	public void importCsvFile(String path)
+	{
+		File file;
+		if (path.startsWith("/")) {
+			file = new File(path);
+		}
+		else {
+			file = FileUtil.newFile(getDataDir(), path);
+		}
+		if (!file.isFile()) {
+			throw new ETLRuntimeException("No such file: " + file.getAbsolutePath());
+		}
+		importCsvFiles(new File[] { file });
+	}
+
 	/**
-	 * Imports the Source files in the Brahms data directory.
+	 * Iterates over the CSV files in the brahms data directory and imports
+	 * them.
 	 */
 	public void importCsvFiles()
 	{
+		importCsvFiles(getCsvFiles());
+	}
+
+	/**
+	 * Imports the Source files in the Brahms data directory.
+	 */
+	public void importCsvFiles(File[] csvFiles)
+	{
 		long start = System.currentTimeMillis();
-		File[] csvFiles = getCsvFiles();
 		if (csvFiles.length == 0) {
 			logger.info("No CSV files to process");
 			return;

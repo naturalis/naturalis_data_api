@@ -8,7 +8,4 @@ elasticsearch.index.default.shards=1
 elasticsearch.index.default.replicas=0
 
 elasticsearch.index.0.name=nba_integration_test
-elasticsearch.index.0.types=Specimen,Taxon,MultiMediaObject
-elasticsearch.index.1.name=geo_areas_integration_test
-elasticsearch.index.1.types=GeoArea
-elasticsearch.index.1.shards=1
+elasticsearch.index.0.types=Specimen,Taxon,MultiMediaObject,GeoArea

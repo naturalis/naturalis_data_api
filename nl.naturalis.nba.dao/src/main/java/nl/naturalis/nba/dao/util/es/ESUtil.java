@@ -513,8 +513,9 @@ public class ESUtil {
 	public static <T extends IDocumentObject> void truncate(DocumentType<T> dt)
 	{
 		logger.info("Deleting all {} documents", dt.getName());
-		DocumentIterator<T> extractor = new DocumentIterator<>(dt);
-		extractor.setBatchSize(1000);
+		QuerySpec qs = new QuerySpec();
+		qs.setSize(1000);
+		DirtyDocumentIterator<T> extractor = new DirtyDocumentIterator<>(dt, qs);
 		String index = dt.getIndexInfo().getName();
 		String type = dt.getName();
 		Client client = ESClientManager.getInstance().getClient();
@@ -548,9 +549,9 @@ public class ESUtil {
 		logger.info("Deleting all {} {} documents", ss.getCode(), dt.getName());
 		QuerySpec qs = new QuerySpec();
 		qs.setConstantScore(true);
+		qs.setSize(1000);
 		qs.addCondition(new QueryCondition("sourceSystem.code", "=", ss.getCode()));
-		DocumentIterator<T> extractor = new DocumentIterator<>(dt, qs);
-		extractor.setBatchSize(1000);
+		DirtyDocumentIterator<T> extractor = new DirtyDocumentIterator<>(dt, qs);
 		String index = dt.getIndexInfo().getName();
 		String type = dt.getName();
 		Client client = ESClientManager.getInstance().getClient();

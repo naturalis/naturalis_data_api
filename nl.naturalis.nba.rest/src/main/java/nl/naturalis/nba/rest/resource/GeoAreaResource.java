@@ -70,7 +70,7 @@ public class GeoAreaResource {
 		try {
 			String[] idArray = StringUtil.split(ids, ",");
 			GeoAreaDao dao = new GeoAreaDao();
-			return dao.find(idArray);
+			return dao.findByIds(idArray);
 		}
 		catch (Throwable t) {
 			throw handleError(uriInfo, t);

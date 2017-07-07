@@ -209,7 +209,7 @@ public class TestNbaClientAssertions {
 	{
 
 		String[] ids = { "WAG.1706278@BRAHMS", "WAG.1706277@BRAHMS" };
-		Specimen[] result = specimenClient.find(ids);
+		Specimen[] result = specimenClient.findByIds(ids);
 		// System.out.println("Hash code: " + result.hashCode());
 		int expectedHashCode = 2106592975;
 		assertEquals(expectedHashCode, result.hashCode());

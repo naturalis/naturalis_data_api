@@ -82,7 +82,7 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
 	 *            The NBA system IDs of the requested data model objects
 	 * @return
 	 */
-	DOCUMENT_OBJECT[] find(String[] ids);
+	DOCUMENT_OBJECT[] findByIds(String[] ids);
 
 	/**
 	 * <p>

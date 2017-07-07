@@ -86,7 +86,7 @@ public class SpecimenDaoTest_Miscellaneous {
 		String id0 = pMajor.getUnitID() + "@" + pMajor.getSourceSystem().getCode();
 		String id1 = lFuscus1.getUnitID() + "@" + lFuscus1.getSourceSystem().getCode();
 		SpecimenDao dao = new SpecimenDao();
-		Specimen[] specimens = dao.find(new String[] { id0, id1 });
+		Specimen[] specimens = dao.findByIds(new String[] { id0, id1 });
 		assertEquals("01", 2, specimens.length);
 	}
 
@@ -101,7 +101,7 @@ public class SpecimenDaoTest_Miscellaneous {
 		String id3 = "BLA DI BLA";
 		String[] ids = new String[] { id1, id2, id3 };
 		SpecimenDao dao = new SpecimenDao();
-		Specimen[] specimens = dao.find(ids);
+		Specimen[] specimens = dao.findByIds(ids);
 		assertNotNull("01", specimens);
 		assertEquals("02", 2, specimens.length);
 	}

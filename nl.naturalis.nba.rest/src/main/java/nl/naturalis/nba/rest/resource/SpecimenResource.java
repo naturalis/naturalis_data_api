@@ -84,7 +84,7 @@ public class SpecimenResource {
 		try {
 			String[] idArray = StringUtil.split(ids, ",");
 			SpecimenDao dao = new SpecimenDao();
-			return dao.find(idArray);
+			return dao.findByIds(idArray);
 		}
 		catch (Throwable t) {
 			throw handleError(uriInfo, t);

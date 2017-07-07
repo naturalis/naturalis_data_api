@@ -84,7 +84,7 @@ public class TaxonResource {
 		try {
 			String[] idArray = StringUtil.split(ids, ",");
 			TaxonDao dao = new TaxonDao();
-			return dao.find(idArray);
+			return dao.findByIds(idArray);
 		}
 		catch (Throwable t) {
 			throw handleError(uriInfo, t);

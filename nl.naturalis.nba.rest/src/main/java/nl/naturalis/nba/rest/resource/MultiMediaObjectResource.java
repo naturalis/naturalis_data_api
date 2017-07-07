@@ -69,7 +69,7 @@ public class MultiMediaObjectResource {
 		try {
 			String[] idArray = StringUtil.split(ids, ",");
 			MultiMediaObjectDao dao = new MultiMediaObjectDao();
-			return dao.find(idArray);
+			return dao.findByIds(idArray);
 		}
 		catch (Throwable t) {
 			throw handleError(uriInfo, t);

@@ -81,7 +81,7 @@ abstract class NbaClient<T extends IDocumentObject> implements INbaAccess<T> {
 	}
 
 	@Override
-	public T[] find(String[] ids)
+	public T[] findByIds(String[] ids)
 	{
 		String imploded = ArrayUtil.implode(ids);
 		SimpleHttpGet request = getJson(rootPath + "findByIds/" + imploded);

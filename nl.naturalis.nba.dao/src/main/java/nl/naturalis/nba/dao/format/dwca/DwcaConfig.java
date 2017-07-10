@@ -189,7 +189,7 @@ public class DwcaConfig {
 			else {
 				dirtyScroller = new DirtyScroller(query, DocumentType.SPECIMEN);
 			}
-			dirtyScroller.setBatchSize(10000);
+			dirtyScroller.setBatchSize(1000);
 			scroller = dirtyScroller;
 		}
 		else {

@@ -22,7 +22,10 @@ import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.translate.QuerySpecTranslator;
 
 /**
- * Utility class for using Elasticsearch's scroll API. Note that when using this
+ * An implementation of {@link IScroller} that uses Elasticsearch's scroll API.
+ * Because the scroll API implements the equivalent of a database cursor, where
+ * selected data is not affected by subsequent updates, this implementation is
+ * akin to what in database land is called ACID. Note that when using the scroll
  * API, the {@code from} property of the {@link SearchRequest} is ignored (you
  * can only scroll through the entire result set; not jump in at some arbitrary
  * point) and the {@code size} property has a different meaning: it specifies
@@ -39,9 +42,9 @@ import nl.naturalis.nba.dao.translate.QuerySpecTranslator;
  * @author Ayco Holleman
  *
  */
-public class TransactionSafeScroller implements IScroller {
+public class AcidScroller implements IScroller {
 
-	private static final Logger logger = getLogger(TransactionSafeScroller.class);
+	private static final Logger logger = getLogger(AcidScroller.class);
 
 	private final SearchRequestBuilder request;
 
@@ -50,7 +53,7 @@ public class TransactionSafeScroller implements IScroller {
 	private int from = 0;
 	private int size = 0;
 
-	public TransactionSafeScroller(QuerySpec querySpec, DocumentType<?> documentType)
+	public AcidScroller(QuerySpec querySpec, DocumentType<?> documentType)
 			throws InvalidQueryException
 	{
 		if (querySpec.getFrom() != null) {

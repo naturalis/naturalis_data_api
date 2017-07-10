@@ -13,7 +13,7 @@ import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.format.IField;
-import nl.naturalis.nba.dao.util.es.TransactionSafeScroller;
+import nl.naturalis.nba.dao.util.es.AcidScroller;
 
 public class CsvWriter<T extends IDocumentObject> {
 
@@ -36,7 +36,7 @@ public class CsvWriter<T extends IDocumentObject> {
 		writer.printBOM();
 		writer.printHeader();
 		CsvWriterSearchHitHandler handler = new CsvWriterSearchHitHandler(writer);
-		TransactionSafeScroller scroller = new TransactionSafeScroller(querySpec, dt);
+		AcidScroller scroller = new AcidScroller(querySpec, dt);
 		try {
 			scroller.scroll(handler);
 		}

@@ -40,7 +40,7 @@ import nl.naturalis.nba.api.model.VernacularName;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.ESClientManager;
-import nl.naturalis.nba.dao.util.es.DocumentIterator;
+import nl.naturalis.nba.dao.util.es.AcidDocumentIterator;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.BulkIndexException;
 import nl.naturalis.nba.etl.BulkIndexer;
@@ -81,7 +81,7 @@ public class SpecimenTaxonomicEnricher {
 		logger.info("Starting taxonomic enrichment of Specimen documents");
 		QuerySpec qs = new QuerySpec();
 		qs.sortBy("identifications.scientificName.scientificNameGroup");
-		DocumentIterator<Specimen> extractor = new DocumentIterator<>(SPECIMEN, qs);
+		AcidDocumentIterator<Specimen> extractor = new AcidDocumentIterator<>(SPECIMEN, qs);
 		extractor.setBatchSize(readBatchSize);
 		extractor.setTimeout(scrollTimeout);
 		BulkIndexer<Specimen> indexer = new BulkIndexer<>(SPECIMEN);

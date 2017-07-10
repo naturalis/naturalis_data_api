@@ -35,10 +35,10 @@ import nl.naturalis.nba.dao.translate.QuerySpecTranslator;
  * @author Ayco Holleman
  *
  */
-public class DocumentIterator<T extends IDocumentObject> implements Iterator<T>, Iterable<T> {
+public class AcidDocumentIterator<T extends IDocumentObject> implements IDocumentIterator<T> {
 
 	@SuppressWarnings("unused")
-	private static final Logger logger = getLogger(DocumentIterator.class);
+	private static final Logger logger = getLogger(AcidDocumentIterator.class);
 
 	private static final int DEFAULT_TIMEOUT = 30000; // msec
 	private static final int DEFAULT_BATCH_SIZE = 100;
@@ -64,12 +64,12 @@ public class DocumentIterator<T extends IDocumentObject> implements Iterator<T>,
 	// Counts documents within a batch (gets reset for every new batch)
 	private int hitCounter;
 
-	public DocumentIterator(DocumentType<T> dt)
+	public AcidDocumentIterator(DocumentType<T> dt)
 	{
 		this(dt, null);
 	}
 
-	public DocumentIterator(DocumentType<T> dt, QuerySpec qs)
+	public AcidDocumentIterator(DocumentType<T> dt, QuerySpec qs)
 	{
 		this.client = ESClientManager.getInstance().getClient();
 		this.dt = dt;
@@ -87,9 +87,7 @@ public class DocumentIterator<T extends IDocumentObject> implements Iterator<T>,
 		return size;
 	}
 
-	/**
-	 * Returns the number of documents iterated over thus far.
-	 */
+	@Override
 	public long getDocCounter()
 	{
 		return docCounter;
@@ -116,6 +114,7 @@ public class DocumentIterator<T extends IDocumentObject> implements Iterator<T>,
 		return convert(hits[hitCounter++]);
 	}
 
+	@Override
 	public List<T> nextBatch()
 	{
 		checkReady();
@@ -143,6 +142,31 @@ public class DocumentIterator<T extends IDocumentObject> implements Iterator<T>,
 		T obj = om.convertValue(hit.getSource(), dt.getJavaType());
 		obj.setId(hit.getId());
 		return obj;
+	}
+
+	public TimeValue getTimeout()
+	{
+		return timeout;
+	}
+
+	public void setTimeout(TimeValue timeout)
+	{
+		this.timeout = timeout;
+	}
+
+	public void setTimeout(int milliseconds)
+	{
+		this.timeout = new TimeValue(milliseconds);
+	}
+
+	public int getBatchSize()
+	{
+		return batchSize;
+	}
+
+	public void setBatchSize(int batchSize)
+	{
+		this.batchSize = batchSize;
 	}
 
 	private void checkReady()
@@ -175,31 +199,6 @@ public class DocumentIterator<T extends IDocumentObject> implements Iterator<T>,
 			hits = response.getHits().hits();
 			ready = true;
 		}
-	}
-
-	public TimeValue getTimeout()
-	{
-		return timeout;
-	}
-
-	public void setTimeout(TimeValue timeout)
-	{
-		this.timeout = timeout;
-	}
-
-	public void setTimeout(int milliseconds)
-	{
-		this.timeout = new TimeValue(milliseconds);
-	}
-
-	public int getBatchSize()
-	{
-		return batchSize;
-	}
-
-	public void setBatchSize(int batchSize)
-	{
-		this.batchSize = batchSize;
 	}
 
 	private void scroll()

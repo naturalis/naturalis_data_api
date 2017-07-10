@@ -19,7 +19,7 @@ import nl.naturalis.nba.dao.format.Entity;
 import nl.naturalis.nba.dao.format.csv.CsvFieldFactory;
 import nl.naturalis.nba.dao.util.es.DirtyScroller;
 import nl.naturalis.nba.dao.util.es.IScroller;
-import nl.naturalis.nba.dao.util.es.TransactionSafeScroller;
+import nl.naturalis.nba.dao.util.es.AcidScroller;
 import nl.naturalis.nba.utils.ArrayUtil;
 import nl.naturalis.nba.utils.ConfigObject;
 import nl.naturalis.nba.utils.ConfigObject.MissingPropertyException;
@@ -190,12 +190,12 @@ public class DwcaConfig {
 			}
 			return new DirtyScroller(query, DocumentType.SPECIMEN);
 		}
-		TransactionSafeScroller scroller;
+		AcidScroller scroller;
 		if (dataSetType == DwcaDataSetType.TAXON) {
-			scroller = new TransactionSafeScroller(query, DocumentType.TAXON);
+			scroller = new AcidScroller(query, DocumentType.TAXON);
 		}
 		else {
-			scroller = new TransactionSafeScroller(query, DocumentType.SPECIMEN);
+			scroller = new AcidScroller(query, DocumentType.SPECIMEN);
 		}
 		scroller.setTimeout(30000);
 		return scroller;

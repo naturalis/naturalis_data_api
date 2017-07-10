@@ -40,7 +40,7 @@ import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.DaoRegistry;
 import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.TaxonDao;
-import nl.naturalis.nba.dao.util.es.DocumentIterator;
+import nl.naturalis.nba.dao.util.es.AcidDocumentIterator;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.BulkIndexException;
 import nl.naturalis.nba.etl.BulkIndexer;
@@ -94,7 +94,7 @@ public class SpecimenTaxonomicEnricher2 {
 	{
 		FileOutputStream fos = new FileOutputStream(tempFile);
 		BufferedOutputStream bos = new BufferedOutputStream(fos, 4096);
-		DocumentIterator<Specimen> extractor = new DocumentIterator<>(SPECIMEN);
+		AcidDocumentIterator<Specimen> extractor = new AcidDocumentIterator<>(SPECIMEN);
 		extractor.setBatchSize(readBatchSize);
 		extractor.setTimeout(scrollTimeout);
 		int batchNo = 0;

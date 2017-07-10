@@ -29,7 +29,6 @@ scripts=" \
 	enrich-specimens-mm \
 	enrich-specimens-te \
 	enrich-multimedia \
-	name-import \
 	"
 
 for script in $scripts

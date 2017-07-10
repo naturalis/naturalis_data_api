@@ -10,7 +10,7 @@ import org.apache.logging.log4j.Logger;
 import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.dao.ESClientManager;
-import nl.naturalis.nba.dao.util.es.DocumentIterator;
+import nl.naturalis.nba.dao.util.es.AcidDocumentIterator;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.BulkIndexException;
 import nl.naturalis.nba.etl.BulkIndexer;
@@ -77,7 +77,7 @@ public class CoLNullifier {
 	public void nullify() throws BulkIndexException
 	{
 		long start = System.currentTimeMillis();
-		DocumentIterator<Taxon> iterator = new DocumentIterator<>(TAXON);
+		AcidDocumentIterator<Taxon> iterator = new AcidDocumentIterator<>(TAXON);
 		iterator.setBatchSize(batchSize);
 		BulkIndexer<Taxon> indexer = new BulkIndexer<>(TAXON);
 		ArrayList<Taxon> batch = new ArrayList<>(batchSize);

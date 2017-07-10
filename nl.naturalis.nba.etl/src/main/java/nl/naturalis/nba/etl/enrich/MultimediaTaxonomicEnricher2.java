@@ -41,7 +41,7 @@ import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.DaoRegistry;
 import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.TaxonDao;
-import nl.naturalis.nba.dao.util.es.DocumentIterator;
+import nl.naturalis.nba.dao.util.es.AcidDocumentIterator;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.BulkIndexException;
 import nl.naturalis.nba.etl.BulkIndexer;
@@ -95,7 +95,7 @@ public class MultimediaTaxonomicEnricher2 {
 	{
 		FileOutputStream fos = new FileOutputStream(tempFile);
 		BufferedOutputStream bos = new BufferedOutputStream(fos, 4096);
-		DocumentIterator<MultiMediaObject> extractor = new DocumentIterator<>(MULTI_MEDIA_OBJECT);
+		AcidDocumentIterator<MultiMediaObject> extractor = new AcidDocumentIterator<>(MULTI_MEDIA_OBJECT);
 		extractor.setBatchSize(readBatchSize);
 		extractor.setTimeout(scrollTimeout);
 		int batchNo = 0;

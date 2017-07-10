@@ -1,7 +1,6 @@
 package nl.naturalis.nba.dao.util.es;
 
 import static nl.naturalis.nba.dao.util.es.ESUtil.executeSearchRequest;
-import static nl.naturalis.nba.dao.util.es.ESUtil.newSearchRequest;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -28,7 +27,7 @@ import nl.naturalis.nba.dao.translate.QuerySpecTranslator;
  * @author Ayco Holleman
  *
  */
-public class DirtyDocumentIterator<T extends IDocumentObject> implements Iterator<T>, Iterable<T> {
+public class DirtyDocumentIterator<T extends IDocumentObject> implements IDocumentIterator<T> {
 
 	private final DocumentType<T> dt;
 	private final QuerySpec qs;
@@ -38,7 +37,7 @@ public class DirtyDocumentIterator<T extends IDocumentObject> implements Iterato
 
 	// Whether or not we've already issued our initial query request
 	private boolean ready = false;
-	// Totsl number of documents to iterate over
+	// Total number of documents to iterate over
 	private long size;
 	// Counts documents across batches
 	private long docCounter;
@@ -49,7 +48,7 @@ public class DirtyDocumentIterator<T extends IDocumentObject> implements Iterato
 
 	public DirtyDocumentIterator(DocumentType<T> dt)
 	{
-		this(dt, null);
+		this(dt, new QuerySpec());
 	}
 
 	public DirtyDocumentIterator(DocumentType<T> dt, QuerySpec qs)
@@ -137,19 +136,14 @@ public class DirtyDocumentIterator<T extends IDocumentObject> implements Iterato
 
 	private void scroll()
 	{
+		qs.setFrom(null);
+		qs.setSortFields(null);
 		SearchRequestBuilder request;
-		if (qs == null) {
-			request = newSearchRequest(this.dt);
+		try {
+			request = new QuerySpecTranslator(qs, dt).translate();
 		}
-		else {
-			qs.setFrom(null);
-			qs.setSortFields(null);
-			try {
-				request = new QuerySpecTranslator(qs, dt).translate();
-			}
-			catch (InvalidQueryException e) {
-				throw new DaoException(e);
-			}
+		catch (InvalidQueryException e) {
+			throw new DaoException(e);
 		}
 		request.addSort("_uid", SortOrder.ASC);
 		if (lastUid != null) {

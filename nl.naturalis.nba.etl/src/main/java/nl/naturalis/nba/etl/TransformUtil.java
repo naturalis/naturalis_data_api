@@ -136,6 +136,9 @@ public class TransformUtil {
 			monomials.add(new Monomial(SPECIES, sn.getSpecificEpithet()));
 		if (sn.getInfraspecificEpithet() != null)
 			monomials.add(new Monomial(SUBSPECIES, sn.getInfraspecificEpithet()));
+		if (monomials.size() == 0) {
+			return null;
+		}
 		return monomials;
 	}
 

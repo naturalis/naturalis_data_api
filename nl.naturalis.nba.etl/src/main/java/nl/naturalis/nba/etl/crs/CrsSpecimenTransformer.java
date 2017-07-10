@@ -131,8 +131,9 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 
 		if (specimen.getIdentifications() == null) {
 			stats.recordsRejected++;
-			if (!suppressErrors)
+			if (!suppressErrors) {
 				error("Invalid or insufficient specimen identification information");
+			}
 			return null;
 		}
 
@@ -280,15 +281,21 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 	{
 		List<Monomial> lowerClassification = TransformUtil.getMonomialsInName(sn);
 		List<Element> elems = DOMUtil.getChildren(elem, "ncrsHighername");
-		if (elems == null)
+		if (elems == null) {
 			return lowerClassification;
-		List<Monomial> classification = new ArrayList<>(elems.size() + lowerClassification.size());
+		}
+		List<Monomial> classification = new ArrayList<>();
 		for (Element e : elems) {
 			String rank = DOMUtil.getValue(e, "abcd:HigherTaxonRank");
 			String name = DOMUtil.getValue(e, "abcd:taxonCoverage");
 			classification.add(new Monomial(rank, name));
 		}
-		classification.addAll(lowerClassification);
+		if (lowerClassification != null) {
+			classification.addAll(lowerClassification);
+		}
+		if (classification.size() == 0) {
+			return null;
+		}
 		return classification;
 	}
 

@@ -1,5 +1,7 @@
 package nl.naturalis.nba.dao.format.calc;
 
+import static nl.naturalis.nba.dao.format.FormatUtil.EMPTY_STRING;
+
 import java.util.Map;
 
 import nl.naturalis.nba.api.model.DefaultClassification;
@@ -25,6 +27,9 @@ public class HigherClassificationCalculator implements ICalculator {
 		Specimen specimen = cache.getSpecimen(entity);
 		SpecimenIdentification si = cache.getPreferredOrFirstIdentitifcation(entity);
 		DefaultClassification dc = si.getDefaultClassification();
+		if(si.getDefaultClassification() == null) {
+			return EMPTY_STRING;
+		}
 		StringBuilder sb = new StringBuilder(100);
 		if (specimen.getSourceSystem() == SourceSystem.CRS) {
 			append(sb, dc.getKingdom());

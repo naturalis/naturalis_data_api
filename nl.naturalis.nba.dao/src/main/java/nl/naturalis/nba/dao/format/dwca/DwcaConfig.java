@@ -171,33 +171,38 @@ public class DwcaConfig {
 		return dataSet.getEntity(dataSetType.name().toLowerCase());
 	}
 
-	/*
-	 * If we iterate over less than 10000 documents we will use a
-	 * TransactionSafeScroller (i.e. the Elasticsearch scroll API) because it
-	 * will honour the sort order specified in the QuerySpec. Otherwise we will
-	 * use the DirtyScroller (i.e. the "search after" technique) to avoid the
-	 * timeouts that you can easily get with the scroll API.
-	 */
 	IScroller createScroller(QuerySpec query) throws InvalidQueryException
 	{
 		/*
 		 * TODO: Maybe softcode the integer constants here in dwca.properties or
-		 * nba.properties
+		 * nba.properties. For small datasets we use the Elasticsearch scroll
+		 * API (through the AcidScroller) as it will honor the sortFields of the
+		 * QuerySpec. Otherwise we use the "search_after" technique (through the
+		 * DirtyScroller) to exclude the possibility of timeouts.
 		 */
+		IScroller scroller;
 		if (query.getSize() == null || query.getSize() > 10000) {
+			DirtyScroller dirtyScroller;
 			if (dataSetType == DwcaDataSetType.TAXON) {
-				return new DirtyScroller(query, DocumentType.TAXON);
+				dirtyScroller = new DirtyScroller(query, DocumentType.TAXON);
 			}
-			return new DirtyScroller(query, DocumentType.SPECIMEN);
-		}
-		AcidScroller scroller;
-		if (dataSetType == DwcaDataSetType.TAXON) {
-			scroller = new AcidScroller(query, DocumentType.TAXON);
+			else {
+				dirtyScroller = new DirtyScroller(query, DocumentType.SPECIMEN);
+			}
+			dirtyScroller.setBatchSize(10000);
+			scroller = dirtyScroller;
 		}
 		else {
-			scroller = new AcidScroller(query, DocumentType.SPECIMEN);
+			AcidScroller acidScroller;
+			if (dataSetType == DwcaDataSetType.TAXON) {
+				acidScroller = new AcidScroller(query, DocumentType.TAXON);
+			}
+			else {
+				acidScroller = new AcidScroller(query, DocumentType.SPECIMEN);
+			}
+			acidScroller.setTimeout(30000);
+			scroller = acidScroller;
 		}
-		scroller.setTimeout(30000);
 		return scroller;
 	}
 

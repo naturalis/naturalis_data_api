@@ -158,6 +158,9 @@ public class HttpGroupByScientificNameQuerySpecBuilder {
 						String msg = String.format(ERR_ILLEGAL_PARAM, param);
 						throw new HTTP400Exception(uriInfo, msg);
 					}
+					if (value.equals("@NULL@")) {
+						value = null;
+					}
 					qs.addCondition(new QueryCondition(param, operator, value));
 					break;
 			}

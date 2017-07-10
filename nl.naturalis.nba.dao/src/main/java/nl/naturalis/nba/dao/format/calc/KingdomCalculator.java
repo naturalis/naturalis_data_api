@@ -25,6 +25,9 @@ public class KingdomCalculator implements ICalculator {
 		SpecimenCalculatorCache cache = SpecimenCalculatorCache.instance;
 		Specimen specimen = cache.getSpecimen(entity);
 		SpecimenIdentification si = cache.getPreferredOrFirstIdentitifcation(entity);
+		if(si.getDefaultClassification() == null) {
+			return EMPTY_STRING;
+		}
 		String kingdom = si.getDefaultClassification().getKingdom();
 		if (specimen.getSourceSystem() == SourceSystem.BRAHMS) {
 			if (kingdom == null || !kingdom.toLowerCase().contains("fungi")) {

@@ -69,7 +69,7 @@ public class DirtyScroller implements IScroller {
 		}
 		QuerySpecTranslator qst = new QuerySpecTranslator(querySpec, documentType);
 		request = qst.translate();
-		request.addSort("_uid", SortOrder.ASC);
+		request.addSort("_uid", SortOrder.DESC);
 	}
 
 	@Override

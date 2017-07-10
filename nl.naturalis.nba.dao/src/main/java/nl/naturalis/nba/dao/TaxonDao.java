@@ -14,6 +14,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.search.SearchRequestBuilder;
@@ -116,6 +117,7 @@ public class TaxonDao extends NbaDao<Taxon> implements ITaxonAccess {
 		SearchResponse response = executeSearchRequest(request);
 		Terms terms = response.getAggregations().get("TERMS");
 		List<Bucket> buckets = terms.getBuckets();
+		buckets = filterBuckets(buckets, sngQuery.getGroupFilter());
 		result.setTotalSize(buckets.size());
 		int from = sngQuery.getFrom() == null ? 0 : sngQuery.getFrom();
 		int size = sngQuery.getSize() == null ? 10 : sngQuery.getSize();
@@ -127,20 +129,18 @@ public class TaxonDao extends NbaDao<Taxon> implements ITaxonAccess {
 		List<QueryResultItem<ScientificNameGroup>> resultSet = new ArrayList<>(size);
 		for (int i = from; i < to; i++) {
 			String name = buckets.get(i).getKeyAsString();
-			if (sngQuery.getGroupFilter() != null && sngQuery.getGroupFilter().contains(name)) {
-				ScientificNameGroup sng = new ScientificNameGroup(name);
-				resultSet.add(new QueryResultItem<ScientificNameGroup>(sng, 0));
-				if (!sngQuery.isNoTaxa()) {
-					extraCondition.setValue(name);
-					QueryResult<Taxon> taxa = query(sngQuery);
-					sng.setTaxonCount((int) taxa.getTotalSize());
-					for (QueryResultItem<Taxon> taxon : taxa) {
-						sng.addTaxon(taxon.getItem());
-					}
+			ScientificNameGroup sng = new ScientificNameGroup(name);
+			resultSet.add(new QueryResultItem<ScientificNameGroup>(sng, 0));
+			if (!sngQuery.isNoTaxa()) {
+				extraCondition.setValue(name);
+				QueryResult<Taxon> taxa = query(sngQuery);
+				sng.setTaxonCount((int) taxa.getTotalSize());
+				for (QueryResultItem<Taxon> taxon : taxa) {
+					sng.addTaxon(taxon.getItem());
 				}
-				if (sngQuery.getSpecimensSize() == null || sngQuery.getSpecimensSize() > 0) {
-					addSpecimens(sng, sngQuery);
-				}
+			}
+			if (sngQuery.getSpecimensSize() == null || sngQuery.getSpecimensSize() > 0) {
+				addSpecimens(sng, sngQuery);
 			}
 		}
 		result.setResultSet(resultSet);
@@ -163,6 +163,20 @@ public class TaxonDao extends NbaDao<Taxon> implements ITaxonAccess {
 			tab.order(Terms.Order.count(true));
 		}
 		return tab;
+	}
+
+	private static List<Bucket> filterBuckets(List<Bucket> buckets, Set<String> filter)
+	{
+		if (filter == null || filter.size() == 0) {
+			return buckets;
+		}
+		List<Bucket> filtered = new ArrayList<>(filter.size());
+		for (Bucket bucket : buckets) {
+			if (filter.contains(bucket.getKey())) {
+				filtered.add(bucket);
+			}
+		}
+		return filtered;
 	}
 
 	private static void addSpecimens(ScientificNameGroup sng,

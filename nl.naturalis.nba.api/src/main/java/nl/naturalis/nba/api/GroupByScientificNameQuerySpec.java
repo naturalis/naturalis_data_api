@@ -105,12 +105,16 @@ public class GroupByScientificNameQuerySpec extends QuerySpec {
 	}
 
 	/**
+	 * <p>
 	 * This method allows you to set an extra filter on the
 	 * {@link ScientificNameGroup} objects to be returned. Only
 	 * {@code ScientificNameGroup} objects whose name property corresponds to
 	 * one of the specified strings are returned. The filtering is done by the
-	 * NBA rather than by Elasticsearch and happens in the final stage of the
-	 * {code groupByScientificName} implementation.
+	 * NBA rather than by Elasticsearch and takes place just <i>after</i> the
+	 * aggregation yielding a set of unique scientific names (the group a.k.a.
+	 * buckets), but <i>before</i> the queries that retrieve the specimens and
+	 * taxa for the scientific names.
+	 * </p>
 	 * 
 	 * @param groupFilter
 	 */

@@ -204,6 +204,7 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 		Nested nested = response.getAggregations().get("NESTED");
 		Terms terms = nested.getAggregations().get("TERMS");
 		List<Bucket> buckets = terms.getBuckets();
+		buckets = filterBuckets(buckets, sngQuery.getGroupFilter());
 		result.setTotalSize(buckets.size());
 		/*
 		 * Now extract the from-th to size-th bucket and for each bucket
@@ -224,20 +225,18 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 		List<QueryResultItem<ScientificNameGroup>> resultSet = new ArrayList<>(size);
 		for (int i = from; i < to; i++) {
 			String name = buckets.get(i).getKeyAsString();
-			if (sngQuery.getGroupFilter() != null && sngQuery.getGroupFilter().contains(name)) {
-				ScientificNameGroup sng = new ScientificNameGroup(name);
-				resultSet.add(new QueryResultItem<ScientificNameGroup>(sng, 0));
-				if (sngQuery.getSpecimensSize() == null || sngQuery.getSpecimensSize() > 0) {
-					extraCondition.setValue(name);
-					QueryResult<Specimen> specimens = query(sngQuery);
-					sng.setSpecimenCount((int) specimens.getTotalSize());
-					for (QueryResultItem<Specimen> specimen : specimens) {
-						sng.addSpecimen(specimen.getItem());
-					}
+			ScientificNameGroup sng = new ScientificNameGroup(name);
+			resultSet.add(new QueryResultItem<ScientificNameGroup>(sng, 0));
+			if (sngQuery.getSpecimensSize() == null || sngQuery.getSpecimensSize() > 0) {
+				extraCondition.setValue(name);
+				QueryResult<Specimen> specimens = query(sngQuery);
+				sng.setSpecimenCount((int) specimens.getTotalSize());
+				for (QueryResultItem<Specimen> specimen : specimens) {
+					sng.addSpecimen(specimen.getItem());
 				}
-				if (!sngQuery.isNoTaxa()) {
-					addTaxaToGroup(sng);
-				}
+			}
+			if (!sngQuery.isNoTaxa()) {
+				addTaxaToGroup(sng);
 			}
 		}
 		result.setResultSet(resultSet);
@@ -262,6 +261,20 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 		NestedAggregationBuilder nab = nested("NESTED", "identifications");
 		nab.subAggregation(tab);
 		return nab;
+	}
+
+	private static List<Bucket> filterBuckets(List<Bucket> buckets, Set<String> filter)
+	{
+		if (filter == null || filter.size() == 0) {
+			return buckets;
+		}
+		List<Bucket> filtered = new ArrayList<>(filter.size());
+		for (Bucket bucket : buckets) {
+			if (filter.contains(bucket.getKey())) {
+				filtered.add(bucket);
+			}
+		}
+		return filtered;
 	}
 
 	private static void addTaxaToGroup(ScientificNameGroup sng) throws InvalidQueryException

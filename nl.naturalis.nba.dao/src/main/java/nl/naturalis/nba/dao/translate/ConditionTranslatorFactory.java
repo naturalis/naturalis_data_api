@@ -64,6 +64,9 @@ public class ConditionTranslatorFactory {
 		if (TranslatorUtil.isTrueCondition(condition)) {
 			return new TrueConditionTranslator(condition, mappingInfo);
 		}
+		if (TranslatorUtil.isFalseCondition(condition)) {
+			return new FalseConditionTranslator(condition, mappingInfo);
+		}
 		ConditionValidator validator = new ConditionValidator(condition, mappingInfo);
 		validator.validateCondition();
 		ConditionPreprocessor preprocessor = new ConditionPreprocessor(condition, mappingInfo);

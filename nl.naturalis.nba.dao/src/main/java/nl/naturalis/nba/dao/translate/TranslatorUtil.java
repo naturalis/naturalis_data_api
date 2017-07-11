@@ -12,15 +12,38 @@ class TranslatorUtil {
 
 	/**
 	 * Whether or not the specified condition must be interpreted as the ALWAYS
-	 * TRUE condition (akin to SQL's WHERE true).
+	 * TRUE condition (akin to SQL's WHERE 1 = 1).
 	 * 
 	 * @param condition
 	 * @return
 	 */
 	static boolean isTrueCondition(QueryCondition condition)
 	{
-		return condition.getField() == null && condition.getOperator() == null
-				&& condition.getValue() == null;
+		if (condition.getField() == null && condition.getOperator() == null) {
+			if (condition.getValue() == null || condition.getValue().getClass() != Boolean.class) {
+				return false;
+			}
+			return ((Boolean) condition.getValue()).equals(Boolean.TRUE);
+		}
+		return false;
+	}
+
+	/**
+	 * Whether or not the specified condition must be interpreted as the ALWAYS
+	 * FALSE condition (akin to SQL's WHERE 1 = 0).
+	 * 
+	 * @param condition
+	 * @return
+	 */
+	static boolean isFalseCondition(QueryCondition condition)
+	{
+		if (condition.getField() == null && condition.getOperator() == null) {
+			if (condition.getValue() == null || condition.getValue().getClass() != Boolean.class) {
+				return false;
+			}
+			return ((Boolean) condition.getValue()).equals(Boolean.FALSE);
+		}
+		return false;
 	}
 
 	static String getNestedPath(Path path, MappingInfo<?> mappingInfo)
@@ -99,6 +122,5 @@ class TranslatorUtil {
 			throw invalidDataType(condition);
 		}
 	}
-
 
 }

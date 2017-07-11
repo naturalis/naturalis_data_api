@@ -71,26 +71,31 @@ import java.util.List;
  * querySpec.addCondition(new Condition(NOT, "sourceSystem.code", EQUALS, "CRS"));
  * </pre>
  * 
- * <h3>The ALWAYS TRUE query condition</h3>
+ * <h3>The ALWAYS TRUE and ALWAYS FALSE query conditions</h3>
  * 
  * <p>
  * Analogous to SQL query conditions that always evaluate to true (like
- * {@code WHERE 1 = 1}), a {@code QueryCondition} whose field, operator and
- * value are all {@code null}, will be interpreted as an ALWAYS TRUE query
- * condition. In other words: the following condition always evaluates to true:
+ * {@code WHERE 1 = 1}), the following special query condition will always
+ * evaluate to true:
  * </p>
  * 
  * <pre>
  * 
- * QueryCondition TRUE = new QueryCondition();
+ * QueryCondition ALWAYS_TRUE = new QueryCondition(true);
  * </pre>
  * <p>
- * Note that you can still add AND siblings to this query condition. (You could
- * also add OR siblings, but it would be pointless because whatever OR sibling
- * you add, the condition as a whole will still evaluate to true.) Also note
- * that you can always write you {@link QuerySpec} without having to resort to
- * the ALWAYS TRUE condition, but it might be easier to conceive your query
- * with the ALWAYS TRUE condition at your disposal.
+ * Likewise, the following special query condition will always evaluate to false
+ * (like {@codeWHERE 1 = 0});
+ * </p>
+ * 
+ * <pre>
+ * 
+ * QueryCondition ALWAYS_FALSE = new QueryCondition(false);
+ * </pre>
+ * <p>
+ * Note that you can always write you {@link QuerySpec} without resorting to the
+ * ALWAYS TRUE or the ALWAYS FALSE condition, but it might sometimes be easier
+ * to conceive your query with these special query conditions at you disposal.
  * </p>
  * 
  * @author Ayco Holleman
@@ -112,6 +117,16 @@ public class QueryCondition {
 	 */
 	public QueryCondition()
 	{
+	}
+
+	/**
+	 * instantiating a {@code QueryCondition} this way will create either the
+	 * ALWAYS TRUE or the ALWAYS FALSE query condition, depending on the boolean
+	 * value passed to this constructor. See comments above.
+	 */
+	public QueryCondition(boolean b)
+	{
+		this.value = Boolean.valueOf(b);
 	}
 
 	/**

@@ -147,8 +147,18 @@ public class SpecimenClient extends NbaClient<Specimen> implements ISpecimenAcce
 	public QueryResult<ScientificNameGroup> groupByScientificName(
 			GroupByScientificNameQuerySpec querySpec) throws InvalidQueryException
 	{
-		// TODO Auto-generated method stub
-		return null;
+                String json = JsonUtil.toJson(querySpec);
+                SimpleHttpGet request = new SimpleHttpGet();
+                request.setBaseUrl(config.getBaseUrl());
+                request.setPath("specimen/groupByScientificName/");
+                request.addQueryParam("_querySpec", json);
+                
+                sendRequest(request);
+                int status = request.getStatus();
+                if (status != HTTP_OK) {
+                        throw newServerException(status, request.getResponseBody());
+                }
+                return getObject(request.getResponseBody(), new TypeReference<QueryResult<ScientificNameGroup>>() {});
 	}
 
 	@Override

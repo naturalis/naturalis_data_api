@@ -300,7 +300,7 @@ public enum ComparisonOperator
 	STARTS_WITH_IC,
 
 	/**
-	 * Operator used to establish that, ignoring case a field&#39;s value does
+	 * Operator used to establish that, ignoring case, a field&#39;s value does
 	 * not start with a given prefix
 	 */
 	NOT_STARTS_WITH_IC;

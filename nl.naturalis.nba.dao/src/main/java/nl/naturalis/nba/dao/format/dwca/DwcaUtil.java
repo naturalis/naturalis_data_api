@@ -46,7 +46,7 @@ public class DwcaUtil {
 	}
 
 	static void writeEmlXml(DwcaConfig dwcaConfig, ZipOutputStream zos)
-			throws DataSetConfigurationException, IOException
+			throws IOException
 	{
 		logger.info("Adding eml.xml ({})", dwcaConfig.getEmlFile());
 		zos.putNextEntry(new ZipEntry("eml.xml"));

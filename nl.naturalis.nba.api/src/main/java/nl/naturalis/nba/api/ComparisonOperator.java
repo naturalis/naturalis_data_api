@@ -301,7 +301,7 @@ public enum ComparisonOperator
 
 	/**
 	 * Operator used to establish that, ignoring case, a field&#39;s value does
-	 * not start with a given prefix
+	 * not start with a given prefix.
 	 */
 	NOT_STARTS_WITH_IC;
 

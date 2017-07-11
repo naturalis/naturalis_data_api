@@ -140,6 +140,16 @@ public class ConditionTranslatorFactory {
 			case NOT_MATCHES:
 				translator = new MatchesConditionTranslator(condition, mappingInfo);
 				break;
+			case STARTS_WITH:
+			case NOT_STARTS_WITH:
+				translator = new StartsWithConditionTranslator(condition, mappingInfo);
+				break;
+			case STARTS_WITH_IC:
+			case NOT_STARTS_WITH_IC:
+				translator = new StartsWithIgnoreCaseConditionTranslator(condition, mappingInfo);
+				break;
+			default:
+				break;
 		}
 		if (logger.isDebugEnabled()) {
 			String s = translator.getClass().getSimpleName();

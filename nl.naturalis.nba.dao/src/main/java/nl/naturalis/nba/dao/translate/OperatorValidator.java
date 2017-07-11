@@ -15,7 +15,7 @@ import static nl.naturalis.nba.api.ComparisonOperator.NOT_EQUALS;
 import static nl.naturalis.nba.api.ComparisonOperator.NOT_EQUALS_IC;
 import static nl.naturalis.nba.api.ComparisonOperator.NOT_IN;
 import static nl.naturalis.nba.api.ComparisonOperator.NOT_LIKE;
-import static nl.naturalis.nba.api.ComparisonOperator.NOT_MATCHES;
+import static nl.naturalis.nba.api.ComparisonOperator.*;
 import static nl.naturalis.nba.common.es.map.ESDataType.BOOLEAN;
 import static nl.naturalis.nba.common.es.map.ESDataType.BYTE;
 import static nl.naturalis.nba.common.es.map.ESDataType.DATE;
@@ -136,10 +136,12 @@ public class OperatorValidator {
 			return false;
 		}
 		if (field instanceof KeywordField) {
-			if (operator == EQUALS || operator == NOT_EQUALS) {
+			if (operator == EQUALS || operator == NOT_EQUALS || operator == IN || operator == NOT_IN
+					|| operator == STARTS_WITH || operator == NOT_STARTS_WITH) {
 				return true;
 			}
-			if (operator == EQUALS_IC || operator == NOT_EQUALS_IC) {
+			if (operator == EQUALS_IC || operator == NOT_EQUALS_IC || operator == STARTS_WITH_IC
+					|| operator == NOT_STARTS_WITH_IC) {
 				return ((KeywordField) field).hasMultiField(IGNORE_CASE_MULTIFIELD);
 			}
 			if (operator == LIKE || operator == NOT_LIKE) {
@@ -148,7 +150,6 @@ public class OperatorValidator {
 			if (operator == MATCHES || operator == NOT_MATCHES) {
 				return ((KeywordField) field).hasMultiField(DEFAULT_MULTIFIELD);
 			}
-			return operator == IN || operator == NOT_IN;
 		}
 		EnumSet<ComparisonOperator> ops = t2o.get(field.getType());
 		if (ops == null) {

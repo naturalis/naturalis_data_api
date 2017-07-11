@@ -279,7 +279,31 @@ public enum ComparisonOperator
 	 * Operator used to trigger a full-text search (negating its outcome). Can
 	 * only be used for text fields. See {@link #MATCHES}.
 	 */
-	NOT_MATCHES;
+	NOT_MATCHES,
+
+	/**
+	 * Operator used to establish that a field&#39;s value start with a given
+	 * prefix.
+	 */
+	STARTS_WITH,
+
+	/**
+	 * Operator used to establish that a field&#39;s value does not start with a
+	 * given prefix.
+	 */
+	NOT_STARTS_WITH,
+
+	/**
+	 * Operator used to establish that, ignoring case, a field&#39;s value start
+	 * with a given prefix.
+	 */
+	STARTS_WITH_IC,
+
+	/**
+	 * Operator used to establish that, ignoring case a field&#39;s value does
+	 * not start with a given prefix
+	 */
+	NOT_STARTS_WITH_IC;
 
 	/**
 	 * Returns the {@link ComparisonOperator} corresponding to the specified

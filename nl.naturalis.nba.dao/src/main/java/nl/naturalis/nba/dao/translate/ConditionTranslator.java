@@ -4,6 +4,8 @@ import static nl.naturalis.nba.api.ComparisonOperator.NOT_BETWEEN;
 import static nl.naturalis.nba.api.ComparisonOperator.NOT_IN;
 import static nl.naturalis.nba.api.ComparisonOperator.NOT_LIKE;
 import static nl.naturalis.nba.api.ComparisonOperator.NOT_MATCHES;
+import static nl.naturalis.nba.api.ComparisonOperator.NOT_STARTS_WITH;
+import static nl.naturalis.nba.api.ComparisonOperator.NOT_STARTS_WITH_IC;
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static nl.naturalis.nba.dao.translate.TranslatorUtil.getNestedPath;
 import static nl.naturalis.nba.dao.translate.TranslatorUtil.isTrueCondition;
@@ -51,7 +53,8 @@ public abstract class ConditionTranslator {
 	private static final EnumSet<ComparisonOperator> negatingOperators;
 
 	static {
-		negatingOperators = EnumSet.of(NOT_BETWEEN, NOT_LIKE, NOT_IN, NOT_MATCHES);
+		negatingOperators = EnumSet.of(NOT_BETWEEN, NOT_LIKE, NOT_IN, NOT_MATCHES, NOT_STARTS_WITH,
+				NOT_STARTS_WITH_IC);
 	}
 
 	QueryCondition condition;
@@ -103,7 +106,7 @@ public abstract class ConditionTranslator {
 		else if (hasElements(condition.getOr())) {
 			query = generateOrSiblings(query);
 		}
-		if(condition.isNegated()) {
+		if (condition.isNegated()) {
 			query = not(query);
 		}
 		query.boost(condition.getBoost());

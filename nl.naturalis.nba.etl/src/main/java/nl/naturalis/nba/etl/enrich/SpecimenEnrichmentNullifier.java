@@ -10,11 +10,13 @@ import java.util.Set;
 
 import org.apache.logging.log4j.Logger;
 
+import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.TaxonomicEnrichment;
 import nl.naturalis.nba.api.model.TaxonomicIdentification;
+import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.ESClientManager;
-import nl.naturalis.nba.dao.util.es.AcidDocumentIterator;
+import nl.naturalis.nba.dao.util.es.DirtyDocumentIterator;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.BulkIndexException;
 import nl.naturalis.nba.etl.BulkIndexer;
@@ -71,8 +73,10 @@ public class SpecimenEnrichmentNullifier {
 		long start = System.currentTimeMillis();
 		logger.info("Nullify taxonomic enrichments: " + nullifyTaxonomicEnrichments);
 		logger.info("Nullify multimedia URIs: " + nullifyMultiMediaUris);
-		AcidDocumentIterator<Specimen> iterator = new AcidDocumentIterator<>(SPECIMEN);
-		iterator.setBatchSize(batchSize);
+		DocumentType<Specimen> dt = DocumentType.SPECIMEN;
+		QuerySpec qs = new QuerySpec();
+		qs.setSize(batchSize);
+		DirtyDocumentIterator<Specimen> iterator = new DirtyDocumentIterator<>(dt, qs);
 		BulkIndexer<Specimen> indexer = new BulkIndexer<>(SPECIMEN);
 		ArrayList<Specimen> batch = new ArrayList<>(batchSize);
 		int processed = 0;

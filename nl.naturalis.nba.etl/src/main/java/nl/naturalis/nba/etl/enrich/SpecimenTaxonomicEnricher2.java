@@ -38,9 +38,10 @@ import nl.naturalis.nba.api.model.TaxonomicIdentification;
 import nl.naturalis.nba.api.model.VernacularName;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.DaoRegistry;
+import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.TaxonDao;
-import nl.naturalis.nba.dao.util.es.AcidDocumentIterator;
+import nl.naturalis.nba.dao.util.es.DirtyDocumentIterator;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.BulkIndexException;
 import nl.naturalis.nba.etl.BulkIndexer;
@@ -94,9 +95,10 @@ public class SpecimenTaxonomicEnricher2 {
 	{
 		FileOutputStream fos = new FileOutputStream(tempFile);
 		BufferedOutputStream bos = new BufferedOutputStream(fos, 4096);
-		AcidDocumentIterator<Specimen> extractor = new AcidDocumentIterator<>(SPECIMEN);
-		extractor.setBatchSize(readBatchSize);
-		extractor.setTimeout(scrollTimeout);
+		DocumentType<Specimen> dt = DocumentType.SPECIMEN;
+		QuerySpec qs = new QuerySpec();
+		qs.setSize(readBatchSize);
+		DirtyDocumentIterator<Specimen> extractor = new DirtyDocumentIterator<>(dt, qs);
 		int batchNo = 0;
 		int enriched = 0;
 		List<Specimen> batch = extractor.nextBatch();

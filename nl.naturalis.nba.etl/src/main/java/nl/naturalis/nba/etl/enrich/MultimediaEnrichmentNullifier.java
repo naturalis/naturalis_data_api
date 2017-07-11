@@ -7,11 +7,13 @@ import java.util.ArrayList;
 
 import org.apache.logging.log4j.Logger;
 
-import nl.naturalis.nba.api.model.MultiMediaObject;
+import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.MultiMediaContentIdentification;
+import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.api.model.TaxonomicEnrichment;
+import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.ESClientManager;
-import nl.naturalis.nba.dao.util.es.AcidDocumentIterator;
+import nl.naturalis.nba.dao.util.es.DirtyDocumentIterator;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.BulkIndexException;
 import nl.naturalis.nba.etl.BulkIndexer;
@@ -46,13 +48,15 @@ public class MultimediaEnrichmentNullifier {
 	{
 	}
 
-	private int batchSize = 500;
+	private int batchSize = 1000;
 
 	public void nullify() throws BulkIndexException
 	{
 		long start = System.currentTimeMillis();
-		AcidDocumentIterator<MultiMediaObject> iterator = new AcidDocumentIterator<>(MULTI_MEDIA_OBJECT);
-		iterator.setBatchSize(batchSize);
+		DocumentType<MultiMediaObject> dt = DocumentType.MULTI_MEDIA_OBJECT;
+		QuerySpec qs = new QuerySpec();
+		qs.setSize(batchSize);
+		DirtyDocumentIterator<MultiMediaObject> iterator = new DirtyDocumentIterator<>(dt, qs);
 		BulkIndexer<MultiMediaObject> indexer = new BulkIndexer<>(MULTI_MEDIA_OBJECT);
 		ArrayList<MultiMediaObject> batch = new ArrayList<>(batchSize);
 		int processed = 0;

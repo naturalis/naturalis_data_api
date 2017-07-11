@@ -32,6 +32,7 @@ import nl.naturalis.nba.api.model.ServiceAccessPoint;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.DaoRegistry;
+import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.MultiMediaObjectDao;
 import nl.naturalis.nba.dao.util.es.DirtyDocumentIterator;
@@ -87,11 +88,12 @@ public class SpecimenMultimediaEnricher {
 	{
 		FileOutputStream fos = new FileOutputStream(tempFile);
 		BufferedOutputStream bos = new BufferedOutputStream(fos, 4096);
-		QuerySpec query = new QuerySpec();
-		query.setSize(readBatchSize);
+		DocumentType<Specimen> dt = DocumentType.SPECIMEN;
 		QueryCondition condition = new QueryCondition("sourceSystem.code", "=", "CRS");
-		query.addCondition(condition);
-		DirtyDocumentIterator<Specimen> extractor = new DirtyDocumentIterator<>(SPECIMEN, query);
+		QuerySpec qs = new QuerySpec();
+		qs.addCondition(condition);
+		qs.setSize(readBatchSize);
+		DirtyDocumentIterator<Specimen> extractor = new DirtyDocumentIterator<>(dt, qs);
 		int batchNo = 0;
 		int enriched = 0;
 		List<Specimen> batch = extractor.nextBatch();

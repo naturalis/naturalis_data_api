@@ -39,9 +39,10 @@ import nl.naturalis.nba.api.model.TaxonomicIdentification;
 import nl.naturalis.nba.api.model.VernacularName;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.DaoRegistry;
+import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.TaxonDao;
-import nl.naturalis.nba.dao.util.es.AcidDocumentIterator;
+import nl.naturalis.nba.dao.util.es.DirtyDocumentIterator;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.BulkIndexException;
 import nl.naturalis.nba.etl.BulkIndexer;
@@ -95,9 +96,10 @@ public class MultimediaTaxonomicEnricher2 {
 	{
 		FileOutputStream fos = new FileOutputStream(tempFile);
 		BufferedOutputStream bos = new BufferedOutputStream(fos, 4096);
-		AcidDocumentIterator<MultiMediaObject> extractor = new AcidDocumentIterator<>(MULTI_MEDIA_OBJECT);
-		extractor.setBatchSize(readBatchSize);
-		extractor.setTimeout(scrollTimeout);
+		DocumentType<MultiMediaObject> dt = DocumentType.MULTI_MEDIA_OBJECT;
+		QuerySpec qs = new QuerySpec();
+		qs.setSize(readBatchSize);
+		DirtyDocumentIterator<MultiMediaObject> extractor = new DirtyDocumentIterator<>(dt, qs);
 		int batchNo = 0;
 		int enriched = 0;
 		List<MultiMediaObject> batch = extractor.nextBatch();
@@ -111,7 +113,8 @@ public class MultimediaTaxonomicEnricher2 {
 					bos.write(NEW_LINE);
 				}
 				if (++batchNo % 100 == 0) {
-					logger.info("MultiMediaObject documents processed: {}", (batchNo * readBatchSize));
+					logger.info("MultiMediaObject documents processed: {}",
+							(batchNo * readBatchSize));
 					logger.info("MultiMediaObject documents enriched: {}", enriched);
 				}
 				batch = extractor.nextBatch();

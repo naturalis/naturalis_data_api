@@ -154,7 +154,7 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 	public void dwcaGetDataSet(String name, OutputStream out) throws NoSuchDataSetException
 	{
 		if (logger.isDebugEnabled()) {
-			logger.debug(printCall("dwcaQuery", name, out));
+			logger.debug(printCall("dwcaGetDataSet", name, out));
 		}
 		try {
 			DwcaConfig config = new DwcaConfig(name, DwcaDataSetType.SPECIMEN);

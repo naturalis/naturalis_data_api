@@ -41,6 +41,11 @@ public class DebugUtil {
 		RUNTIME_EXCEPTION
 	}
 
+	public static String printCall(String methodName)
+	{
+		return methodName + "()";
+	}
+
 	public static String printCall(String methodName, Object arg0)
 	{
 		return printCall(methodName, new Object[] { arg0 });

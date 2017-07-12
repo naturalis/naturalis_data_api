@@ -134,7 +134,7 @@ public class DwcaConfig {
 		return dataSet;
 	}
 
-	File getEmlFile()
+	public File getEmlFile()
 	{
 		String emlFile = dataSetName + "/eml.xml";
 		return FileUtil.newFile(getHome(), emlFile);

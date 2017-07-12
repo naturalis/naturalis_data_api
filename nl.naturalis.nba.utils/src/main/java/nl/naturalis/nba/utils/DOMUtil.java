@@ -1,5 +1,6 @@
 package nl.naturalis.nba.utils;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,10 +34,20 @@ public class DOMUtil {
 	public static Element getDocumentElement(String xml, boolean namespaceAware, boolean validating)
 			throws SAXParseException
 	{
+		return getDocument(xml, namespaceAware, validating).getDocumentElement();
+	}
+
+	public static Document getDocument(String xml) throws SAXParseException
+	{
+		return getDocument(xml, false, false);
+	}
+
+	public static Document getDocument(String xml, boolean namespaceAware, boolean validating)
+			throws SAXParseException
+	{
 		DocumentBuilder docBuilder = getDocumentBuilder(namespaceAware, validating);
-		Document doc;
 		try {
-			doc = docBuilder.parse(StringUtil.toInputStream(xml, "UTF-8"));
+			return docBuilder.parse(StringUtil.toInputStream(xml, "UTF-8"));
 		}
 		catch (SAXParseException e) {
 			throw e;
@@ -44,7 +55,26 @@ public class DOMUtil {
 		catch (IOException | SAXException e) {
 			throw new RuntimeException(e);
 		}
-		return doc.getDocumentElement();
+	}
+
+	public static Document getDocument(File xml) throws SAXParseException
+	{
+		return getDocument(xml, false, false);
+	}
+
+	public static Document getDocument(File xml, boolean namespaceAware, boolean validating)
+			throws SAXParseException
+	{
+		DocumentBuilder docBuilder = getDocumentBuilder(namespaceAware, validating);
+		try {
+			return docBuilder.parse(xml);
+		}
+		catch (SAXParseException e) {
+			throw e;
+		}
+		catch (IOException | SAXException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	/**

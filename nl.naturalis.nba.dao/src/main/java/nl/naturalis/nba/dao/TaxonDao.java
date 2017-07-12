@@ -21,6 +21,7 @@ import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
+import org.xml.sax.SAXParseException;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 
 import nl.naturalis.nba.api.GroupByScientificNameQuerySpec;
@@ -42,6 +43,7 @@ import nl.naturalis.nba.dao.format.dwca.DwcaDataSetType;
 import nl.naturalis.nba.dao.format.dwca.DwcaUtil;
 import nl.naturalis.nba.dao.format.dwca.IDwcaWriter;
 import nl.naturalis.nba.dao.translate.QuerySpecTranslator;
+import nl.naturalis.nba.utils.xml.XmlFileUpdater;
 
 public class TaxonDao extends NbaDao<Taxon> implements ITaxonAccess {
 
@@ -71,6 +73,19 @@ public class TaxonDao extends NbaDao<Taxon> implements ITaxonAccess {
 	{
 		try {
 			DwcaConfig config = new DwcaConfig(name, DwcaDataSetType.TAXON);
+			////////////////////// BEGIN TEMPORARY CODE
+			// Remove when Jeroen Creuwels has corrected all EML files. By
+			// attempting to read the EML here already, rather than when we
+			// are already busy sending the DwCA file to the client, the
+			// client gets informed about what is wrong with the EML file.
+			XmlFileUpdater emlUpdater = new XmlFileUpdater(config.getEmlFile());
+			try {
+				emlUpdater.readFile();
+			}
+			catch (SAXParseException e) {
+				throw new DaoException("Error while parsing EML file: " + e.toString());
+			}
+			////////////////////// END TEMPORARY CODE
 			IDwcaWriter writer = config.getWriter(out);
 			writer.writeDwcaForDataSet();
 		}

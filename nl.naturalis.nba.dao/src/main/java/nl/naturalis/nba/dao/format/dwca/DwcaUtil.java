@@ -3,22 +3,25 @@ package nl.naturalis.nba.dao.format.dwca;
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URI;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.logging.log4j.Logger;
+import org.xml.sax.SAXParseException;
 
 import nl.naturalis.nba.dao.DaoRegistry;
+import nl.naturalis.nba.dao.exception.DaoException;
 import nl.naturalis.nba.dao.format.DataSetConfigurationException;
 import nl.naturalis.nba.dao.format.Entity;
 import nl.naturalis.nba.dao.format.IField;
 import nl.naturalis.nba.utils.FileUtil;
-import nl.naturalis.nba.utils.IOUtil;
+import nl.naturalis.nba.utils.xml.XmlFileUpdater;
 
 /**
  * Utility class for the DwCA creation process.
@@ -45,15 +48,20 @@ public class DwcaUtil {
 		return FileUtil.newFile(root, "dwca/" + dirName);
 	}
 
-	static void writeEmlXml(DwcaConfig dwcaConfig, ZipOutputStream zos)
-			throws DataSetConfigurationException, IOException
+	static void writeEmlXml(DwcaConfig dwcaConfig, ZipOutputStream zos) throws IOException
 	{
 		logger.info("Adding eml.xml ({})", dwcaConfig.getEmlFile());
 		zos.putNextEntry(new ZipEntry("eml.xml"));
-		FileInputStream fis = null;
-		fis = new FileInputStream(dwcaConfig.getEmlFile());
-		IOUtil.pipe(fis, zos, 2048);
-		fis.close();
+		XmlFileUpdater emlUpdater = new XmlFileUpdater(dwcaConfig.getEmlFile());
+		try {
+			emlUpdater.readFile();
+		}
+		catch (SAXParseException e) {
+			throw new DaoException("Error while parsing EML file", e);
+		}
+		String now = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+		emlUpdater.updateFirstElement("pubDate", now);
+		emlUpdater.save(zos);
 	}
 
 	static void writeMetaXml(DwcaConfig dwcaConfig, ZipOutputStream zos)

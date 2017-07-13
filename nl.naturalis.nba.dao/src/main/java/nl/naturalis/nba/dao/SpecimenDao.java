@@ -7,6 +7,7 @@ import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static nl.naturalis.nba.dao.DocumentType.SPECIMEN;
 import static nl.naturalis.nba.dao.util.es.ESUtil.executeSearchRequest;
 import static nl.naturalis.nba.dao.util.es.ESUtil.newSearchRequest;
+import static nl.naturalis.nba.utils.debug.DebugUtil.printCall;
 import static org.elasticsearch.index.query.QueryBuilders.constantScoreQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 import static org.elasticsearch.search.aggregations.AggregationBuilders.nested;
@@ -31,6 +32,7 @@ import org.elasticsearch.search.aggregations.bucket.nested.NestedAggregationBuil
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
+import org.xml.sax.SAXParseException;
 
 import nl.naturalis.nba.api.GroupByScientificNameQuerySpec;
 import nl.naturalis.nba.api.ISpecimenAccess;
@@ -52,6 +54,7 @@ import nl.naturalis.nba.dao.format.dwca.DwcaDataSetType;
 import nl.naturalis.nba.dao.format.dwca.DwcaUtil;
 import nl.naturalis.nba.dao.format.dwca.IDwcaWriter;
 import nl.naturalis.nba.dao.translate.QuerySpecTranslator;
+import nl.naturalis.nba.utils.xml.XmlFileUpdater;
 
 public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 
@@ -65,8 +68,9 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 	@Override
 	public boolean exists(String unitID)
 	{
-		if (logger.isDebugEnabled())
-			logger.debug("exists(\"{}\")", unitID);
+		if (logger.isDebugEnabled()) {
+			logger.debug(printCall("exists", unitID));
+		}
 		SearchRequestBuilder request = newSearchRequest(SPECIMEN);
 		TermQueryBuilder tqb = termQuery("unitID", unitID);
 		ConstantScoreQueryBuilder csq = constantScoreQuery(tqb);
@@ -79,8 +83,9 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 	@Override
 	public Specimen[] findByUnitID(String unitID)
 	{
-		if (logger.isDebugEnabled())
-			logger.debug("findByUnitID(\"{}\")", unitID);
+		if (logger.isDebugEnabled()) {
+			logger.debug(printCall("findByUnitID", unitID));
+		}
 		SearchRequestBuilder request = newSearchRequest(SPECIMEN);
 		TermQueryBuilder tqb = termQuery("unitID", unitID);
 		ConstantScoreQueryBuilder csq = constantScoreQuery(tqb);
@@ -93,6 +98,9 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 	@Override
 	public String[] getNamedCollections()
 	{
+		if (logger.isDebugEnabled()) {
+			logger.debug(printCall("getNamedCollections"));
+		}
 		if (namedCollections == null) {
 			try {
 				Set<String> themes = getDistinctValues("theme", null).keySet();
@@ -109,8 +117,9 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 	@Override
 	public String[] getIdsInCollection(String collectionName)
 	{
-		if (logger.isDebugEnabled())
-			logger.debug("getUnitIDsInCollection(\"{}\")", collectionName);
+		if (logger.isDebugEnabled()) {
+			logger.debug(printCall("getIdsInCollection", collectionName));
+		}
 		TermQueryBuilder tq = termQuery("theme", collectionName);
 		ConstantScoreQueryBuilder csq = constantScoreQuery(tq);
 		SearchRequestBuilder request = newSearchRequest(SPECIMEN);
@@ -128,6 +137,9 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 	@Override
 	public void dwcaQuery(QuerySpec querySpec, OutputStream out) throws InvalidQueryException
 	{
+		if (logger.isDebugEnabled()) {
+			logger.debug(printCall("dwcaQuery", querySpec, out));
+		}
 		try {
 			DwcaConfig config = DwcaConfig.getDynamicDwcaConfig(DwcaDataSetType.SPECIMEN);
 			IDwcaWriter writer = config.getWriter(out);
@@ -141,8 +153,24 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 	@Override
 	public void dwcaGetDataSet(String name, OutputStream out) throws NoSuchDataSetException
 	{
+		if (logger.isDebugEnabled()) {
+			logger.debug(printCall("dwcaGetDataSet", name, out));
+		}
 		try {
 			DwcaConfig config = new DwcaConfig(name, DwcaDataSetType.SPECIMEN);
+			////////////////////// BEGIN TEMPORARY CODE
+			// Remove when Jeroen Creuwels has corrected all EML files. By
+			// attempting to read the EML here already, rather than when we
+			// are already busy sending the DwCA file to the client, the
+			// client gets informed about what is wrong with the EML file.
+			XmlFileUpdater emlUpdater = new XmlFileUpdater(config.getEmlFile());
+			try {
+				emlUpdater.readFile();
+			}
+			catch (SAXParseException e) {
+				throw new DaoException("Error while parsing EML file: " + e.toString());
+			}
+			////////////////////// END TEMPORARY CODE
 			IDwcaWriter writer = config.getWriter(out);
 			writer.writeDwcaForDataSet();
 		}
@@ -154,6 +182,9 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 	@Override
 	public String[] dwcaGetDataSetNames()
 	{
+		if (logger.isDebugEnabled()) {
+			logger.debug(printCall("dwcaGetDataSetNames"));
+		}
 		File dir = DwcaUtil.getDwcaConfigurationDirectory(DwcaDataSetType.SPECIMEN);
 		File[] files = dir.listFiles(new FileFilter() {
 
@@ -182,6 +213,9 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 	public QueryResult<ScientificNameGroup> groupByScientificName(
 			GroupByScientificNameQuerySpec sngQuery) throws InvalidQueryException
 	{
+		if (logger.isDebugEnabled()) {
+			logger.debug(printCall("groupByScientificName", sngQuery));
+		}
 		QueryResult<ScientificNameGroup> result = new QueryResult<>();
 		/*
 		 * First, just get ALL groups a.k.a. buckets without anything else.

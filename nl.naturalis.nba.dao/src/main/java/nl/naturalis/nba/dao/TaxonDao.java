@@ -6,6 +6,7 @@ import static nl.naturalis.nba.api.GroupByScientificNameQuerySpec.GroupSort.NAME
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static nl.naturalis.nba.dao.DocumentType.TAXON;
 import static nl.naturalis.nba.dao.util.es.ESUtil.executeSearchRequest;
+import static nl.naturalis.nba.utils.debug.DebugUtil.printCall;
 import static org.elasticsearch.search.aggregations.AggregationBuilders.terms;
 
 import java.io.File;
@@ -22,6 +23,7 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
+import org.xml.sax.SAXParseException;
 
 import nl.naturalis.nba.api.GroupByScientificNameQuerySpec;
 import nl.naturalis.nba.api.ITaxonAccess;
@@ -42,10 +44,10 @@ import nl.naturalis.nba.dao.format.dwca.DwcaDataSetType;
 import nl.naturalis.nba.dao.format.dwca.DwcaUtil;
 import nl.naturalis.nba.dao.format.dwca.IDwcaWriter;
 import nl.naturalis.nba.dao.translate.QuerySpecTranslator;
+import nl.naturalis.nba.utils.xml.XmlFileUpdater;
 
 public class TaxonDao extends NbaDao<Taxon> implements ITaxonAccess {
 
-	@SuppressWarnings("unused")
 	private static final Logger logger = getLogger(TaxonDao.class);
 
 	public TaxonDao()
@@ -56,6 +58,9 @@ public class TaxonDao extends NbaDao<Taxon> implements ITaxonAccess {
 	@Override
 	public void dwcaQuery(QuerySpec querySpec, OutputStream out) throws InvalidQueryException
 	{
+		if (logger.isDebugEnabled()) {
+			logger.debug(printCall("dwcaQuery", querySpec, out));
+		}
 		try {
 			DwcaConfig config = DwcaConfig.getDynamicDwcaConfig(DwcaDataSetType.TAXON);
 			IDwcaWriter writer = config.getWriter(out);
@@ -69,8 +74,24 @@ public class TaxonDao extends NbaDao<Taxon> implements ITaxonAccess {
 	@Override
 	public void dwcaGetDataSet(String name, OutputStream out) throws NoSuchDataSetException
 	{
+		if (logger.isDebugEnabled()) {
+			logger.debug(printCall("dwcaGetDataSet", name, out));
+		}
 		try {
 			DwcaConfig config = new DwcaConfig(name, DwcaDataSetType.TAXON);
+			////////////////////// BEGIN TEMPORARY CODE
+			// Remove when Jeroen Creuwels has corrected all EML files. By
+			// attempting to read the EML here already, rather than when we
+			// are already busy sending the DwCA file to the client, the
+			// client gets informed about what is wrong with the EML file.
+			XmlFileUpdater emlUpdater = new XmlFileUpdater(config.getEmlFile());
+			try {
+				emlUpdater.readFile();
+			}
+			catch (SAXParseException e) {
+				throw new DaoException("Error while parsing EML file: " + e.toString());
+			}
+			////////////////////// END TEMPORARY CODE
 			IDwcaWriter writer = config.getWriter(out);
 			writer.writeDwcaForDataSet();
 		}
@@ -82,6 +103,9 @@ public class TaxonDao extends NbaDao<Taxon> implements ITaxonAccess {
 	@Override
 	public String[] dwcaGetDataSetNames()
 	{
+		if (logger.isDebugEnabled()) {
+			logger.debug(printCall("dwcaGetDataSetNames"));
+		}
 		File dir = DwcaUtil.getDwcaConfigurationDirectory(DwcaDataSetType.TAXON);
 		File[] files = dir.listFiles(new FileFilter() {
 
@@ -110,6 +134,9 @@ public class TaxonDao extends NbaDao<Taxon> implements ITaxonAccess {
 	public QueryResult<ScientificNameGroup> groupByScientificName(
 			GroupByScientificNameQuerySpec sngQuery) throws InvalidQueryException
 	{
+		if (logger.isDebugEnabled()) {
+			logger.debug(printCall("groupByScientificName", sngQuery));
+		}
 		QueryResult<ScientificNameGroup> result = new QueryResult<>();
 		QuerySpecTranslator translator = new QuerySpecTranslator(sngQuery, TAXON);
 		SearchRequestBuilder request = translator.translate();
@@ -122,6 +149,19 @@ public class TaxonDao extends NbaDao<Taxon> implements ITaxonAccess {
 		int from = sngQuery.getFrom() == null ? 0 : sngQuery.getFrom();
 		int size = sngQuery.getSize() == null ? 10 : sngQuery.getSize();
 		int to = Math.min(buckets.size(), from + size);
+		/*
+		 * Contrary to SpecimenDao.groupByScientificName you cannot page through
+		 * the taxa associated with a scientific name, because there can be no
+		 * more than 2 taxa per scientific name. So you just always get all taxa
+		 * associated with a name, unless sngQuery.noTaxa == true.
+		 */
+		sngQuery.setFrom(0);
+		/*
+		 * Unless strange things are going on we can have at most two taxa per
+		 * scientific name (NSR, COL). So setting size to 2 should be enough,
+		 * but just to capture those strange things:
+		 */
+		sngQuery.setSize(1000);
 		String field = "acceptedName.scientificNameGroup";
 		QueryCondition extraCondition = new QueryCondition(field, "=", null);
 		extraCondition.setConstantScore(true);

@@ -205,6 +205,7 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 			first.setCollectionType(val(oaiDcElem, "abcd:CollectionType"));
 			first.setSourceSystem(CRS);
 			first.setSourceInstitutionID(SOURCE_INSTITUTION_ID);
+			first.setOwner(SOURCE_INSTITUTION_ID);
 			first.setSourceID(CRS.getCode());
 			first.setLicense(LICENCE);
 			first.setLicenseType(LICENCE_TYPE);
@@ -230,6 +231,7 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 		next.setSexes(first.getSexes());
 		next.setCollectionType(first.getCollectionType());
 		next.setSourceSystem(first.getSourceSystem());
+		next.setOwner(first.getOwner());
 		next.setLicense(first.getLicense());
 		next.setLicenseType(first.getLicenseType());
 		next.setAssociatedSpecimenReference(first.getAssociatedSpecimenReference());

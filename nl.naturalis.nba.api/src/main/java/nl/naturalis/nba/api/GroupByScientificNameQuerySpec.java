@@ -1,7 +1,6 @@
 package nl.naturalis.nba.api;
 
 import java.util.List;
-import java.util.Set;
 
 import nl.naturalis.nba.api.model.ScientificNameGroup;
 
@@ -65,7 +64,7 @@ public class GroupByScientificNameQuerySpec extends QuerySpec {
 	}
 
 	private GroupSort groupSort;
-	private Set<String> groupFilter;
+	private Filter groupFilter;
 	private Integer specimensFrom;
 	private Integer specimensSize;
 	private List<SortField> specimensSortFields;
@@ -99,26 +98,29 @@ public class GroupByScientificNameQuerySpec extends QuerySpec {
 	 * 
 	 * @return
 	 */
-	public Set<String> getGroupFilter()
+	public Filter getGroupFilter()
 	{
 		return groupFilter;
 	}
 
 	/**
 	 * <p>
-	 * This method allows you to set an extra filter on the
-	 * {@link ScientificNameGroup} objects to be returned. Only
-	 * {@code ScientificNameGroup} objects whose name property corresponds to
-	 * one of the specified strings are returned. The filtering is done by the
-	 * NBA rather than by Elasticsearch and takes place just <i>after</i> the
-	 * aggregation yielding a set of unique scientific names (the group a.k.a.
-	 * buckets), but <i>before</i> the queries that retrieve the specimens and
-	 * taxa for the scientific names.
+	 * Sets an extra filter on the {@link ScientificNameGroup} objects to be
+	 * returned. For example to exclude all {@code ScientificNameGroup} objects
+	 * whose {@link ScientificNameGroup#getName() name} contains a question
+	 * mark, use the following filter:
+	 * </p>
+	 * <p>
+	 * 
+	 * <pre>
+	 * Filter filter = new Filter();
+	 * filter.rejectRegexp(".*\\?.*");
+	 * </pre>
 	 * </p>
 	 * 
 	 * @param groupFilter
 	 */
-	public void setGroupFilter(Set<String> groupFilter)
+	public void setGroupFilter(Filter groupFilter)
 	{
 		this.groupFilter = groupFilter;
 	}

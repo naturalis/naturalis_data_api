@@ -9,7 +9,6 @@ import static nl.naturalis.nba.utils.ConfigObject.isTrueValue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashSet;
 import java.util.List;
 
 import javax.ws.rs.core.MultivaluedMap;
@@ -19,6 +18,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.api.ComparisonOperator;
+import nl.naturalis.nba.api.Filter;
 import nl.naturalis.nba.api.GroupByScientificNameQuerySpec;
 import nl.naturalis.nba.api.GroupByScientificNameQuerySpec.GroupSort;
 import nl.naturalis.nba.api.LogicalOperator;
@@ -138,7 +138,14 @@ public class HttpGroupByScientificNameQuerySpecBuilder {
 				case PARAM_GROUP_FILTER:
 					if (value.length() != 0) {
 						String[] filters = value.split(",");
-						qs.setGroupFilter(new LinkedHashSet<>(Arrays.asList(filters)));
+						Filter filter = new Filter();
+						if (filters.length == 1) {
+							filter.acceptRegexp(filters[0]);
+						}
+						else {
+							filter.acceptValues(filters);
+						}
+						qs.setGroupFilter(filter);
 					}
 					break;
 				case PARAM_SPECIMENS_FROM:

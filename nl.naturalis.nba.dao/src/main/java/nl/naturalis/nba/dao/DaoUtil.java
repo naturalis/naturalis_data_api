@@ -6,8 +6,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.logging.log4j.Logger;
+import org.elasticsearch.search.aggregations.bucket.terms.support.IncludeExclude;
 import org.geojson.GeoJsonObject;
 
+import nl.naturalis.nba.api.Filter;
+import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QuerySpec;
 
@@ -116,6 +119,52 @@ public class DaoUtil {
 		return copies.toArray(new QueryCondition[copies.size()]);
 	}
 
+	static final String ERR_BAD_FILTER = "Accept filter and Reject filter must "
+			+ "have the same type and must either be a string or an array of strings";
+
+	static IncludeExclude translateFilter(Filter filter) throws InvalidQueryException
+	{
+		IncludeExclude ie = null;
+		Object accept = filter.getAccept();
+		Object reject = filter.getReject();
+		if (accept != null) {
+			if (accept instanceof String) {
+				if (reject == null) {
+					ie = new IncludeExclude((String) accept, null);
+				}
+				else if (!(reject instanceof String)) {
+					throw new InvalidQueryException(ERR_BAD_FILTER);
+				}
+				else {
+					ie = new IncludeExclude((String) accept, (String) reject);
+				}
+			}
+			else if (accept instanceof String[]) {
+				if (reject == null) {
+					ie = new IncludeExclude((String[]) accept, null);
+				}
+				else if (!(reject instanceof String[])) {
+					throw new InvalidQueryException(ERR_BAD_FILTER);
+				}
+				else {
+					ie = new IncludeExclude((String[]) accept, (String[]) reject);
+				}
+			}
+		}
+		else if (reject != null) {
+			if (reject instanceof String) {
+				ie = new IncludeExclude(null, (String) reject);
+			}
+			else if (reject instanceof String[]) {
+				ie = new IncludeExclude(null, (String[]) reject);
+			}
+			else {
+				throw new InvalidQueryException(reject.getClass().getName());
+			}
+		}
+		return ie;
+	}
+
 	private static void prune(QueryCondition condition, List<QueryCondition> siblings)
 	{
 		Object val = condition.getValue();
@@ -163,4 +212,5 @@ public class DaoUtil {
 		}
 		return copy;
 	}
+
 }

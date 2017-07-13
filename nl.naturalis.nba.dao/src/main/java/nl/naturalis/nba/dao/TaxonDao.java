@@ -15,7 +15,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.search.SearchRequestBuilder;
@@ -23,8 +22,10 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
+import org.elasticsearch.search.aggregations.bucket.terms.support.IncludeExclude;
 import org.xml.sax.SAXParseException;
 
+import nl.naturalis.nba.api.Filter;
 import nl.naturalis.nba.api.GroupByScientificNameQuerySpec;
 import nl.naturalis.nba.api.ITaxonAccess;
 import nl.naturalis.nba.api.InvalidQueryException;
@@ -144,7 +145,7 @@ public class TaxonDao extends NbaDao<Taxon> implements ITaxonAccess {
 		SearchResponse response = executeSearchRequest(request);
 		Terms terms = response.getAggregations().get("TERMS");
 		List<Bucket> buckets = terms.getBuckets();
-		buckets = filterBuckets(buckets, sngQuery.getGroupFilter());
+		//buckets = filterBuckets(buckets, sngQuery.getGroupFilter());
 		result.setTotalSize(buckets.size());
 		int from = sngQuery.getFrom() == null ? 0 : sngQuery.getFrom();
 		int size = sngQuery.getSize() == null ? 10 : sngQuery.getSize();
@@ -188,7 +189,7 @@ public class TaxonDao extends NbaDao<Taxon> implements ITaxonAccess {
 	}
 
 	private static TermsAggregationBuilder createAggregation(
-			GroupByScientificNameQuerySpec sngQuery)
+			GroupByScientificNameQuerySpec sngQuery) throws InvalidQueryException
 	{
 		TermsAggregationBuilder tab = terms("TERMS");
 		tab.field("acceptedName.scientificNameGroup");
@@ -202,21 +203,12 @@ public class TaxonDao extends NbaDao<Taxon> implements ITaxonAccess {
 		else if (sngQuery.getGroupSort() == COUNT_ASC) {
 			tab.order(Terms.Order.count(true));
 		}
+		Filter filter = sngQuery.getGroupFilter();
+		if (filter != null) {
+			IncludeExclude ie = DaoUtil.translateFilter(filter);
+			tab.includeExclude(ie);
+		}
 		return tab;
-	}
-
-	private static List<Bucket> filterBuckets(List<Bucket> buckets, Set<String> filter)
-	{
-		if (filter == null || filter.size() == 0) {
-			return buckets;
-		}
-		List<Bucket> filtered = new ArrayList<>(filter.size());
-		for (Bucket bucket : buckets) {
-			if (filter.contains(bucket.getKey())) {
-				filtered.add(bucket);
-			}
-		}
-		return filtered;
 	}
 
 	private static void addSpecimens(ScientificNameGroup sng,

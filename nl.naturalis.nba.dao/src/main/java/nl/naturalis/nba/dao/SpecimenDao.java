@@ -32,8 +32,10 @@ import org.elasticsearch.search.aggregations.bucket.nested.NestedAggregationBuil
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
+import org.elasticsearch.search.aggregations.bucket.terms.support.IncludeExclude;
 import org.xml.sax.SAXParseException;
 
+import nl.naturalis.nba.api.Filter;
 import nl.naturalis.nba.api.GroupByScientificNameQuerySpec;
 import nl.naturalis.nba.api.ISpecimenAccess;
 import nl.naturalis.nba.api.InvalidQueryException;
@@ -238,7 +240,6 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 		Nested nested = response.getAggregations().get("NESTED");
 		Terms terms = nested.getAggregations().get("TERMS");
 		List<Bucket> buckets = terms.getBuckets();
-		buckets = filterBuckets(buckets, sngQuery.getGroupFilter());
 		result.setTotalSize(buckets.size());
 		/*
 		 * Now extract the from-th to size-th bucket and for each bucket
@@ -278,7 +279,7 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 	}
 
 	private static NestedAggregationBuilder createAggregation(
-			GroupByScientificNameQuerySpec sngQuery)
+			GroupByScientificNameQuerySpec sngQuery) throws InvalidQueryException
 	{
 		TermsAggregationBuilder tab = terms("TERMS");
 		tab.field("identifications.scientificName.scientificNameGroup");
@@ -292,23 +293,14 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 		else if (sngQuery.getGroupSort() == COUNT_ASC) {
 			tab.order(Terms.Order.count(true));
 		}
+		Filter filter = sngQuery.getGroupFilter();
+		if (filter != null) {
+			IncludeExclude ie = DaoUtil.translateFilter(filter);
+			tab.includeExclude(ie);
+		}
 		NestedAggregationBuilder nab = nested("NESTED", "identifications");
 		nab.subAggregation(tab);
 		return nab;
-	}
-
-	private static List<Bucket> filterBuckets(List<Bucket> buckets, Set<String> filter)
-	{
-		if (filter == null || filter.size() == 0) {
-			return buckets;
-		}
-		List<Bucket> filtered = new ArrayList<>(filter.size());
-		for (Bucket bucket : buckets) {
-			if (filter.contains(bucket.getKey())) {
-				filtered.add(bucket);
-			}
-		}
-		return filtered;
 	}
 
 	private static void addTaxaToGroup(ScientificNameGroup sng) throws InvalidQueryException

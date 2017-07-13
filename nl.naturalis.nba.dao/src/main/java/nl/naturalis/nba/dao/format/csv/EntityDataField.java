@@ -28,7 +28,13 @@ class EntityDataField extends AbstractField {
 		if (value == MISSING_VALUE) {
 			return EMPTY_STRING;
 		}
-		return escapeCsv(value.toString());
+		
+		// HACK: if StringEscapeUtils.escapeCsv correctly implements CSV escaping,
+		// this should not be necessary. However, GBIF doesn't like it
+		String s = value.toString().replace('\n', ' ');
+		s = value.toString().replace('\r', ' ');
+		
+		return escapeCsv(s);
 	}
 
 }

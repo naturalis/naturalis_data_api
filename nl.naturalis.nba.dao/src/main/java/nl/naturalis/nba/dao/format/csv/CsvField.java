@@ -2,10 +2,9 @@ package nl.naturalis.nba.dao.format.csv;
 
 import static nl.naturalis.nba.common.json.JsonUtil.MISSING_VALUE;
 import static nl.naturalis.nba.common.json.JsonUtil.readField;
+import static org.apache.commons.lang3.StringEscapeUtils.escapeCsv;
 
 import java.net.URI;
-
-import org.apache.commons.lang3.StringEscapeUtils;
 
 import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.dao.format.EntityObject;
@@ -49,7 +48,7 @@ class CsvField implements IField {
 		String s = value.toString().replace('\n', ' ');
 		s = value.toString().replace('\r', ' ');
 		
-		return StringEscapeUtils.escapeCsv(s);
+		return escapeCsv(s);
 	}
 
 }

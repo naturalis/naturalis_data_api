@@ -22,8 +22,14 @@ class CalculatedField extends AbstractField {
 	@Override
 	public String getValue(EntityObject entity) throws FieldWriteException
 	{
-		Object val = calculator.calculateValue(entity);
-		return escapeCsv(val.toString());
+		Object value = calculator.calculateValue(entity);
+		
+		// HACK: if StringEscapeUtils.escapeCsv correctly implements CSV escaping,
+		// this should not be necessary. However, GBIF doesn't like it
+		String s = value.toString().replace('\n', ' ');
+		s = value.toString().replace('\r', ' ');
+		
+		return escapeCsv(s);
 	}
 
 }

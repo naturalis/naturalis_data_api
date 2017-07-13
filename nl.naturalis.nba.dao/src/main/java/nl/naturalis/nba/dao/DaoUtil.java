@@ -120,47 +120,22 @@ public class DaoUtil {
 	}
 
 	static final String ERR_BAD_FILTER = "Accept filter and Reject filter must "
-			+ "have the same type and must either be a string or an array of strings";
+			+ "have the same type (regular expression or string array)";
 
 	static IncludeExclude translateFilter(Filter filter) throws InvalidQueryException
 	{
 		IncludeExclude ie = null;
-		Object accept = filter.getAccept();
-		Object reject = filter.getReject();
-		if (accept != null) {
-			if (accept instanceof String) {
-				if (reject == null) {
-					ie = new IncludeExclude((String) accept, null);
-				}
-				else if (!(reject instanceof String)) {
-					throw new InvalidQueryException(ERR_BAD_FILTER);
-				}
-				else {
-					ie = new IncludeExclude((String) accept, (String) reject);
-				}
+		if (filter.getAcceptRegexp() != null || filter.getRejectRegexp() != null) {
+			if (filter.getAcceptValues() != null || filter.getRejectValues() != null) {
+				throw new InvalidQueryException(ERR_BAD_FILTER);
 			}
-			else if (accept instanceof String[]) {
-				if (reject == null) {
-					ie = new IncludeExclude((String[]) accept, null);
-				}
-				else if (!(reject instanceof String[])) {
-					throw new InvalidQueryException(ERR_BAD_FILTER);
-				}
-				else {
-					ie = new IncludeExclude((String[]) accept, (String[]) reject);
-				}
-			}
+			ie = new IncludeExclude(filter.getAcceptRegexp(), filter.getRejectRegexp());
 		}
-		else if (reject != null) {
-			if (reject instanceof String) {
-				ie = new IncludeExclude(null, (String) reject);
+		else if (filter.getAcceptValues() != null || filter.getRejectValues() != null) {
+			if (filter.getAcceptRegexp() != null || filter.getRejectRegexp() != null) {
+				throw new InvalidQueryException(ERR_BAD_FILTER);
 			}
-			else if (reject instanceof String[]) {
-				ie = new IncludeExclude(null, (String[]) reject);
-			}
-			else {
-				throw new InvalidQueryException(reject.getClass().getName());
-			}
+			ie = new IncludeExclude(filter.getAcceptValues(), filter.getRejectValues());
 		}
 		return ie;
 	}

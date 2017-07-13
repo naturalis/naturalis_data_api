@@ -106,7 +106,7 @@ public class GroupByScientificNameQuerySpec extends QuerySpec {
 	/**
 	 * <p>
 	 * Sets an extra filter on the {@link ScientificNameGroup} objects to be
-	 * returned. For example to exclude all {@code ScientificNameGroup} objects
+	 * returned. For example, to exclude all {@code ScientificNameGroup} objects
 	 * whose {@link ScientificNameGroup#getName() name} contains a question
 	 * mark, use the following filter:
 	 * </p>
@@ -115,6 +115,26 @@ public class GroupByScientificNameQuerySpec extends QuerySpec {
 	 * <pre>
 	 * Filter filter = new Filter();
 	 * filter.rejectRegexp(".*\\?.*");
+	 * </pre>
+	 * </p>
+	 * <p>
+	 * To only include taxa/specimens whose genus is "Larus":
+	 * </p>
+	 * <p>
+	 * 
+	 * <pre>
+	 * Filter filter = new Filter();
+	 * filter.acceptRegexp("larus.*");
+	 * </pre>
+	 * </p>
+	 * <p>
+	 * To only include "Larus fuscus" and "Larus fuscus fuscus":
+	 * </p>
+	 * <p>
+	 * 
+	 * <pre>
+	 * Filter filter = new Filter();
+	 * filter.acceptValues(new String[] { "larus fuscus", "larus fuscus fuscus" });
 	 * </pre>
 	 * </p>
 	 * 

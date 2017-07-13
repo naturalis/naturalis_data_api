@@ -9,86 +9,89 @@ package nl.naturalis.nba.api;
  */
 public class Filter {
 
-	private Object accept;
-	private Object reject;
+	private String acceptRegexp;
+	private String rejectRegexp;
+	private String[] acceptValues;
+	private String[] rejectValues;
 
 	/**
-	 * Accept the specified (literal) values.
+	 * Returns the (literal) values to be accepted.
+	 * 
+	 * @return
+	 */
+	public String[] getAcceptValues()
+	{
+		return acceptValues;
+	}
+
+	/**
+	 * Sets the (literal) values to be accepted.
 	 * 
 	 * @param values
 	 */
 	public void acceptValues(String[] values)
 	{
-		if (reject != null && reject.getClass() != values.getClass()) {
-			throwIllegalArgumentException();
-		}
-		this.accept = values;
+		this.acceptValues = values;
 	}
 
 	/**
-	 * Accept all values conforming to the specified regular expression.
+	 * Returns the (literal) values to be rejected.
 	 * 
-	 * @param regexp
+	 * @return
 	 */
-	public void acceptRegexp(String regexp)
+	public String[] getRejectValues()
 	{
-		if (reject != null && reject.getClass() != regexp.getClass()) {
-			throwIllegalArgumentException();
-		}
-		this.accept = regexp;
+		return rejectValues;
 	}
 
 	/**
-	 * Reject the specified (literal) values.
+	 * Sets the (literal) values to be rejected.
 	 * 
-	 * @param values
+	 * @return
 	 */
 	public void rejectValues(String[] values)
 	{
-		if (accept != null && accept.getClass() != values.getClass()) {
-			throwIllegalArgumentException();
-		}
-		this.reject = values;
+		this.rejectValues = values;
 	}
 
 	/**
-	 * Reject all values conforming to the specified regular expression.
+	 * Returns the regular expression that values should match.
 	 * 
-	 * @param regexp
+	 * @return
+	 */
+	public String getAcceptRegexp()
+	{
+		return acceptRegexp;
+	}
+
+	/**
+	 * Sets the regular expression that values should match.
+	 * 
+	 * @return
+	 */
+	public void acceptRegexp(String regexp)
+	{
+		this.acceptRegexp = regexp;
+	}
+
+	/**
+	 * Returns the regular expression that values should <i>not</i> match.
+	 * 
+	 * @return
+	 */
+	public String getRejectRegexp()
+	{
+		return rejectRegexp;
+	}
+
+	/**
+	 * Sets the regular expression that values should <i>not</i> match.
+	 * 
+	 * @return
 	 */
 	public void rejectRegexp(String regexp)
 	{
-		if (accept != null && accept.getClass() != regexp.getClass()) {
-			throwIllegalArgumentException();
-		}
-		this.reject = regexp;
-	}
-
-	/**
-	 * Returns the accepted values either a an array of literal values or as a
-	 * single regular expression string.
-	 * 
-	 * @return
-	 */
-	public Object getAccept()
-	{
-		return accept;
-	}
-
-	/**
-	 * Returns the rejected values either a an array of literal values or as a
-	 * single regular expression string.
-	 * 
-	 * @return
-	 */
-	public Object getReject()
-	{
-		return reject;
-	}
-
-	private static void throwIllegalArgumentException()
-	{
-		throw new IllegalArgumentException("Accept filter and Reject filter must have same type");
+		this.rejectRegexp = regexp;
 	}
 
 }

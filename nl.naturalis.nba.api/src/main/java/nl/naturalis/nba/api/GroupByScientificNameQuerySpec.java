@@ -114,7 +114,7 @@ public class GroupByScientificNameQuerySpec extends QuerySpec {
 	 * 
 	 * <pre>
 	 * Filter filter = new Filter();
-	 * filter.rejectRegexp(".*\\?.*");
+	 * filter.rejectRegexp(".*\\?.*";
 	 * </pre>
 	 * </p>
 	 * <p>

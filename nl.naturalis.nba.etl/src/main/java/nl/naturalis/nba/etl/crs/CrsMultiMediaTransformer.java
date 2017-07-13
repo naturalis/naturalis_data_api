@@ -48,6 +48,7 @@ import nl.naturalis.nba.etl.normalize.UnmappedValueException;
  * The transformer component for the CRS multimedia import.
  * 
  * @author Ayco Holleman
+ * @author Tom Gilissen
  *
  */
 class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> {

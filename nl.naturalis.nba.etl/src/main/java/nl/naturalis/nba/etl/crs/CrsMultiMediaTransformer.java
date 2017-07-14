@@ -331,6 +331,10 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 		return title;
 	}
 
+	/*
+	 * getQualifiers() should be redefined:
+	 * https://jira.naturalis.nl/browse/NBAVTWO-432
+	 */
 	private List<String> getQualifiers(Element e)
 	{
 		String s = val(e, "abcd:IdentificationQualifier1");

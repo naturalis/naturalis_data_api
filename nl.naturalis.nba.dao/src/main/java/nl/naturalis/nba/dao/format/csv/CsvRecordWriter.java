@@ -55,7 +55,16 @@ public class CsvRecordWriter {
 			if (i != 0) {
 				ps.print(',');
 			}
-			String val = escapeCsv(fields[i].getValue(entity));
+			String val = fields[i].getValue(entity);
+			// BEGIN HACK
+			/*
+			 * If Apache's commons-text correctly implements CSV escaping rules
+			 * this should not be necessary, but it seems like GBIF cannot
+			 * handle newlines in CSV records.
+			 */
+			// END HACK
+			val = val.replace("\n", "\\n");
+			val = escapeCsv(val);
 			ps.print(val);
 		}
 		ps.println();

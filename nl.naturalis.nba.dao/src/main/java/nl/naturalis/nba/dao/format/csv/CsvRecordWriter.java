@@ -63,7 +63,7 @@ public class CsvRecordWriter {
 			 * handle newlines in CSV records.
 			 */
 			// END HACK
-			val = val.replace("\n", "\\n");
+			//val = val.replace("\n", "\\n");
 			val = escapeCsv(val);
 			ps.print(val);
 		}

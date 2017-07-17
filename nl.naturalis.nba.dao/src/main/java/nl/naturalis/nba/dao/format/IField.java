@@ -10,15 +10,16 @@ import java.util.Map;
  * interface can be used to write CSV files, XML documents, DwC archives, etc.
  * Different formats have different string escaping rules, so for each format
  * there will be different implementations of {@code IField}. However, the main
- * purpose of this interface is to define where the field gets its value from
- * rather than how to format the value. The {@link #getValue(Map) getValue}
- * takes a Map&lt;String, Object&gt; instance as input. Implementations of
- * {@code IField} define how to extract a value from this document. Although the
- * use of a Map&lt;String, Object&gt; instance is strongly suggestive of
- * Elasticsearch (it is what you get when you call the Elasticsearch API's
- * {@code SearchHit.getSource} method), this type of object also happens to be
- * flexible enough to be used for complex source data, when a data set's data
- * does not (exclusively) from a single document type.
+ * purpose of this interface is to define where the field gets its value
+ * <b>from</b> rather than how to format the value. The {@link #getValue(Map)
+ * getValue} method takes a Map&lt;String, Object&gt; instance as input.
+ * Implementations of {@code IField} define how to extract a value from this
+ * map. Although the use of a Map&lt;String, Object&gt; instance is strongly
+ * suggestive of Elasticsearch (it is what you get when you call the
+ * Elasticsearch API {@code SearchHit.getSource}), this type of object
+ * also happens to be flexible enough to be used for complex source data, when a
+ * data set's data source does not map one-to-one to an Elasticsearch document
+ * type.
  * </p>
  * <p>
  * {@code IField} instances come in three flavors:<br>

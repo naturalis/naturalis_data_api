@@ -2,7 +2,6 @@ package nl.naturalis.nba.dao.format.csv;
 
 import static nl.naturalis.nba.common.json.JsonUtil.MISSING_VALUE;
 import static nl.naturalis.nba.common.json.JsonUtil.readField;
-import static org.apache.commons.lang3.StringEscapeUtils.escapeCsv;
 
 import java.net.URI;
 
@@ -42,13 +41,7 @@ class CsvField implements IField {
 		if (value == MISSING_VALUE) {
 			return FormatUtil.EMPTY_STRING;
 		}
-		
-		// HACK: if StringEscapeUtils.escapeCsv correctly implements CSV escaping,
-		// this should not be necessary. However, GBIF doesn't like it
-		String s = value.toString().replace('\n', ' ');
-		s = value.toString().replace('\r', ' ');
-		
-		return escapeCsv(s);
+		return value.toString();
 	}
 
 }

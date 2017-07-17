@@ -3,14 +3,22 @@ package nl.naturalis.nba.dao.format.csv;
 import static nl.naturalis.nba.common.json.JsonUtil.MISSING_VALUE;
 import static nl.naturalis.nba.common.json.JsonUtil.readField;
 import static nl.naturalis.nba.dao.format.FormatUtil.EMPTY_STRING;
-import static org.apache.commons.lang3.StringEscapeUtils.escapeCsv;
 
 import java.net.URI;
 
 import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.dao.format.AbstractField;
 import nl.naturalis.nba.dao.format.EntityObject;
+import nl.naturalis.nba.dao.format.IField;
 
+/**
+ * An implementation if {@link IField} that retrieves its value from the nested
+ * object that functions as the {@link EntityObject}. See also
+ * {@link DocumentDataField}.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 class EntityDataField extends AbstractField {
 
 	private Path path;
@@ -28,13 +36,7 @@ class EntityDataField extends AbstractField {
 		if (value == MISSING_VALUE) {
 			return EMPTY_STRING;
 		}
-		
-		// HACK: if StringEscapeUtils.escapeCsv correctly implements CSV escaping,
-		// this should not be necessary. However, GBIF doesn't like it
-		String s = value.toString().replace('\n', ' ');
-		s = value.toString().replace('\r', ' ');
-		
-		return escapeCsv(s);
+		return value.toString();
 	}
 
 }

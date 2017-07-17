@@ -1,5 +1,7 @@
 package nl.naturalis.nba.dao.format.csv;
 
+import static org.apache.commons.lang3.StringEscapeUtils.escapeCsv;
+
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.Map;
@@ -42,7 +44,7 @@ public class CsvRecordWriter {
 		for (int i = 0; i < fields.length; ++i) {
 			if (i != 0)
 				ps.print(',');
-			ps.print(fields[i].getName());
+			ps.print(escapeCsv(fields[i].getName()));
 		}
 		ps.println();
 	}
@@ -53,7 +55,8 @@ public class CsvRecordWriter {
 			if (i != 0) {
 				ps.print(',');
 			}
-			ps.print(fields[i].getValue(entity));
+			String val = escapeCsv(fields[i].getValue(entity));
+			ps.print(val);
 		}
 		ps.println();
 	}

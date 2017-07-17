@@ -1,7 +1,5 @@
 package nl.naturalis.nba.dao.format.csv;
 
-import static org.apache.commons.lang3.StringEscapeUtils.escapeCsv;
-
 import java.net.URI;
 
 import nl.naturalis.nba.dao.format.AbstractField;
@@ -14,7 +12,7 @@ class ConstantField extends AbstractField {
 	ConstantField(String name, URI term, String value)
 	{
 		super(name, term);
-		this.value = escapeCsv(value);
+		this.value = value;
 	}
 
 	@Override

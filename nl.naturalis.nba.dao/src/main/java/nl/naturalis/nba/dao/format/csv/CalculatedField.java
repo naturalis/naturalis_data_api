@@ -1,7 +1,5 @@
 package nl.naturalis.nba.dao.format.csv;
 
-import static org.apache.commons.lang3.StringEscapeUtils.escapeCsv;
-
 import java.net.URI;
 
 import nl.naturalis.nba.dao.format.AbstractField;
@@ -23,13 +21,7 @@ class CalculatedField extends AbstractField {
 	public String getValue(EntityObject entity) throws FieldWriteException
 	{
 		Object value = calculator.calculateValue(entity);
-		
-		// HACK: if StringEscapeUtils.escapeCsv correctly implements CSV escaping,
-		// this should not be necessary. However, GBIF doesn't like it
-		String s = value.toString().replace('\n', ' ');
-		s = value.toString().replace('\r', ' ');
-		
-		return escapeCsv(s);
+		return value.toString();
 	}
 
 }

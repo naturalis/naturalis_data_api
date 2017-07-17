@@ -4,7 +4,6 @@ import static nl.naturalis.nba.common.json.JsonUtil.MISSING_VALUE;
 import static nl.naturalis.nba.common.json.JsonUtil.readField;
 import static nl.naturalis.nba.dao.format.FormatUtil.EMPTY_STRING;
 import static nl.naturalis.nba.dao.format.FormatUtil.formatDate;
-import static org.apache.commons.lang3.StringEscapeUtils.escapeCsv;
 
 import java.net.URI;
 
@@ -29,7 +28,7 @@ class DocumentDateTimeField extends AbstractField {
 		if (value == MISSING_VALUE) {
 			return EMPTY_STRING;
 		}
-		return escapeCsv(formatDate(value.toString()));
+		return formatDate(value.toString());
 	}
 
 }

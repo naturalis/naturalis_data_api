@@ -310,6 +310,7 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 		ScientificName sn = new ScientificName();
 		sn.setFullScientificName(val(ncrsDeterminationElem, "dwc:scientificName"));
 		sn.setGenusOrMonomial(val(ncrsDeterminationElem, "abcd:GenusOrMonomial"));
+		sn.setSubgenus(val(ncrsDeterminationElem, "abcd:Subgenus"));
 		sn.setSpecificEpithet(val(ncrsDeterminationElem, "abcd:SpeciesEpithet"));
 		sn.setInfraspecificEpithet(val(ncrsDeterminationElem, "abcd:subspeciesepithet"));
 		sn.setNameAddendum(val(ncrsDeterminationElem, "abcd:NameAddendum"));
@@ -330,6 +331,10 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 		return title;
 	}
 
+	/*
+	 * getQualifiers() should be redefined:
+	 * https://jira.naturalis.nl/browse/NBAVTWO-432
+	 */
 	private List<String> getQualifiers(Element e)
 	{
 		String s = val(e, "abcd:IdentificationQualifier1");

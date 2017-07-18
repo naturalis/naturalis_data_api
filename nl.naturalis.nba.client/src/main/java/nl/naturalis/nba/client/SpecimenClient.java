@@ -114,7 +114,7 @@ public class SpecimenClient extends NbaClient<Specimen> implements ISpecimenAcce
 	{
 		SimpleHttpGet request = new SimpleHttpGet();
 		request.setBaseUrl(config.getBaseUrl());
-		request.setPath("specimen/dwca/dataset/" + name);
+		request.setPath("specimen/dwca/getDataSet/" + name);
 		sendRequest(request);
 		int status = request.getStatus();
 		if (status != HTTP_OK) {

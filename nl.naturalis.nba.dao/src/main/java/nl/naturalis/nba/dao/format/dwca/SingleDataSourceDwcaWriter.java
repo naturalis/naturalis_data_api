@@ -134,8 +134,8 @@ class SingleDataSourceDwcaWriter implements IDwcaWriter {
 		for (Entity e : cfg.getDataSet().getEntities()) {
 			/*
 			 * NB Multiple entities may get written to the same zip entry (e.g.
-			 * taxa and synonyms are both written to taxa.txt. Thus we must make
-			 * sure to create only unique zip entries.
+			 * taxa and synonyms are both written to taxa.txt). Thus we must
+			 * make sure to create only unique zip entries.
 			 */
 			fileName = cfg.getCsvFileName(e);
 			if (fileNames.contains(fileName)) {

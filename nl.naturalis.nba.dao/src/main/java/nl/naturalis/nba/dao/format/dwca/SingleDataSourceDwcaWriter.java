@@ -43,6 +43,10 @@ class SingleDataSourceDwcaWriter implements IDwcaWriter {
 		this.out = out;
 	}
 
+	/**
+	 * Writes a DwCA archive for a user-defined query (a&#46;k&#46;a "dynamic
+	 * DwCA").
+	 */
 	@Override
 	public void writeDwcaForQuery(QuerySpec querySpec)
 			throws InvalidQueryException, DataSetConfigurationException, DataSetWriteException
@@ -64,6 +68,10 @@ class SingleDataSourceDwcaWriter implements IDwcaWriter {
 		logger.info("DarwinCore archive generated (took {})", took);
 	}
 
+	/**
+	 * Writes a DwCA archive for a predefined dataset (the query to be executed
+	 * is in the XML configuration file for the dataset).
+	 */
 	@Override
 	public void writeDwcaForDataSet() throws DataSetConfigurationException, DataSetWriteException
 	{

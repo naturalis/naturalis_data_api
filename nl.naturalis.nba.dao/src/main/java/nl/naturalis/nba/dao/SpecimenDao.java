@@ -18,7 +18,9 @@ import java.io.FileFilter;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.logging.log4j.Logger;
@@ -270,11 +272,22 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 					sng.addSpecimen(specimen.getItem());
 				}
 			}
-			if (!sngQuery.isNoTaxa()) {
+			/*
+			 * If the client has requested (and gets) more than 1024 buckets, he
+			 * pays a stiff penalty, because in that case taxa are retrieved
+			 * separately for each bucket. Otherwise all taxa are retrieved at
+			 * once and then distributed over the groups. The latter method uses
+			 * a query condition with the IN operator, and you cannot have more
+			 * than 1024 values following the IN operator.
+			 */
+			if (!sngQuery.isNoTaxa() && buckets.size() > 1024) {
 				addTaxaToGroup(sng);
 			}
 		}
 		result.setResultSet(resultSet);
+		if (!sngQuery.isNoTaxa() && buckets.size() <= 1024) {
+			addTaxaToResult(result);
+		}
 		return result;
 	}
 
@@ -315,6 +328,37 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 		sng.setTaxonCount((int) taxa.getTotalSize());
 		for (QueryResultItem<Taxon> taxon : taxa) {
 			sng.addTaxon(taxon.getItem());
+		}
+	}
+
+	private static void addTaxaToResult(QueryResult<ScientificNameGroup> result)
+			throws InvalidQueryException
+	{
+		Map<String, ScientificNameGroup> groups = new HashMap<>(result.size() + 8, 1F);
+		for (QueryResultItem<ScientificNameGroup> item : result) {
+			groups.put(item.getItem().getName(), item.getItem());
+		}
+		QuerySpec query = new QuerySpec();
+		/*
+		 * Since we won't have more than 1024 groups, and since a group won't
+		 * have more than two taxa (one NSR taxon, one CoL taxon), this should
+		 * be enough:
+		 */
+		query.setSize(10000);
+		query.setConstantScore(true);
+		String field = "acceptedName.scientificNameGroup";
+		QueryCondition condition = new QueryCondition(field, "IN", groups.keySet());
+		query.addCondition(condition);
+		TaxonDao dao = new TaxonDao();
+		QueryResult<Taxon> taxa = dao.query(query);
+		if (taxa.getTotalSize() > 10000) {
+			throw new DaoException("Don't understand why we have more than 10000 taxa");
+		}
+		for (QueryResultItem<Taxon> taxon : taxa) {
+			String name = taxon.getItem().getAcceptedName().getScientificNameGroup();
+			ScientificNameGroup group = groups.get(name);
+			group.addTaxon(taxon.getItem());
+			group.setTaxonCount(group.getTaxa().size());
 		}
 	}
 

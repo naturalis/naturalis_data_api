@@ -8,6 +8,7 @@ import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -76,9 +77,23 @@ public class DwcaUtil {
 		core.setFiles(new Files(dwcaConfig.getCsvFileName(coreEntity)));
 		core.setRowType(dwcaConfig.getRowtype(coreEntity));
 		core.setFields(getMetaXmlFieldsForEntity(coreEntity));
+		/*
+		 * NB Multiple entities may get written to the same zip entry (e.g. taxa
+		 * and synonyms are both written to taxa.txt). We must generate only one
+		 * <extension> element per CSV file, NOT one <extension> element per
+		 * entity.
+		 */
+		HashSet<String> fileNames = new HashSet<>();
+		fileNames.add(dwcaConfig.getCsvFileName(coreEntity));
 		for (Entity entity : dwcaConfig.getDataSet().getEntities()) {
-			if (entity.getName().equals(coreEntity.getName()))
+			if (entity.getName().equals(coreEntity.getName())) {
 				continue;
+			}
+			String fileName = dwcaConfig.getCsvFileName(entity);
+			if (fileNames.contains(fileName)) {
+				continue;
+			}
+			fileNames.add(fileName);
 			Extension extension = new Extension();
 			extension.setFiles(new Files(dwcaConfig.getCsvFileName(entity)));
 			extension.setRowType(dwcaConfig.getRowtype(entity));

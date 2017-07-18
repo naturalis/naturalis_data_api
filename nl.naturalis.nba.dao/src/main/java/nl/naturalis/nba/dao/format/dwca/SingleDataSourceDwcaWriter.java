@@ -44,8 +44,8 @@ class SingleDataSourceDwcaWriter implements IDwcaWriter {
 	}
 
 	/**
-	 * Writes a DwCA archive for a user-defined query (a&#46;k&#46;a "dynamic
-	 * DwCA").
+	 * Writes a DwCA archive for a user-defined query (a&#46;k&#46;a&#46;
+	 * "dynamic DwCA").
 	 */
 	@Override
 	public void writeDwcaForQuery(QuerySpec querySpec)

@@ -62,8 +62,8 @@ public class CsvRecordWriter {
 			 * this should not be necessary, but it seems like GBIF cannot
 			 * handle newlines in CSV records.
 			 */
-			// END HACK
 			val = val.replace("\n", "\\n");
+			// END HACK
 			val = escapeCsv(val);
 			ps.print(val);
 		}

@@ -2,6 +2,7 @@ package nl.naturalis.nba.rest.util;
 
 import static nl.naturalis.nba.api.ComparisonOperator.EQUALS;
 import static nl.naturalis.nba.api.ComparisonOperator.EQUALS_IC;
+import static nl.naturalis.nba.api.ComparisonOperator.NOT_EQUALS;
 import static nl.naturalis.nba.api.SortOrder.ASC;
 import static nl.naturalis.nba.api.SortOrder.DESC;
 import static nl.naturalis.nba.common.json.JsonUtil.deserialize;
@@ -166,9 +167,14 @@ public class HttpGroupByScientificNameQuerySpecBuilder {
 						throw new HTTP400Exception(uriInfo, msg);
 					}
 					if (value.equals("@NULL@")) {
-						value = null;
+						qs.addCondition(new QueryCondition(param, EQUALS, null));
 					}
-					qs.addCondition(new QueryCondition(param, operator, value));
+					else if (value.equals("@NOT_NULL@")) {
+						qs.addCondition(new QueryCondition(param, NOT_EQUALS, null));
+					}
+					else {
+						qs.addCondition(new QueryCondition(param, operator, value));
+					}
 					break;
 			}
 		}

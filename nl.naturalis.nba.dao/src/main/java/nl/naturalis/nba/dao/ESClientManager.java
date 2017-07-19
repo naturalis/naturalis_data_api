@@ -1,6 +1,8 @@
 package nl.naturalis.nba.dao;
 
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
+import static nl.naturalis.nba.utils.ArrayUtil.box;
+import static nl.naturalis.nba.utils.ArrayUtil.implode;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -81,8 +83,8 @@ public class ESClientManager {
 
 	/**
 	 * Closes the Elasticsearch client. If you disconnect from Elasticsearch
-	 * this way, the next call to {@link #getClient()} is guaranteed to return
-	 * a new Elasticsearch {@link Client} instance.
+	 * this way, the next call to {@link #getClient()} is guaranteed to return a
+	 * new Elasticsearch {@link Client} instance.
 	 */
 	public void closeClient()
 	{
@@ -101,6 +103,7 @@ public class ESClientManager {
 	{
 		Builder builder = Settings.builder();
 		String cluster = config.required("elasticsearch.cluster.name");
+		logger.info("Cluster: {}", cluster);
 		builder.put("cluster.name", cluster);
 		builder.put("client.transport.ping_timeout", "20s");
 		Settings settings = builder.build();
@@ -110,6 +113,7 @@ public class ESClientManager {
 	private InetAddress[] getHosts()
 	{
 		String s = config.required("elasticsearch.transportaddress.host");
+		logger.info("Host(s): " + s);
 		String names[] = s.trim().split(",");
 		InetAddress[] addresses = new InetAddress[names.length];
 		for (int i = 0; i < names.length; ++i) {
@@ -129,6 +133,7 @@ public class ESClientManager {
 	{
 		int[] ports = new int[numHosts];
 		String s = config.get("elasticsearch.transportaddress.port");
+		logger.info("Port(s): " + s);
 		if (s == null) {
 			Arrays.fill(ports, 9300);
 			return ports;

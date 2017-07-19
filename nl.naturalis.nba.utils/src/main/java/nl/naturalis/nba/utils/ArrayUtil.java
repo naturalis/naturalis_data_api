@@ -22,6 +22,15 @@ public class ArrayUtil {
 	{
 	}
 
+	public static Integer[] box(int[] ints)
+	{
+		Integer[] result = new Integer[ints.length];
+		for (int i = 0; i < ints.length; ++i) {
+			result[i] = Integer.valueOf(ints[i]);
+		}
+		return result;
+	}
+
 	/**
 	 * Convert an {@code Enumeration} to an array.
 	 * 

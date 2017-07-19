@@ -1,25 +1,75 @@
+RELEASE NOTES v 2.7
+
+* NBAVTWO-159 There is a new quartet of operators:
+  STARTS_WITH, NOT_STARTS_WITH, STARTS_WITH_IC,
+  NOT_STARTS_WITH_IC
+  
+* NBAVTWO-242 Imporved date handling
+
+* NBAVTWO-282 DwCA taxon download: taxa and synonyms
+  now in one file (Taxa.txt)
+  
+* NBAVTWO-311 There now is a REST service displaying
+  all available REST services
+  
+* NBAVTWO-376 Solved issue with constantScore
+  conditions
+  
+* NBAVTWO-384 type status now also set for multimedia
+
+* NBAVTWO-401 DwCA download - solved issue with meta.xml 
+  generation
+  
+* NBAVTWO-403 DwcA specimen download: now with
+  multimedia links
+  
+* NBAVTWO-414 system classification no longer populated
+  for specimens and multimedia
+  
+* NBAVTWO-415 dwca/getDataSetNames - dataset names now
+  sorted alphabetically
+  
+* NBAVTWO-418 solved issue with groupByScientificName
+
+* NBAVTWO-419 solved issue with groupByScientificName
+
+* NBAVTWO-420 In queries specified throw separate
+  URL query parameters, you can not search for null using
+  special value @NULL@
+  
+* NBAVTWO-428 owner now set for multimedia
+
+* NBAVTWO-431 subgenus now set for mulimedia
+
+* NBAVTWO-434 subgenus now set for taxa
+
+* NBAVTWO-435 solved issue with meta.xml generation
+
+
+
 RELEASE NOTES v 2.6
 
-NBAVTWO-416 DwCA download service now more stable
+* NBAVTWO-416 DwCA download service now more stable
   and not at risk of timing out
+  
 
 RELEASE NOTES V 2.5
 
-NBAVTWO-375 constantScore setting on QueryCondition
+* NBAVTWO-375 constantScore setting on QueryCondition
   now passed on to Elasticsearch without exception
   
-NBAVTWO-377 boost now always set on outermost ES
+* NBAVTWO-377 boost now always set on outermost ES
   query
   
-NBAVTWO-381 You can now sort on the id field
+* NBAVTWO-381 You can now sort on the id field
 
-NBAVTWO-383 NbaDao.find(String[] ids) now sets size
+* NBAVTWO-383 NbaDao.find(String[] ids) now sets size
   the length of the ids array
   
-NBAVTWO-387 querySpecial service now significantly
+* NBAVTWO-387 querySpecial service now significantly
   faster b/c
   
-NBAVTWO-388 Fixed bug in extracting QuerySpec for
+* NBAVTWO-388 Fixed bug in extracting QuerySpec for
   Specimen from QuerySpec for ScientificNameGroup
   
 

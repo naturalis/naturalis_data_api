@@ -68,7 +68,7 @@ public class TaxonClient extends NbaClient<Taxon> implements ITaxonAccess {
 	{
 		SimpleHttpGet request = new SimpleHttpGet();
 		request.setBaseUrl(config.getBaseUrl());
-		request.setPath("taxon/dwca/dataset/" + name);
+		request.setPath("taxon/dwca/getDataSet/" + name);
 		sendRequest(request);
 		int status = request.getStatus();
 		if (status != HTTP_OK) {
@@ -119,8 +119,19 @@ public class TaxonClient extends NbaClient<Taxon> implements ITaxonAccess {
 	public QueryResult<ScientificNameGroup> groupByScientificName(
 			GroupByScientificNameQuerySpec querySpec) throws InvalidQueryException
 	{
-		// TODO Auto-generated method stub
-		return null;
+		String json = JsonUtil.toJson(querySpec);
+		SimpleHttpGet request = new SimpleHttpGet();
+		request.setBaseUrl(config.getBaseUrl());
+		request.setPath("taxon/groupByScientificName/");
+		request.addQueryParam("_querySpec", json);
+		sendRequest(request);
+		int status = request.getStatus();
+		if (status != HTTP_OK) {
+			throw newServerException(status, request.getResponseBody());
+		}
+		return getObject(request.getResponseBody(),
+				new TypeReference<QueryResult<ScientificNameGroup>>() {});
+		
 	}
 
 }

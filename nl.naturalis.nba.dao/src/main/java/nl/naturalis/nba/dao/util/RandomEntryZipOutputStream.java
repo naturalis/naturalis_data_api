@@ -194,9 +194,8 @@ public class RandomEntryZipOutputStream extends OutputStream {
 	 * Deletes all swap files created by the
 	 * {@code CompressedSwapFileOutputStream}s maintained by this instance. You
 	 * only need to call this method in case an error prevented you from calling
-	 * {@link #mergeEntries(). {@code mergeEntries} will also implicitly the
-	 * delete the swap files once it is done collecting data for the zip
-	 * entries.
+	 * {@link #mergeEntries(). {@code mergeEntries} will also implicitly delete
+	 * the swap files once it is done collecting data for the zip entries.
 	 * 
 	 * @throws IOException
 	 */

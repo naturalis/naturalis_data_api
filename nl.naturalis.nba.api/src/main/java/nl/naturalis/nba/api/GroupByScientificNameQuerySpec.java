@@ -26,9 +26,9 @@ public class GroupByScientificNameQuerySpec extends QuerySpec {
 	public static enum GroupSort
 	{
 		/**
-		 * Sorts the {@link ScientificNameGroup} objects in descending order its
-		 * the best-scoring specimen/taxon.
-		 */		
+		 * Sorts the {@link ScientificNameGroup} objects in descending order
+		 * their the best-scoring specimen/taxon. This is the default.
+		 */
 		TOP_HIT_SCORE,
 		/**
 		 * Sorts the {@link ScientificNameGroup} objects in descending order of

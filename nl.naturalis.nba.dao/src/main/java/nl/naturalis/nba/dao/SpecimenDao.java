@@ -1,6 +1,7 @@
 package nl.naturalis.nba.dao;
 
 import static nl.naturalis.nba.api.GroupByScientificNameQuerySpec.GroupSort.COUNT_ASC;
+import static nl.naturalis.nba.api.GroupByScientificNameQuerySpec.GroupSort.COUNT_DESC;
 import static nl.naturalis.nba.api.GroupByScientificNameQuerySpec.GroupSort.NAME_ASC;
 import static nl.naturalis.nba.api.GroupByScientificNameQuerySpec.GroupSort.NAME_DESC;
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
@@ -10,8 +11,10 @@ import static nl.naturalis.nba.dao.util.es.ESUtil.newSearchRequest;
 import static nl.naturalis.nba.utils.debug.DebugUtil.printCall;
 import static org.elasticsearch.index.query.QueryBuilders.constantScoreQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
+import static org.elasticsearch.search.aggregations.AggregationBuilders.max;
 import static org.elasticsearch.search.aggregations.AggregationBuilders.nested;
 import static org.elasticsearch.search.aggregations.AggregationBuilders.terms;
+import static org.elasticsearch.search.aggregations.AggregationBuilders.topHits;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -28,6 +31,7 @@ import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.ConstantScoreQueryBuilder;
 import org.elasticsearch.index.query.TermQueryBuilder;
+import org.elasticsearch.script.Script;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.bucket.nested.Nested;
 import org.elasticsearch.search.aggregations.bucket.nested.NestedAggregationBuilder;
@@ -35,6 +39,8 @@ import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 import org.elasticsearch.search.aggregations.bucket.terms.support.IncludeExclude;
+import org.elasticsearch.search.aggregations.metrics.max.MaxAggregationBuilder;
+import org.elasticsearch.search.aggregations.metrics.tophits.TopHitsAggregationBuilder;
 import org.xml.sax.SAXParseException;
 
 import nl.naturalis.nba.api.Filter;
@@ -296,15 +302,27 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 	{
 		TermsAggregationBuilder tab = terms("TERMS");
 		tab.field("identifications.scientificName.scientificNameGroup");
-		tab.size(10000000);
+		tab.size(10000);
 		if (sngQuery.getGroupSort() == NAME_ASC) {
 			tab.order(Terms.Order.term(true));
 		}
 		else if (sngQuery.getGroupSort() == NAME_DESC) {
 			tab.order(Terms.Order.term(false));
 		}
+		else if (sngQuery.getGroupSort() == COUNT_DESC) {
+			tab.order(Terms.Order.count(false));
+		}
 		else if (sngQuery.getGroupSort() == COUNT_ASC) {
 			tab.order(Terms.Order.count(true));
+		}
+		else {
+			TopHitsAggregationBuilder thab = topHits("TOP_HITS");
+			thab.size(1);
+			tab.subAggregation(thab);
+			MaxAggregationBuilder mab = max("MAX");
+			mab.script(new Script("_score"));
+			tab.subAggregation(mab);
+			tab.order(Terms.Order.aggregation("MAX", false));
 		}
 		Filter filter = sngQuery.getGroupFilter();
 		if (filter != null) {

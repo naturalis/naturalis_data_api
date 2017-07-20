@@ -1,10 +1,10 @@
 package nl.naturalis.nba.dao.format;
 
 /**
- * An {@code EntityConfiguration} specifies how to generate one particular file
- * in a data set. For example, DwC archives may contain multiple CSV files, each
- * containing a different type of data (e.g. taxa, literature references,
- * vernacular names, etc.). These files are referred to as entities.
+ * An {@code Entity} contains the configuration for how to generate one
+ * particular file in a data set. For example, DwC archives may contain multiple
+ * CSV files, each containing a different type of data (e.g. taxa, literature
+ * references, vernacular names, etc.). These files are referred to as entities.
  * 
  * @author Ayco Holleman
  *

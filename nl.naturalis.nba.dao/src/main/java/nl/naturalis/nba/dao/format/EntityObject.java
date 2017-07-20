@@ -10,13 +10,15 @@ import nl.naturalis.nba.dao.DocumentType;
 /**
  * An entity object is an Elasticsearch document or an object nested within it
  * that functions as the main data source for a record within a data set.
- * Suppose, for example, that you want to print out specimen collector
- * information, then the entity object would be the
+ * Suppose, for example, that you want to print out CSV records containing
+ * specimen collector information. Then the entity object would be the
  * {@link GatheringEvent#getGatheringPersons() gatheringPersons} object within
  * the {@link Specimen#getGatheringEvent() gatheringEvent} object within the
  * {@link DocumentType#SPECIMEN Specimen} document type. Since there may be
  * multiple collectors associated with a specimen, one specimen document may
- * yield multiple specimen collector records.
+ * yield multiple CSV records. An entity object maintains a reference to the
+ * parent document, because you might want to include data from it in your (CSV)
+ * record.
  * 
  * See also {@link Entity#toString()}.
  * 

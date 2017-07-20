@@ -36,6 +36,7 @@ import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.IndicesAdminClient;
+import org.elasticsearch.common.bytes.BytesReference;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.settings.Settings.Builder;
 import org.elasticsearch.index.IndexNotFoundException;
@@ -50,6 +51,7 @@ import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nba.common.es.map.MappingSerializer;
+import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.IndexInfo;
@@ -78,6 +80,21 @@ public class ESUtil {
 	public static Client esClient()
 	{
 		return ESClientManager.getInstance().getClient();
+	}
+
+	/**
+	 * Converts the specified {@link SearchHit} to a instance of T.
+	 * 
+	 * @param hit
+	 * @param dt
+	 * @return
+	 */
+	public static <T extends IDocumentObject> T toDocumentObject(SearchHit hit, DocumentType<T> dt)
+	{
+		byte[] json = BytesReference.toBytes(hit.sourceRef());
+		T obj = JsonUtil.deserialize(dt.getObjectMapper(), json, dt.getJavaType());
+		obj.setId(hit.getId());
+		return obj;
 	}
 
 	/**

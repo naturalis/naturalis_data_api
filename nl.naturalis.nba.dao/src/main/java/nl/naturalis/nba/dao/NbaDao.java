@@ -3,6 +3,7 @@ package nl.naturalis.nba.dao;
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static nl.naturalis.nba.dao.util.es.ESUtil.executeSearchRequest;
 import static nl.naturalis.nba.dao.util.es.ESUtil.newSearchRequest;
+import static nl.naturalis.nba.dao.util.es.ESUtil.toDocumentObject;
 import static nl.naturalis.nba.utils.debug.DebugUtil.printCall;
 import static org.elasticsearch.search.aggregations.AggregationBuilders.nested;
 import static org.elasticsearch.search.aggregations.AggregationBuilders.terms;
@@ -24,6 +25,7 @@ import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.IndicesAdminClient;
+import org.elasticsearch.common.bytes.BytesReference;
 import org.elasticsearch.index.query.IdsQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
@@ -32,8 +34,6 @@ import org.elasticsearch.search.aggregations.bucket.nested.NestedAggregationBuil
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import nl.naturalis.nba.api.INbaAccess;
 import nl.naturalis.nba.api.InvalidQueryException;
@@ -78,8 +78,10 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 			}
 			return null;
 		}
-		Map<String, Object> data = response.getSource();
-		return newDocumentObject(id, data);
+		byte[] json = BytesReference.toBytes(response.getSourceAsBytesRef());
+		T obj = JsonUtil.deserialize(dt.getObjectMapper(), json, dt.getJavaType());
+		obj.setId(id);
+		return obj;
 	}
 
 	@Override
@@ -236,9 +238,7 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 		SearchHit[] hits = response.getHits().getHits();
 		T[] documentObjects = createDocumentObjectArray(hits.length);
 		for (int i = 0; i < hits.length; ++i) {
-			String id = hits[i].getId();
-			Map<String, Object> data = hits[i].getSource();
-			documentObjects[i] = newDocumentObject(id, data);
+			documentObjects[i] = toDocumentObject(hits[i], dt);
 		}
 		return documentObjects;
 	}
@@ -247,24 +247,15 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 	{
 		if (logger.isDebugEnabled()) {
 			String type = dt.getJavaType().getSimpleName();
-			logger.debug("Converting documents to {} instances", type);
+			logger.debug("Converting search hits to {} instances", type);
 		}
 		SearchHit[] hits = response.getHits().getHits();
 		List<QueryResultItem<T>> items = new ArrayList<>(hits.length);
 		for (SearchHit hit : hits) {
-			T obj = dt.getObjectMapper().convertValue(hit.getSource(), dt.getJavaType());
-			obj.setId(hit.getId());
+			T obj = toDocumentObject(hit, dt);
 			items.add(new QueryResultItem<T>(obj, hit.getScore()));
 		}
 		return items;
-	}
-
-	private T newDocumentObject(String id, Map<String, Object> data)
-	{
-		ObjectMapper om = dt.getObjectMapper();
-		T obj = om.convertValue(data, dt.getJavaType());
-		obj.setId(id);
-		return obj;
 	}
 
 }

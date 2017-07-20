@@ -2,7 +2,6 @@ package nl.naturalis.nba.etl.enrich;
 
 import static nl.naturalis.nba.dao.DocumentType.SPECIMEN;
 import static nl.naturalis.nba.etl.ETLConstants.SYS_PROP_ENRICH_READ_BATCH_SIZE;
-import static nl.naturalis.nba.etl.ETLConstants.SYS_PROP_ENRICH_SCROLL_TIMEOUT;
 import static nl.naturalis.nba.etl.ETLConstants.SYS_PROP_ENRICH_WRITE_BATCH_SIZE;
 import static nl.naturalis.nba.etl.ETLUtil.getLogger;
 import static nl.naturalis.nba.etl.ETLUtil.logDuration;
@@ -75,7 +74,6 @@ public class SpecimenTaxonomicEnricher2 {
 
 	private int readBatchSize = 1000;
 	private int writeBatchSize = 1000;
-	private int scrollTimeout = 60000;
 
 	private File tempFile;
 
@@ -168,13 +166,6 @@ public class SpecimenTaxonomicEnricher2 {
 		catch (NumberFormatException e) {
 			throw new ETLRuntimeException("Invalid write batch size: " + prop);
 		}
-		prop = System.getProperty(SYS_PROP_ENRICH_SCROLL_TIMEOUT, "10000");
-		try {
-			setScrollTimeout(Integer.parseInt(prop));
-		}
-		catch (NumberFormatException e) {
-			throw new ETLRuntimeException("Invalid scroll timeout: " + prop);
-		}
 	}
 
 	public int getReadBatchSize()
@@ -184,6 +175,12 @@ public class SpecimenTaxonomicEnricher2 {
 
 	public void setReadBatchSize(int readBatchSize)
 	{
+		if (readBatchSize > 1024) {
+			throw new IllegalArgumentException("readBatchSize must be less than 1025");
+		}
+		if (readBatchSize < 1) {
+			throw new IllegalArgumentException("readBatchSize must be greater than 0");
+		}
 		this.readBatchSize = readBatchSize;
 	}
 
@@ -194,17 +191,10 @@ public class SpecimenTaxonomicEnricher2 {
 
 	public void setWriteBatchSize(int writeBatchSize)
 	{
+		if (writeBatchSize < 1) {
+			throw new IllegalArgumentException("writeBatchSize must be greater than 0");
+		}
 		this.writeBatchSize = writeBatchSize;
-	}
-
-	public int getScrollTimeout()
-	{
-		return scrollTimeout;
-	}
-
-	public void setScrollTimeout(int scrollTimeout)
-	{
-		this.scrollTimeout = scrollTimeout;
 	}
 
 	private static List<Specimen> enrichSpecimens(List<Specimen> specimens)
@@ -275,6 +265,9 @@ public class SpecimenTaxonomicEnricher2 {
 				continue;
 			}
 			TaxonomicEnrichment enrichment = new TaxonomicEnrichment();
+			enrichment.setSourceSystem(copySourceSystem(taxon.getSourceSystem()));
+			enrichment.setTaxonId(taxon.getId());
+			enrichments.add(enrichment);
 			if (taxon.getVernacularNames() != null) {
 				for (VernacularName vn : taxon.getVernacularNames()) {
 					enrichment.addVernacularName(copySummaryVernacularName(vn));
@@ -285,21 +278,32 @@ public class SpecimenTaxonomicEnricher2 {
 					enrichment.addSynonym(copyScientificName(sn));
 				}
 			}
-			enrichment.setSourceSystem(copySourceSystem(taxon.getSourceSystem()));
-			enrichment.setTaxonId(taxon.getId());
-			enrichments.add(enrichment);
 		}
 		return enrichments.isEmpty() ? NONE : enrichments;
 	}
 
 	private static HashMap<String, List<Taxon>> createLookupTable(List<Specimen> specimens)
 	{
-		HashSet<String> names = new HashSet<>(specimens.size());
-		for (Specimen specimen : specimens) {
-			for (TaxonomicIdentification si : specimen.getIdentifications()) {
-				names.add(si.getScientificName().getScientificNameGroup());
+		HashMap<String, List<Taxon>> table = new HashMap<>(specimens.size() * 3);
+		HashSet<String> names = new HashSet<>(1024);
+		for (int i = 0; i < specimens.size(); i++) {
+			Specimen specimen = specimens.get(i);
+			if (names.size() + specimen.getIdentifications().size() > 1024) {
+				QueryResult<Taxon> taxa = loadTaxa(names);
+				addToLookupTable(taxa, table);
+				names = new HashSet<>(1024);
+			}
+			else {
+				for (TaxonomicIdentification si : specimen.getIdentifications()) {
+					names.add(si.getScientificName().getScientificNameGroup());
+				}
 			}
 		}
+		return table;
+	}
+
+	private static QueryResult<Taxon> loadTaxa(HashSet<String> names)
+	{
 		String field = "acceptedName.scientificNameGroup";
 		QueryCondition condition = new QueryCondition(field, "IN", names);
 		QuerySpec query = new QuerySpec();
@@ -314,17 +318,22 @@ public class SpecimenTaxonomicEnricher2 {
 		catch (InvalidQueryException e) {
 			throw new ETLRuntimeException(e);
 		}
-		HashMap<String, List<Taxon>> table = new HashMap<>(result.size() + 8, 1F);
-		for (QueryResultItem<Taxon> item : result) {
+		return result;
+	}
+
+	private static void addToLookupTable(QueryResult<Taxon> taxa,
+			HashMap<String, List<Taxon>> table)
+	{
+		for (QueryResultItem<Taxon> item : taxa) {
 			Taxon taxon = item.getItem();
-			List<Taxon> taxa = table.get(taxon.getAcceptedName().getScientificNameGroup());
-			if (taxa == null) {
-				taxa = new ArrayList<>(2);
-				table.put(taxon.getAcceptedName().getScientificNameGroup(), taxa);
+			String sng = taxon.getAcceptedName().getScientificNameGroup();
+			List<Taxon> stored = table.get(sng);
+			if (stored == null) {
+				stored = new ArrayList<>(2);
+				table.put(sng, stored);
 			}
-			taxa.add(taxon);
+			stored.add(taxon);
 		}
-		return table;
 	}
 
 	private static File getTempFile() throws IOException

@@ -1,20 +1,20 @@
 package nl.naturalis.nba.dao.util.es;
 
 import static nl.naturalis.nba.dao.util.es.ESUtil.executeSearchRequest;
+import static nl.naturalis.nba.dao.util.es.ESUtil.toDocumentObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.sort.SortOrder;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.QuerySpec;
+import nl.naturalis.nba.api.SortField;
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.exception.DaoException;
@@ -29,12 +29,13 @@ import nl.naturalis.nba.dao.translate.QuerySpecTranslator;
  */
 public class DirtyDocumentIterator<T extends IDocumentObject> implements IDocumentIterator<T> {
 
+	private static final Integer DEFAULT_BATCH_SIZE = 1000;
+
 	private final DocumentType<T> dt;
 	private final QuerySpec qs;
 
 	// The "search after" value
 	private String lastUid;
-
 	// Whether or not we've already issued our initial query request
 	private boolean ready = false;
 	// Total number of documents to iterate over
@@ -42,17 +43,18 @@ public class DirtyDocumentIterator<T extends IDocumentObject> implements IDocume
 	// Counts documents across batches
 	private long docCounter;
 	// The batch
-	private SearchHit[] hits;
-	// Counts documents within a batch (gets reset for every new batch)
-	private int hitCounter;
+	private SearchHit[] batch;
+	// Index into the current batch of documents (gets reset for every new batch)
+	private int batchIndex;
 
 	public DirtyDocumentIterator(DocumentType<T> dt)
 	{
-		this(dt, new QuerySpec());
+		this(dt, defaultQuerySpec());
 	}
 
 	public DirtyDocumentIterator(DocumentType<T> dt, QuerySpec qs)
 	{
+		checkQuerySpec(qs);
 		this.dt = dt;
 		this.qs = qs;
 	}
@@ -80,13 +82,13 @@ public class DirtyDocumentIterator<T extends IDocumentObject> implements IDocume
 	public boolean hasNext()
 	{
 		checkReady();
-		if (hits.length == 0) {
+		if (batch.length == 0) {
 			return false;
 		}
-		if (hitCounter == hits.length) {
-			scroll();
+		if (batchIndex == batch.length) {
+			loadNextBatch();
 		}
-		return hits.length != 0;
+		return batch.length != 0;
 	}
 
 	@Override
@@ -94,22 +96,29 @@ public class DirtyDocumentIterator<T extends IDocumentObject> implements IDocume
 	{
 		checkReady();
 		docCounter++;
-		return convert(hits[hitCounter++]);
+		return toDocumentObject(batch[batchIndex++], dt);
 	}
 
+	/**
+	 * Returns the next batch of documents or {@code null} if there are no more
+	 * documents to read. The batch size is determined by the {@code size}
+	 * property of the {@link QuerySpec} object passed to the two-argument
+	 * constructor. If the single-argument constructor was used, the batch size
+	 * will be 1000.
+	 */
 	public List<T> nextBatch()
 	{
 		checkReady();
-		if (hits.length == 0) {
+		if (batch.length == 0) {
 			return null;
 		}
-		docCounter += hits.length;
-		List<T> batch = new ArrayList<>(hits.length);
-		for (int i = 0; i < hits.length; i++) {
-			batch.add(convert(hits[i]));
+		docCounter += batch.length;
+		List<T> docs = new ArrayList<>(batch.length);
+		for (int i = 0; i < batch.length; i++) {
+			docs.add(toDocumentObject(batch[i], dt));
 		}
-		scroll();
-		return batch;
+		loadNextBatch();
+		return docs;
 	}
 
 	@Override
@@ -118,26 +127,17 @@ public class DirtyDocumentIterator<T extends IDocumentObject> implements IDocume
 		return this;
 	}
 
-	private T convert(SearchHit hit)
-	{
-		ObjectMapper om = dt.getObjectMapper();
-		T obj = om.convertValue(hit.getSource(), dt.getJavaType());
-		obj.setId(hit.getId());
-		return obj;
-	}
-
 	private void checkReady()
 	{
 		if (!ready) {
-			scroll();
+			loadFirstBatch();
 			ready = true;
 		}
 	}
 
-	private void scroll()
+	private void loadFirstBatch()
 	{
-		qs.setFrom(null);
-		qs.setSortFields(null);
+		qs.setSortFields(Arrays.asList(new SortField("id")));
 		SearchRequestBuilder request;
 		try {
 			request = new QuerySpecTranslator(qs, dt).translate();
@@ -145,17 +145,53 @@ public class DirtyDocumentIterator<T extends IDocumentObject> implements IDocume
 		catch (InvalidQueryException e) {
 			throw new DaoException(e);
 		}
-		request.addSort("_uid", SortOrder.ASC);
-		if (lastUid != null) {
-			request.searchAfter(new String[] { lastUid });
-		}
 		SearchResponse response = executeSearchRequest(request);
-		hits = response.getHits().hits();
-		if (hits.length > 0) {
-			lastUid = dt.getName() + '#' + hits[hits.length - 1].getId();
+		batch = response.getHits().hits();
+		if (batch.length > 0) {
+			lastUid = dt.getName() + '#' + batch[batch.length - 1].getId();
 		}
-		hitCounter = 0;
 		size = response.getHits().getTotalHits();
+	}
+
+	private void loadNextBatch()
+	{
+		SearchRequestBuilder request;
+		try {
+			request = new QuerySpecTranslator(qs, dt).translate();
+		}
+		catch (InvalidQueryException e) {
+			throw new DaoException(e);
+		}
+		request.searchAfter(new String[] { lastUid });
+		SearchResponse response = executeSearchRequest(request);
+		batch = response.getHits().hits();
+		if (batch.length > 0) {
+			lastUid = dt.getName() + '#' + batch[batch.length - 1].getId();
+		}
+		batchIndex = 0;
+	}
+
+	private static void checkQuerySpec(QuerySpec qs)
+	{
+		if (qs.getFrom() != null || qs.getFrom() != 0) {
+			String msg = "QuerySpec's \"from\" property must be 0";
+			throw new IllegalArgumentException(msg);
+		}
+		if (qs.getSize() == null || qs.getSize() == 0) {
+			String msg = "QuerySpec's \"size\" property must not be 0";
+			throw new IllegalArgumentException(msg);
+		}
+		if (qs.getSortFields() != null) {
+			String msg = "QuerySpec's \"sortFields\" property must be null";
+			throw new IllegalArgumentException(msg);
+		}
+	}
+
+	private static QuerySpec defaultQuerySpec()
+	{
+		QuerySpec qs = new QuerySpec();
+		qs.setSize(DEFAULT_BATCH_SIZE);
+		return qs;
 	}
 
 }

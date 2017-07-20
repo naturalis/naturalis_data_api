@@ -173,7 +173,7 @@ public class DirtyDocumentIterator<T extends IDocumentObject> implements IDocume
 
 	private static void checkQuerySpec(QuerySpec qs)
 	{
-		if (qs.getFrom() != null || qs.getFrom() != 0) {
+		if (!(qs.getFrom() == null || qs.getFrom() == 0)) {
 			String msg = "QuerySpec's \"from\" property must be 0";
 			throw new IllegalArgumentException(msg);
 		}

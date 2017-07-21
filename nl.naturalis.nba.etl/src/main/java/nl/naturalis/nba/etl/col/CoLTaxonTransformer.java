@@ -188,6 +188,7 @@ class CoLTaxonTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, Taxon
 		ScientificName sn = new ScientificName();
 		sn.setFullScientificName(input.get(scientificName));
 		sn.setGenusOrMonomial(input.get(genericName));
+		sn.setSubgenus(input.get(subgenus));
 		sn.setSpecificEpithet(input.get(specificEpithet));
 		sn.setInfraspecificEpithet(input.get(infraspecificEpithet));
 		sn.setAuthorshipVerbatim(input.get(scientificNameAuthorship));

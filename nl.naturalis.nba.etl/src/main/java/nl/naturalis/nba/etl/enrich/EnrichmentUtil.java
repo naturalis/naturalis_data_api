@@ -1,5 +1,6 @@
 package nl.naturalis.nba.etl.enrich;
 
+import static nl.naturalis.nba.etl.ETLUtil.getLogger;
 import static nl.naturalis.nba.etl.SummaryObjectUtil.copyScientificName;
 import static nl.naturalis.nba.etl.SummaryObjectUtil.copySourceSystem;
 import static nl.naturalis.nba.etl.SummaryObjectUtil.copySummaryVernacularName;
@@ -11,6 +12,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.QueryCondition;
@@ -32,17 +35,27 @@ import nl.naturalis.nba.utils.FileUtil;
 
 class EnrichmentUtil {
 
+	private static final Logger logger = getLogger(EnrichmentUtil.class);
+
 	static final List<TaxonomicEnrichment> NOT_ENRICHABLE = new ArrayList<>(0);
 
 	static Map<String, List<Taxon>> extractTaxaFromSpecimens(List<Specimen> specimens)
 	{
 		String[] names = extractNamesFromSpecimens(specimens);
+		if (logger.isDebugEnabled()) {
+			String fmt = "{} unique scientific names extracted from {} specimens";
+			logger.debug(fmt, names.length, specimens.size());
+		}
 		return createTaxonLookupTable(names);
 	}
 
 	static Map<String, List<Taxon>> extractTaxaFromMultiMedia(List<MultiMediaObject> multimedia)
 	{
 		String[] names = extractNamesFromMultiMedia(multimedia);
+		if (logger.isDebugEnabled()) {
+			String fmt = "{} unique scientific names extracted from {} multimedia";
+			logger.debug(fmt, names.length, multimedia.size());
+		}
 		return createTaxonLookupTable(names);
 	}
 
@@ -90,14 +103,15 @@ class EnrichmentUtil {
 	private static HashMap<String, List<Taxon>> createTaxonLookupTable(String[] names)
 	{
 		HashMap<String, List<Taxon>> table = new HashMap<>(names.length);
-		int from = 0;
-		while (from < names.length) {
+		for (int from = 0; from < names.length; from += 1024) {
 			int len = Math.min(1024, names.length - from);
 			String[] chunk = new String[len];
 			System.arraycopy(names, from, chunk, 0, len);
+			if (logger.isDebugEnabled()) {
+				logger.debug("Loading {} taxa for insertion into lookup table");
+			}
 			QueryResult<Taxon> taxa = loadTaxa(names);
 			addTaxaToLookupTable(taxa, table);
-			from += 1024;
 		}
 		return table;
 	}

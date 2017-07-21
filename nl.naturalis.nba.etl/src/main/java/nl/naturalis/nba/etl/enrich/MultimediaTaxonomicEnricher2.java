@@ -181,18 +181,12 @@ public class MultimediaTaxonomicEnricher2 {
 
 	private static List<MultiMediaObject> enrichMultimedia(List<MultiMediaObject> mmos)
 	{
-		if (logger.isDebugEnabled()) {
-			logger.debug("Creating taxon lookup table");
-		}
 		Map<String, List<Taxon>> taxonLookupTable = extractTaxaFromMultiMedia(mmos);
 		if (taxonLookupTable.isEmpty()) {
 			if (logger.isDebugEnabled()) {
-				logger.debug("No taxa found for current batch of specimens");
+				logger.debug("No taxa found for current batch of multimedia");
 			}
 			return Collections.emptyList();
-		}
-		if (logger.isDebugEnabled()) {
-			logger.debug("Lookup table created ({} entries)", taxonLookupTable.size());
 		}
 		Map<String, List<TaxonomicEnrichment>> cache = new HashMap<>(mmos.size());
 		List<MultiMediaObject> result = new ArrayList<>(mmos.size());

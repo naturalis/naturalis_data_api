@@ -102,16 +102,22 @@ class EnrichmentUtil {
 
 	private static HashMap<String, List<Taxon>> createTaxonLookupTable(String[] names)
 	{
+		if (logger.isDebugEnabled()) {
+			logger.debug("Creating taxon lookup table");
+		}
 		HashMap<String, List<Taxon>> table = new HashMap<>(names.length);
 		for (int from = 0; from < names.length; from += 1024) {
 			int len = Math.min(1024, names.length - from);
 			String[] chunk = new String[len];
 			System.arraycopy(names, from, chunk, 0, len);
 			if (logger.isDebugEnabled()) {
-				logger.debug("Loading {} taxa for insertion into lookup table");
+				logger.debug("Loading {} taxa for insertion into lookup table", chunk.length);
 			}
-			QueryResult<Taxon> taxa = loadTaxa(names);
+			QueryResult<Taxon> taxa = loadTaxa(chunk);
 			addTaxaToLookupTable(taxa, table);
+		}
+		if (logger.isDebugEnabled()) {
+			logger.debug("Lookup table created ({} entries)", table.size());
 		}
 		return table;
 	}

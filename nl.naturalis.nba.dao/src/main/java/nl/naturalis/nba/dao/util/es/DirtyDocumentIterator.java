@@ -1,5 +1,6 @@
 package nl.naturalis.nba.dao.util.es;
 
+import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static nl.naturalis.nba.dao.util.es.ESUtil.executeSearchRequest;
 import static nl.naturalis.nba.dao.util.es.ESUtil.toDocumentObject;
 
@@ -8,6 +9,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.SearchHit;
@@ -29,6 +31,7 @@ import nl.naturalis.nba.dao.translate.QuerySpecTranslator;
  */
 public class DirtyDocumentIterator<T extends IDocumentObject> implements IDocumentIterator<T> {
 
+	private static final Logger logger = getLogger(DirtyDocumentIterator.class);
 	private static final Integer DEFAULT_BATCH_SIZE = 1000;
 
 	private final DocumentType<T> dt;
@@ -153,6 +156,9 @@ public class DirtyDocumentIterator<T extends IDocumentObject> implements IDocume
 
 	private void loadFirstBatch()
 	{
+		if (logger.isDebugEnabled()) {
+			logger.debug("Initializing document buffer");
+		}
 		qs.setSortFields(Arrays.asList(new SortField("id")));
 		SearchRequestBuilder request;
 		try {
@@ -171,6 +177,9 @@ public class DirtyDocumentIterator<T extends IDocumentObject> implements IDocume
 
 	private void loadNextBatch()
 	{
+		if (logger.isDebugEnabled()) {
+			logger.debug("Refreshing document buffer");
+		}
 		SearchRequestBuilder request;
 		try {
 			request = new QuerySpecTranslator(qs, dt).translate();

@@ -183,18 +183,12 @@ public class SpecimenTaxonomicEnricher2 {
 
 	private static List<Specimen> enrichSpecimens(List<Specimen> specimens)
 	{
-		if (logger.isDebugEnabled()) {
-			logger.debug("Creating taxon lookup table");
-		}
 		Map<String, List<Taxon>> taxonLookupTable = extractTaxaFromSpecimens(specimens);
 		if (taxonLookupTable.isEmpty()) {
 			if (logger.isDebugEnabled()) {
 				logger.debug("No taxa found for current batch of specimens");
 			}
 			return Collections.emptyList();
-		}
-		if (logger.isDebugEnabled()) {
-			logger.debug("Lookup table created ({} entries)", taxonLookupTable.size());
 		}
 		Map<String, List<TaxonomicEnrichment>> cache = new HashMap<>(specimens.size());
 		List<Specimen> result = new ArrayList<>(specimens.size());

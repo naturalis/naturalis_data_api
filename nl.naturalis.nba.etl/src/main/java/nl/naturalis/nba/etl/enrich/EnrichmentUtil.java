@@ -28,6 +28,7 @@ import nl.naturalis.nba.api.model.VernacularName;
 import nl.naturalis.nba.dao.DaoRegistry;
 import nl.naturalis.nba.dao.TaxonDao;
 import nl.naturalis.nba.etl.ETLRuntimeException;
+import nl.naturalis.nba.utils.FileUtil;
 
 class EnrichmentUtil {
 
@@ -83,7 +84,7 @@ class EnrichmentUtil {
 		name.append(".");
 		name.append(System.identityHashCode(new Object()));
 		name.append(".json");
-		return null;
+		return FileUtil.newFile(tmpDir, name.toString());
 	}
 
 	private static HashMap<String, List<Taxon>> createTaxonLookupTable(String[] names)

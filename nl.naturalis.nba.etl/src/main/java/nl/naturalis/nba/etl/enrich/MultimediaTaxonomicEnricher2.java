@@ -49,7 +49,7 @@ public class MultimediaTaxonomicEnricher2 {
 			enricher.enrich();
 		}
 		catch (Throwable t) {
-			logger.error(t.getMessage());
+			logger.error("Error while enriching multimedia", t);
 			System.exit(1);
 		}
 		finally {

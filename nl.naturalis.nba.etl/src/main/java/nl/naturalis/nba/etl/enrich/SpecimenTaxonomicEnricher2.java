@@ -49,7 +49,7 @@ public class SpecimenTaxonomicEnricher2 {
 			enricher.enrich();
 		}
 		catch (Throwable t) {
-			logger.error(t.getMessage());
+			logger.error("Error while enriching specimens", t);
 			System.exit(1);
 		}
 		finally {

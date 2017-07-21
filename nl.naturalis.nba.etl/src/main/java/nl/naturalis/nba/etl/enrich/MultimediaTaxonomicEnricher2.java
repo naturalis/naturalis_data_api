@@ -70,7 +70,7 @@ public class MultimediaTaxonomicEnricher2 {
 	public void enrich() throws IOException, BulkIndexException
 	{
 		long start = System.currentTimeMillis();
-		tempFile = createTempFile(MULTI_MEDIA_OBJECT);
+		tempFile = createTempFile(getClass().getSimpleName());
 		logger.info("Saving enriched multimedia to temp file: " + tempFile.getAbsolutePath());
 		saveToTempFile();
 		logger.info("Importing multimedia from temp file");
@@ -185,35 +185,38 @@ public class MultimediaTaxonomicEnricher2 {
 			logger.debug("Creating taxon lookup table");
 		}
 		Map<String, List<Taxon>> taxonLookupTable = extractTaxaFromMultiMedia(mmos);
-		if (taxonLookupTable == null) {
+		if (taxonLookupTable.isEmpty()) {
 			if (logger.isDebugEnabled()) {
 				logger.debug("No taxa found for current batch of specimens");
 			}
 			return Collections.emptyList();
 		}
 		if (logger.isDebugEnabled()) {
-			logger.debug("Lookup table created. {} unique name group(s) found in Taxon index",
-					taxonLookupTable.size());
+			logger.debug("Lookup table created ({} entries)", taxonLookupTable.size());
 		}
 		Map<String, List<TaxonomicEnrichment>> cache = new HashMap<>(mmos.size());
 		List<MultiMediaObject> result = new ArrayList<>(mmos.size());
 		for (MultiMediaObject mmo : mmos) {
-			boolean enriched = false;
 			if (mmo.getIdentifications() == null) {
 				continue;
 			}
+			boolean enriched = false;
 			for (TaxonomicIdentification si : mmo.getIdentifications()) {
-				String nameGroup = si.getScientificName().getScientificNameGroup();
-				List<TaxonomicEnrichment> enrichments = cache.get(nameGroup);
+				String name = si.getScientificName().getScientificNameGroup();
+				List<TaxonomicEnrichment> enrichments = cache.get(name);
 				if (enrichments == null) {
-					List<Taxon> taxa = taxonLookupTable.get(nameGroup);
-					if (taxa == null) {
-						cache.put(nameGroup, NOT_ENRICHABLE);
+					// Is this scientific name also present in the Taxon index?
+					List<Taxon> taxa = taxonLookupTable.get(name);
+					if (taxa == null) { // No
+						cache.put(name, NOT_ENRICHABLE);
 					}
 					else {
 						enrichments = createEnrichments(taxa);
-						cache.put(nameGroup, enrichments);
-						if (enrichments != NOT_ENRICHABLE) {
+						if (enrichments.isEmpty()) {
+							cache.put(name, NOT_ENRICHABLE);
+						}
+						else {
+							cache.put(name, enrichments);
 							si.setTaxonomicEnrichments(enrichments);
 							enriched = true;
 						}

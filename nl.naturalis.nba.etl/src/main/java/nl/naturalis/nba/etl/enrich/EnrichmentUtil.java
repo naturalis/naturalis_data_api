@@ -26,7 +26,6 @@ import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.api.model.TaxonomicEnrichment;
 import nl.naturalis.nba.api.model.VernacularName;
 import nl.naturalis.nba.dao.DaoRegistry;
-import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.TaxonDao;
 import nl.naturalis.nba.etl.ETLRuntimeException;
 
@@ -68,18 +67,18 @@ class EnrichmentUtil {
 			enrichment.setTaxonId(taxon.getId());
 			enrichments.add(enrichment);
 		}
-		return enrichments.isEmpty() ? NOT_ENRICHABLE : enrichments;
+		return enrichments;
 	}
 
-	static File createTempFile(DocumentType<?> dt) throws IOException
+	static File createTempFile(String prefix) throws IOException
 	{
 		File tmpDir = DaoRegistry.getInstance().getFile("../tmp").getCanonicalFile();
 		if (!tmpDir.isDirectory()) {
 			tmpDir.mkdir();
 		}
 		StringBuilder name = new StringBuilder(100);
-		name.append(dt.getName().toLowerCase());
-		name.append(".enrich.");
+		name.append(prefix);
+		name.append(".");
 		name.append(System.currentTimeMillis());
 		name.append(".");
 		name.append(System.identityHashCode(new Object()));
@@ -132,7 +131,11 @@ class EnrichmentUtil {
 		QuerySpec query = new QuerySpec();
 		query.addCondition(condition);
 		query.setConstantScore(true);
-		query.setSize(1024);
+		/*
+		 * We can't have more than 2 taxa per name (NSR and/or COL), so this
+		 * should be more than enough
+		 */
+		query.setSize(10000);
 		TaxonDao taxonDao = new TaxonDao();
 		QueryResult<Taxon> result;
 		try {
@@ -149,13 +152,13 @@ class EnrichmentUtil {
 	{
 		for (QueryResultItem<Taxon> item : taxa) {
 			Taxon taxon = item.getItem();
-			String sng = taxon.getAcceptedName().getScientificNameGroup();
-			List<Taxon> stored = table.get(sng);
-			if (stored == null) {
-				stored = new ArrayList<>(2);
-				table.put(sng, stored);
+			String name = taxon.getAcceptedName().getScientificNameGroup();
+			List<Taxon> otherTaxaWithName = table.get(name);
+			if (otherTaxaWithName == null) {
+				otherTaxaWithName = new ArrayList<>(2);
+				table.put(name, otherTaxaWithName);
 			}
-			stored.add(taxon);
+			otherTaxaWithName.add(taxon);
 		}
 	}
 

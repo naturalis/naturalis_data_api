@@ -70,7 +70,7 @@ public class SpecimenTaxonomicEnricher2 {
 	public void enrich() throws IOException, BulkIndexException
 	{
 		long start = System.currentTimeMillis();
-		tempFile = createTempFile(SPECIMEN);
+		tempFile = createTempFile(getClass().getSimpleName());
 		logger.info("Writing enriched specimens to " + tempFile.getAbsolutePath());
 		saveToTempFile();
 		logger.info("Reading enriched specimens from " + tempFile.getAbsolutePath());
@@ -165,12 +165,6 @@ public class SpecimenTaxonomicEnricher2 {
 
 	public void setReadBatchSize(int readBatchSize)
 	{
-		if (readBatchSize > 1024) {
-			throw new IllegalArgumentException("readBatchSize must be less than 1025");
-		}
-		if (readBatchSize < 1) {
-			throw new IllegalArgumentException("readBatchSize must be greater than 0");
-		}
 		this.readBatchSize = readBatchSize;
 	}
 
@@ -200,7 +194,7 @@ public class SpecimenTaxonomicEnricher2 {
 			return Collections.emptyList();
 		}
 		if (logger.isDebugEnabled()) {
-			logger.debug("Lookup table size: {}", taxonLookupTable.size());
+			logger.debug("Lookup table created ({} entries)", taxonLookupTable.size());
 		}
 		Map<String, List<TaxonomicEnrichment>> cache = new HashMap<>(specimens.size());
 		List<Specimen> result = new ArrayList<>(specimens.size());
@@ -210,17 +204,21 @@ public class SpecimenTaxonomicEnricher2 {
 			}
 			boolean enriched = false;
 			for (TaxonomicIdentification si : specimen.getIdentifications()) {
-				String sng = si.getScientificName().getScientificNameGroup();
-				List<TaxonomicEnrichment> enrichments = cache.get(sng);
+				String name = si.getScientificName().getScientificNameGroup();
+				List<TaxonomicEnrichment> enrichments = cache.get(name);
 				if (enrichments == null) {
-					List<Taxon> taxa = taxonLookupTable.get(sng);
-					if (taxa == null) {
-						cache.put(sng, NOT_ENRICHABLE);
+					// Is this scientific name also present in the Taxon index?
+					List<Taxon> taxa = taxonLookupTable.get(name);
+					if (taxa == null) { // No
+						cache.put(name, NOT_ENRICHABLE);
 					}
 					else {
 						enrichments = createEnrichments(taxa);
-						cache.put(sng, enrichments);
-						if (enrichments != NOT_ENRICHABLE) {
+						if (enrichments.isEmpty()) {
+							cache.put(name, NOT_ENRICHABLE);
+						}
+						else {
+							cache.put(name, enrichments);
 							si.setTaxonomicEnrichments(enrichments);
 							enriched = true;
 						}

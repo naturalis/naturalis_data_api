@@ -36,8 +36,6 @@ public class DirtyDocumentIterator<T extends IDocumentObject> implements IDocume
 
 	// The "search after" value
 	private String lastUid;
-	// Whether or not we've already issued our initial query request
-	private boolean ready = false;
 	// Total number of documents to iterate over
 	private long size;
 	// Counts documents across batches
@@ -52,6 +50,25 @@ public class DirtyDocumentIterator<T extends IDocumentObject> implements IDocume
 		this(dt, defaultQuerySpec());
 	}
 
+	/**
+	 * Creates a {@code DirtyDocumentIterator} that iterates over documents of
+	 * the specified document type, satisfying the specified query
+	 * specification. There are a few constraints on the {@link QuerySpec} you
+	 * provide:
+	 * <ol>
+	 * <li>Its {@link QuerySpec#getFrom() from} property <i>must not</i> be set.
+	 * Iteration will always take place from the start of the query result set.
+	 * <li>Its {@link QuerySpec#getSize() size} property <i>must</i> be set to a
+	 * value greater than 0. This property takes on a different meaning within a
+	 * {@code DirtyDocumentIterator}. It does not determine the maximum number
+	 * of documents to retrieve. Iteration will always continue till the last
+	 * document in the result set. Instead it determines the size of an
+	 * internally maintained document buffer.
+	 * </ol>
+	 * 
+	 * @param dt
+	 * @param qs
+	 */
 	public DirtyDocumentIterator(DocumentType<T> dt, QuerySpec qs)
 	{
 		checkQuerySpec(qs);
@@ -129,9 +146,8 @@ public class DirtyDocumentIterator<T extends IDocumentObject> implements IDocume
 
 	private void checkReady()
 	{
-		if (!ready) {
+		if (batch == null) {
 			loadFirstBatch();
-			ready = true;
 		}
 	}
 

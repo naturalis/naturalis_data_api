@@ -19,14 +19,16 @@ import org.apache.logging.log4j.Logger;
  * general you would create a {@code RandomEntryZipOutputStream} with one zip
  * entry (called the main entry) being compressed and written directly to the
  * underlying output stream while data for the other zip entries is written to
- * intermediate storage. Once you are done writing data for the entries managed
- * by the {@code RandomEntryZipOutputStream}, you call {@link #mergeEntries()}.
- * This will produce a regular {@code ZipOutputStream} that you can use as you
- * see fit (e.g. to start writing other zip entries in a serial fashion again).
- * Most notably, {@code RandomEntryZipOutputStream} will not have called
- * {@link ZipOutputStream#close() close} or {@link ZipOutputStream#finish()
- * finish} on the {@code ZipOutputStream} it produces.
- * {@code RandomEntryZipOutputStream} internally uses a
+ * intermediate storage. For example, when writing a DwCA archive, you might
+ * want to write taxa.txt to the main entry, while simultaneously also buffering
+ * content for varnacular.txt and reference.txt. Once you are done writing data
+ * for the entries managed by the {@code RandomEntryZipOutputStream}, you call
+ * {@link #mergeEntries()}. This will produce a regular {@code ZipOutputStream}
+ * that you can use as you see fit (e.g. to start writing other zip entries in a
+ * serial fashion again). Most notably, {@code RandomEntryZipOutputStream} will
+ * not have called {@link ZipOutputStream#close() close} or
+ * {@link ZipOutputStream#finish() finish} on the {@code ZipOutputStream} it
+ * produces. {@code RandomEntryZipOutputStream} internally uses a
  * {@link CompressedSwapFileOutputStream} as intermediate storage for zip
  * entries (for each zip entry a separate {@code CompressedSwapFileOutputStream}
  * is created). This class will try to keep data for a zip entry in memory and

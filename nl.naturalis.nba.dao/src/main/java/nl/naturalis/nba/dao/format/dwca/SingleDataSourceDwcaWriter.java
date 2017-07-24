@@ -1,26 +1,25 @@
 package nl.naturalis.nba.dao.format.dwca;
 
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
-import static nl.naturalis.nba.dao.format.dwca.DwcaUtil.writeEmlXml;
-import static nl.naturalis.nba.dao.format.dwca.DwcaUtil.writeMetaXml;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.HashSet;
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.api.InvalidQueryException;
-import nl.naturalis.nba.api.NbaException;
 import nl.naturalis.nba.api.QuerySpec;
-import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.DaoUtil;
 import nl.naturalis.nba.dao.format.DataSetConfigurationException;
 import nl.naturalis.nba.dao.format.DataSetWriteException;
 import nl.naturalis.nba.dao.format.Entity;
 import nl.naturalis.nba.dao.util.RandomEntryZipOutputStream;
 import nl.naturalis.nba.dao.util.es.IScroller;
+import nl.naturalis.nba.utils.IOUtil;
 
 /**
  * Manages the assembly and creation of DarwinCore archives. Use this class if
@@ -48,24 +47,57 @@ class SingleDataSourceDwcaWriter implements IDwcaWriter {
 	 * "dynamic DwCA").
 	 */
 	@Override
-	public void writeDwcaForQuery(QuerySpec querySpec)
+	public void writeDwcaForQuery(QuerySpec query)
 			throws InvalidQueryException, DataSetConfigurationException, DataSetWriteException
 	{
 		long start = System.currentTimeMillis();
 		logger.info("Generating DarwinCore archive for user-defined query");
+		DwcaPreparator dwcaPreparator = new DwcaPreparator(cfg);
+		dwcaPreparator.prepare();
+		IScroller scroller = cfg.createScroller(query);
+		RandomEntryZipOutputStream rezos = createRandomEntryZipOutputStream();
+		SingleDataSourceSearchHitHandler handler = new SingleDataSourceSearchHitHandler(cfg, rezos);
+		/*
+		 * OK, we are going to send bytes over the line, we're past the point
+		 * that we can respond with an error message if anything goes wrong
+		 */
+		logger.info("Writing CSV file(s)");
 		try {
-			RandomEntryZipOutputStream rezos = createZipStream();
-			writeCsvFiles(querySpec, rezos);
+			handler.printHeaders();
+			scroller.scroll(handler);
+			handler.logStatistics();
+			rezos.flush();
+		}
+		catch (Throwable t) {
+			String msg = "Error writing archive for user-defined query";
+			logger.error(msg, t);
+			try {
+				ZipOutputStream zos = rezos.mergeEntries();
+				zos.putNextEntry(new ZipEntry("__ERROR__.txt"));
+				t.printStackTrace(new PrintStream(zos));
+				zos.finish();
+			}
+			catch (Throwable t2) {
+				logger.error(t2);
+			}
+			return;
+		}
+		try {
 			ZipOutputStream zos = rezos.mergeEntries();
-			writeMetaXml(cfg, zos);
-			writeEmlXml(cfg, zos);
+			logger.info("Writing meta.xml");
+			zos.putNextEntry(new ZipEntry("meta.xml"));
+			zos.write(dwcaPreparator.getMetaXml());
+			logger.info("Writing eml.xml ({})", cfg.getEmlFile());
+			zos.putNextEntry(new ZipEntry("eml.xml"));
+			zos.write(dwcaPreparator.getEml());
 			zos.finish();
+			String took = DaoUtil.getDuration(start);
+			logger.info("DarwinCore archive generated (took {})", took);
 		}
-		catch (IOException e) {
-			throw new DataSetWriteException(e);
+		catch (Throwable t) {
+			String msg = "Error writing archive for user-defind query";
+			logger.error(msg, t);
 		}
-		String took = DaoUtil.getDuration(start);
-		logger.info("DarwinCore archive generated (took {})", took);
 	}
 
 	/**
@@ -78,58 +110,75 @@ class SingleDataSourceDwcaWriter implements IDwcaWriter {
 		long start = System.currentTimeMillis();
 		String fmt = "Generating DarwinCore archive for data set \"{}\"";
 		logger.info(fmt, cfg.getDataSetName());
+		DwcaPreparator dwcaPreparator = new DwcaPreparator(cfg);
+		dwcaPreparator.prepare();
 		QuerySpec query = cfg.getDataSet().getSharedDataSource().getQuerySpec();
+		IScroller scroller;
 		try {
-			RandomEntryZipOutputStream zip = createZipStream();
-			logger.info("Adding CSV files");
-			writeCsvFiles(query, zip);
-			ZipOutputStream zos = zip.mergeEntries();
-			writeMetaXml(cfg, zos);
-			writeEmlXml(cfg, zos);
-			zos.finish();
+			scroller = cfg.createScroller(query);
 		}
 		catch (InvalidQueryException e) {
-			/*
-			 * Not the user's fault but the application maintainer's: the query
-			 * was defined in the XML configuration file. So we convert the
-			 * InvalidQueryException to a DataSetConfigurationException
-			 */
-			fmt = "Invalid query specification for shared data source:\n%s";
-			String queryString = JsonUtil.toPrettyJson(query);
-			String msg = String.format(fmt, queryString);
-			throw new DataSetConfigurationException(msg);
+			// Not user's fault, query comes from the configuration file
+			throw new DataSetConfigurationException(e);
 		}
-		catch (IOException e) {
-			throw new DataSetWriteException(e);
-		}
-		String took = DaoUtil.getDuration(start);
-		logger.info("DarwinCore archive generated (took {})", took);
-	}
-
-	private void writeCsvFiles(QuerySpec query, RandomEntryZipOutputStream zip)
-			throws DataSetConfigurationException, DataSetWriteException, IOException,
-			InvalidQueryException
-	{
-		IScroller scroller = cfg.createScroller(query);
-		SingleDataSourceSearchHitHandler handler = new SingleDataSourceSearchHitHandler(cfg, zip);
-		handler.printHeaders();
+		RandomEntryZipOutputStream rezos = createRandomEntryZipOutputStream();
+		SingleDataSourceSearchHitHandler handler = new SingleDataSourceSearchHitHandler(cfg, rezos);
+		/*
+		 * OK, we are going to send bytes over the line, we're past the point
+		 * that we can respond with an error message if anything goes wrong
+		 */
+		logger.info("Writing CSV file(s)");
 		try {
+			handler.printHeaders();
 			scroller.scroll(handler);
+			handler.logStatistics();
+			rezos.flush();
 		}
-		catch (NbaException e) {
-			throw (DataSetWriteException) e;
+		catch (Throwable t) {
+			String msg = "Error while writing archive for dataset " + cfg.getDataSetName();
+			logger.error(msg, t);
+			try {
+				ZipOutputStream zos = rezos.mergeEntries();
+				zos.putNextEntry(new ZipEntry("__ERROR__.txt"));
+				t.printStackTrace(new PrintStream(zos));
+				zos.finish();
+			}
+			catch (Throwable t2) {
+				logger.error(t2);
+			}
+			return;
 		}
-		handler.logStatistics();
-		zip.flush();
+		try {
+			ZipOutputStream zos = rezos.mergeEntries();
+			logger.info("Writing meta.xml");
+			zos.putNextEntry(new ZipEntry("meta.xml"));
+			zos.write(dwcaPreparator.getMetaXml());
+			logger.info("Writing eml.xml ({})", cfg.getEmlFile());
+			zos.putNextEntry(new ZipEntry("eml.xml"));
+			zos.write(dwcaPreparator.getEml());
+			zos.finish();
+			String took = DaoUtil.getDuration(start);
+			logger.info("DarwinCore archive generated (took {})", took);
+		}
+		catch (Throwable t) {
+			String msg = "Error writing archive for dataset " + cfg.getDataSetName();
+			logger.error(msg, t);
+		}
 	}
 
-	private RandomEntryZipOutputStream createZipStream()
-			throws DataSetConfigurationException, IOException
+	private RandomEntryZipOutputStream createRandomEntryZipOutputStream()
+			throws DataSetConfigurationException, DataSetWriteException
 	{
 		Entity coreEntity = cfg.getCoreEntity();
 		String fileName = cfg.getCsvFileName(coreEntity);
-		RandomEntryZipOutputStream rezos;
-		rezos = new RandomEntryZipOutputStream(out, fileName);
+		RandomEntryZipOutputStream rezos = null;
+		try {
+			rezos = new RandomEntryZipOutputStream(out, fileName);
+		}
+		catch (IOException exc) {
+			IOUtil.close(rezos);
+			throw new DataSetWriteException(exc);
+		}
 		HashSet<String> fileNames = new HashSet<>();
 		for (Entity e : cfg.getDataSet().getEntities()) {
 			/*
@@ -145,7 +194,13 @@ class SingleDataSourceDwcaWriter implements IDwcaWriter {
 			if (e.getName().equals(coreEntity.getName())) {
 				continue;
 			}
-			rezos.addEntry(fileName, 1024 * 1024);
+			try {
+				rezos.addEntry(fileName, 1024 * 1024);
+			}
+			catch (IOException exc) {
+				IOUtil.close(rezos);
+				throw new DataSetWriteException(exc);
+			}
 		}
 		return rezos;
 	}

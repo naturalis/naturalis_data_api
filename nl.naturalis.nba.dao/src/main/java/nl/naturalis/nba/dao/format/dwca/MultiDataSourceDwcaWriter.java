@@ -1,8 +1,5 @@
 package nl.naturalis.nba.dao.format.dwca;
 
-import static nl.naturalis.nba.dao.format.dwca.DwcaUtil.writeEmlXml;
-import static nl.naturalis.nba.dao.format.dwca.DwcaUtil.writeMetaXml;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
@@ -56,12 +53,12 @@ class MultiDataSourceDwcaWriter implements IDwcaWriter {
 	private static Logger logger = LogManager.getLogger(MultiDataSourceDwcaWriter.class);
 	private static TimeValue TIME_OUT = new TimeValue(10000);
 
-	private DwcaConfig dwcaConfig;
+	private DwcaConfig cfg;
 	private ZipOutputStream zos;
 
 	MultiDataSourceDwcaWriter(DwcaConfig dwcaConfig, OutputStream out)
 	{
-		this.dwcaConfig = dwcaConfig;
+		this.cfg = dwcaConfig;
 		this.zos = new ZipOutputStream(out);
 	}
 
@@ -70,10 +67,16 @@ class MultiDataSourceDwcaWriter implements IDwcaWriter {
 			throws InvalidQueryException, DataSetConfigurationException, DataSetWriteException
 	{
 		logger.info("Generating DarwinCore archive for user-defined query");
+		DwcaPreparator dwcaPreparator = new DwcaPreparator(cfg);
+		dwcaPreparator.prepare();
 		try {
-			writeMetaXml(dwcaConfig, zos);
-			writeEmlXml(dwcaConfig, zos);
-			writeCsvFilesForQuery(querySpec);
+			logger.info("Adding meta.xml");
+			zos.putNextEntry(new ZipEntry("eml.xml"));
+			zos.write(dwcaPreparator.getMetaXml());
+			logger.info("Adding eml.xml ({})", cfg.getEmlFile());
+			zos.putNextEntry(new ZipEntry("eml.xml"));
+			zos.write(dwcaPreparator.getEml());
+			writeCsvFilesForQuery(querySpec);			
 			zos.finish();
 		}
 		catch (IOException e) {
@@ -86,25 +89,31 @@ class MultiDataSourceDwcaWriter implements IDwcaWriter {
 	public void writeDwcaForDataSet() throws DataSetConfigurationException, DataSetWriteException
 	{
 		String fmt = "Generating DarwinCore archive for data set \"{}\"";
-		logger.info(fmt, dwcaConfig.getDataSetName());
+		logger.info(fmt, cfg.getDataSetName());
+		DwcaPreparator dwcaPreparator = new DwcaPreparator(cfg);
+		dwcaPreparator.prepare();
 		try {
-			writeMetaXml(dwcaConfig, zos);
-			writeEmlXml(dwcaConfig, zos);
-			writeCsvFilesForDataSet();
+			logger.info("Adding meta.xml");
+			zos.putNextEntry(new ZipEntry("eml.xml"));
+			zos.write(dwcaPreparator.getMetaXml());
+			logger.info("Adding eml.xml ({})", cfg.getEmlFile());
+			zos.putNextEntry(new ZipEntry("eml.xml"));
+			zos.write(dwcaPreparator.getEml());
+			writeCsvFilesForDataSet();			
 			zos.finish();
 		}
 		catch (IOException e) {
 			throw new DataSetWriteException(e);
 		}
 		fmt = "Finished writing DarwinCore archive for data set \"{}\"";
-		logger.info(fmt, dwcaConfig.getDataSetName());
+		logger.info(fmt, cfg.getDataSetName());
 	}
 
 	private void writeCsvFilesForQuery(QuerySpec querySpec) throws InvalidQueryException,
 			DataSetConfigurationException, DataSetWriteException, IOException
 	{
-		for (Entity entity : dwcaConfig.getDataSet().getEntities()) {
-			String fileName = dwcaConfig.getCsvFileName(entity);
+		for (Entity entity : cfg.getDataSet().getEntities()) {
+			String fileName = cfg.getCsvFileName(entity);
 			logger.info("Adding CSV file for entity {}", entity.getName());
 			zos.putNextEntry(new ZipEntry(fileName));
 			writeCsvFile(entity, executeQuery(querySpec));
@@ -114,8 +123,8 @@ class MultiDataSourceDwcaWriter implements IDwcaWriter {
 	private void writeCsvFilesForDataSet()
 			throws DataSetConfigurationException, DataSetWriteException, IOException
 	{
-		for (Entity entity : dwcaConfig.getDataSet().getEntities()) {
-			String fileName = dwcaConfig.getCsvFileName(entity);
+		for (Entity entity : cfg.getDataSet().getEntities()) {
+			String fileName = cfg.getCsvFileName(entity);
 			logger.info("Adding CSV file for entity {}", entity.getName());
 			zos.putNextEntry(new ZipEntry(fileName));
 			QuerySpec query = entity.getDataSource().getQuerySpec();

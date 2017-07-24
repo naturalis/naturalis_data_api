@@ -16,6 +16,12 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXParseException;
 
+/**
+ * Utility class for add hoc updates of XML files.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public class XmlFileUpdater {
 
 	private File file;

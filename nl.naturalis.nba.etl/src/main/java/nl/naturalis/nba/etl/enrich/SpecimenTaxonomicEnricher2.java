@@ -8,7 +8,7 @@ import static nl.naturalis.nba.etl.ETLUtil.logDuration;
 import static nl.naturalis.nba.etl.enrich.EnrichmentUtil.NOT_ENRICHABLE;
 import static nl.naturalis.nba.etl.enrich.EnrichmentUtil.createEnrichments;
 import static nl.naturalis.nba.etl.enrich.EnrichmentUtil.createTempFile;
-import static nl.naturalis.nba.etl.enrich.EnrichmentUtil.extractTaxaFromSpecimens;
+import static nl.naturalis.nba.etl.enrich.EnrichmentUtil.createTaxonLookupTableForSpecimens;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -183,7 +183,7 @@ public class SpecimenTaxonomicEnricher2 {
 
 	private static List<Specimen> enrichSpecimens(List<Specimen> specimens)
 	{
-		Map<String, List<Taxon>> taxonLookupTable = extractTaxaFromSpecimens(specimens);
+		Map<String, List<Taxon>> taxonLookupTable = createTaxonLookupTableForSpecimens(specimens);
 		if (taxonLookupTable.isEmpty()) {
 			if (logger.isDebugEnabled()) {
 				logger.debug("No taxa found for current batch of specimens");

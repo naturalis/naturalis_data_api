@@ -23,12 +23,14 @@ import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.MultiMediaContentIdentification;
 import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.api.model.ScientificName;
+import nl.naturalis.nba.api.model.ServiceAccessPoint;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.api.model.TaxonomicEnrichment;
 import nl.naturalis.nba.api.model.VernacularName;
 import nl.naturalis.nba.dao.DaoRegistry;
+import nl.naturalis.nba.dao.MultiMediaObjectDao;
 import nl.naturalis.nba.dao.TaxonDao;
 import nl.naturalis.nba.etl.ETLRuntimeException;
 import nl.naturalis.nba.utils.FileUtil;
@@ -39,7 +41,7 @@ class EnrichmentUtil {
 
 	static final List<TaxonomicEnrichment> NOT_ENRICHABLE = new ArrayList<>(0);
 
-	static Map<String, List<Taxon>> extractTaxaFromSpecimens(List<Specimen> specimens)
+	static Map<String, List<Taxon>> createTaxonLookupTableForSpecimens(List<Specimen> specimens)
 	{
 		String[] names = extractNamesFromSpecimens(specimens);
 		if (logger.isDebugEnabled()) {
@@ -49,7 +51,19 @@ class EnrichmentUtil {
 		return createTaxonLookupTable(names);
 	}
 
-	static Map<String, List<Taxon>> extractTaxaFromMultiMedia(List<MultiMediaObject> multimedia)
+	static Map<String, List<ServiceAccessPoint>> createMultiMediaLookupTableForSpecimens(
+			List<Specimen> specimens)
+	{
+		String[] specimenIds = extractIdsFromSpecimens(specimens);
+		if (logger.isDebugEnabled()) {
+			String fmt = "{} unique IDs extracted from {} specimens";
+			logger.debug(fmt, specimenIds.length, specimens.size());
+		}
+		return createMultiMediaLookupTable(specimenIds);
+	}
+
+	static Map<String, List<Taxon>> createTaxonLookupTableForMultiMedia(
+			List<MultiMediaObject> multimedia)
 	{
 		String[] names = extractNamesFromMultiMedia(multimedia);
 		if (logger.isDebugEnabled()) {
@@ -100,12 +114,12 @@ class EnrichmentUtil {
 		return FileUtil.newFile(tmpDir, name.toString());
 	}
 
-	private static HashMap<String, List<Taxon>> createTaxonLookupTable(String[] names)
+	private static Map<String, List<Taxon>> createTaxonLookupTable(String[] names)
 	{
 		if (logger.isDebugEnabled()) {
 			logger.debug("Creating taxon lookup table");
 		}
-		HashMap<String, List<Taxon>> table = new HashMap<>(names.length);
+		Map<String, List<Taxon>> table = new HashMap<>(names.length);
 		for (int from = 0; from < names.length; from += 1024) {
 			int len = Math.min(1024, names.length - from);
 			String[] chunk = new String[len];
@@ -115,6 +129,29 @@ class EnrichmentUtil {
 			}
 			QueryResult<Taxon> taxa = loadTaxa(chunk);
 			addTaxaToLookupTable(taxa, table);
+		}
+		if (logger.isDebugEnabled()) {
+			logger.debug("Lookup table created ({} entries)", table.size());
+		}
+		return table;
+	}
+
+	private static Map<String, List<ServiceAccessPoint>> createMultiMediaLookupTable(
+			String[] specimenIds)
+	{
+		if (logger.isDebugEnabled()) {
+			logger.debug("Creating multimedia lookup table");
+		}
+		Map<String, List<ServiceAccessPoint>> table = new HashMap<>(specimenIds.length);
+		for (int from = 0; from < specimenIds.length; from += 1024) {
+			int len = Math.min(1024, specimenIds.length - from);
+			String[] chunk = new String[len];
+			System.arraycopy(specimenIds, from, chunk, 0, len);
+			if (logger.isDebugEnabled()) {
+				logger.debug("Loading {} multimedia for insertion into lookup table", chunk.length);
+			}
+			QueryResult<MultiMediaObject> multimedia = loadMultiMedia(chunk);
+			addMultimediaToLookupTable(multimedia, table);
 		}
 		if (logger.isDebugEnabled()) {
 			logger.debug("Lookup table created ({} entries)", table.size());
@@ -132,6 +169,15 @@ class EnrichmentUtil {
 			}
 		}
 		return names.toArray(new String[names.size()]);
+	}
+
+	private static String[] extractIdsFromSpecimens(List<Specimen> specimens)
+	{
+		HashSet<String> ids = new HashSet<>(specimens.size());
+		for (Specimen s : specimens) {
+			ids.add(s.getId());
+		}
+		return ids.toArray(new String[ids.size()]);
 	}
 
 	private static String[] extractNamesFromMultiMedia(List<MultiMediaObject> multimedia)
@@ -152,15 +198,37 @@ class EnrichmentUtil {
 		QuerySpec query = new QuerySpec();
 		query.addCondition(condition);
 		query.setConstantScore(true);
-		/*
-		 * We can't have more than 2 taxa per name (NSR and/or COL), so this
-		 * should be more than enough
-		 */
-		query.setSize(10000);
-		TaxonDao taxonDao = new TaxonDao();
+		// TODO: softcode with index.max_result_window setting using TaxonMetaDataDao
+		query.setSize(50000);
+		TaxonDao dao = new TaxonDao();
 		QueryResult<Taxon> result;
 		try {
-			result = taxonDao.query(query);
+			result = dao.query(query);
+			if (result.getTotalSize() > 50000) {
+				throw new ETLRuntimeException("Too many taxa");
+			}
+		}
+		catch (InvalidQueryException e) {
+			throw new ETLRuntimeException(e);
+		}
+		return result;
+	}
+
+	private static QueryResult<MultiMediaObject> loadMultiMedia(String[] specimenIds)
+	{
+		String field = "associatedSpecimenReference";
+		QueryCondition condition = new QueryCondition(field, "IN", specimenIds);
+		QuerySpec query = new QuerySpec();
+		query.addCondition(condition);
+		query.setConstantScore(true);
+		query.setSize(50000);
+		MultiMediaObjectDao dao = new MultiMediaObjectDao();
+		QueryResult<MultiMediaObject> result;
+		try {
+			result = dao.query(query);
+			if (result.getTotalSize() > 50000) {
+				throw new ETLRuntimeException("Too many multimedia");
+			}
 		}
 		catch (InvalidQueryException e) {
 			throw new ETLRuntimeException(e);
@@ -169,7 +237,7 @@ class EnrichmentUtil {
 	}
 
 	private static void addTaxaToLookupTable(QueryResult<Taxon> taxa,
-			HashMap<String, List<Taxon>> table)
+			Map<String, List<Taxon>> table)
 	{
 		for (QueryResultItem<Taxon> item : taxa) {
 			Taxon taxon = item.getItem();
@@ -180,6 +248,21 @@ class EnrichmentUtil {
 				table.put(name, otherTaxaWithName);
 			}
 			otherTaxaWithName.add(taxon);
+		}
+	}
+
+	private static void addMultimediaToLookupTable(QueryResult<MultiMediaObject> multimedia,
+			Map<String, List<ServiceAccessPoint>> table)
+	{
+		for (QueryResultItem<MultiMediaObject> item : multimedia) {
+			MultiMediaObject mmo = item.getItem();
+			String specimenId = mmo.getAssociatedSpecimenReference();
+			List<ServiceAccessPoint> otherMultimediaWithSpecimenId = table.get(specimenId);
+			if (otherMultimediaWithSpecimenId == null) {
+				otherMultimediaWithSpecimenId = new ArrayList<>(2);
+				table.put(specimenId, otherMultimediaWithSpecimenId);
+			}
+			otherMultimediaWithSpecimenId.addAll(mmo.getServiceAccessPoints());
 		}
 	}
 

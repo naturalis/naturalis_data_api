@@ -8,7 +8,7 @@ import static nl.naturalis.nba.etl.ETLUtil.logDuration;
 import static nl.naturalis.nba.etl.enrich.EnrichmentUtil.NOT_ENRICHABLE;
 import static nl.naturalis.nba.etl.enrich.EnrichmentUtil.createEnrichments;
 import static nl.naturalis.nba.etl.enrich.EnrichmentUtil.createTempFile;
-import static nl.naturalis.nba.etl.enrich.EnrichmentUtil.extractTaxaFromMultiMedia;
+import static nl.naturalis.nba.etl.enrich.EnrichmentUtil.createTaxonLookupTableForMultiMedia;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -181,7 +181,7 @@ public class MultimediaTaxonomicEnricher2 {
 
 	private static List<MultiMediaObject> enrichMultimedia(List<MultiMediaObject> mmos)
 	{
-		Map<String, List<Taxon>> taxonLookupTable = extractTaxaFromMultiMedia(mmos);
+		Map<String, List<Taxon>> taxonLookupTable = createTaxonLookupTableForMultiMedia(mmos);
 		if (taxonLookupTable.isEmpty()) {
 			if (logger.isDebugEnabled()) {
 				logger.debug("No taxa found for current batch of multimedia");

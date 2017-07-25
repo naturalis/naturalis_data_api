@@ -2,6 +2,7 @@ package nl.naturalis.nba.dao.format.calc;
 
 import java.util.Map;
 
+import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.dao.format.CalculationException;
 import nl.naturalis.nba.dao.format.CalculatorInitializationException;
@@ -18,8 +19,8 @@ public class TaxonRankCalculator implements ICalculator {
 	@Override
 	public Object calculateValue(EntityObject entity) throws CalculationException
 	{
-		SpecimenCalculatorCache cache = SpecimenCalculatorCache.instance;
-		SpecimenIdentification si = cache.getPreferredOrFirstIdentitifcation(entity);
+		Specimen specimen = (Specimen) entity.getDocument();
+		SpecimenIdentification si = specimen.getIdentifications().iterator().next();
 		switch (si.getTaxonRank()) {
 			case "var.":
 				return "variety";

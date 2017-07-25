@@ -22,6 +22,9 @@ class FieldCache {
 				String msg = String.format("Invalid path element: \"%s\"", name);
 				throw new InvalidPathException(msg);
 			}
+			if (!f.isAccessible()) {
+				f.setAccessible(true);
+			}
 			subcache.put(name, f);
 		}
 		return f;

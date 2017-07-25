@@ -1,7 +1,5 @@
 package nl.naturalis.nba.dao.format.csv;
 
-import static nl.naturalis.nba.common.json.JsonUtil.MISSING_VALUE;
-import static nl.naturalis.nba.common.json.JsonUtil.readField;
 import static nl.naturalis.nba.dao.format.FormatUtil.EMPTY_STRING;
 
 import java.net.URI;
@@ -9,6 +7,7 @@ import java.net.URI;
 import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.api.model.VernacularName;
+import nl.naturalis.nba.common.PathValueReader;
 import nl.naturalis.nba.dao.format.AbstractField;
 import nl.naturalis.nba.dao.format.EntityObject;
 import nl.naturalis.nba.dao.format.IField;
@@ -29,19 +28,19 @@ import nl.naturalis.nba.dao.format.IField;
  */
 class DocumentDataField extends AbstractField {
 
-	private Path path;
+	private PathValueReader pvr;
 
 	DocumentDataField(String name, URI term, Path path)
 	{
 		super(name, term);
-		this.path = path;
+		this.pvr = new PathValueReader(path);
 	}
 
 	@Override
 	public String getValue(EntityObject entity)
 	{
-		Object value = readField(entity.getDocument(), path);
-		if (value == MISSING_VALUE) {
+		Object value = pvr.read(entity.getDocument());
+		if (value == null) {
 			return EMPTY_STRING;
 		}
 		return value.toString();

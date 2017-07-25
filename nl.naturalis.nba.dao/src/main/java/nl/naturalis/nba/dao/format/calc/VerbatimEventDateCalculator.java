@@ -1,13 +1,11 @@
 package nl.naturalis.nba.dao.format.calc;
 
-import static nl.naturalis.nba.common.json.JsonUtil.MISSING_VALUE;
-import static nl.naturalis.nba.common.json.JsonUtil.readField;
 import static nl.naturalis.nba.dao.format.FormatUtil.EMPTY_STRING;
 import static nl.naturalis.nba.dao.format.FormatUtil.formatDate;
 
+import java.util.Date;
 import java.util.Map;
 
-import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.dao.format.CalculatorInitializationException;
 import nl.naturalis.nba.dao.format.EntityObject;
@@ -22,9 +20,6 @@ import nl.naturalis.nba.dao.format.ICalculator;
  */
 public class VerbatimEventDateCalculator implements ICalculator {
 
-	private static final Path beginDatePath = new Path("gatheringEvent.dateTimeBegin");
-	private static final Path endDatePath = new Path("gatheringEvent.dateTimeEnd");
-
 	@Override
 	public void initialize(Map<String, String> args) throws CalculatorInitializationException
 	{
@@ -33,15 +28,19 @@ public class VerbatimEventDateCalculator implements ICalculator {
 	@Override
 	public Object calculateValue(EntityObject entity)
 	{
-		Object beginDate = readField(entity.getData(), beginDatePath);
-		if (beginDate == MISSING_VALUE) {
+		Specimen specimen = (Specimen) entity.getDocument();
+		if (specimen.getGatheringEvent() == null) {
 			return EMPTY_STRING;
 		}
-		Object endDate = readField(entity.getData(), endDatePath);
-		if (endDate == MISSING_VALUE || beginDate.equals(endDate)) {
+		Date beginDate = specimen.getGatheringEvent().getDateTimeBegin();
+		if (beginDate == null) {
+			return EMPTY_STRING;
+		}
+		Date endDate = specimen.getGatheringEvent().getDateTimeEnd();
+		if (endDate == null || beginDate.equals(endDate)) {
 			return formatDate(beginDate.toString());
 		}
-		return formatDate(beginDate.toString()) + " | " + formatDate(endDate.toString());
+		return formatDate(beginDate) + " | " + formatDate(endDate);
 	}
 
 }

@@ -27,18 +27,21 @@ import nl.naturalis.nba.dao.DocumentType;
  */
 public class EntityObject {
 
-	private Map<String, Object> data;
+	private Object document;
+	private Object entity;
 	private EntityObject parent;
 
-	public EntityObject(Map<String, Object> data)
+	public EntityObject(Object document)
 	{
-		this.data = data;
+		this.document = document;
+		this.entity = document;
 		this.parent = null;
 	}
 
-	public EntityObject(Map<String, Object> data, EntityObject parent)
+	public EntityObject(Object document, Object entity, EntityObject parent)
 	{
-		this.data = data;
+		this.document = document;
+		this.entity = entity;
 		this.parent = parent;
 	}
 
@@ -48,14 +51,9 @@ public class EntityObject {
 	 * the entity object, some data may need to come from the parent or
 	 * ancestors of the entity object. Hence this method.
 	 */
-	public Map<String, Object> getDocument()
+	public Object getDocument()
 	{
-		if (parent == null)
-			return data;
-		EntityObject dn;
-		for (dn = parent; dn.parent != null; dn = dn.parent)
-			;
-		return dn.data;
+		return document;
 	}
 
 	/**
@@ -64,9 +62,20 @@ public class EntityObject {
 	 * the data set. It can be queried using
 	 * {@link JsonUtil#readField(Map, String[])}.
 	 */
-	public Map<String, Object> getData()
+	public Object getEntity()
 	{
-		return data;
+		return entity;
+	}
+
+	/**
+	 * Returns the parent of the entity, wrapped into another
+	 * {@code EntityObject}.
+	 * 
+	 * @return
+	 */
+	public EntityObject getParentEntity()
+	{
+		return parent;
 	}
 
 }

@@ -11,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 import org.elasticsearch.search.SearchHit;
 
 import nl.naturalis.nba.api.Path;
+import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.exception.DaoException;
 import nl.naturalis.nba.dao.format.DataSetConfigurationException;
 import nl.naturalis.nba.dao.format.DataSetWriteException;
@@ -21,6 +22,7 @@ import nl.naturalis.nba.dao.format.IEntityFilter;
 import nl.naturalis.nba.dao.format.IField;
 import nl.naturalis.nba.dao.format.csv.CsvRecordWriter;
 import nl.naturalis.nba.dao.util.RandomEntryZipOutputStream;
+import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.dao.util.es.SearchHitHandler;
 
 final class SingleDataSourceSearchHitHandler implements SearchHitHandler {
@@ -54,10 +56,12 @@ final class SingleDataSourceSearchHitHandler implements SearchHitHandler {
 	@Override
 	public boolean handle(SearchHit hit) throws DataSetWriteException
 	{
+		DocumentType<?> dt = dwcaConfig.getDocumentType();
 		try {
 			for (int i = 0; i < entities.length; i++) {
 				// Squash current document and loop over resulting entity objects:
-				List<EntityObject> eos = flatteners[i].flatten(hit.getSource());
+				Object document = ESUtil.toDocumentObject(hit, dt);
+				List<EntityObject> eos = flatteners[i].flatten(document);
 				ENTITY_OBJECT_LOOP: for (EntityObject eo : eos) {
 					// Loop over filters defined for current entity:
 					for (IEntityFilter filter : entities[i].getFilters()) {

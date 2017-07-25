@@ -23,8 +23,7 @@ public class RecordedByCalculator implements ICalculator {
 	@Override
 	public Object calculateValue(EntityObject entity) throws CalculationException
 	{
-		SpecimenCalculatorCache cache = SpecimenCalculatorCache.instance;
-		Specimen specimen = cache.getSpecimen(entity);
+		Specimen specimen = (Specimen) entity.getDocument();
 		GatheringEvent ge = specimen.getGatheringEvent();
 		if (ge == null) {
 			return EMPTY_STRING;

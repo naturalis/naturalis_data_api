@@ -7,6 +7,7 @@ import static nl.naturalis.nba.dao.format.FormatUtil.EMPTY_STRING;
 import java.net.URI;
 
 import nl.naturalis.nba.api.Path;
+import nl.naturalis.nba.common.PathValueReader;
 import nl.naturalis.nba.dao.format.AbstractField;
 import nl.naturalis.nba.dao.format.EntityObject;
 import nl.naturalis.nba.dao.format.IField;
@@ -21,19 +22,19 @@ import nl.naturalis.nba.dao.format.IField;
  */
 class EntityDataField extends AbstractField {
 
-	private Path path;
+	private PathValueReader pvr;
 
 	EntityDataField(String name, URI term, Path path)
 	{
 		super(name, term);
-		this.path = path;
+		this.pvr = new PathValueReader(path);
 	}
 
 	@Override
 	public String getValue(EntityObject entity)
 	{
-		Object value = readField(entity.getData(), path);
-		if (value == MISSING_VALUE) {
+		Object value = pvr.read(entity.getEntity());
+		if (value == null) {
 			return EMPTY_STRING;
 		}
 		return value.toString();

@@ -1,12 +1,11 @@
 package nl.naturalis.nba.dao.format.calc;
 
-import static nl.naturalis.nba.common.json.JsonUtil.readField;
 import static nl.naturalis.nba.dao.format.FormatUtil.EMPTY_STRING;
 
 import java.util.Map;
 
-import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.api.model.Taxon;
+import nl.naturalis.nba.common.PathValueReader;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.format.CalculationException;
 import nl.naturalis.nba.dao.format.CalculatorInitializationException;
@@ -26,9 +25,9 @@ import nl.naturalis.nba.dao.format.ICalculator;
  */
 public class NamePublishedInCalculator implements ICalculator {
 
-	private Path titlePath;
-	private Path authorPath;
-	private Path datePath;
+	private PathValueReader titlePath;
+	private PathValueReader authorPath;
+	private PathValueReader datePath;
 
 	@Override
 	public void initialize(Map<String, String> args) throws CalculatorInitializationException
@@ -40,15 +39,15 @@ public class NamePublishedInCalculator implements ICalculator {
 		}
 		switch (type) {
 			case "accepted name":
-				titlePath = new Path("acceptedName.references.0.titleCitation");
-				authorPath = new Path("acceptedName.references.0.author.fullName");
-				datePath = new Path("acceptedName.references.0.publicationDate");
+				titlePath = new PathValueReader("acceptedName.references.0.titleCitation");
+				authorPath = new PathValueReader("acceptedName.references.0.author.fullName");
+				datePath = new PathValueReader("acceptedName.references.0.publicationDate");
 				break;
 			case "synonym":
 			case "vernacular name":
-				titlePath = new Path("references.0.titleCitation");
-				authorPath = new Path("references.0.author.fullName");
-				datePath = new Path("references.0.publicationDate");
+				titlePath = new PathValueReader("references.0.titleCitation");
+				authorPath = new PathValueReader("references.0.author.fullName");
+				datePath = new PathValueReader("references.0.publicationDate");
 				break;
 			default:
 				String msg = "Contents of element <arg name=\"type\"> must be one "
@@ -63,16 +62,16 @@ public class NamePublishedInCalculator implements ICalculator {
 		String title = EMPTY_STRING;
 		String author = EMPTY_STRING;
 		String date = EMPTY_STRING;
-		Object value = readField(entity.getData(), titlePath);
+		Object value = titlePath.read(entity.getEntity());
 		if (value != JsonUtil.MISSING_VALUE) {
 			title = value.toString();
 		}
-		value = readField(entity.getData(), authorPath);
+		value = authorPath.read(entity.getEntity());
 		if (value != JsonUtil.MISSING_VALUE) {
 			author = value.toString();
 		}
-		value = readField(entity.getData(), datePath);
-		if (value != JsonUtil.MISSING_VALUE) {
+		value = datePath.read(entity.getEntity());
+		if (value != null) {
 			date = FormatUtil.formatDate(value.toString());
 		}
 		if (title == EMPTY_STRING && author == EMPTY_STRING && date == EMPTY_STRING) {

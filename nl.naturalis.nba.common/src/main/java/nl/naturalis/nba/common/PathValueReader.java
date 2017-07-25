@@ -1,11 +1,12 @@
 package nl.naturalis.nba.common;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 import nl.naturalis.nba.api.Path;
-import nl.naturalis.nba.utils.ClassUtil;
 
 /**
  * A {@code PathReader} reads and returns the value of a field within an object.
@@ -23,55 +24,61 @@ public class PathValueReader {
 
 	private Path path;
 
+	public PathValueReader(String path)
+	{
+		this(new Path(path));
+	}
+
 	public PathValueReader(Path path)
 	{
 		this.path = path;
 	}
 
-	public List<Object> readValue(Object obj) throws InvalidPathException
+	public Object read(Object obj) throws InvalidPathException
 	{
-		if (obj == null) {
-			String fmt = "Object must not be null when reading %s";
-			String msg = String.format(fmt, path);
-			throw new IllegalArgumentException(msg);
+		Objects.requireNonNull(obj, "Object must not be null");
+		if (obj instanceof Iterable) {
+			throw new IllegalArgumentException("Object must not be an Iterable");
 		}
 		if (path.countElements() == 0) {
-			throw new InvalidPathException("Path must not be null");
+			return obj;
 		}
-		ArrayList<Object> values = new ArrayList<>();
-		read(path, obj, values);
-		return values;
-	}
-
-	private static void read(Path path, Object obj, ArrayList<Object> values)
-			throws InvalidPathException
-	{
-		Field f = FieldCache.get(path.getElement(0), obj.getClass());
-		if (!f.isAccessible()) {
-			f.setAccessible(true);
-		}
-		Object child = getValue(f, obj);
-		if (path.countElements() == 1) {
-			values.add(child);
-		}
-		else if (child != null) {
-			if (ClassUtil.isA(f.getType(), Iterable.class)) {
-				for (Object elem : (Iterable<?>) child) {
-					read(path.shift(), elem, values);
+		for (int i = 0; i < path.countElements(); i++) {
+			obj = readField(path.getElement(i), obj);
+			if (obj == null || i == path.countElements() - 1) {
+				return obj;
+			}
+			if (obj instanceof Iterable) {
+				try {
+					int idx = Integer.parseInt(path.getElement(i + 1));
+					Iterator<?> iterator = ((Iterable<?>) obj).iterator();
+					for (int j = 0; j < idx; j++) {
+						if (!iterator.hasNext()) {
+							return null;
+						}
+						obj = iterator.next();
+					}
+					if (obj == null || ++i == path.countElements() - 1) {
+						return obj;
+					}
+				}
+				catch (NumberFormatException e) {
+					String fmt = "Missing array index after %s in path %s";
+					String msg = String.format(fmt, path.getElement(i), path);
+					throw new InvalidPathException(msg);
 				}
 			}
-			else {
-				read(path.shift(), child, values);
-			}
 		}
+		/* Won't get here */ return null;
 	}
 
-	private static Object getValue(Field f, Object obj)
+	private static Object readField(String field, Object obj) throws InvalidPathException
 	{
+		Field f = FieldCache.get(field, obj.getClass());
 		try {
 			return f.get(obj);
 		}
-		catch (IllegalArgumentException | IllegalAccessException e) {
+		catch (IllegalAccessException e) {
 			throw new RuntimeException(e);
 		}
 	}

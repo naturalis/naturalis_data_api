@@ -1,13 +1,12 @@
 package nl.naturalis.nba.dao.format.filter;
 
 import static nl.naturalis.nba.common.json.JsonUtil.MISSING_VALUE;
-import static nl.naturalis.nba.common.json.JsonUtil.readField;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import nl.naturalis.nba.api.Path;
+import nl.naturalis.nba.common.PathValueReader;
 import nl.naturalis.nba.dao.format.EntityFilterException;
 import nl.naturalis.nba.dao.format.EntityFilterInitializationException;
 import nl.naturalis.nba.dao.format.EntityObject;
@@ -42,7 +41,7 @@ public class SimpleEntityFilter implements IEntityFilter {
 
 	private static final String NULL_STRING = "@NULL@";
 
-	private Path path;
+	private PathValueReader pvr;
 	private String separator = ",";
 	private String[] values;
 	private boolean ignoreCase;
@@ -60,7 +59,7 @@ public class SimpleEntityFilter implements IEntityFilter {
 					+ "entity filter \"GenericEntityFilter\"";
 			throw new EntityFilterInitializationException(msg);
 		}
-		path = new Path(arg);
+		pvr = new PathValueReader(arg);
 		arg = args.get("separator");
 		if (arg != null && arg.length() != 0) {
 			separator = arg;
@@ -90,7 +89,7 @@ public class SimpleEntityFilter implements IEntityFilter {
 	public boolean accept(EntityObject entity) throws EntityFilterException
 	{
 		boolean accept = !invert;
-		Object value = readField(entity.getData(), path);
+		Object value = pvr.read(entity.getEntity());
 		if (value == MISSING_VALUE) {
 			return containsNullString ? accept : !accept;
 		}

@@ -1,6 +1,7 @@
 package nl.naturalis.nba.dao.format;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Utility class for writing data set documents.
@@ -59,6 +60,11 @@ public class FormatUtil {
 		chars[4] = '/';
 		chars[7] = '/';
 		return new String(chars);
+	}
+
+	public static String formatDate(Date esDate)
+	{
+		return DEFAULT_DATE_FORMAT.format(esDate);
 	}
 
 }

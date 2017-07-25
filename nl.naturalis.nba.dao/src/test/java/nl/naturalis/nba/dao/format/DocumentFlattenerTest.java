@@ -73,7 +73,7 @@ public class DocumentFlattenerTest {
 		DocumentFlattener df = new DocumentFlattener(new Path(new String[0]), 1);
 		List<EntityObject> records = df.flatten(taxon);
 		assertEquals("01", 1, records.size());
-		assertTrue("02", records.get(0).getData() == taxon);
+		assertTrue("02", records.get(0).getEntity() == taxon);
 		assertTrue("03", records.get(0).getDocument() == taxon);
 	}
 
@@ -83,8 +83,8 @@ public class DocumentFlattenerTest {
 		DocumentFlattener df = new DocumentFlattener(new Path("vernacularNames"), 4);
 		List<EntityObject> records = df.flatten(taxon);
 		assertEquals("01", 2, records.size());
-		assertTrue("02", records.get(0).getData() == vernacularName0);
-		assertTrue("03", records.get(1).getData() == vernacularName1);
+		assertTrue("02", records.get(0).getEntity() == vernacularName0);
+		assertTrue("03", records.get(1).getEntity() == vernacularName1);
 		assertTrue("04", records.get(0).getDocument() == taxon);
 		assertTrue("05", records.get(1).getDocument() == taxon);
 	}
@@ -95,7 +95,7 @@ public class DocumentFlattenerTest {
 		DocumentFlattener df = new DocumentFlattener(new Path("acceptedName"), 1);
 		List<EntityObject> records = df.flatten(taxon);
 		assertEquals("01", 1, records.size());
-		assertTrue("02", records.get(0).getData() == acceptedName);
+		assertTrue("02", records.get(0).getEntity() == acceptedName);
 		assertTrue("03", records.get(0).getDocument() == taxon);
 	}
 
@@ -105,10 +105,10 @@ public class DocumentFlattenerTest {
 		DocumentFlattener df = new DocumentFlattener(new Path("vernacularNames.references"), 4);
 		List<EntityObject> records = df.flatten(taxon);
 		assertEquals("01", 4, records.size());
-		assertTrue("02", records.get(0).getData() == reference0);
-		assertTrue("03", records.get(1).getData() == reference1);
-		assertTrue("04", records.get(2).getData() == reference0);
-		assertTrue("05", records.get(3).getData() == reference1);
+		assertTrue("02", records.get(0).getEntity() == reference0);
+		assertTrue("03", records.get(1).getEntity() == reference1);
+		assertTrue("04", records.get(2).getEntity() == reference0);
+		assertTrue("05", records.get(3).getEntity() == reference1);
 		assertTrue("06", records.get(0).getDocument() == taxon);
 		assertTrue("07", records.get(1).getDocument() == taxon);
 		assertTrue("06", records.get(2).getDocument() == taxon);

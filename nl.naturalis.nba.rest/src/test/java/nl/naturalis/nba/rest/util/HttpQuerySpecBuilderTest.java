@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -60,16 +61,14 @@ public class HttpQuerySpecBuilderTest {
 	{
 	}
 
-	
+	/*
+	 * Test of human readable URL request containing a parameter twice 
+	 * Test URL:
+	 * http://localhost:8080/v2/specimen/query/?sourceSystem.code=CRS&collectionType=Aves&collectionType=Mammalia
+	 */
 	@Test
 	public void test_01_Build() throws URISyntaxException
 	{
-
-		/*
-		 * Test of human readable URL request containing a parameter twice 
-		 * Test URL:
-		 * http://localhost:8080/v2/specimen/query/?sourceSystem.code=CRS&collectionType=Aves&collectionType=Mammalia
-		 */
 		String param1 = "sourceSystem.code";
 		String value1 = "CRS";
 		
@@ -102,14 +101,118 @@ public class HttpQuerySpecBuilderTest {
         assertTrue("Test duplicate parameters", paramTest);
         
 	}
+
 	
+	/*
+	 * Test of human readable URL: request containing a parameter with value "querySpec" 
+	 */
 	@Test
 	public void test_02_Build() throws URISyntaxException
+	{
+		String param1 = "sourceSystem.code";
+		String value1 = "CRS";
+		
+		String param2 = "querySpec";
+		String value2 = "test";
+		
+		String parameters = param1 + "=" + value1 + "&" + param2 + "=" + value2;
+		
+		String baseURI = "http://localhost:8080/v2";
+		String documentType = "specimen";
+		String requestURI = baseURI + "/" + documentType + "/query/?" + parameters; 
+		
+		UriInfo uriInfo = mock(UriInfo.class);		
+        when(uriInfo.getRequestUri()).thenReturn(new URI(requestURI)); 
+        when(uriInfo.getBaseUri()).thenReturn(new URI(baseURI)); 
+        when(uriInfo.getQueryParameters()).thenReturn(parseQueryParameters(baseURI + requestURI));
+        
+        Boolean paramTest = false;
+        try {
+        	QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
+        } catch (HTTP400Exception ex) {
+        	paramTest = true;
+        }
+        assertTrue("Test parameter querySpec", paramTest);     
+	}
+
+	@Test
+	public void test_03_Build() throws URISyntaxException
+	{
+
+		/*
+		 * Test of human readable URL request: parameter beginning with underscore 
+		 */
+		String param1 = "sourceSystem.code";
+		String value1 = "CRS";
+		
+		String param2 = "_test";
+		String value2 = "test";
+		
+		String parameters = param1 + "=" + value1 + "&" + param2 + "=" + value2;
+		
+		String baseURI = "http://localhost:8080/v2";
+		String documentType = "specimen";
+		String requestURI = baseURI + "/" + documentType + "/query/?" + parameters; 
+		
+		UriInfo uriInfo = mock(UriInfo.class);		
+        when(uriInfo.getRequestUri()).thenReturn(new URI(requestURI)); 
+        when(uriInfo.getBaseUri()).thenReturn(new URI(baseURI)); 
+        when(uriInfo.getQueryParameters()).thenReturn(parseQueryParameters(baseURI + requestURI));
+        
+        Boolean paramTest = false;
+        try {
+        	QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
+        } catch (HTTP400Exception ex) {
+        	paramTest = true;
+        }
+        assertTrue("Test illegal parameter", paramTest);        
+	}
+
+	/*
+	 * Test of human readable URL request: value equals @NULL@ 
+	 */
+	@Test
+	public void test_04_Build() throws URISyntaxException
+	{
+		String param1 = "sourceSystem.code";
+		String value1 = "BRAHMS";
+		
+		String param2 = "collectionType";
+		String value2 = "@NULL@";
+		
+		String parameters = param1 + "=" + value1 + "&" + param2 + "=" + value2;
+		
+		String baseURI = "http://localhost:8080/v2";
+		String documentType = "specimen";
+		String requestURI = baseURI + "/" + documentType + "/query/?" + parameters; 
+		
+		UriInfo uriInfo = mock(UriInfo.class);		
+        when(uriInfo.getRequestUri()).thenReturn(new URI(requestURI)); 
+        when(uriInfo.getBaseUri()).thenReturn(new URI(baseURI)); 
+        when(uriInfo.getQueryParameters()).thenReturn(parseQueryParameters(baseURI + requestURI));
+        
+        QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
+        Boolean nullValueTest = false;
+        for (QueryCondition condition : qs.getConditions()) {
+        	System.out.println("Condition in test: " + condition.getField() + " " + condition.getOperator() + " " + condition.getValue());
+        	if (condition.getField().toString().equals(param2)) {
+        		if (condition.getValue() == null && condition.getOperator() == EQUALS) {
+        			nullValueTest = true;
+        		}
+        	}
+
+        }        
+        assertTrue("Test NULL value in parameter", nullValueTest);
+    }
+	
+	
+	@Test
+	public void test_099_Build() throws URISyntaxException
 	{
 		// Test URL: 
 		// http://localhost:8080/v2/specimen/query/?sourceSystem.code=CRS&collectionType=Aves&gatheringEvent.country=@NOT_NULL@&_fields=gatheringEvent.country
 		
-/*		
+		
 		String param1 = "sourceSystem.code";
 		String value1 = "CRS";
 		

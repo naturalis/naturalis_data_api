@@ -85,23 +85,19 @@ public class HttpQuerySpecBuilder {
 	public QuerySpec build()
 	{
 		logger.info("Extracting QuerySpec object from request");
-
-//		for (String parameter : params.keySet()) {
-//			logger.info("Parameter: " + parameter + " - value: " + params.get(parameter).toString());
-//		}
-		
 		checkParams(uriInfo);
 
 		List<String> values = params.get(PARAM_QUERY_SPEC);
 		if (values != null) {
 			return buildFromSearchSpecParam(values);
 		}
+
 		QuerySpec qs = new QuerySpec();
 		ComparisonOperator operator = getComparisonOperator();
 		for (String param : params.keySet()) {
 			
 			logger.info("param = " + param);
-			logger.info("key = " + params.get(param));
+			logger.info("key = " + params.get(param) + " (" + params.get(param).size() + ")");
 
 			values = params.get(param);
 			if (values.size() != 1) {

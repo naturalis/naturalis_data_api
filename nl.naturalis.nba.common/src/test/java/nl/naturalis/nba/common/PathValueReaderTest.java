@@ -14,17 +14,16 @@ import nl.naturalis.nba.api.model.SpecimenIdentification;
 @SuppressWarnings("static-method")
 public class PathValueReaderTest {
 
-//	@Test
-//	public void testReadValue_01() throws InvalidPathException
-//	{
-//		Specimen specimen = new Specimen();
-//		String unitID = "ZMA.MAM.123456";
-//		specimen.setUnitID(unitID);
-//		PathValueReader pr = new PathValueReader(new Path("unitID"));
-//		List<Object> value = pr.readValue(specimen);
-//		assertEquals("01", 1, value.size());
-//		assertEquals("02", unitID, value.get(0));
-//	}
+	@Test
+	public void testReadValue_01() throws InvalidPathException
+	{
+		Specimen specimen = new Specimen();
+		String unitID = "ZMA.MAM.123456";
+		specimen.setUnitID(unitID);
+		PathValueReader pr = new PathValueReader(new Path("unitID"));
+		Object value = pr.read(specimen);
+		assertEquals("02", unitID, value);
+	}
 //
 //	@Test
 //	public void testReadValue_02() throws InvalidPathException

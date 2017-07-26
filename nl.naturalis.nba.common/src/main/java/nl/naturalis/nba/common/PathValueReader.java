@@ -49,16 +49,17 @@ public class PathValueReader {
 				return obj;
 			}
 			if (obj instanceof Iterable) {
+				++i;
 				try {
-					int idx = Integer.parseInt(path.getElement(i + 1));
+					int idx = Integer.parseInt(path.getElement(i));
 					Iterator<?> iterator = ((Iterable<?>) obj).iterator();
-					for (int j = 0; j < idx; j++) {
+					for (int j = 0; j <= idx; j++) {
 						if (!iterator.hasNext()) {
 							return null;
 						}
 						obj = iterator.next();
 					}
-					if (obj == null || ++i == path.countElements() - 1) {
+					if (obj == null||i == path.countElements() - 1) {
 						return obj;
 					}
 				}
@@ -72,9 +73,14 @@ public class PathValueReader {
 		/* Won't get here */ return null;
 	}
 
-	private static Object readField(String field, Object obj) throws InvalidPathException
+	private Object readField(String field, Object obj) throws InvalidPathException
 	{
 		Field f = FieldCache.get(field, obj.getClass());
+		if (f == null) {
+			String fmt = "Invalid path for objects of type %s: %s (no such field: %s)";
+			String msg = String.format(fmt, obj.getClass(), path, field);
+			throw new InvalidPathException(msg);
+		}
 		try {
 			return f.get(obj);
 		}

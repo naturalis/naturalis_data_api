@@ -1,11 +1,15 @@
 package nl.naturalis.nba.dao.util;
 
+import static nl.naturalis.nba.dao.DaoUtil.getLogger;
+
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+
+import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.utils.IOUtil;
 
@@ -19,6 +23,8 @@ import nl.naturalis.nba.utils.IOUtil;
  *
  */
 public class SwapFileOutputStream extends SwapOutputStream {
+
+	private static final Logger logger = getLogger(SwapFileOutputStream.class);
 
 	/**
 	 * Creates a new instance that swaps its in-memory buffer an auto-generated
@@ -125,6 +131,8 @@ public class SwapFileOutputStream extends SwapOutputStream {
 	{
 		close();
 		if (swapFile.exists()) {
+			long size = swapFile.length() / 1024;
+			logger.info("Deleting swap file {} ({} kB)", swapFile.getPath(), size);
 			swapFile.delete();
 		}
 	}

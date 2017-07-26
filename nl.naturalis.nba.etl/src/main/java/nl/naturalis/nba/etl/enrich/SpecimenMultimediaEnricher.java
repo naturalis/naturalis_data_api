@@ -82,6 +82,7 @@ public class SpecimenMultimediaEnricher {
 		DocumentType<Specimen> dt = SPECIMEN;
 		QueryCondition condition = new QueryCondition("sourceSystem.code", "=", "CRS");
 		QuerySpec qs = new QuerySpec();
+		qs.setConstantScore(true);
 		qs.addCondition(condition);
 		qs.setSize(readBatchSize);
 		DirtyDocumentIterator<Specimen> extractor = new DirtyDocumentIterator<>(dt, qs);

@@ -1,7 +1,5 @@
 package nl.naturalis.nba.dao.format.csv;
 
-import static nl.naturalis.nba.common.json.JsonUtil.MISSING_VALUE;
-import static nl.naturalis.nba.common.json.JsonUtil.readField;
 import static nl.naturalis.nba.dao.format.FormatUtil.EMPTY_STRING;
 
 import java.net.URI;

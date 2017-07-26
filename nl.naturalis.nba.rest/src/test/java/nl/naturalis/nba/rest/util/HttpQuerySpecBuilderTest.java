@@ -9,9 +9,11 @@ import static org.mockito.Mockito.when;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
@@ -27,6 +29,7 @@ import nl.naturalis.nba.api.ComparisonOperator;
 import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QuerySpec;
+import nl.naturalis.nba.rest.exception.HTTP400Exception;
 
 
 public class HttpQuerySpecBuilderTest {
@@ -59,11 +62,54 @@ public class HttpQuerySpecBuilderTest {
 
 	
 	@Test
-	public void testBuild() throws URISyntaxException
+	public void test_01_Build() throws URISyntaxException
 	{
 
-		// Test URL: http://localhost:8080/v2/specimen/query/?sourceSystem.code=CRS&collectionType=Aves&gatheringEvent.country=@NOT_NULL@&_fields=gatheringEvent.country";
+		/*
+		 * Test of human readable URL request containing a parameter twice 
+		 * Test URL:
+		 * http://localhost:8080/v2/specimen/query/?sourceSystem.code=CRS&collectionType=Aves&collectionType=Mammalia
+		 */
+		String param1 = "sourceSystem.code";
+		String value1 = "CRS";
 		
+		String param2 = "collectionType";
+		String value2 = "Aves";
+		
+		String param3 = "collectionType";
+		String value3 = "Mammalia";
+		
+		String parameters = param1 + "=" + value1 + "&" + param2 + "=" + value2 + "&" + param3 + "=" + value3;
+		
+		String baseURI = "http://localhost:8080/v2";
+		String documentType = "specimen";
+		String requestURI = baseURI + "/" + documentType + "/query/?" + parameters; 
+		
+		UriInfo uriInfo = mock(UriInfo.class);		
+        when(uriInfo.getRequestUri()).thenReturn(new URI(requestURI)); 
+        when(uriInfo.getBaseUri()).thenReturn(new URI(baseURI)); 
+        when(uriInfo.getQueryParameters()).thenReturn(parseQueryParameters(baseURI + requestURI));
+        
+        assertEquals("Test baseURI", new URI(baseURI), uriInfo.getBaseUri());
+        assertEquals("Test requestURI", new URI(requestURI), uriInfo.getRequestUri());
+
+        Boolean paramTest = false;
+        try {
+        	QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
+        } catch (HTTP400Exception ex) {
+        	paramTest = true;
+        }
+        assertTrue("Test duplicate parameters", paramTest);
+        
+	}
+	
+	@Test
+	public void test_02_Build() throws URISyntaxException
+	{
+		// Test URL: 
+		// http://localhost:8080/v2/specimen/query/?sourceSystem.code=CRS&collectionType=Aves&gatheringEvent.country=@NOT_NULL@&_fields=gatheringEvent.country
+		
+/*		
 		String param1 = "sourceSystem.code";
 		String value1 = "CRS";
 		
@@ -73,13 +119,17 @@ public class HttpQuerySpecBuilderTest {
 		String param3 = "gatheringEvent.country";
 		String value3 = "@NOT_NULL@";
 		
-		String parameters = param1 + "=" + value1 + "&" + param2 + "=" + value2 + "&" + param3 + "=" + value3;
+		String param4 = "_ignoreCase";
+		String value4 = "true";
 		
-		HashMap paramsExpected = new HashMap();
+		String parameters = param1 + "=" + value1 + "&" + param2 + "=" + value2 + "&" + param3 + "=" + value3 + "&" + param4 + "=" + value4;
+		
+		Map<String, String> paramsExpected = new HashMap<>();
 		paramsExpected.put(param1, value1);
 		paramsExpected.put(param2, value2);
 		paramsExpected.put(param3, null);
-		
+		paramsExpected.put(param4, value4);
+
 		String field1 = "gatheringEvent.country";
 		String fields = "_fields=" + field1;
 		
@@ -88,7 +138,6 @@ public class HttpQuerySpecBuilderTest {
 		
 		String requestURI = baseURI + "/" + documentType + "/query/?" + parameters + "&" + fields; 
 		
-
 		UriInfo uriInfo = mock(UriInfo.class);		
         when(uriInfo.getRequestUri()).thenReturn(new URI(requestURI)); 
         when(uriInfo.getBaseUri()).thenReturn(new URI(baseURI)); 
@@ -98,19 +147,49 @@ public class HttpQuerySpecBuilderTest {
         assertEquals("Test requestURI", new URI(requestURI), uriInfo.getRequestUri());
 
         QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
+
+        // Comparison operator
+        // &_ignoreCase=true
+        // &_ignoreCase=1
+        // &_ignoreCase=false
+        // &_ignoreCase=
+
+        // ... 
+        
+        
+        
+
         
         HashMap paramsActual = new HashMap();
         for (QueryCondition condition : qs.getConditions()) {
-        	System.out.println("Condition: " + condition.getField() + " = " + condition.getValue() );
+        	System.out.println("Condition: " + condition.getField() + " " + condition.getOperator() + " " + condition.getValue());
         	paramsActual.put(condition.getField(), condition.getValue());
         }
         
         assertTrue(paramsExpected.equals(paramsActual));
 		
         assertTrue("QS", (qs != null));
+		
+		/**
+		Map<String, String[]> paramsURL = new HashMap<>();
+		String[] p1 = {"CRS"};
+		paramsURL.put("sourceSystem.code", p1);
+		String[] p2 = {"Aves", "Mammalia"};
+		paramsURL.put("collectionType", p2);
+		
+		for (String key : paramsURL.keySet()) {
+			System.out.println(key + " : " + Arrays.toString(paramsURL.get(key)));
+		}
+		
+		for (Entry<String, String[]> entry : paramsURL.entrySet()) {
+			System.out.println(entry.getKey() + " : " + Arrays.toString(entry.getValue()));
+		}
 
-        
-        
+		System.out.println("Keys: " + paramsURL.keySet());
+		
+		*/
+		
+		
 	}
 	
 }

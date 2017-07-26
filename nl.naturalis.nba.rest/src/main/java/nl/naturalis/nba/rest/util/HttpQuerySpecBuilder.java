@@ -86,9 +86,9 @@ public class HttpQuerySpecBuilder {
 	{
 		logger.info("Extracting QuerySpec object from request");
 
-		for (String parameter : params.keySet()) {
-			logger.info("Parameter: " + parameter + " - value: " + params.get(parameter).toString());
-		}
+//		for (String parameter : params.keySet()) {
+//			logger.info("Parameter: " + parameter + " - value: " + params.get(parameter).toString());
+//		}
 		
 		checkParams(uriInfo);
 
@@ -99,6 +99,10 @@ public class HttpQuerySpecBuilder {
 		QuerySpec qs = new QuerySpec();
 		ComparisonOperator operator = getComparisonOperator();
 		for (String param : params.keySet()) {
+			
+			logger.info("param = " + param);
+			logger.info("key = " + params.get(param));
+
 			values = params.get(param);
 			if (values.size() != 1) {
 				String msg = String.format(ERR_DUPLICATE_PARAM, param);

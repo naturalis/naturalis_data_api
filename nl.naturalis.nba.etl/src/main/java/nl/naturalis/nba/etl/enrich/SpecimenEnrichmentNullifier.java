@@ -17,7 +17,7 @@ import nl.naturalis.nba.api.model.TaxonomicEnrichment;
 import nl.naturalis.nba.api.model.TaxonomicIdentification;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.ESClientManager;
-import nl.naturalis.nba.dao.util.es.AcidDocumentIterator;
+import nl.naturalis.nba.dao.util.es.DirtyDocumentIterator;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.BulkIndexException;
 import nl.naturalis.nba.etl.BulkIndexer;
@@ -77,7 +77,7 @@ public class SpecimenEnrichmentNullifier {
 		DocumentType<Specimen> dt = SPECIMEN;
 		QuerySpec qs = new QuerySpec();
 		qs.setSize(batchSize);
-		AcidDocumentIterator<Specimen> iterator = new AcidDocumentIterator<>(dt, qs);
+		DirtyDocumentIterator<Specimen> iterator = new DirtyDocumentIterator<>(dt, qs);
 		BulkIndexer<Specimen> indexer = new BulkIndexer<>(SPECIMEN);
 		ArrayList<Specimen> batch = new ArrayList<>(batchSize);
 		int processed = 0;

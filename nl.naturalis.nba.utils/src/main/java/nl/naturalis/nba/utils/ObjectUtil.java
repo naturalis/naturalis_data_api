@@ -24,8 +24,7 @@ public class ObjectUtil {
 	}
 
 	/**
-	 * Returns {@code dfault} if the argument is {@code null}, otherwise the
-	 * argument
+	 * Returns {@code null} if {@code obj} is {@code null}, else {@code dfault}.
 	 * 
 	 * @param obj
 	 * @return

@@ -9,13 +9,13 @@ import java.util.Objects;
 import nl.naturalis.nba.api.Path;
 
 /**
- * A {@code PathReader} reads and returns the value of a field within an object.
- * The field is specified by means of a {@link Path}. The value is always
- * returned as a {@link List}, even if all path elements are single-valued
- * objects (i.e. they are neither arrays nor {@link Collection} objects). Also
- * note that more than one path element may be multi-valued. In that case,
- * <i>all</i> values for the last path element are collected and returned in a
- * new {@code List}.
+ * A {@code PathValueReader} reads and returns the value of a field within an
+ * object. The field is specified by means of a {@link Path}. The value is
+ * always returned as a {@link List}, even if all path elements are
+ * single-valued objects (i.e. they are neither arrays nor {@link Collection}
+ * objects). Also note that more than one path element may be multi-valued. In
+ * that case, <i>all</i> values for the last path element are collected and
+ * returned in a new {@code List}.
  * 
  * @author Ayco Holleman
  *
@@ -26,7 +26,7 @@ public class PathValueReader {
 
 	/**
 	 * Creates a {@code PathValueReader} that will read values from objects at
-	 * the specifried path.
+	 * the specified path.
 	 * 
 	 * @param path
 	 */
@@ -37,7 +37,7 @@ public class PathValueReader {
 
 	/**
 	 * Creates a {@code PathValueReader} that will read values from objects at
-	 * the specifried path.
+	 * the specified path.
 	 * 
 	 * @param path
 	 */

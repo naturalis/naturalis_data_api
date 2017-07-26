@@ -1,7 +1,5 @@
 package nl.naturalis.nba.dao.format.filter;
 
-import static nl.naturalis.nba.common.json.JsonUtil.MISSING_VALUE;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -90,7 +88,7 @@ public class SimpleEntityFilter implements IEntityFilter {
 	{
 		boolean accept = !invert;
 		Object value = pvr.read(entity.getEntity());
-		if (value == MISSING_VALUE) {
+		if (value == null) {
 			return containsNullString ? accept : !accept;
 		}
 		if (ignoreCase) {

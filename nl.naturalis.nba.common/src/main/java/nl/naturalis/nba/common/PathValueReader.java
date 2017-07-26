@@ -24,22 +24,43 @@ public class PathValueReader {
 
 	private Path path;
 
+	/**
+	 * Creates a {@code PathValueReader} that will read values from objects at
+	 * the specifried path.
+	 * 
+	 * @param path
+	 */
 	public PathValueReader(String path)
 	{
 		this(new Path(path));
 	}
 
+	/**
+	 * Creates a {@code PathValueReader} that will read values from objects at
+	 * the specifried path.
+	 * 
+	 * @param path
+	 */
 	public PathValueReader(Path path)
 	{
 		this.path = path;
 	}
 
+	/**
+	 * Follows the {@link Path} into the specified object, reading the value of
+	 * the last element in the path. If one of the intermediate path elements
+	 * turns out to be {@code null}, {@code null} is returned. If one of the
+	 * intermediate path elements is an {@link Iterable}, the next path element
+	 * <i>must</i> be an array index (for example:
+	 * identifications.0.defaultClassification.genus).
+	 * 
+	 * @param obj
+	 * @return
+	 * @throws InvalidPathException
+	 */
 	public Object read(Object obj) throws InvalidPathException
 	{
 		Objects.requireNonNull(obj, "Object must not be null");
-		if (obj instanceof Iterable) {
-			throw new IllegalArgumentException("Object must not be an Iterable");
-		}
 		if (path.countElements() == 0) {
 			return obj;
 		}
@@ -59,7 +80,7 @@ public class PathValueReader {
 						}
 						obj = iterator.next();
 					}
-					if (obj == null||i == path.countElements() - 1) {
+					if (obj == null || i == path.countElements() - 1) {
 						return obj;
 					}
 				}

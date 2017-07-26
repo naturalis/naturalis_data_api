@@ -1,12 +1,14 @@
 package nl.naturalis.nba.dao.format.calc;
 
 import static nl.naturalis.nba.dao.format.FormatUtil.EMPTY_STRING;
+import static nl.naturalis.nba.utils.ObjectUtil.nvl;
 
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
+import nl.naturalis.nba.api.model.Reference;
 import nl.naturalis.nba.api.model.Taxon;
-import nl.naturalis.nba.common.PathValueReader;
-import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.format.CalculationException;
 import nl.naturalis.nba.dao.format.CalculatorInitializationException;
 import nl.naturalis.nba.dao.format.EntityObject;
@@ -25,9 +27,11 @@ import nl.naturalis.nba.dao.format.ICalculator;
  */
 public class NamePublishedInCalculator implements ICalculator {
 
-	private PathValueReader titlePath;
-	private PathValueReader authorPath;
-	private PathValueReader datePath;
+	private static final int ACCEPTED_NAME = 0;
+	private static final int SYNONYM = 1;
+	private static final int VERNACULAR_NAME = 2;
+
+	private int type;
 
 	@Override
 	public void initialize(Map<String, String> args) throws CalculatorInitializationException
@@ -39,15 +43,13 @@ public class NamePublishedInCalculator implements ICalculator {
 		}
 		switch (type) {
 			case "accepted name":
-				titlePath = new PathValueReader("acceptedName.references.0.titleCitation");
-				authorPath = new PathValueReader("acceptedName.references.0.author.fullName");
-				datePath = new PathValueReader("acceptedName.references.0.publicationDate");
+				this.type = ACCEPTED_NAME;
 				break;
 			case "synonym":
+				this.type = SYNONYM;
+				break;
 			case "vernacular name":
-				titlePath = new PathValueReader("references.0.titleCitation");
-				authorPath = new PathValueReader("references.0.author.fullName");
-				datePath = new PathValueReader("references.0.publicationDate");
+				this.type = VERNACULAR_NAME;
 				break;
 			default:
 				String msg = "Contents of element <arg name=\"type\"> must be one "
@@ -59,38 +61,44 @@ public class NamePublishedInCalculator implements ICalculator {
 	@Override
 	public Object calculateValue(EntityObject entity) throws CalculationException
 	{
-		String title = EMPTY_STRING;
-		String author = EMPTY_STRING;
-		String date = EMPTY_STRING;
-		Object value = titlePath.read(entity.getEntity());
-		if (value != JsonUtil.MISSING_VALUE) {
-			title = value.toString();
+
+		Taxon taxon = (Taxon) entity.getEntity();
+		List<Reference> references;
+		if (type == ACCEPTED_NAME) {
+			references = taxon.getAcceptedName().getReferences();
 		}
-		value = authorPath.read(entity.getEntity());
-		if (value != JsonUtil.MISSING_VALUE) {
-			author = value.toString();
+		else {
+			references = taxon.getReferences();
 		}
-		value = datePath.read(entity.getEntity());
-		if (value != null) {
-			date = FormatUtil.formatDate(value.toString());
+		if (references == null) {
+			return EMPTY_STRING;
 		}
-		if (title == EMPTY_STRING && author == EMPTY_STRING && date == EMPTY_STRING) {
+		Reference ref = references.get(0);
+		String title = ref.getTitleCitation();
+		String author = nvl(ref.getAuthor(), ref.getAuthor().getFullName());
+		Date date = ref.getPublicationDate();
+		if (title == null && author == null && date == null) {
 			return EMPTY_STRING;
 		}
 		StringBuilder sb = new StringBuilder(32);
-		sb.append(title);
-		if (author != EMPTY_STRING || date != EMPTY_STRING) {
-			if (title != EMPTY_STRING) {
+		if (title != null) {
+			sb.append(title);
+		}
+		if (author != null || date != null) {
+			if (title != null) {
 				sb.append(' ');
 			}
 			sb.append('(');
 			sb.append(author);
-			if (author == EMPTY_STRING) {
+			if (author == null) {
+				if (date != null) {
+					sb.append(FormatUtil.formatDate(date));
+				}
 				sb.append(date);
 			}
-			else if (date != EMPTY_STRING) {
+			else if (date != null) {
 				sb.append(", ");
-				sb.append(date);
+				sb.append(FormatUtil.formatDate(date));
 			}
 			sb.append(')');
 		}

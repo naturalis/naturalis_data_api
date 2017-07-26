@@ -2,6 +2,13 @@ package nl.naturalis.nba.utils;
 
 public class ObjectUtil {
 
+	/**
+	 * Null-tolerant comparison of two objects.
+	 * 
+	 * @param obj0
+	 * @param obj1
+	 * @return
+	 */
 	public static <T extends Comparable<T>> int compare(T obj0, T obj1)
 	{
 		if (obj0 == null) {
@@ -14,6 +21,18 @@ public class ObjectUtil {
 			return -1;
 		}
 		return obj0.compareTo(obj1);
+	}
+
+	/**
+	 * Returns {@code dfault} if the argument is {@code null}, otherwise the
+	 * argument
+	 * 
+	 * @param obj
+	 * @return
+	 */
+	public static <T> T nvl(Object obj, T dfault)
+	{
+		return obj == null ? null : dfault;
 	}
 
 	private ObjectUtil()

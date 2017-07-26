@@ -13,7 +13,7 @@ import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.api.model.TaxonomicEnrichment;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.ESClientManager;
-import nl.naturalis.nba.dao.util.es.DirtyDocumentIterator;
+import nl.naturalis.nba.dao.util.es.AcidDocumentIterator;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.BulkIndexException;
 import nl.naturalis.nba.etl.BulkIndexer;
@@ -56,7 +56,7 @@ public class MultimediaEnrichmentNullifier {
 		DocumentType<MultiMediaObject> dt = DocumentType.MULTI_MEDIA_OBJECT;
 		QuerySpec qs = new QuerySpec();
 		qs.setSize(batchSize);
-		DirtyDocumentIterator<MultiMediaObject> iterator = new DirtyDocumentIterator<>(dt, qs);
+		AcidDocumentIterator<MultiMediaObject> iterator = new AcidDocumentIterator<>(dt, qs);
 		BulkIndexer<MultiMediaObject> indexer = new BulkIndexer<>(MULTI_MEDIA_OBJECT);
 		ArrayList<MultiMediaObject> batch = new ArrayList<>(batchSize);
 		int processed = 0;

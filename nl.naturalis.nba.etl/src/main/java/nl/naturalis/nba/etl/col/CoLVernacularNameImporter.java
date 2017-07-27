@@ -12,10 +12,8 @@ import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.dao.DaoRegistry;
 import nl.naturalis.nba.etl.CSVExtractor;
 import nl.naturalis.nba.etl.CSVRecordInfo;
-import nl.naturalis.nba.etl.ETLConstants;
 import nl.naturalis.nba.etl.ETLRuntimeException;
 import nl.naturalis.nba.etl.ETLStatistics;
-import nl.naturalis.nba.utils.ConfigObject;
 import nl.naturalis.nba.utils.IOUtil;
 
 /**
@@ -48,10 +46,6 @@ public class CoLVernacularNameImporter extends CoLImporter {
 	 */
 	public void importCsv(String path)
 	{
-		if (ConfigObject.isEnabled(ETLConstants.SYSPROP_DRY_RUN)) {
-			logger.info("Disabled in dry run: {}", getClass().getName());
-			return;
-		}
 		long start = System.currentTimeMillis();
 		ETLStatistics stats = null;
 		CSVExtractor<CoLVernacularNameCsvField> extractor = null;

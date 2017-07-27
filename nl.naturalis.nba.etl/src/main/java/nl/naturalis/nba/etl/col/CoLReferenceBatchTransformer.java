@@ -3,6 +3,7 @@ package nl.naturalis.nba.etl.col;
 import static nl.naturalis.nba.api.model.SourceSystem.COL;
 import static nl.naturalis.nba.dao.DocumentType.TAXON;
 import static nl.naturalis.nba.dao.util.es.ESUtil.getElasticsearchId;
+import static nl.naturalis.nba.etl.ETLConstants.SYSPROP_DRY_RUN;
 import static nl.naturalis.nba.etl.ETLUtil.getLogger;
 import static nl.naturalis.nba.etl.ETLUtil.getTestGenera;
 import static nl.naturalis.nba.etl.col.CoLReferenceCsvField.creator;
@@ -33,6 +34,7 @@ import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.TransformUtil;
+import nl.naturalis.nba.utils.ConfigObject;
 
 class CoLReferenceBatchTransformer {
 
@@ -46,6 +48,7 @@ class CoLReferenceBatchTransformer {
 	private int numOrphans;
 
 	private String[] testGenera;
+	private boolean dry = ConfigObject.isEnabled(SYSPROP_DRY_RUN);
 
 	CoLReferenceBatchTransformer()
 	{
@@ -60,12 +63,13 @@ class CoLReferenceBatchTransformer {
 			Taxon taxon = lookupTable.get(id);
 			Reference reference = createReference(record);
 			if (taxon == null) {
-				++numOrphans;
 				/*
-				 * When creating a test set we're bound to have huge amounts of
-				 * orphans; let's not clutter up our log files
+				 * When executing a dry run or importing a test set, we're bound
+				 * to have huge amounts of orphans, so we are not going to
+				 * report on this in that case.
 				 */
-				if (testGenera == null) {
+				if (dry == false || testGenera == null) {
+					++numOrphans;
 					logger.error("{} | Orphan: {} ", id, reference);
 				}
 			}

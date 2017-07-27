@@ -23,14 +23,13 @@ import nl.naturalis.nba.dao.format.IField;
  * However, you would probably still also want to include the taxon ID in the
  * CSV record. In that case you would need a {@code DocumentDataField}, because
  * the taxon ID is not part of the {@code VernacularName} object. It sits at the
- * top-most level of the {@code Taxon} document. See also
- * {@link EntityDataField}.
+ * top-most level of the {@code Taxon} document. See also {@link EntityField}.
  */
-class DocumentDataField extends AbstractField {
+class DocumentField extends AbstractField {
 
 	private PathValueReader pvr;
 
-	DocumentDataField(String name, URI term, Path path)
+	DocumentField(String name, URI term, Path path)
 	{
 		super(name, term);
 		this.pvr = new PathValueReader(path);
@@ -40,10 +39,7 @@ class DocumentDataField extends AbstractField {
 	public String getValue(EntityObject entity)
 	{
 		Object value = pvr.read(entity.getDocument());
-		if (value == null) {
-			return EMPTY_STRING;
-		}
-		return value.toString();
+		return value == null ? EMPTY_STRING : value.toString();
 	}
 
 }

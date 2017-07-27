@@ -4,17 +4,18 @@ import static nl.naturalis.nba.dao.format.FormatUtil.EMPTY_STRING;
 import static nl.naturalis.nba.dao.format.FormatUtil.formatDate;
 
 import java.net.URI;
+import java.util.Date;
 
 import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.common.PathValueReader;
 import nl.naturalis.nba.dao.format.AbstractField;
 import nl.naturalis.nba.dao.format.EntityObject;
 
-class DocumentDateTimeField extends AbstractField {
+class DocumentDateField extends AbstractField {
 
 	private PathValueReader pvr;
 
-	DocumentDateTimeField(String name, URI term, Path path)
+	DocumentDateField(String name, URI term, Path path)
 	{
 		super(name, term);
 		this.pvr = new PathValueReader(path);
@@ -23,11 +24,8 @@ class DocumentDateTimeField extends AbstractField {
 	@Override
 	public String getValue(EntityObject entity)
 	{
-		Object value = pvr.read(entity.getDocument());
-		if (value == null) {
-			return EMPTY_STRING;
-		}
-		return formatDate(value.toString());
+		Date value = (Date) pvr.read(entity.getDocument());
+		return value == null ? EMPTY_STRING : formatDate(value);
 	}
 
 }

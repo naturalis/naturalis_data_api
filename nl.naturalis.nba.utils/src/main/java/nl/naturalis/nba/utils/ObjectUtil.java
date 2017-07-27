@@ -23,17 +23,6 @@ public class ObjectUtil {
 		return obj0.compareTo(obj1);
 	}
 
-	/**
-	 * Returns {@code null} if {@code obj} is {@code null}, else {@code dfault}.
-	 * 
-	 * @param obj
-	 * @return
-	 */
-	public static <T> T nvl(Object obj, T dfault)
-	{
-		return obj == null ? null : dfault;
-	}
-
 	private ObjectUtil()
 	{
 	}

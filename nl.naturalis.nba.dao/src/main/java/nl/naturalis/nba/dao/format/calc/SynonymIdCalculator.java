@@ -21,7 +21,7 @@ public class SynonymIdCalculator implements ICalculator {
 	{
 		Taxon taxon = (Taxon) entity.getDocument();
 		ScientificName synonym = (ScientificName) entity.getEntity();
-		long hash = hash(taxon.getSourceSystemId());
+		long hash = taxon.getSourceSystemId().hashCode();
 		hash = (hash * 31) + hash(synonym.getFullScientificName());
 		hash = (hash * 31) + hash(synonym.getTaxonomicStatus());
 		return Long.toHexString(hash).toUpperCase();

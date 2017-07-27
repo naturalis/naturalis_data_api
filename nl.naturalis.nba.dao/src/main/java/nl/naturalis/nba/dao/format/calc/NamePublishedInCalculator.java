@@ -1,7 +1,6 @@
 package nl.naturalis.nba.dao.format.calc;
 
 import static nl.naturalis.nba.dao.format.FormatUtil.EMPTY_STRING;
-import static nl.naturalis.nba.utils.ObjectUtil.nvl;
 
 import java.util.Date;
 import java.util.List;
@@ -75,7 +74,10 @@ public class NamePublishedInCalculator implements ICalculator {
 		}
 		Reference ref = references.get(0);
 		String title = ref.getTitleCitation();
-		String author = nvl(ref.getAuthor(), ref.getAuthor().getFullName());
+		String author = null;
+		if (ref.getAuthor() != null) {
+			author = ref.getAuthor().getFullName();
+		}
 		Date date = ref.getPublicationDate();
 		if (title == null && author == null && date == null) {
 			return EMPTY_STRING;

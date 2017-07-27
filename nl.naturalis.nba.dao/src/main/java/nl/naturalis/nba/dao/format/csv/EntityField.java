@@ -13,16 +13,16 @@ import nl.naturalis.nba.dao.format.IField;
 /**
  * An implementation if {@link IField} that retrieves its value from the nested
  * object that functions as the {@link EntityObject}. See also
- * {@link DocumentDataField}.
+ * {@link DocumentField}.
  * 
  * @author Ayco Holleman
  *
  */
-class EntityDataField extends AbstractField {
+class EntityField extends AbstractField {
 
 	private PathValueReader pvr;
 
-	EntityDataField(String name, URI term, Path path)
+	EntityField(String name, URI term, Path path)
 	{
 		super(name, term);
 		this.pvr = new PathValueReader(path);
@@ -32,10 +32,7 @@ class EntityDataField extends AbstractField {
 	public String getValue(EntityObject entity)
 	{
 		Object value = pvr.read(entity.getEntity());
-		if (value == null) {
-			return EMPTY_STRING;
-		}
-		return value.toString();
+		return value == null ? EMPTY_STRING : value.toString();
 	}
 
 }

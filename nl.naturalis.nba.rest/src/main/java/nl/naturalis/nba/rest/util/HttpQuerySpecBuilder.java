@@ -9,7 +9,9 @@ import static nl.naturalis.nba.utils.ConfigObject.isTrueValue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
@@ -165,6 +167,11 @@ public class HttpQuerySpecBuilder {
 		if (params.containsKey(PARAM_QUERY_SPEC)) {
 			List<String> forbidden = Arrays.asList(PARAM_FIELDS, PARAM_FROM, PARAM_SIZE,
 					PARAM_SORT_FIELDS, PARAM_OPERATOR);
+			System.out.println("Type forbidden: " + forbidden.get(0).getClass());
+			System.out.println("Type keyset: " + params.keySet().getClass());
+			
+			
+			// forbidden = [_fields, _from, _size, _sortFields, _logicalOperator]
 			if (forbidden.removeAll(params.keySet())) {
 				String imploded = CollectionUtil.implode(forbidden);
 				String msg = String.format(ERR_BAD_PARAM_COMBI, imploded);

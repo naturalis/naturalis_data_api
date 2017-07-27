@@ -17,6 +17,8 @@ import nl.naturalis.nba.etl.col.CoLReferenceBatchImporter;
 import nl.naturalis.nba.etl.col.CoLSynonymImporter;
 import nl.naturalis.nba.etl.col.CoLTaxonImporter;
 import nl.naturalis.nba.etl.col.CoLVernacularNameImporter;
+import nl.naturalis.nba.utils.ConfigObject;
+import static nl.naturalis.nba.etl.ETLConstants.*;
 
 /**
  * <p>
@@ -92,6 +94,7 @@ public abstract class Loader<T extends IDocumentObject> implements Closeable {
 
 	private int tresh;
 	private boolean suppressErrors;
+	private boolean dry = ConfigObject.isEnabled(SYSPROP_DRY_RUN);
 
 	private HashMap<String, T> idObjMap;
 
@@ -215,8 +218,10 @@ public abstract class Loader<T extends IDocumentObject> implements Closeable {
 	{
 		if (!objs.isEmpty()) {
 			try {
-				indexer.index(objs, ids, parIds);
-				stats.documentsIndexed += objs.size();
+				if (!dry) {
+					indexer.index(objs, ids, parIds);
+					stats.documentsIndexed += objs.size();
+				}
 			}
 			catch (BulkIndexException e) {
 				stats.documentsRejected += e.getFailureCount();

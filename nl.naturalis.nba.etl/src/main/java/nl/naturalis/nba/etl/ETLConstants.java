@@ -13,7 +13,7 @@ public interface ETLConstants {
 	 * number of documents indexed at once).
 	 */
 	String SYSPROP_LOADER_QUEUE_SIZE = "queueSize";
-	
+
 	/**
 	 * Optional system property that causes the ETL programs to suppress ERROR
 	 * and WARN messages while still letting through INFO messages. This can
@@ -21,7 +21,7 @@ public interface ETLConstants {
 	 * errors that cause you to miss interesting INFO messages in the log files.
 	 */
 	String SYSPROP_SUPPRESS_ERRORS = "suppressErrors";
-	
+
 	/**
 	 * &34;nl.naturalis.nba.etl.test.genera&34;. Optional system property that
 	 * causes the ETL programs only import a record if its genus field has one
@@ -34,27 +34,38 @@ public interface ETLConstants {
 	String SYSPROP_TEST_GENERA = "nl.naturalis.nba.etl.test.genera";
 
 	/**
+	 * &34;nl.naturalis.nba.etl.dry&34;. Optional system property that causes
+	 * the ETL programs only transform and validate the source data, but not
+	 * index it (a &34;dry run&34;).
+	 */
+	String SYSPROP_DRY_RUN = "nl.naturalis.nba.etl.dry";
+
+	/**
 	 * Boolean property determining whether or not to delete all documents from
 	 * a source system before starting an import for that source system.
 	 */
 	String SYSPROP_TRUNCATE = "nl.naturalis.nba.etl.truncate";
-	
+
 	/**
 	 * &34;nl.naturalis.nba.etl.name.batchSize&34;.
 	 */
 	String SYS_PROP_SNG_IMPORT_BATCH_SIZE = "nl.naturalis.nba.etl.name.batchSize";
+
 	/**
 	 * &34;nl.naturalis.nba.etl.name.scrollTimeout&34;.
 	 */
 	String SYS_PROP_SNG_IMPORT_SCROLL_TIMEOUT = "nl.naturalis.nba.etl.name.scrollTimeout";
+
 	/**
 	 * &34;nl.naturalis.nba.etl.name.readBatchSize&34;.
 	 */
 	String SYS_PROP_ENRICH_READ_BATCH_SIZE = "nl.naturalis.nba.etl.enrich.readBatchSize";
+
 	/**
 	 * &34;nl.naturalis.nba.etl.name.writeBatchSize&34;.
 	 */
 	String SYS_PROP_ENRICH_WRITE_BATCH_SIZE = "nl.naturalis.nba.etl.enrich.writeBatchSize";
+
 	/**
 	 * &34;nl.naturalis.nba.etl.name.scrollTimeout&34;.
 	 */

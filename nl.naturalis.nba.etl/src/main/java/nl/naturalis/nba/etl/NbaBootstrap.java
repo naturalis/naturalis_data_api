@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.util.es.ESUtil;
+import nl.naturalis.nba.utils.ConfigObject;
 
 /**
  * Class managing the creation of the indices used by the NBA.
@@ -44,6 +45,10 @@ public class NbaBootstrap {
 	@SuppressWarnings("static-method")
 	public void bootstrap(String... documentTypes)
 	{
+		if (ConfigObject.isEnabled(ETLConstants.SYSPROP_DRY_RUN)) {
+			logger.info("Bootstrap disabled in dry run");
+			return;
+		}
 		if (documentTypes.length == 0) {
 			throw new IllegalArgumentException("At least one document type name required");
 		}

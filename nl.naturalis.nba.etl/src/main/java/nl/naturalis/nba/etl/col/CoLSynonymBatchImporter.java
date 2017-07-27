@@ -19,8 +19,10 @@ import nl.naturalis.nba.etl.BulkIndexException;
 import nl.naturalis.nba.etl.BulkIndexer;
 import nl.naturalis.nba.etl.CSVExtractor;
 import nl.naturalis.nba.etl.CSVRecordInfo;
+import nl.naturalis.nba.etl.ETLConstants;
 import nl.naturalis.nba.etl.ETLRuntimeException;
 import nl.naturalis.nba.etl.ETLStatistics;
+import nl.naturalis.nba.utils.ConfigObject;
 
 /**
  * Enriches Taxon documents with literature references sourced from the reference.txt file
@@ -73,6 +75,10 @@ public class CoLSynonymBatchImporter {
 	 */
 	public void importCsv(String path) throws BulkIndexException
 	{
+		if (ConfigObject.isEnabled(ETLConstants.SYSPROP_DRY_RUN)) {
+			logger.info("Disabled in dry run: {}", getClass().getName());
+			return;
+		}
 		File f = new File(path);
 		if (!f.exists()) {
 			throw new ETLRuntimeException("No such file: " + path);

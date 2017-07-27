@@ -15,8 +15,10 @@ import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.CSVExtractor;
 import nl.naturalis.nba.etl.CSVRecordInfo;
+import nl.naturalis.nba.etl.ETLConstants;
 import nl.naturalis.nba.etl.ETLRuntimeException;
 import nl.naturalis.nba.etl.ETLStatistics;
+import nl.naturalis.nba.utils.ConfigObject;
 import nl.naturalis.nba.utils.IOUtil;
 
 /**
@@ -55,6 +57,10 @@ public class CoLSynonymImporter extends CoLImporter {
 	 */
 	public void importCsv(String path)
 	{
+		if (ConfigObject.isEnabled(ETLConstants.SYSPROP_DRY_RUN)) {
+			logger.info("Disabled in dry run: {}", getClass().getName());
+			return;
+		}
 		long start = System.currentTimeMillis();
 		ETLStatistics stats = null;
 		CSVExtractor<CoLTaxonCsvField> extractor = null;

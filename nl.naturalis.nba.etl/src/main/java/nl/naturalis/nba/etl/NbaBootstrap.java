@@ -42,11 +42,10 @@ public class NbaBootstrap {
 	 * 
 	 * @param documentTypes
 	 */
-	@SuppressWarnings("static-method")
 	public void bootstrap(String... documentTypes)
 	{
 		if (ConfigObject.isEnabled(ETLConstants.SYSPROP_DRY_RUN)) {
-			logger.info("Bootstrap disabled in dry run");
+			logger.info("Disabled in dry run: {}", getClass().getName());
 			return;
 		}
 		if (documentTypes.length == 0) {

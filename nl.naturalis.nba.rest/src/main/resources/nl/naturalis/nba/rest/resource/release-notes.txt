@@ -1,3 +1,24 @@
+RELEASE NOTES v 2.8
+
+* NBAVTWO-20 Field export organization for vernacular
+  names now set
+  
+* NBAVTWO-282 DwCA download - synonyms now part of
+  taxa.txt in stead of being written to separate file
+  
+* NBAVTWO-431 Field subgenus now set for CRS multimedia
+
+* NBAVTWO-434 Field subgenus now set for CoL taxa
+
+* NBAVTWO-442 DwCA download - better error reporting;
+  if anything goes wrong AFTER downloading has started
+  a file named __ERROR__.txt will be put into the DwCA
+  zip file, containing a Java stacktrace.
+  
+* NBAVTWO-444 Fixed issue where simultaneious DwCA
+  downloads caused corrupt DwCA files.
+
+
 RELEASE NOTES v 2.7
 
 * NBAVTWO-159 There is a new quartet of operators:

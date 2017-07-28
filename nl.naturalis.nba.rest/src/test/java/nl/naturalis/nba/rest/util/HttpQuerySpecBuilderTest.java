@@ -1,6 +1,7 @@
 package nl.naturalis.nba.rest.util;
 
 import static nl.naturalis.nba.api.ComparisonOperator.EQUALS;
+import static nl.naturalis.nba.api.ComparisonOperator.NOT_EQUALS;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -198,6 +199,7 @@ public class HttpQuerySpecBuilderTest {
 			if (condition.getField().toString().equals(param2)) {
 				if (condition.getValue() == null && condition.getOperator() == EQUALS) {
 					nullValueTest = true;
+					break;
 				}
 			}
 		}
@@ -205,12 +207,51 @@ public class HttpQuerySpecBuilderTest {
 	}
 
 	/*
+	 * Test of human readable URL request: value equals @NOT_NULL@
+	 */
+	@Test
+	public void testBuildDefaultEqualsNotNull() throws URISyntaxException
+	{
+		String param1 = "sourceSystem.code";
+		String value1 = "BRAHMS";
+
+		String param2 = "collectionType";
+		String value2 = "@NOT_NULL@";
+
+		String param3 = "kindOfUnit";
+		String value3 = "@NULL@";
+
+		MultivaluedHashMap<String, String> parameterMap = new MultivaluedHashMap<String, String>();
+		parameterMap.put(param1, new ArrayList<>(Arrays.asList(value1)));
+		parameterMap.put(param2, new ArrayList<>(Arrays.asList(value2)));
+		parameterMap.put(param3, new ArrayList<>(Arrays.asList(value3)));
+
+		UriInfo uriInfo = mock(UriInfo.class);
+		when(uriInfo.getQueryParameters()).thenReturn(parameterMap);
+		QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
+
+		Boolean notNullValueTest = false;
+		for (QueryCondition condition : qs.getConditions()) {
+			if (condition.getField().toString().equals(param2)) {
+				if (condition.getValue() == null && condition.getOperator() == NOT_EQUALS) {
+					notNullValueTest = true;
+					break;
+				}
+			}
+		}
+		assertTrue("Test NULL value in parameter", notNullValueTest);
+	}
+
+	
+	
+	
+	/*
 	 * Test of human readable URL request: filter fields
 	 * http://localhost:8080/v2/specimen/query/?sourceSystem.code=CRS&
 	 * collectionType=Aves&_fields=recordBasis,gatheringEvent.country
 	 */
 	@Test
-	public void test_05_Build() throws URISyntaxException
+	public void testBuildGetFields() throws URISyntaxException
 	{
 		String param1 = "sourceSystem.code";
 		String value1 = "CRS";
@@ -219,11 +260,13 @@ public class HttpQuerySpecBuilderTest {
 		String value2 = "Aves";
 
 		String param3 = "_fields";
-		String value3 = "recordBasis,gatheringEvent.country";
+		String value3 = "unitID, recordBasis,gatheringEvent.country ,identifications.defaultClassification.genus";
+		String[] chunks = value3.split(",");
 
-		List<Path> value4 = new ArrayList<>();
-		value4.add(new Path("recordBasis"));
-		value4.add(new Path("gatheringEvent.country"));
+		List<Path> fieldsExpected = new ArrayList<>();
+		for (String chunk : chunks) {
+			fieldsExpected.add(new Path(chunk.trim()));
+		}
 		
 		MultivaluedHashMap<String, String> parameterMap = new MultivaluedHashMap<String, String>();
 		parameterMap.put(param1, new ArrayList<>(Arrays.asList(value1)));
@@ -234,20 +277,8 @@ public class HttpQuerySpecBuilderTest {
 		when(uriInfo.getQueryParameters()).thenReturn(parameterMap);
 
 		QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
-
-		Boolean filterTest = false;
-
-		for (QueryCondition condition : qs.getConditions()) {
-			// System.out.println("Condition in test: " + condition.getField() + " " + condition.getOperator() + " " + condition.getValue());
-			if (condition.getField().toString().equals("_filter")) {
-				System.out.println("Condition: " + condition.getField() + " "
-						+ condition.getOperator() + " " + condition.getValue());
-				if (condition.getValue() == value3) {
-					filterTest = true;
-				}
-			}
-		}
-		assertTrue("Test filter", filterTest);
+		List<Path> fieldsActual = qs.getFields();
+		assertTrue("Test filter", fieldsExpected.equals(fieldsActual));
 	}
 
 	@Test

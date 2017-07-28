@@ -1,7 +1,8 @@
 package nl.naturalis.nba.rest.util;
 
-import static nl.naturalis.nba.api.ComparisonOperator.*;
+import static nl.naturalis.nba.api.ComparisonOperator.EQUALS;
 import static nl.naturalis.nba.api.ComparisonOperator.EQUALS_IC;
+import static nl.naturalis.nba.api.ComparisonOperator.NOT_EQUALS;
 import static nl.naturalis.nba.api.SortOrder.ASC;
 import static nl.naturalis.nba.api.SortOrder.DESC;
 import static nl.naturalis.nba.common.json.JsonUtil.deserialize;
@@ -9,10 +10,7 @@ import static nl.naturalis.nba.utils.ConfigObject.isTrueValue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;

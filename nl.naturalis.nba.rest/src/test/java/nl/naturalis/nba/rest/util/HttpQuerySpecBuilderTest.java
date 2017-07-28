@@ -11,6 +11,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map.Entry;
 
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.UriInfo;
@@ -22,10 +23,12 @@ import org.junit.Test;
 import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QuerySpec;
+import nl.naturalis.nba.api.SortField;
+import nl.naturalis.nba.api.SortOrder;
 import nl.naturalis.nba.rest.exception.HTTP400Exception;
 
-public class HttpQuerySpecBuilderTest {
-
+public class HttpQuerySpecBuilderTest<qs> {
+	
 	@Before
 	public void setUp() throws Exception
 	{
@@ -101,6 +104,76 @@ public class HttpQuerySpecBuilderTest {
 		QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
 	}
 
+	
+	/*
+	 * Test of request containing sort parameters
+	 */
+	@Test
+	public void testBuildCaseParameterSortFields() throws Exception
+	{
+		String param1 = "sourceSystem.code", value1 = "CRS";
+		String param2 = "collectionType", value2 = "Aves";
+		String param3 = "_sortFields", value3 = "unitID:ASC,id:DESC,id:ASC";
+
+		MultivaluedHashMap<String, String> parameterMap = new MultivaluedHashMap<String, String>();
+		parameterMap.put(param1, new ArrayList<>(Arrays.asList(value1)));
+		parameterMap.put(param2, new ArrayList<>(Arrays.asList(value2)));
+		parameterMap.put(param3, new ArrayList<>(Arrays.asList(value3)));
+
+		Boolean paramCheck = true;
+		MultivaluedHashMap<Path, SortOrder> fieldsExpected = new MultivaluedHashMap<>();
+		String[] chunks = value3.split(",");
+		for (String chunk : chunks) {
+			String[] parts = chunk.split(":");
+			SortOrder so = null;
+			if (parts.length == 1)
+			{
+				fieldsExpected.add(new Path(parts[0]), SortOrder.ASC);
+			}
+			else if (parts.length == 2) {
+				if (parts[1].toLowerCase().equals("asc"))
+				{
+					so = SortOrder.ASC;
+				}
+				else if (parts[1].toLowerCase().equals("desc"))
+				{
+					so = SortOrder.DESC;
+				}
+				else {
+					paramCheck = false;
+				}
+				fieldsExpected.add(new Path(parts[0]), so);
+			}
+		}
+		
+		UriInfo uriInfo = mock(UriInfo.class);
+		when(uriInfo.getQueryParameters()).thenReturn(parameterMap);
+		QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
+		
+		MultivaluedHashMap<Path, SortOrder> fieldsActual = new MultivaluedHashMap<>();
+		for (SortField field : qs.getSortFields()) {
+			fieldsActual.add(field.getPath(), field.getSortOrder());
+		}
+
+		assertTrue("Test filter", paramCheck && fieldsExpected.equals(fieldsActual));
+		
+		
+		// Test again, but now with an invalid sort order
+		value3 = "unitID:ASC,id:test,id:ASC";
+		parameterMap.get(param3).set(0, value3);
+		Boolean paramTest = false;
+		
+		try {
+			qs = new HttpQuerySpecBuilder(uriInfo).build();
+		}
+		catch (HTTP400Exception ex) {
+			paramTest = true;
+		}
+		assertTrue("Test illegal parameter", paramTest);
+	}
+
+	
+	
 	/*
 	 * Test of request containing a parameter starting with an underscore
 	 */
@@ -198,7 +271,7 @@ public class HttpQuerySpecBuilderTest {
 	 * Test of request containing filter fields
 	 */
 	@Test
-	public void testBuildGetFields() throws URISyntaxException
+	public void testBuildCaseParameterFields()
 	{
 		String param1 = "sourceSystem.code", value1 = "CRS";
 		String param2 = "collectionType", value2 = "Aves";

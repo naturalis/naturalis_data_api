@@ -3,6 +3,7 @@ package nl.naturalis.nba.rest.util;
 import static nl.naturalis.nba.api.ComparisonOperator.EQUALS;
 import static nl.naturalis.nba.api.ComparisonOperator.NOT_EQUALS;
 import static nl.naturalis.nba.api.ComparisonOperator.EQUALS_IC;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -351,4 +352,44 @@ public class HttpQuerySpecBuilderTest<qs> {
 		}
 		assertTrue("Test of parameter: _ignoreCase=\"\"", operatorTest);		
 	}
+	
+	/*
+	 * Test of _size and _from parameters
+	 */
+
+	@Test
+	public void testGetIntParam()
+	{
+		String param1 = "sourceSystem.code", value1 = "BRAHMS";
+		String param2 = "_size", value2 = "100";
+		String param3 = "_from", value3 = "100";
+
+		MultivaluedHashMap<String, String> parameterMap = new MultivaluedHashMap<String, String>();
+		parameterMap.put(param1, new ArrayList<>(Arrays.asList(value1)));
+		parameterMap.put(param2, new ArrayList<>(Arrays.asList(value2)));
+		parameterMap.put(param3, new ArrayList<>(Arrays.asList(value3)));
+		
+		UriInfo uriInfo = mock(UriInfo.class);
+		when(uriInfo.getQueryParameters()).thenReturn(parameterMap);
+		QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
+		
+		assertEquals("Test of Size parameter ", value2, qs.getSize().toString());
+		assertEquals("Test of From parameter ", value3, qs.getFrom().toString());
+
+		parameterMap.get(param2).set(0, "test");
+		when(uriInfo.getQueryParameters()).thenReturn(parameterMap);
+
+		Boolean paramTest = false;
+		try {
+			@SuppressWarnings("unused")
+			QuerySpec qs2 = new HttpQuerySpecBuilder(uriInfo).build();
+		}
+		catch (HTTP400Exception ex) {
+			paramTest = true;
+			
+		}
+		assertTrue("Test for illegal size or from parameter", paramTest);	
+	}
+	
+	
 }

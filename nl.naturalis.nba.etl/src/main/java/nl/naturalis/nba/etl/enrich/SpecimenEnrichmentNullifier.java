@@ -79,13 +79,13 @@ public class SpecimenEnrichmentNullifier {
 		DocumentType<Specimen> dt = SPECIMEN;
 		QuerySpec qs = new QuerySpec();
 		qs.setConstantScore(true);
+		qs.setSize(batchSize);
 		if (!nullifyTaxonomicEnrichments) {
 			qs.addCondition(new QueryCondition("sourceSystem.code", "=", "CRS"));
 		}
 
 		// Dirty:
 		DirtyDocumentIterator<Specimen> iterator = new DirtyDocumentIterator<>(dt, qs);
-		qs.setSize(batchSize);
 
 		// Acid:
 		// AcidDocumentIterator<Specimen> iterator = new AcidDocumentIterator<>(dt, qs);

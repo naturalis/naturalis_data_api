@@ -18,7 +18,6 @@ import nl.naturalis.nba.api.model.TaxonomicEnrichment;
 import nl.naturalis.nba.api.model.TaxonomicIdentification;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.ESClientManager;
-import nl.naturalis.nba.dao.util.es.AcidDocumentIterator;
 import nl.naturalis.nba.dao.util.es.DirtyDocumentIterator;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.BulkIndexException;
@@ -83,15 +82,7 @@ public class SpecimenEnrichmentNullifier {
 		if (!nullifyTaxonomicEnrichments) {
 			qs.addCondition(new QueryCondition("sourceSystem.code", "=", "CRS"));
 		}
-
-		// Dirty:
 		DirtyDocumentIterator<Specimen> iterator = new DirtyDocumentIterator<>(dt, qs);
-
-		// Acid:
-		// AcidDocumentIterator<Specimen> iterator = new AcidDocumentIterator<>(dt, qs);
-		// iterator.setBatchSize(batchSize);
-		// iterator.setTimeout(60000);
-
 		BulkIndexer<Specimen> indexer = new BulkIndexer<>(SPECIMEN);
 		ArrayList<Specimen> batch = new ArrayList<>(batchSize);
 		int processed = 0;

@@ -51,7 +51,7 @@ if [ "x$2" != "x" ]
 then
   log_file="${log_file}__${2}"
 fi
-dt=$(date +%Y%m%d%H%m)
+dt=$(date +%Y%m%d%H%M%S)
 log_file="${log_dir}/${log_file}.${dt}"
 echo "Log file: ${log_file}.log"
 

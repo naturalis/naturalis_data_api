@@ -1,8 +1,8 @@
 package nl.naturalis.nba.rest.util;
 
 import static nl.naturalis.nba.api.ComparisonOperator.EQUALS;
-import static nl.naturalis.nba.api.ComparisonOperator.NOT_EQUALS;
 import static nl.naturalis.nba.api.ComparisonOperator.EQUALS_IC;
+import static nl.naturalis.nba.api.ComparisonOperator.NOT_EQUALS;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -12,13 +12,13 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map.Entry;
 
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.UriInfo;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import nl.naturalis.nba.api.Path;
@@ -356,7 +356,6 @@ public class HttpQuerySpecBuilderTest<qs> {
 	/*
 	 * Test of _size and _from parameters
 	 */
-
 	@Test
 	public void testGetIntParam()
 	{
@@ -390,6 +389,147 @@ public class HttpQuerySpecBuilderTest<qs> {
 		}
 		assertTrue("Test for illegal size or from parameter", paramTest);	
 	}
+
+	/*
+	 * Test of the _querySpec parameter (method: buildFromSearchSpecParam)
+	 */
+	@Test
+	public void testBuildFromSearchSpecParam()
+	{
+		// Start by testing 2 Query Specs at once
+		String param1 = "_querySpec";
+		String value1 = "{\"conditions\":[{\"field\":\"collectionType\",\"operator\":\"=\",\"value\":\"Botany\"}]}";
+		String value2 = "{\"conditions\":[{\"field\":\"collectionType\",\"operator\":\"=\",\"value\":\"Aves\"}]}";
+
+		MultivaluedHashMap<String, String> parameterMap = new MultivaluedHashMap<String, String>();
+		parameterMap.put(param1, new ArrayList<>(Arrays.asList(value1, value2)));
+
+		UriInfo uriInfo = mock(UriInfo.class);
+		when(uriInfo.getQueryParameters()).thenReturn(parameterMap);
+
+		Boolean paramTest = false;
+		try {
+			@SuppressWarnings("unused")
+			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
+		}
+		catch (HTTP400Exception ex) {
+			paramTest = true;
+			
+		}
+		assertTrue("Test Build with 2 Query Specs", paramTest);
+		
+		// Continue with an empty Query Spec
+		parameterMap.remove(param1);
+		parameterMap.put(param1, new ArrayList<>(Arrays.asList("")));
+		
+		paramTest = false;
+		try {
+			@SuppressWarnings("unused")
+			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
+		}
+		catch (HTTP400Exception ex) {
+			paramTest = true;
+		}
+		assertTrue("Test Build with empty search spec", paramTest);
+		
+		// And conclude with a Query Spec in JSON
+		paramTest = false;
+		parameterMap.get(param1).remove(param1);
+		parameterMap.put(param1, new ArrayList<>(Arrays.asList(value1)));
+		try {
+			@SuppressWarnings("unused")
+			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
+			paramTest = true;
+		}
+		catch (Exception ex) {
+			paramTest = false;
+		}
+		assertTrue("Test build with complex search failed", paramTest);
+		// Note: it is allowed to combine a human readable AND a complex query
+		// BUT: only the complex query will be run!
+	}
 	
-	
+	/*
+	 * Final test that compares the expected query spec and the actuel query spec
+	 */
+	@Test
+	public void testBuild()
+	{
+		/*
+		 * Sample query
+		 * 
+		 * Human readable:
+		 * 
+		 * sourceSystem.code=CRS
+		 * collectionType=Hymenoptera
+		 * kindOfUnit=WholeOrganism
+		 * gatheringEvent.country=Greece
+		 * _ignoreCase=true
+		 * _size=10
+		 * _from=25
+		 * _fields=sourceSystemId,identifications.scientificName.fullScientificName 
+		 * _sortFields=id,identifications.scientificName.fullScientificName:DESC
+		 * 
+		 * 
+		 * Complex:
+		 * 
+
+		 * {
+		 *	   "conditions" : [
+		 *       { "field" : "sourceSystem.code", "operator" : "=", "value" : "CRS" },
+		 *         { "field" : "collectionType", "operator" : "EQUALS_IC", "value" : "Hymenoptera" },
+		 *         { "field" : "kindOfUnit", "operator" : "EQUALS_IC", "value" : "WholeOrganism" },
+		 *         { "field" : "gatheringEvent.country", "operator" : "EQUALS_IC", "value" : "Greece" } 
+		 *     ],
+		 *     "logicalOperator" : "AND",
+		 *     "from" : 25,
+		 *     "size" : 10,
+		 *     "fields" : ["sourceSystemId","identifications.scientificName.fullScientificName"],
+		 *       "sortFields" : [ 
+		 *       { "path" : "id", "sortOrder" : "ASC" }, 
+		 *       { "path" : "identifications.scientificName.fullScientificName", "sortOrder" : "DESC" } ]
+		 * }
+		 *
+		 */
+		
+		String param1 = "sourceSystem.code",		value1 = "CRS";
+		String param2 = "collectionType",			value2 = "Hymenoptera";
+		String param3 = "kindOfUnit",				value3 = "WholeOrganism";
+		String param4 = "gatheringEvent.country",	value4 = "Greece";
+		String param5 = "_ignoreCase",				value5 = "true";
+		String param6 = "_size",					value6 = "10";
+		String param7 = "_from",					value7 = "25";
+		String param8 = "_fields",					value8 = "sourceSystemId,identifications.scientificName.fullScientificName"; 
+		String param9 = "_sortFields", 				value9 = "id,identifications.scientificName.fullScientificName:DESC";
+
+		MultivaluedHashMap<String, String> parameterMap = new MultivaluedHashMap<String, String>();
+		parameterMap.put(param1, new ArrayList<>(Arrays.asList(value1)));
+		parameterMap.put(param2, new ArrayList<>(Arrays.asList(value2)));
+		parameterMap.put(param3, new ArrayList<>(Arrays.asList(value3)));
+		parameterMap.put(param4, new ArrayList<>(Arrays.asList(value4)));
+		parameterMap.put(param5, new ArrayList<>(Arrays.asList(value5)));
+		parameterMap.put(param5, new ArrayList<>(Arrays.asList(value6)));
+		parameterMap.put(param7, new ArrayList<>(Arrays.asList(value7)));
+		parameterMap.put(param8, new ArrayList<>(Arrays.asList(value8)));
+		parameterMap.put(param9, new ArrayList<>(Arrays.asList(value9)));
+		
+		UriInfo uriInfo = mock(UriInfo.class);
+		when(uriInfo.getQueryParameters()).thenReturn(parameterMap);
+		@SuppressWarnings("unused")
+		QuerySpec qsActual = new HttpQuerySpecBuilder(uriInfo).build();
+		
+		QuerySpec qsExpected = new QuerySpec();
+		QueryCondition cond1 = new QueryCondition("sourceSystem", EQUALS_IC, "CRS");
+		QueryCondition cond2 = new QueryCondition("collectionType", EQUALS_IC, "Hymenoptera");
+		QueryCondition cond3 = new QueryCondition("kindOfUnit", EQUALS_IC, "WholeOrganism");
+		QueryCondition cond4 = new QueryCondition("gatheringEvent.country", EQUALS_IC, "Greece");
+		qsExpected.addCondition(cond1);
+		qsExpected.addCondition(cond2);
+		qsExpected.addCondition(cond3);
+		qsExpected.addCondition(cond4);
+		String[] fields = {"ignoreCase", "size","from", "fields", "sortFields"};
+		qsExpected.addFields(fields);
+		
+
+	}
 }

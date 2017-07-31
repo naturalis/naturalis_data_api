@@ -95,11 +95,8 @@ public class HttpQuerySpecBuilder {
 
 		QuerySpec qs = new QuerySpec();
 		ComparisonOperator operator = getComparisonOperator();
-		for (String param : params.keySet()) {
-			
-			logger.info("param = " + param);
-			logger.info("key = " + params.get(param) + " (" + params.get(param).size() + ")");
 
+		for (String param : params.keySet()) {
 			values = params.get(param);
 			if (values.size() != 1) {
 				String msg = String.format(ERR_DUPLICATE_PARAM, param);
@@ -107,11 +104,12 @@ public class HttpQuerySpecBuilder {
 			}
 			String value = values.iterator().next();
 			logger.info("Processing parameter {}: \"{}\"", param, value);
+
 			switch (param) {
 				case "querySpec":
 					throw new HTTP400Exception(uriInfo, ERR_NO_UNDERSCORE);
 				case PARAM_IGNORE_CASE:
-					break;
+					break;					
 				case PARAM_SORT_FIELDS:
 					qs.setSortFields(getSortFields(value));
 					break;

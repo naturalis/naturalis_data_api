@@ -9,7 +9,7 @@ import nl.naturalis.nba.dao.format.ICalculator;
 
 class CalculatedField extends AbstractField {
 
-	private final ICalculator calculator;
+	private ICalculator calculator;
 
 	CalculatedField(String name, URI term, ICalculator calculator)
 	{

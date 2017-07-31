@@ -11,6 +11,7 @@ import java.util.Set;
 import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.api.QuerySpec;
+import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.TaxonomicEnrichment;
 import nl.naturalis.nba.api.model.TaxonomicIdentification;
@@ -73,7 +74,7 @@ public class SpecimenEnrichmentNullifier {
 		long start = System.currentTimeMillis();
 		logger.info("Nullify taxonomic enrichments: " + nullifyTaxonomicEnrichments);
 		logger.info("Nullify multimedia URIs: " + nullifyMultiMediaUris);
-		DocumentType<Specimen> dt = DocumentType.SPECIMEN;
+		DocumentType<Specimen> dt = SPECIMEN;
 		QuerySpec qs = new QuerySpec();
 		qs.setSize(batchSize);
 		DirtyDocumentIterator<Specimen> iterator = new DirtyDocumentIterator<>(dt, qs);
@@ -92,7 +93,7 @@ public class SpecimenEnrichmentNullifier {
 					}
 				}
 			}
-			if (nullifyMultiMediaUris) {
+			if (nullifyMultiMediaUris && specimen.getSourceSystem() == SourceSystem.CRS) {
 				if (specimen.getAssociatedMultiMediaUris() != null) {
 					specimen.setAssociatedMultiMediaUris(null);
 					modified = true;

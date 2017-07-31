@@ -1,9 +1,13 @@
 package nl.naturalis.nba.dao.util;
 
+import static nl.naturalis.nba.dao.DaoUtil.getLogger;
+
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+
+import org.apache.logging.log4j.Logger;
 
 /**
  * An output stream that first fills up an internal buffer before flushing it
@@ -26,6 +30,8 @@ import java.io.OutputStream;
  *
  */
 public class SwapOutputStream extends OutputStream {
+
+	private static final Logger logger = getLogger(SwapOutputStream.class);
 
 	/**
 	 * The buffer to which data is written until the treshold is reached.
@@ -136,6 +142,7 @@ public class SwapOutputStream extends OutputStream {
 			return;
 		}
 		swapped = true;
+		logger.info("Buffer overflow. Swapping out {} kB", (cnt / 1024));
 		out.write(buf, 0, cnt);
 	}
 

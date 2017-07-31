@@ -34,9 +34,9 @@ public class CsvFieldFactory implements IFieldFactory {
 		}
 		catch (NoSuchFieldException e) { /* Won't happen */ }
 		if (esField.getType() == ESDataType.DATE) {
-			return new EntityDateTimeField(name, term, path);
+			return new EntityDateField(name, term, path);
 		}
-		return new EntityDataField(name, term, path);
+		return new EntityField(name, term, path);
 	}
 
 	@Override
@@ -50,9 +50,9 @@ public class CsvFieldFactory implements IFieldFactory {
 		}
 		catch (NoSuchFieldException e) { /* Won't happen */ }
 		if (esField.getType() == ESDataType.DATE) {
-			return new DocumentDateTimeField(name, term, path);
+			return new DocumentDateField(name, term, path);
 		}
-		return new DocumentDataField(name, term, path);
+		return new DocumentField(name, term, path);
 	}
 
 	@Override

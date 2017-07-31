@@ -26,6 +26,6 @@
 			}
 		},
 		"refresh_interval": -1,
-		"max_result_window": 5000000
+		"max_result_window": 50000
 	}
 }

@@ -23,6 +23,10 @@ queue_size=1000
 # importers; other importers just do it).
 truncate=true
 
+# Whether or not to do a dry run (transform/validate the source data
+# but not index it)
+dry_run=false
+
 # Provide a comma-separated list of genera to import. This will create a
 # test set with only the specified genera from COL, NSR, CRS and BRAHMS.
 # test_genera=malus,parus,larus,bombus,rhododendron,felix,tulipa,rosa,canis,passer,trientalis
@@ -53,10 +57,11 @@ echo "Log file: ${log_file}.log"
 
 JAVA_OPTS="-Xms2048m -Xmx2048m"
 JAVA_OPTS="${JAVA_OPTS} -Dfile.encoding=UTF-8"
-JAVA_OPTS="${JAVA_OPTS} -DsuppressErrors=${suppress_errors}"
-JAVA_OPTS="${JAVA_OPTS} -DqueueSize=${queue_size}"
-JAVA_OPTS="${JAVA_OPTS} -Dnl.naturalis.nba.etl.truncate=${truncate}"
-JAVA_OPTS="${JAVA_OPTS} -Dnba.v2.conf.dir=${cnf_dir}"
 JAVA_OPTS="${JAVA_OPTS} -Dlog4j.configurationFile=${cnf_dir}/log4j2.xml"
-JAVA_OPTS="${JAVA_OPTS} -Dnba.v2.etl.logfile=${log_file}"
-JAVA_OPTS="${JAVA_OPTS} -Dnl.naturalis.nba.etl.test.genera=${test_genera}"
+JAVA_OPTS="${JAVA_OPTS} -Dnba.v2.conf.dir=${cnf_dir}"
+JAVA_OPTS="${JAVA_OPTS} -Dnl.naturalis.nba.etl.logFile=${log_file}"
+JAVA_OPTS="${JAVA_OPTS} -Dnl.naturalis.nba.etl.suppressErrors=${suppress_errors}"
+JAVA_OPTS="${JAVA_OPTS} -Dnl.naturalis.nba.etl.queueSize=${queue_size}"
+JAVA_OPTS="${JAVA_OPTS} -Dnl.naturalis.nba.etl.truncate=${truncate}"
+JAVA_OPTS="${JAVA_OPTS} -Dnl.naturalis.nba.etl.dry=${dry_run}"
+JAVA_OPTS="${JAVA_OPTS} -Dnl.naturalis.nba.etl.testGenera=${test_genera}"

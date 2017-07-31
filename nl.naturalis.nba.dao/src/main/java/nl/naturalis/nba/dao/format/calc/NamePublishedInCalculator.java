@@ -1,13 +1,13 @@
 package nl.naturalis.nba.dao.format.calc;
 
-import static nl.naturalis.nba.common.json.JsonUtil.readField;
 import static nl.naturalis.nba.dao.format.FormatUtil.EMPTY_STRING;
 
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
-import nl.naturalis.nba.api.Path;
+import nl.naturalis.nba.api.model.Reference;
 import nl.naturalis.nba.api.model.Taxon;
-import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.format.CalculationException;
 import nl.naturalis.nba.dao.format.CalculatorInitializationException;
 import nl.naturalis.nba.dao.format.EntityObject;
@@ -26,9 +26,11 @@ import nl.naturalis.nba.dao.format.ICalculator;
  */
 public class NamePublishedInCalculator implements ICalculator {
 
-	private Path titlePath;
-	private Path authorPath;
-	private Path datePath;
+	private static final int ACCEPTED_NAME = 0;
+	private static final int SYNONYM = 1;
+	private static final int VERNACULAR_NAME = 2;
+
+	private int type;
 
 	@Override
 	public void initialize(Map<String, String> args) throws CalculatorInitializationException
@@ -40,15 +42,13 @@ public class NamePublishedInCalculator implements ICalculator {
 		}
 		switch (type) {
 			case "accepted name":
-				titlePath = new Path("acceptedName.references.0.titleCitation");
-				authorPath = new Path("acceptedName.references.0.author.fullName");
-				datePath = new Path("acceptedName.references.0.publicationDate");
+				this.type = ACCEPTED_NAME;
 				break;
 			case "synonym":
+				this.type = SYNONYM;
+				break;
 			case "vernacular name":
-				titlePath = new Path("references.0.titleCitation");
-				authorPath = new Path("references.0.author.fullName");
-				datePath = new Path("references.0.publicationDate");
+				this.type = VERNACULAR_NAME;
 				break;
 			default:
 				String msg = "Contents of element <arg name=\"type\"> must be one "
@@ -60,38 +60,47 @@ public class NamePublishedInCalculator implements ICalculator {
 	@Override
 	public Object calculateValue(EntityObject entity) throws CalculationException
 	{
-		String title = EMPTY_STRING;
-		String author = EMPTY_STRING;
-		String date = EMPTY_STRING;
-		Object value = readField(entity.getData(), titlePath);
-		if (value != JsonUtil.MISSING_VALUE) {
-			title = value.toString();
+
+		Taxon taxon = (Taxon) entity.getEntity();
+		List<Reference> references;
+		if (type == ACCEPTED_NAME) {
+			references = taxon.getAcceptedName().getReferences();
 		}
-		value = readField(entity.getData(), authorPath);
-		if (value != JsonUtil.MISSING_VALUE) {
-			author = value.toString();
+		else {
+			references = taxon.getReferences();
 		}
-		value = readField(entity.getData(), datePath);
-		if (value != JsonUtil.MISSING_VALUE) {
-			date = FormatUtil.formatDate(value.toString());
+		if (references == null) {
+			return EMPTY_STRING;
 		}
-		if (title == EMPTY_STRING && author == EMPTY_STRING && date == EMPTY_STRING) {
+		Reference ref = references.get(0);
+		String title = ref.getTitleCitation();
+		String author = null;
+		if (ref.getAuthor() != null) {
+			author = ref.getAuthor().getFullName();
+		}
+		Date date = ref.getPublicationDate();
+		if (title == null && author == null && date == null) {
 			return EMPTY_STRING;
 		}
 		StringBuilder sb = new StringBuilder(32);
-		sb.append(title);
-		if (author != EMPTY_STRING || date != EMPTY_STRING) {
-			if (title != EMPTY_STRING) {
+		if (title != null) {
+			sb.append(title);
+		}
+		if (author != null || date != null) {
+			if (title != null) {
 				sb.append(' ');
 			}
 			sb.append('(');
 			sb.append(author);
-			if (author == EMPTY_STRING) {
+			if (author == null) {
+				if (date != null) {
+					sb.append(FormatUtil.formatDate(date));
+				}
 				sb.append(date);
 			}
-			else if (date != EMPTY_STRING) {
+			else if (date != null) {
 				sb.append(", ");
-				sb.append(date);
+				sb.append(FormatUtil.formatDate(date));
 			}
 			sb.append(')');
 		}

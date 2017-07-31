@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import nl.naturalis.nba.api.model.Agent;
+import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.dao.format.CalculationException;
 import nl.naturalis.nba.dao.format.CalculatorInitializationException;
@@ -22,8 +23,8 @@ public class IdentifiedByCalculator implements ICalculator {
 	@Override
 	public Object calculateValue(EntityObject entity) throws CalculationException
 	{
-		SpecimenCalculatorCache cache = SpecimenCalculatorCache.instance;
-		SpecimenIdentification si = cache.getPreferredOrFirstIdentitifcation(entity);
+		Specimen specimen = (Specimen) entity.getDocument();
+		SpecimenIdentification si = specimen.getIdentifications().iterator().next();
 		List<Agent> identifiers = si.getIdentifiers();
 		if (identifiers == null) {
 			return EMPTY_STRING;

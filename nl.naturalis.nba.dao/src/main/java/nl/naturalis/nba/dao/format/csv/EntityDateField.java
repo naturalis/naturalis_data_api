@@ -1,34 +1,31 @@
 package nl.naturalis.nba.dao.format.csv;
 
-import static nl.naturalis.nba.common.json.JsonUtil.MISSING_VALUE;
-import static nl.naturalis.nba.common.json.JsonUtil.readField;
 import static nl.naturalis.nba.dao.format.FormatUtil.EMPTY_STRING;
 import static nl.naturalis.nba.dao.format.FormatUtil.formatDate;
 
 import java.net.URI;
+import java.util.Date;
 
 import nl.naturalis.nba.api.Path;
+import nl.naturalis.nba.common.PathValueReader;
 import nl.naturalis.nba.dao.format.AbstractField;
 import nl.naturalis.nba.dao.format.EntityObject;
 
-class EntityDateTimeField extends AbstractField {
+class EntityDateField extends AbstractField {
 
-	private Path path;
+	private PathValueReader pvr;
 
-	EntityDateTimeField(String name, URI term, Path path)
+	EntityDateField(String name, URI term, Path path)
 	{
 		super(name, term);
-		this.path = path;
+		this.pvr = new PathValueReader(path);
 	}
 
 	@Override
 	public String getValue(EntityObject entity)
 	{
-		Object value = readField(entity.getData(), path);
-		if (value == MISSING_VALUE) {
-			return EMPTY_STRING;
-		}
-		return formatDate(value.toString());
+		Date value = (Date) pvr.read(entity.getEntity());
+		return value == null ? EMPTY_STRING : formatDate(value);
 	}
 
 }

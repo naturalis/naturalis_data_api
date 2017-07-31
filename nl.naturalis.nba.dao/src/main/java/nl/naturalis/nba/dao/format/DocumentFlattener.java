@@ -1,14 +1,13 @@
 package nl.naturalis.nba.dao.format;
 
-import static nl.naturalis.nba.common.json.JsonUtil.MISSING_VALUE;
-import static nl.naturalis.nba.common.json.JsonUtil.readField;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import nl.naturalis.nba.api.Path;
+import nl.naturalis.nba.common.InvalidPathException;
+import nl.naturalis.nba.common.PathValueReader;
 
 /**
  * A {@code DocumentFlattener} flattens an Elasticsearch document. It produces a
@@ -65,38 +64,37 @@ public class DocumentFlattener {
 		this.entitiesPerDocument = entitiesPerDocument;
 	}
 
-	public List<EntityObject> flatten(Map<String, Object> document)
+	public List<EntityObject> flatten(Object document) throws InvalidPathException
 	{
 		if (pathToEntity == null) {
 			return Arrays.asList(new EntityObject(document));
 		}
 		List<EntityObject> entityNodes = new ArrayList<>(entitiesPerDocument);
-		EntityObject root = new EntityObject(document, null);
+		EntityObject root = new EntityObject(document);
 		flatten(root, pathToEntity, entityNodes);
 		return entityNodes;
 	}
 
-	@SuppressWarnings("unchecked")
-	private static void flatten(EntityObject node, Path path, List<EntityObject> entities)
+	private void flatten(EntityObject node, Path path, List<EntityObject> entities)
+			throws InvalidPathException
 	{
 		if (path.countElements() == 0) {
 			entities.add(node);
 			return;
 		}
-		Object obj = readField(node.getData(), path.element(0));
-		if (obj == MISSING_VALUE) {
+		PathValueReader pvr = new PathValueReader(path.element(0));
+		Object obj = pvr.read(node.getEntity());
+		if (obj == null) {
 			return;
 		}
-		if (obj instanceof List) {
-			List<Map<String, Object>> list = (List<Map<String, Object>>) obj;
-			for (Map<String, Object> map : list) {
-				EntityObject child = new EntityObject(map, node);
+		if (obj instanceof Iterable) {
+			for (Object element : (Iterable<?>) obj) {
+				EntityObject child = new EntityObject(node.getDocument(), element, node);
 				flatten(child, path.shift(), entities);
 			}
 		}
 		else {
-			Map<String, Object> map = (Map<String, Object>) obj;
-			EntityObject child = new EntityObject(map, node);
+			EntityObject child = new EntityObject(node.getDocument(), obj, node);
 			flatten(child, path.shift(), entities);
 		}
 	}

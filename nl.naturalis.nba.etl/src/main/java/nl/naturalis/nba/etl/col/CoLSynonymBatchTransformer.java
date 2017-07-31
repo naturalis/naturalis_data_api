@@ -3,6 +3,7 @@ package nl.naturalis.nba.etl.col;
 import static nl.naturalis.nba.api.model.SourceSystem.COL;
 import static nl.naturalis.nba.dao.DocumentType.TAXON;
 import static nl.naturalis.nba.dao.util.es.ESUtil.getElasticsearchId;
+import static nl.naturalis.nba.etl.ETLConstants.SYSPROP_DRY_RUN;
 import static nl.naturalis.nba.etl.ETLUtil.getLogger;
 import static nl.naturalis.nba.etl.ETLUtil.getTestGenera;
 import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.acceptedNameUsageID;
@@ -37,6 +38,7 @@ import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.TransformUtil;
 import nl.naturalis.nba.etl.normalize.TaxonomicStatusNormalizer;
 import nl.naturalis.nba.etl.normalize.UnmappedValueException;
+import nl.naturalis.nba.utils.ConfigObject;
 
 class CoLSynonymBatchTransformer {
 
@@ -56,12 +58,13 @@ class CoLSynonymBatchTransformer {
 	private int numOrphans;
 
 	private String[] testGenera;
+	private boolean dry = ConfigObject.isEnabled(SYSPROP_DRY_RUN);
 
 	CoLSynonymBatchTransformer()
 	{
 		testGenera = getTestGenera();
 	}
-	
+
 	Collection<Taxon> transform(ArrayList<CSVRecordInfo<CoLTaxonCsvField>> records)
 	{
 		HashMap<String, Taxon> lookupTable = createLookupTable(records);
@@ -70,12 +73,13 @@ class CoLSynonymBatchTransformer {
 			Taxon taxon = lookupTable.get(id);
 			ScientificName synonym = createSynonym(record);
 			if (taxon == null) {
-				++numOrphans;
 				/*
-				 * When creating a test set we're bound to have huge amounts of orphans;
-				 * let's not clutter up our log files
+				 * When executing a dry run or importing a test set, we're bound
+				 * to have huge amounts of orphans, so we are not going to
+				 * report on this in that case.
 				 */
-				if (testGenera == null) {
+				if (dry == false || testGenera == null) {
+					++numOrphans;
 					logger.error("{} | Orphan: {} ", id, synonym.getFullScientificName());
 				}
 			}

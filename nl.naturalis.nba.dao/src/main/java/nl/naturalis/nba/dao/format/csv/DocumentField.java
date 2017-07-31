@@ -1,7 +1,5 @@
 package nl.naturalis.nba.dao.format.csv;
 
-import static nl.naturalis.nba.common.json.JsonUtil.MISSING_VALUE;
-import static nl.naturalis.nba.common.json.JsonUtil.readField;
 import static nl.naturalis.nba.dao.format.FormatUtil.EMPTY_STRING;
 
 import java.net.URI;
@@ -9,6 +7,7 @@ import java.net.URI;
 import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.api.model.VernacularName;
+import nl.naturalis.nba.common.PathValueReader;
 import nl.naturalis.nba.dao.format.AbstractField;
 import nl.naturalis.nba.dao.format.EntityObject;
 import nl.naturalis.nba.dao.format.IField;
@@ -24,27 +23,23 @@ import nl.naturalis.nba.dao.format.IField;
  * However, you would probably still also want to include the taxon ID in the
  * CSV record. In that case you would need a {@code DocumentDataField}, because
  * the taxon ID is not part of the {@code VernacularName} object. It sits at the
- * top-most level of the {@code Taxon} document. See also
- * {@link EntityDataField}.
+ * top-most level of the {@code Taxon} document. See also {@link EntityField}.
  */
-class DocumentDataField extends AbstractField {
+class DocumentField extends AbstractField {
 
-	private Path path;
+	private PathValueReader pvr;
 
-	DocumentDataField(String name, URI term, Path path)
+	DocumentField(String name, URI term, Path path)
 	{
 		super(name, term);
-		this.path = path;
+		this.pvr = new PathValueReader(path);
 	}
 
 	@Override
 	public String getValue(EntityObject entity)
 	{
-		Object value = readField(entity.getDocument(), path);
-		if (value == MISSING_VALUE) {
-			return EMPTY_STRING;
-		}
-		return value.toString();
+		Object value = pvr.read(entity.getDocument());
+		return value == null ? EMPTY_STRING : value.toString();
 	}
 
 }

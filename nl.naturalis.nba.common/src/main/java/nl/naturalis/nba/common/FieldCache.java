@@ -6,7 +6,7 @@ import java.util.HashMap;
 
 class FieldCache {
 
-	private static final HashMap<Class<?>, HashMap<String, Field>> cache = new HashMap<>();
+	private static final HashMap<Class<?>, HashMap<String, Field>> cache = new HashMap<>(64);
 
 	static Field get(String name, Class<?> cls) throws InvalidPathException
 	{
@@ -19,8 +19,10 @@ class FieldCache {
 		if (f == null) {
 			f = getField(name, cls);
 			if (f == null) {
-				String msg = String.format("Invalid path element: \"%s\"", name);
-				throw new InvalidPathException(msg);
+				return null;
+			}
+			if (!f.isAccessible()) {
+				f.setAccessible(true);
 			}
 			subcache.put(name, f);
 		}

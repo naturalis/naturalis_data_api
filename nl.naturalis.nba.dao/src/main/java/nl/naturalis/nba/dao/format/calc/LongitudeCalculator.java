@@ -22,8 +22,7 @@ public class LongitudeCalculator implements ICalculator {
 	@Override
 	public Object calculateValue(EntityObject entity) throws CalculationException
 	{
-		SpecimenCalculatorCache cache = SpecimenCalculatorCache.instance;
-		Specimen specimen = cache.getSpecimen(entity);
+		Specimen specimen = (Specimen) entity.getDocument();
 		List<GatheringSiteCoordinates> coords = specimen.getGatheringEvent().getSiteCoordinates();
 		if (coords == null || coords.size() != 1) {
 			return EMPTY_STRING;

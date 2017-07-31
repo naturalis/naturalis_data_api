@@ -1,12 +1,11 @@
 package nl.naturalis.nba.dao.format.calc;
 
-import static nl.naturalis.nba.common.json.JsonUtil.MISSING_VALUE;
-import static nl.naturalis.nba.common.json.JsonUtil.readField;
 import static nl.naturalis.nba.dao.format.FormatUtil.EMPTY_STRING;
 
+import java.util.List;
 import java.util.Map;
 
-import nl.naturalis.nba.api.Path;
+import nl.naturalis.nba.api.model.Expert;
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.dao.format.CalculationException;
 import nl.naturalis.nba.dao.format.CalculatorInitializationException;
@@ -24,8 +23,11 @@ import nl.naturalis.nba.dao.format.ICalculator;
  */
 public class TaxonomicExpertCalculator implements ICalculator {
 
-	private Path namePath;
-	private Path orgPath;
+	private static final int ACCEPTED_NAME = 0;
+	private static final int SYNONYM = 1;
+	private static final int VERNACULAR_NAME = 2;
+
+	private int type;
 
 	@Override
 	public void initialize(Map<String, String> args) throws CalculatorInitializationException
@@ -37,13 +39,13 @@ public class TaxonomicExpertCalculator implements ICalculator {
 		}
 		switch (type) {
 			case "accepted name":
-				namePath = new Path("acceptedName.experts.0.fullName");
-				orgPath = new Path("acceptedName.experts.0.organization.name");
+				this.type = ACCEPTED_NAME;
 				break;
 			case "synonym":
+				this.type = SYNONYM;
+				break;
 			case "vernacular name":
-				namePath = new Path("experts.0.fullName");
-				orgPath = new Path("experts.0.organization.name");
+				this.type = VERNACULAR_NAME;
 				break;
 			default:
 				String msg = "Contents of element <arg name=\"type\"> must be one "
@@ -55,15 +57,21 @@ public class TaxonomicExpertCalculator implements ICalculator {
 	@Override
 	public Object calculateValue(EntityObject entity) throws CalculationException
 	{
-		String name = null;
-		String org = null;
-		Object value = readField(entity.getData(), namePath);
-		if (value != MISSING_VALUE) {
-			name = value.toString();
+		Taxon taxon = (Taxon) entity.getEntity();
+		List<Expert> experts;
+		if (type == ACCEPTED_NAME) {
+			experts = taxon.getAcceptedName().getExperts();
 		}
-		value = readField(entity.getData(), orgPath);
-		if (value != MISSING_VALUE) {
-			org = value.toString();
+		else {
+			experts = taxon.getExperts();
+		}
+		if (experts == null) {
+			return EMPTY_STRING;
+		}
+		String name = experts.get(0).getFullName();
+		String org = null;
+		if (experts.get(0).getOrganization() != null) {
+			org = experts.get(0).getOrganization().getName();
 		}
 		if (name == null) {
 			if (org == null) {

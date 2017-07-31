@@ -11,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 import org.elasticsearch.search.SearchHit;
 
 import nl.naturalis.nba.api.Path;
+import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.exception.DaoException;
 import nl.naturalis.nba.dao.format.DataSetConfigurationException;
 import nl.naturalis.nba.dao.format.DataSetWriteException;
@@ -21,12 +22,12 @@ import nl.naturalis.nba.dao.format.IEntityFilter;
 import nl.naturalis.nba.dao.format.IField;
 import nl.naturalis.nba.dao.format.csv.CsvRecordWriter;
 import nl.naturalis.nba.dao.util.RandomEntryZipOutputStream;
+import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.dao.util.es.SearchHitHandler;
 
 final class SingleDataSourceSearchHitHandler implements SearchHitHandler {
 
-	private static final Logger logger = getLogger(
-			SingleDataSourceSearchHitHandler.class);
+	private static final Logger logger = getLogger(SingleDataSourceSearchHitHandler.class);
 
 	private DwcaConfig dwcaConfig;
 	private RandomEntryZipOutputStream zip;
@@ -39,8 +40,8 @@ final class SingleDataSourceSearchHitHandler implements SearchHitHandler {
 	private int[] written;
 	private int[] filtered;
 
-	SingleDataSourceSearchHitHandler(DwcaConfig dwcaConfig,
-			RandomEntryZipOutputStream rezos) throws DataSetConfigurationException
+	SingleDataSourceSearchHitHandler(DwcaConfig dwcaConfig, RandomEntryZipOutputStream rezos)
+			throws DataSetConfigurationException
 	{
 		this.dwcaConfig = dwcaConfig;
 		this.zip = rezos;
@@ -55,10 +56,12 @@ final class SingleDataSourceSearchHitHandler implements SearchHitHandler {
 	@Override
 	public boolean handle(SearchHit hit) throws DataSetWriteException
 	{
+		DocumentType<?> dt = dwcaConfig.getDocumentType();
 		try {
 			for (int i = 0; i < entities.length; i++) {
 				// Squash current document and loop over resulting entity objects:
-				List<EntityObject> eos = flatteners[i].flatten(hit.getSource());
+				Object document = ESUtil.toDocumentObject(hit, dt);
+				List<EntityObject> eos = flatteners[i].flatten(document);
 				ENTITY_OBJECT_LOOP: for (EntityObject eo : eos) {
 					// Loop over filters defined for current entity:
 					for (IEntityFilter filter : entities[i].getFilters()) {
@@ -88,8 +91,9 @@ final class SingleDataSourceSearchHitHandler implements SearchHitHandler {
 	void printHeaders() throws IOException
 	{
 		/*
-		 * Note that multiple entities may get written to the same file name (see
-		 * dwca.properties), so we must make sure headers are printed just once.
+		 * Note that multiple entities may get written to the same file name
+		 * (see dwca.properties), so we must make sure headers are printed just
+		 * once.
 		 */
 		HashSet<String> done = new HashSet<>();
 		for (int i = 0; i < printers.length; i++) {
@@ -107,10 +111,8 @@ final class SingleDataSourceSearchHitHandler implements SearchHitHandler {
 	{
 		logger.info("Documents processed: {}", processed);
 		for (int i = 0; i < entities.length; i++) {
-			logger.info("Records written for entity {}  : {}", entities[i].getName(),
-					written[i]);
-			logger.info("Records rejected for entity {} : {}", entities[i].getName(),
-					filtered[i]);
+			logger.info("Records written for entity {}  : {}", entities[i].getName(), written[i]);
+			logger.info("Records rejected for entity {} : {}", entities[i].getName(), filtered[i]);
 		}
 	}
 

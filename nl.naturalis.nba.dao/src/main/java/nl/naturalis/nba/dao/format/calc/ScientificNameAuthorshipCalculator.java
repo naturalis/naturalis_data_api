@@ -1,12 +1,10 @@
 package nl.naturalis.nba.dao.format.calc;
 
-import static nl.naturalis.nba.common.json.JsonUtil.MISSING_VALUE;
-import static nl.naturalis.nba.common.json.JsonUtil.readField;
 import static nl.naturalis.nba.dao.format.FormatUtil.EMPTY_STRING;
 
 import java.util.Map;
 
-import nl.naturalis.nba.api.Path;
+import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.dao.format.CalculationException;
 import nl.naturalis.nba.dao.format.CalculatorInitializationException;
@@ -23,9 +21,10 @@ import nl.naturalis.nba.dao.format.ICalculator;
  */
 public class ScientificNameAuthorshipCalculator implements ICalculator {
 
-	private Path authorPath;
-	private Path yearPath;
-	private Path verbatimPath;
+	private static final int ACCEPTED_NAME = 0;
+	private static final int SYNONYM = 1;
+
+	private int type;
 
 	@Override
 	public void initialize(Map<String, String> args) throws CalculatorInitializationException
@@ -37,14 +36,10 @@ public class ScientificNameAuthorshipCalculator implements ICalculator {
 		}
 		switch (type) {
 			case "accepted name":
-				authorPath = new Path("acceptedName.author");
-				yearPath = new Path("acceptedName.year");
-				verbatimPath = new Path("acceptedName.authorshipVerbatim");
+				this.type = ACCEPTED_NAME;
 				break;
 			case "synonym":
-				authorPath = new Path("author");
-				yearPath = new Path("year");
-				verbatimPath = new Path("authorshipVerbatim");
+				this.type = SYNONYM;
 				break;
 			default:
 				String msg = "Contents of element <arg name=\"type\"> must be one "
@@ -56,19 +51,31 @@ public class ScientificNameAuthorshipCalculator implements ICalculator {
 	@Override
 	public Object calculateValue(EntityObject entity) throws CalculationException
 	{
-		Object value = readField(entity.getData(), authorPath);
-		if (value == MISSING_VALUE) {
-			value = readField(entity.getData(), verbatimPath);
-			if (value == MISSING_VALUE) {
+		String author;
+		String year;
+		String verbatim;
+		if (type == ACCEPTED_NAME) {
+			Taxon taxon = (Taxon) entity.getEntity();
+			author = taxon.getAcceptedName().getAuthor();
+			year = taxon.getAcceptedName().getYear();
+			verbatim = taxon.getAcceptedName().getAuthorshipVerbatim();
+		}
+		else {
+			ScientificName synonym = (ScientificName) entity.getEntity();
+			author = synonym.getAuthor();
+			year = synonym.getYear();
+			verbatim = synonym.getAuthorshipVerbatim();
+		}
+		if (author == null) {
+			if (verbatim == null) {
 				return EMPTY_STRING;
 			}
-			return value;
+			return verbatim;
 		}
-		Object year = readField(entity.getData(), yearPath);
-		if (year == MISSING_VALUE) {
-			return value;
+		if (year == null) {
+			return author;
 		}
-		return value + ", " + year;
+		return author + ", " + year;
 	}
 
 }

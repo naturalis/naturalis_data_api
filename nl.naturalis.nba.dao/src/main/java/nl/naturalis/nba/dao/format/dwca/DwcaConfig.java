@@ -206,6 +206,14 @@ public class DwcaConfig {
 		return scroller;
 	}
 
+	DocumentType<?> getDocumentType()
+	{
+		if (dataSetType == DwcaDataSetType.TAXON) {
+			return DocumentType.TAXON;
+		}
+		return DocumentType.SPECIMEN;
+	}
+
 	private DataSet buildDataSet() throws DataSetConfigurationException, NoSuchDataSetException
 	{
 		File confDir = getHome();

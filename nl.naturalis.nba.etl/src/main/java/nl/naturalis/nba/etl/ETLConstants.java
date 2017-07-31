@@ -9,21 +9,22 @@ package nl.naturalis.nba.etl;
 public interface ETLConstants {
 
 	/**
-	 * Optional system property that can be used to fine-tune bulk indexing (the
-	 * number of documents indexed at once).
+	 * Optional system property that can be used to set the size of
+	 * Elasticsearch bulk index requests (the number of documents to be indexed
+	 * at once).
 	 */
-	String SYSPROP_LOADER_QUEUE_SIZE = "queueSize";
-	
+	String SYSPROP_LOADER_QUEUE_SIZE = "nl.naturalis.nba.etl.queueSize";
+
 	/**
 	 * Optional system property that causes the ETL programs to suppress ERROR
 	 * and WARN messages while still letting through INFO messages. This can
 	 * sometimes be helpful if you expect very large numbers of well-known
 	 * errors that cause you to miss interesting INFO messages in the log files.
 	 */
-	String SYSPROP_SUPPRESS_ERRORS = "suppressErrors";
-	
+	String SYSPROP_SUPPRESS_ERRORS = "nl.naturalis.nba.etl.suppressErrors";
+
 	/**
-	 * &34;nl.naturalis.nba.etl.test.genera&34;. Optional system property that
+	 * &34;nl.naturalis.nba.etl.testGenera&34;. Optional system property that
 	 * causes the ETL programs only import a record if its genus field has one
 	 * of the value of the genera specified here (comma-separated). This
 	 * applies, of course, only to taxonomic data sources. If you do not specify
@@ -31,30 +32,41 @@ public interface ETLConstants {
 	 * all records are imported. String comparison are done in a
 	 * case-insensitive way.
 	 */
-	String SYSPROP_TEST_GENERA = "nl.naturalis.nba.etl.test.genera";
+	String SYSPROP_TEST_GENERA = "nl.naturalis.nba.etl.testGenera";
+
+	/**
+	 * &34;nl.naturalis.nba.etl.dry&34;. Optional system property that causes
+	 * the ETL programs only transform and validate the source data, but not
+	 * index it (a &34;dry run&34;).
+	 */
+	String SYSPROP_DRY_RUN = "nl.naturalis.nba.etl.dry";
 
 	/**
 	 * Boolean property determining whether or not to delete all documents from
 	 * a source system before starting an import for that source system.
 	 */
 	String SYSPROP_TRUNCATE = "nl.naturalis.nba.etl.truncate";
-	
+
 	/**
 	 * &34;nl.naturalis.nba.etl.name.batchSize&34;.
 	 */
 	String SYS_PROP_SNG_IMPORT_BATCH_SIZE = "nl.naturalis.nba.etl.name.batchSize";
+
 	/**
 	 * &34;nl.naturalis.nba.etl.name.scrollTimeout&34;.
 	 */
 	String SYS_PROP_SNG_IMPORT_SCROLL_TIMEOUT = "nl.naturalis.nba.etl.name.scrollTimeout";
+
 	/**
 	 * &34;nl.naturalis.nba.etl.name.readBatchSize&34;.
 	 */
 	String SYS_PROP_ENRICH_READ_BATCH_SIZE = "nl.naturalis.nba.etl.enrich.readBatchSize";
+
 	/**
 	 * &34;nl.naturalis.nba.etl.name.writeBatchSize&34;.
 	 */
 	String SYS_PROP_ENRICH_WRITE_BATCH_SIZE = "nl.naturalis.nba.etl.enrich.writeBatchSize";
+
 	/**
 	 * &34;nl.naturalis.nba.etl.name.scrollTimeout&34;.
 	 */

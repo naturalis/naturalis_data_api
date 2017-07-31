@@ -22,8 +22,7 @@ public class SpecimenMultiMediaCalculator implements ICalculator {
 	@Override
 	public Object calculateValue(EntityObject entity) throws CalculationException
 	{
-		SpecimenCalculatorCache cache = SpecimenCalculatorCache.instance;
-		Specimen specimen = cache.getSpecimen(entity);
+		Specimen specimen = (Specimen) entity.getDocument();
 		List<ServiceAccessPoint> saps = specimen.getAssociatedMultiMediaUris();
 		if (saps == null) {
 			return EMPTY_STRING;

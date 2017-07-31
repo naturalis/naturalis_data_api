@@ -1,12 +1,11 @@
 package nl.naturalis.nba.dao.format.csv;
 
-import static nl.naturalis.nba.common.json.JsonUtil.MISSING_VALUE;
-import static nl.naturalis.nba.common.json.JsonUtil.readField;
 import static nl.naturalis.nba.dao.format.FormatUtil.EMPTY_STRING;
 
 import java.net.URI;
 
 import nl.naturalis.nba.api.Path;
+import nl.naturalis.nba.common.PathValueReader;
 import nl.naturalis.nba.dao.format.AbstractField;
 import nl.naturalis.nba.dao.format.EntityObject;
 import nl.naturalis.nba.dao.format.IField;
@@ -14,29 +13,26 @@ import nl.naturalis.nba.dao.format.IField;
 /**
  * An implementation if {@link IField} that retrieves its value from the nested
  * object that functions as the {@link EntityObject}. See also
- * {@link DocumentDataField}.
+ * {@link DocumentField}.
  * 
  * @author Ayco Holleman
  *
  */
-class EntityDataField extends AbstractField {
+class EntityField extends AbstractField {
 
-	private Path path;
+	private PathValueReader pvr;
 
-	EntityDataField(String name, URI term, Path path)
+	EntityField(String name, URI term, Path path)
 	{
 		super(name, term);
-		this.path = path;
+		this.pvr = new PathValueReader(path);
 	}
 
 	@Override
 	public String getValue(EntityObject entity)
 	{
-		Object value = readField(entity.getData(), path);
-		if (value == MISSING_VALUE) {
-			return EMPTY_STRING;
-		}
-		return value.toString();
+		Object value = pvr.read(entity.getEntity());
+		return value == null ? EMPTY_STRING : value.toString();
 	}
 
 }

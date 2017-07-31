@@ -19,6 +19,11 @@ public interface ICalculator {
 	 * are parameter names, the values of the map are parameter values. This
 	 * method is called just once, right after instantiation of the calculator.
 	 */
+	/*
+	 * Although this interface is oblivious to it, in practice these
+	 * initialization values come from <arg> elements within a <calculator>
+	 * element within a DwCA configuration file.
+	 */
 	void initialize(Map<String, String> args) throws CalculatorInitializationException;
 
 	/**

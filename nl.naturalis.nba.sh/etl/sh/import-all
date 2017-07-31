@@ -26,9 +26,9 @@ scripts=" \
 	brahms-import_multimedia \
 	crs-import_specimens \
 	crs-import_multimedia \
-	enrich-specimens-mm \
-	enrich-specimens-te \
-	enrich-multimedia \
+	add-multimedia-to-specimens \
+	add-taxonomy-to-specimens \
+	add-taxonomy-to-multimedia \
 	"
 
 for script in $scripts

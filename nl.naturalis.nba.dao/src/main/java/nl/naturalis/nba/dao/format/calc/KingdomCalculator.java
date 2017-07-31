@@ -22,9 +22,8 @@ public class KingdomCalculator implements ICalculator {
 	@Override
 	public Object calculateValue(EntityObject entity) throws CalculationException
 	{
-		SpecimenCalculatorCache cache = SpecimenCalculatorCache.instance;
-		Specimen specimen = cache.getSpecimen(entity);
-		SpecimenIdentification si = cache.getPreferredOrFirstIdentitifcation(entity);
+		Specimen specimen = (Specimen) entity.getDocument();
+		SpecimenIdentification si = specimen.getIdentifications().iterator().next();
 		if(si.getDefaultClassification() == null) {
 			return EMPTY_STRING;
 		}

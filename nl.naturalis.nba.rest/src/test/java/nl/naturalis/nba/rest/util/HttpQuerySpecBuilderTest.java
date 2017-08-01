@@ -44,6 +44,7 @@ public class HttpQuerySpecBuilderTest<qs> {
 	{
 	}
 
+	
 	/*
 	 * Test of request containing illegal parameter "_querySpec"
 	 */
@@ -89,6 +90,7 @@ public class HttpQuerySpecBuilderTest<qs> {
 		QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
 	}
 
+	
 	/*
 	 * Test of request containing a parameter "querySpec"
 	 */
@@ -178,7 +180,6 @@ public class HttpQuerySpecBuilderTest<qs> {
 	}
 
 	
-	
 	/*
 	 * Test of request containing a parameter starting with an underscore
 	 */
@@ -240,6 +241,7 @@ public class HttpQuerySpecBuilderTest<qs> {
 		assertTrue("Test NULL value in parameter", nullValueTest);
 	}
 
+	
 	/*
 	 * Test of request containing a parameter that equals @NOT_NULL@
 	 */
@@ -301,6 +303,7 @@ public class HttpQuerySpecBuilderTest<qs> {
 		assertTrue("Test filter", fieldsExpected.equals(fieldsActual));
 	}
 
+	
 	/*
 	 * Test of _ignoreCase parameter
 	 */
@@ -356,7 +359,8 @@ public class HttpQuerySpecBuilderTest<qs> {
 		}
 		assertTrue("Test of parameter: _ignoreCase=\"\"", operatorTest);		
 	}
-	
+
+
 	/*
 	 * Test of _size and _from parameters
 	 */
@@ -394,6 +398,7 @@ public class HttpQuerySpecBuilderTest<qs> {
 		assertTrue("Test for illegal size or from parameter", paramTest);	
 	}
 
+	
 	/*
 	 * Test of the _querySpec parameter (method: buildFromSearchSpecParam)
 	 */
@@ -452,6 +457,7 @@ public class HttpQuerySpecBuilderTest<qs> {
 		// Note: it is allowed to combine a human readable AND a complex query
 		// BUT: only the complex query will be run!
 	}
+
 	
 	/*
 	 * Final test that compares the expected query spec and the actuel query spec
@@ -498,10 +504,10 @@ public class HttpQuerySpecBuilderTest<qs> {
 
 		// Build the Expected Query Spec
 		QuerySpec qsExpected = new QuerySpec();
-		QueryCondition cond1 = new QueryCondition("sourceSystem.code", comparisonOperatorStr, value1);
-		QueryCondition cond2 = new QueryCondition("collectionType", comparisonOperatorStr, value2);
-		QueryCondition cond3 = new QueryCondition("kindOfUnit", comparisonOperatorStr, value3);
-		QueryCondition cond4 = new QueryCondition("gatheringEvent.country", comparisonOperatorStr, value4);
+		QueryCondition cond1 = new QueryCondition(param1, comparisonOperatorStr, value1);
+		QueryCondition cond2 = new QueryCondition(param2, comparisonOperatorStr, value2);
+		QueryCondition cond3 = new QueryCondition(param3, comparisonOperatorStr, value3);
+		QueryCondition cond4 = new QueryCondition(param4, comparisonOperatorStr, value4);
 		qsExpected.addCondition(cond1);
 		qsExpected.addCondition(cond2);
 		qsExpected.addCondition(cond3);
@@ -511,7 +517,6 @@ public class HttpQuerySpecBuilderTest<qs> {
 		qsExpected.setSize(Integer.parseInt(sizeStr));
 		qsExpected.setFrom(Integer.parseInt(fromStr));
 		qsExpected.addFields(fieldsStr.split(","));
-
 		List<SortField> sortFields = new ArrayList<>();
 		for (String sortFieldStr : sortFieldsStr.split(",")) {
 			if (sortFieldStr.indexOf(":") < 0) {
@@ -524,7 +529,7 @@ public class HttpQuerySpecBuilderTest<qs> {
 		qsExpected.setSortFields(sortFields);
 		
 		// Verify if both Query Specs are equal
-		assertTrue(compareQuerySpecs(qsActual, qsExpected));
+		assertTrue("Comparison of Human Readable and Complex Query Spec", compareQuerySpecs(qsActual, qsExpected));
 	}
 
 	

@@ -74,5 +74,10 @@ public class SortField {
 	{
 		return sortOrder != DESC;
 	}
+	
+	public String toString()
+	{
+		return path + ":" + sortOrder;
+	}
 
 }

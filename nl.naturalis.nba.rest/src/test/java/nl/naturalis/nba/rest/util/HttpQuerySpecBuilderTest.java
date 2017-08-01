@@ -3,6 +3,7 @@ package nl.naturalis.nba.rest.util;
 import static nl.naturalis.nba.api.ComparisonOperator.EQUALS;
 import static nl.naturalis.nba.api.ComparisonOperator.EQUALS_IC;
 import static nl.naturalis.nba.api.ComparisonOperator.NOT_EQUALS;
+import static nl.naturalis.nba.utils.ConfigObject.isTrueValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -11,16 +12,19 @@ import static org.mockito.Mockito.when;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.UriInfo;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
+import nl.naturalis.nba.api.ComparisonOperator;
+import nl.naturalis.nba.api.LogicalOperator;
 import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QuerySpec;
@@ -455,81 +459,133 @@ public class HttpQuerySpecBuilderTest<qs> {
 	@Test
 	public void testBuild()
 	{
-		/*
-		 * Sample query
-		 * 
-		 * Human readable:
-		 * 
-		 * sourceSystem.code=CRS
-		 * collectionType=Hymenoptera
-		 * kindOfUnit=WholeOrganism
-		 * gatheringEvent.country=Greece
-		 * _ignoreCase=true
-		 * _size=10
-		 * _from=25
-		 * _fields=sourceSystemId,identifications.scientificName.fullScientificName 
-		 * _sortFields=id,identifications.scientificName.fullScientificName:DESC
-		 * 
-		 * 
-		 * Complex:
-		 * 
-
-		 * {
-		 *	   "conditions" : [
-		 *       { "field" : "sourceSystem.code", "operator" : "=", "value" : "CRS" },
-		 *         { "field" : "collectionType", "operator" : "EQUALS_IC", "value" : "Hymenoptera" },
-		 *         { "field" : "kindOfUnit", "operator" : "EQUALS_IC", "value" : "WholeOrganism" },
-		 *         { "field" : "gatheringEvent.country", "operator" : "EQUALS_IC", "value" : "Greece" } 
-		 *     ],
-		 *     "logicalOperator" : "AND",
-		 *     "from" : 25,
-		 *     "size" : 10,
-		 *     "fields" : ["sourceSystemId","identifications.scientificName.fullScientificName"],
-		 *       "sortFields" : [ 
-		 *       { "path" : "id", "sortOrder" : "ASC" }, 
-		 *       { "path" : "identifications.scientificName.fullScientificName", "sortOrder" : "DESC" } ]
-		 * }
-		 *
-		 */
 		
+		// The parameters used in the Human Readable Query
 		String param1 = "sourceSystem.code",		value1 = "CRS";
 		String param2 = "collectionType",			value2 = "Hymenoptera";
 		String param3 = "kindOfUnit",				value3 = "WholeOrganism";
 		String param4 = "gatheringEvent.country",	value4 = "Greece";
-		String param5 = "_ignoreCase",				value5 = "true";
-		String param6 = "_size",					value6 = "10";
-		String param7 = "_from",					value7 = "25";
-		String param8 = "_fields",					value8 = "sourceSystemId,identifications.scientificName.fullScientificName"; 
-		String param9 = "_sortFields", 				value9 = "id,identifications.scientificName.fullScientificName:DESC";
 
+		String param5 = "_logicalOperator",			logicalOperatorStr = "AND";
+		String param6 = "_size",					sizeStr = "10";
+		String param7 = "_from",					fromStr = "25";
+		String param8 = "_fields",					fieldsStr = "sourceSystemId,identifications.scientificName.fullScientificName"; 
+		String param9 = "_sortFields", 				sortFieldsStr = "id,identifications.scientificName.fullScientificName:DESC";
+		String param10 = "_ignoreCase",				ignoreCaseStr = "true";
+
+		ComparisonOperator comparisonOperatorStr = EQUALS;
+		if (isTrueValue(ignoreCaseStr)) {
+			comparisonOperatorStr = EQUALS_IC;
+		}
+
+		// Build the Actual Query Spec
 		MultivaluedHashMap<String, String> parameterMap = new MultivaluedHashMap<String, String>();
 		parameterMap.put(param1, new ArrayList<>(Arrays.asList(value1)));
 		parameterMap.put(param2, new ArrayList<>(Arrays.asList(value2)));
 		parameterMap.put(param3, new ArrayList<>(Arrays.asList(value3)));
 		parameterMap.put(param4, new ArrayList<>(Arrays.asList(value4)));
-		parameterMap.put(param5, new ArrayList<>(Arrays.asList(value5)));
-		parameterMap.put(param5, new ArrayList<>(Arrays.asList(value6)));
-		parameterMap.put(param7, new ArrayList<>(Arrays.asList(value7)));
-		parameterMap.put(param8, new ArrayList<>(Arrays.asList(value8)));
-		parameterMap.put(param9, new ArrayList<>(Arrays.asList(value9)));
+
+		parameterMap.put(param5, new ArrayList<>(Arrays.asList(logicalOperatorStr)));
+		parameterMap.put(param6, new ArrayList<>(Arrays.asList(sizeStr)));
+		parameterMap.put(param7, new ArrayList<>(Arrays.asList(fromStr)));
+		parameterMap.put(param8, new ArrayList<>(Arrays.asList(fieldsStr)));
+		parameterMap.put(param9, new ArrayList<>(Arrays.asList(sortFieldsStr)));
+		parameterMap.put(param10, new ArrayList<>(Arrays.asList(ignoreCaseStr)));
 		
 		UriInfo uriInfo = mock(UriInfo.class);
 		when(uriInfo.getQueryParameters()).thenReturn(parameterMap);
-		@SuppressWarnings("unused")
 		QuerySpec qsActual = new HttpQuerySpecBuilder(uriInfo).build();
-		
+
+		// Build the Expected Query Spec
 		QuerySpec qsExpected = new QuerySpec();
-		QueryCondition cond1 = new QueryCondition("sourceSystem", EQUALS_IC, "CRS");
-		QueryCondition cond2 = new QueryCondition("collectionType", EQUALS_IC, "Hymenoptera");
-		QueryCondition cond3 = new QueryCondition("kindOfUnit", EQUALS_IC, "WholeOrganism");
-		QueryCondition cond4 = new QueryCondition("gatheringEvent.country", EQUALS_IC, "Greece");
+		QueryCondition cond1 = new QueryCondition("sourceSystem.code", comparisonOperatorStr, value1);
+		QueryCondition cond2 = new QueryCondition("collectionType", comparisonOperatorStr, value2);
+		QueryCondition cond3 = new QueryCondition("kindOfUnit", comparisonOperatorStr, value3);
+		QueryCondition cond4 = new QueryCondition("gatheringEvent.country", comparisonOperatorStr, value4);
 		qsExpected.addCondition(cond1);
 		qsExpected.addCondition(cond2);
 		qsExpected.addCondition(cond3);
 		qsExpected.addCondition(cond4);
-		String[] fields = {"ignoreCase", "size","from", "fields", "sortFields"};
-		qsExpected.addFields(fields);
-		
 
+		qsExpected.setLogicalOperator(LogicalOperator.parse(logicalOperatorStr));
+		qsExpected.setSize(Integer.parseInt(sizeStr));
+		qsExpected.setFrom(Integer.parseInt(fromStr));
+		qsExpected.addFields(fieldsStr.split(","));
+
+		List<SortField> sortFields = new ArrayList<>();
+		for (String sortFieldStr : sortFieldsStr.split(",")) {
+			if (sortFieldStr.indexOf(":") < 0) {
+				sortFields.add(new SortField(sortFieldStr, SortOrder.ASC));
+			}
+			else {
+				sortFields.add(new SortField( sortFieldStr.split(":")[0], SortOrder.parse(sortFieldStr.split(":")[1]) ));
+			}
+		}
+		qsExpected.setSortFields(sortFields);
+		
+		// Verify if both Query Specs are equal
+		assertTrue(compareQuerySpecs(qsActual, qsExpected));
+	}
+
+	
+	/**
+	 * Compares two Query Specs
+	 * @param qs1 QuerySpec one
+	 * @param qs2 QuerySpec two
+	 * @return true   if the Query Specs are equal,
+	 * 		   false  otherwise 
+	 */
+	static Boolean compareQuerySpecs(QuerySpec qs1, QuerySpec qs2)
+	{
+
+		// Compare the Logical Operator
+		if (qs1.getLogicalOperator() != qs2.getLogicalOperator())
+			return false;
+		
+		// Compare From and Size
+		if (qs1.getSize() != qs2.getSize() || qs1.getFrom() != qs2.getFrom())
+			return false;
+		
+		// Compare the Fields
+		if (qs1.getFields().size() != qs2.getFields().size())
+			return false;
+		for (Path field : qs1.getFields()) {
+			if (!qs2.getFields().contains(field)) {
+				return false;
+			}
+		}
+		
+		// Compare the Sort Fields
+		if (qs1.getSortFields().size() != qs2.getSortFields().size()) {
+			return false;
+		}
+
+		Map<Path, SortOrder> sortMap1 = new HashMap<>();
+		for (SortField sortField : qs1.getSortFields()) {
+			sortMap1.put(sortField.getPath(), sortField.getSortOrder());
+		}
+		Map<Path, SortOrder> sortMap2 = new HashMap<>();
+		for (SortField sortField : qs2.getSortFields()) {
+			sortMap2.put(sortField.getPath(), sortField.getSortOrder());
+		}
+		if (!sortMap1.equals(sortMap2))
+			return false;
+		
+		// Compare the Query Conditions
+		Map<Path, ArrayList<String>> map1 = new HashMap<>();
+		for (QueryCondition cond : qs1.getConditions()) {
+			map1.put(cond.getField(), new ArrayList<>(Arrays.asList(cond.getOperator().toString(), cond.getValue().toString())));
+		}
+
+		Map<Path, ArrayList<String>> map2 = new HashMap<>();
+		for (QueryCondition cond : qs2.getConditions()) {
+			map2.put(cond.getField(), new ArrayList<>(Arrays.asList(cond.getOperator().toString(), cond.getValue().toString())));
+		}
+		
+		if (!map1.equals(map2))
+			return false;
+
+		// Query Specs are equal
+		return true;
 	}
 }

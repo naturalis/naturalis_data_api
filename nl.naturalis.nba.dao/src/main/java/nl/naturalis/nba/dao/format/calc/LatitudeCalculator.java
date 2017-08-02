@@ -23,8 +23,11 @@ public class LatitudeCalculator implements ICalculator {
 	public Object calculateValue(EntityObject entity) throws CalculationException
 	{
 		Specimen specimen = (Specimen) entity.getDocument();
+		if (specimen.getGatheringEvent() == null) {
+			return EMPTY_STRING;
+		}
 		List<GatheringSiteCoordinates> coords = specimen.getGatheringEvent().getSiteCoordinates();
-		if (coords == null || coords.size() != 1) {
+		if (coords == null || coords.size() == 0) {
 			return EMPTY_STRING;
 		}
 		Double lat = coords.iterator().next().getLatitudeDecimal();

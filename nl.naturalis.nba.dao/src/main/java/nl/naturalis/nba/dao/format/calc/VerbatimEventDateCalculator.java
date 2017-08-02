@@ -38,7 +38,7 @@ public class VerbatimEventDateCalculator implements ICalculator {
 		}
 		Date endDate = specimen.getGatheringEvent().getDateTimeEnd();
 		if (endDate == null || beginDate.equals(endDate)) {
-			return formatDate(beginDate.toString());
+			return formatDate(beginDate);
 		}
 		return formatDate(beginDate) + " | " + formatDate(endDate);
 	}

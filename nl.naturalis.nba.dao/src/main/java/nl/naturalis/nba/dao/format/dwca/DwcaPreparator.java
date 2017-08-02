@@ -73,9 +73,12 @@ class DwcaPreparator {
 	private void prepareEml() throws DataSetWriteException
 	{
 		logger.info("Preparing eml.xml");
-		File f = cfg.getEmlFile();
-		if (!f.isFile()) {
-			throw new DataSetWriteException("Missing EML file: " + f.getAbsolutePath());
+		File f;
+		try {
+			f = cfg.getEmlFile();
+		}
+		catch (DataSetConfigurationException e) {
+			throw new DataSetWriteException(e);
 		}
 		XmlFileUpdater emlUpdater = new XmlFileUpdater(f);
 		try {
@@ -145,5 +148,5 @@ class DwcaPreparator {
 		}
 		return metaXmlFields;
 	}
-	
+
 }

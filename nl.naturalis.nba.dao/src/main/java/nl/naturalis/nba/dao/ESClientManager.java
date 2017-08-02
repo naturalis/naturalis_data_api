@@ -1,8 +1,6 @@
 package nl.naturalis.nba.dao;
 
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
-import static nl.naturalis.nba.utils.ArrayUtil.box;
-import static nl.naturalis.nba.utils.ArrayUtil.implode;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -33,17 +31,14 @@ public class ESClientManager {
 
 	private static final Logger logger = getLogger(ESClientManager.class);
 
-	private static ESClientManager instance;
+	private static final ESClientManager instance = new ESClientManager(
+			DaoRegistry.getInstance().getConfiguration());
 
 	/**
 	 * Returns an instance of an {@link ESClientManager}.
 	 */
 	public static ESClientManager getInstance()
 	{
-		if (instance == null) {
-			ConfigObject cfg = DaoRegistry.getInstance().getConfiguration();
-			instance = new ESClientManager(cfg);
-		}
 		return instance;
 	}
 
@@ -61,7 +56,7 @@ public class ESClientManager {
 	 * 
 	 * @return
 	 */
-	public Client getClient()
+	public synchronized Client getClient()
 	{
 		if (client == null) {
 			logger.info("Connecting to Elasticsearch cluster");
@@ -86,7 +81,7 @@ public class ESClientManager {
 	 * this way, the next call to {@link #getClient()} is guaranteed to return a
 	 * new Elasticsearch {@link Client} instance.
 	 */
-	public void closeClient()
+	public synchronized void closeClient()
 	{
 		if (client != null) {
 			logger.info("Disconnecting from Elasticsearch cluster");

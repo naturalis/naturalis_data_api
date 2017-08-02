@@ -17,9 +17,9 @@ import nl.naturalis.nba.dao.format.DataSetBuilder;
 import nl.naturalis.nba.dao.format.DataSetConfigurationException;
 import nl.naturalis.nba.dao.format.Entity;
 import nl.naturalis.nba.dao.format.csv.CsvFieldFactory;
+import nl.naturalis.nba.dao.util.es.AcidScroller;
 import nl.naturalis.nba.dao.util.es.DirtyScroller;
 import nl.naturalis.nba.dao.util.es.IScroller;
-import nl.naturalis.nba.dao.util.es.AcidScroller;
 import nl.naturalis.nba.utils.ArrayUtil;
 import nl.naturalis.nba.utils.ConfigObject;
 import nl.naturalis.nba.utils.ConfigObject.MissingPropertyException;
@@ -91,12 +91,6 @@ public class DwcaConfig {
 			throw new DataSetConfigurationException(msg);
 		}
 		this.dataSet = buildDataSet();
-		/*
-		 * Validate as much as possible before generating a response; if things
-		 * go wrong after the first byte has been sent out, the client won't
-		 * know what went wrong and just get a corrupt zip file.
-		 */
-		validateConfig();
 	}
 
 	/**
@@ -119,6 +113,15 @@ public class DwcaConfig {
 		return new SingleDataSourceDwcaWriter(this, out);
 	}
 
+	public File getEmlFile() throws DataSetConfigurationException
+	{
+		File f = FileUtil.newFile(getHome(), dataSetName + "/eml.xml");
+		if (!f.isFile()) {
+			throw new DataSetConfigurationException("Missing file: " + f.getAbsolutePath());
+		}
+		return f;
+	}
+
 	String getDataSetName()
 	{
 		return dataSetName;
@@ -132,12 +135,6 @@ public class DwcaConfig {
 	DataSet getDataSet()
 	{
 		return dataSet;
-	}
-
-	public File getEmlFile()
-	{
-		String emlFile = dataSetName + "/eml.xml";
-		return FileUtil.newFile(getHome(), emlFile);
 	}
 
 	String getCsvFileName(Entity entity) throws DataSetConfigurationException
@@ -240,27 +237,15 @@ public class DwcaConfig {
 		return dataset;
 	}
 
-	private File getHome()
+	private File getHome() throws DataSetConfigurationException
 	{
 		File root = DaoRegistry.getInstance().getConfigurationDirectory();
 		String subdir = "dwca/" + dataSetType.name().toLowerCase();
-		return FileUtil.newFile(root, subdir);
-	}
-
-	private void validateConfig() throws DataSetConfigurationException
-	{
-		File file = getHome();
-		if (!file.isDirectory()) {
-			String fmt = "Missing directory %s for DwCA dataset %s";
-			String msg = String.format(fmt, file.getAbsolutePath(), dataSetName);
-			throw new DataSetConfigurationException(msg);
+		File home = FileUtil.newFile(root, subdir);
+		if (!home.isDirectory()) {
+			throw new DataSetConfigurationException("Missing directory: " + home.getAbsolutePath());
 		}
-		file = getEmlFile();
-		if (!file.isFile()) {
-			String fmt = "Missing file %s for DwCA dataset %s";
-			String msg = String.format(fmt, file.getAbsolutePath(), dataSetName);
-			throw new DataSetConfigurationException(msg);
-		}
+		return home;
 	}
 
 }

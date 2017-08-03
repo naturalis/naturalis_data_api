@@ -198,8 +198,7 @@ public class HttpGroupByScientificNameQuerySpecBuilder {
 	private void checkParams(UriInfo uriInfo)
 	{
 		if (params.containsKey(PARAM_QUERY_SPEC)) {
-			List<String> forbidden = Arrays.asList(PARAM_FIELDS, PARAM_FROM, PARAM_SIZE,
-					PARAM_SORT_FIELDS, PARAM_OPERATOR);
+			List<String> forbidden = new ArrayList<>(Arrays.asList(PARAM_FIELDS, PARAM_FROM, PARAM_SIZE, PARAM_SORT_FIELDS, PARAM_OPERATOR));			
 			if (forbidden.removeAll(params.keySet())) {
 				String imploded = CollectionUtil.implode(forbidden);
 				String msg = String.format(ERR_BAD_PARAM_COMBI, imploded);

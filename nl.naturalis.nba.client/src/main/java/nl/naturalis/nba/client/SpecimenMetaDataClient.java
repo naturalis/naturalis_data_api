@@ -6,6 +6,8 @@ import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.metadata.NbaSetting;
 
 public class SpecimenMetaDataClient extends NbaMetaDataClient<Specimen> {
+	
+	
 
 	@Override
 	public Object getSetting(NbaSetting setting)

@@ -1,5 +1,6 @@
 package nl.naturalis.nba.client;
 
+import static nl.naturalis.nba.client.ClientUtil.sendRequest;
 import static nl.naturalis.nba.client.ServerException.newServerException;
 import static nl.naturalis.nba.utils.http.SimpleHttpRequest.HTTP_NOT_FOUND;
 import static nl.naturalis.nba.utils.http.SimpleHttpRequest.HTTP_OK;
@@ -100,7 +101,7 @@ public class NbaSession {
 		request.setBaseUrl(cfg.getBaseUrl());
 		request.setAccept("text/plain");
 		request.setPath("/ping");
-		NbaClient.sendRequest(request);
+		sendRequest(request);
 		int status = request.getStatus();
 		if (status == HTTP_NOT_FOUND) {
 			return "Received a 404 (NOT FOUND) error. Please check Base URL: " + cfg.getBaseUrl();

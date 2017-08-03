@@ -2,6 +2,7 @@ package nl.naturalis.nba.client;
 
 import static nl.naturalis.nba.client.ClientUtil.getBoolean;
 import static nl.naturalis.nba.client.ClientUtil.getObject;
+import static nl.naturalis.nba.client.ClientUtil.sendRequest;
 import static nl.naturalis.nba.client.ServerException.newServerException;
 import static nl.naturalis.nba.utils.http.SimpleHttpRequest.HTTP_OK;
 

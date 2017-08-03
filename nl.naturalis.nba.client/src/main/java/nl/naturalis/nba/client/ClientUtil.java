@@ -1,6 +1,8 @@
 package nl.naturalis.nba.client;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -13,6 +15,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.common.json.ObjectMapperLocator;
+import nl.naturalis.nba.utils.http.SimpleHttpException;
+import nl.naturalis.nba.utils.http.SimpleHttpRequest;
 
 /**
  * 
@@ -21,7 +25,6 @@ import nl.naturalis.nba.common.json.ObjectMapperLocator;
  */
 public class ClientUtil {
 
-	@SuppressWarnings("unused")
 	private static final Logger logger = LogManager.getLogger(ClientUtil.class);
 	private static final ObjectMapperLocator oml = ObjectMapperLocator.getInstance();
 
@@ -189,5 +192,42 @@ public class ClientUtil {
 			throw new ClientException(e);
 		}
 	}
+	
+	static SimpleHttpRequest sendRequest(SimpleHttpRequest request)
+	{
+		URI uri = getURI(request);
+		logger.info("Sending {} request:\n{}", request.getMethod(), uri);
+		try {
+			request.execute();
+		}
+		catch (Throwable t) {
+			if (t instanceof SimpleHttpException) {
+				if (t.getMessage().indexOf("Connection refused") != -1) {
+					String fmt = "NBA server down or invalid base URL: %s";
+					String msg = String.format(fmt, request.getBaseUrl());
+					throw new ClientException(msg);
+				}
+			}
+			throw t;
+		}
+		return request;
+	}
+
+
+	
+	private static URI getURI(SimpleHttpRequest request)
+	{
+		URI uri = null;
+		try {
+			uri = request.createUri();
+		}
+		catch (URISyntaxException e) {
+			String fmt = "Invalid URL (path: \"%s\"; query: \"%s\")";
+			String msg = String.format(fmt, request.getPath(), request.getQuery());
+			throw new ClientException(msg);
+		}
+		return uri;
+	}
+
 
 }

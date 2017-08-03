@@ -1,6 +1,7 @@
 package nl.naturalis.nba.client;
 
 import static nl.naturalis.nba.client.ClientUtil.getObject;
+import static nl.naturalis.nba.client.ClientUtil.sendRequest;
 import static nl.naturalis.nba.client.ServerException.newServerException;
 import static nl.naturalis.nba.utils.http.SimpleHttpRequest.HTTP_OK;
 
@@ -12,12 +13,12 @@ import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
+import nl.naturalis.nba.api.GroupByScientificNameQuerySpec;
 import nl.naturalis.nba.api.ITaxonAccess;
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.NoSuchDataSetException;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QuerySpec;
-import nl.naturalis.nba.api.GroupByScientificNameQuerySpec;
 import nl.naturalis.nba.api.model.ScientificNameGroup;
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.common.json.JsonUtil;

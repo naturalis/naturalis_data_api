@@ -30,7 +30,7 @@
 		</propertyfile>
 	</target>
 
-	<target name="create-war-file" depends="create-version-file,test">
+	<target name="create-war-file" depends="create-version-file,run-tests">
 		<property name="assembly.dir" location="${basedir}/build/assemble" />
 		<delete dir="${assembly.dir}" quiet="true" />
 		<mkdir dir="${assembly.dir}" />

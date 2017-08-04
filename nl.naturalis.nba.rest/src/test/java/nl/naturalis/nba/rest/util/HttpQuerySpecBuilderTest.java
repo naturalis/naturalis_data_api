@@ -109,13 +109,12 @@ public class HttpQuerySpecBuilderTest<qs> {
 	/*
 	 * Test of request containing sort parameters
 	 */
-	// NOTE: it is allowed to sort on a field both ASC and DESC!!! Should be fixed.
 	@Test(expected = HTTP400Exception.class)
 	public void testBuildCaseParameterSortFields() throws HTTP400Exception
 	{
 		String param1 = "sourceSystem.code", value1 = "CRS";
 		String param2 = "collectionType", value2 = "Aves";
-		String param3 = "_sortFields", value3 = "unitID:ASC,id:DESC,sourceSystemId:ASC";
+		String param3 = "_sortFields", value3 = "unitID:ASC,id:DESC,sourceSystemId:ASC,id:DESC";
 
 		MultivaluedHashMap<String, String> parameterMap = new MultivaluedHashMap<String, String>();
 		parameterMap.put(param1, new ArrayList<>(Arrays.asList(value1)));

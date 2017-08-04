@@ -47,10 +47,10 @@ public class HttpQuerySpecBuilder {
 	private static final String ERR_NO_UNDERSCORE = "Unknown or illegal parameter: "
 			+ "querySpec. Did you mean _querySpec?";
 	private static final String ERR_DUPLICATE_PARAM = "Duplicate parameter not allowed: %s";
+	private static final String ERR_DUPLICATE_SORT = "Duplicate sort field not allowed: %s";
 	private static final String ERR_BAD_PARAM = "Invalid value for parameter %s: \"%s\"";
 	private static final String ERR_BAD_INT_PARAM = "Parameter %s must be an integer (was \"%s\")";
 	private static final String ERR_SORT_PARAM = "Parameter %s: sort order must be \"ASC\" or \"DESC\"";
-//	private static final String ERR_BAD_PARAM_COMBI = "Parameter _querySpec cannot be combined with %s";
 	private static final String ERR_BAD_PARAM_COMBI = "Parameter _querySpec cannot be combined with any other parameter.";
 	private static final Logger logger = LogManager.getLogger(HttpQuerySpecBuilder.class);
 
@@ -221,24 +221,35 @@ public class HttpQuerySpecBuilder {
 			return null;
 		}
 		String[] chunks = value.split(",");
+		List<String> fieldsAdded = new ArrayList<>(chunks.length);
 		List<SortField> sortFields = new ArrayList<>(chunks.length);
 		for (String chunk : chunks) {
+			// First, check if the sort sortfield has not been used before
+			String fieldName = chunk.split(":")[0].toString();
+			if (fieldsAdded.contains(fieldName)) {
+				String msg = String.format(ERR_DUPLICATE_SORT, fieldName);
+				throw new HTTP400Exception(uriInfo, msg);
+			}
 			int i = chunk.indexOf(':');
 			if (i == -1) {
 				sortFields.add(new SortField(chunk));
+				fieldsAdded.add(chunk);
 			}
 			else {
 				String path = chunk.substring(0, i).trim();
 				if (i == chunk.length() - 1) {
 					sortFields.add(new SortField(path));
+					fieldsAdded.add(path.toString());
 				}
 				else {
 					String order = chunk.substring(i + 1).trim().toUpperCase();
 					if (order.equals("ASC")) {
 						sortFields.add(new SortField(path, ASC));
+						fieldsAdded.add(path.toString());
 					}
 					else if (order.equals("DESC")) {
 						sortFields.add(new SortField(path, DESC));
+						fieldsAdded.add(path.toString());
 					}
 					else {
 						String msg = String.format(ERR_SORT_PARAM, PARAM_SORT_FIELDS, value);

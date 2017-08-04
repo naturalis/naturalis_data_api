@@ -31,7 +31,11 @@ import nl.naturalis.nba.api.SortField;
 import nl.naturalis.nba.api.SortOrder;
 import nl.naturalis.nba.rest.exception.HTTP400Exception;
 
-
+/**
+ * Unit test for HttpQuerySpecBuilder
+ * 
+ * @author Tom Gilissen
+ */
 
 public class HttpQuerySpecBuilderTest<qs> {
 
@@ -144,6 +148,7 @@ public class HttpQuerySpecBuilderTest<qs> {
 		new HttpQuerySpecBuilder(uriInfo).build();
 	}
 
+	
 	/*
 	 * Test of request containing a parameter starting with an underscore
 	 */
@@ -174,6 +179,7 @@ public class HttpQuerySpecBuilderTest<qs> {
 				paramTest && msg.contains("Unknown or illegal parameter"));
 	}
 
+	
 	/*
 	 * Test of request containing a parameter that equals @NULL@
 	 */
@@ -204,6 +210,7 @@ public class HttpQuerySpecBuilderTest<qs> {
 		assertTrue("Test NULL value in parameter", nullValueTest);
 	}
 
+	
 	/*
 	 * Test of request containing a parameter that equals @NOT_NULL@
 	 */
@@ -235,6 +242,7 @@ public class HttpQuerySpecBuilderTest<qs> {
 		assertTrue("Test NULL value in parameter", notNullValueTest);
 	}
 
+	
 	/*
 	 * Test of request containing filter fields
 	 */
@@ -265,6 +273,7 @@ public class HttpQuerySpecBuilderTest<qs> {
 		assertTrue("Test filter", fieldsExpected.equals(fieldsActual));
 	}
 
+	
 	/*
 	 * Test of _ignoreCase parameter
 	 */
@@ -323,6 +332,7 @@ public class HttpQuerySpecBuilderTest<qs> {
 		assertTrue("Test of parameter: _ignoreCase=\"\"", operatorTest);
 	}
 
+	
 	/*
 	 * Test of _size and _from parameters
 	 */
@@ -351,6 +361,7 @@ public class HttpQuerySpecBuilderTest<qs> {
 		new HttpQuerySpecBuilder(uriInfo).build();
 	}
 
+	
 	/*
 	 * Test of the _querySpec parameter (method: buildFromSearchSpecParam)
 	 */

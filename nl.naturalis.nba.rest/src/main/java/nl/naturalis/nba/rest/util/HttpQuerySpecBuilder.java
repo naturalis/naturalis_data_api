@@ -31,6 +31,7 @@ import nl.naturalis.nba.rest.exception.HTTP400Exception;
  * @see QuerySpec
  * 
  * @author Ayco Holleman
+ * @author Tom Gilissen
  *
  */
 public class HttpQuerySpecBuilder {

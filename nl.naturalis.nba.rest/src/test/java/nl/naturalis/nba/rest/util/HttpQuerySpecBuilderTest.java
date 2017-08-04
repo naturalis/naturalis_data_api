@@ -363,6 +363,49 @@ public class HttpQuerySpecBuilderTest<qs> {
 
 	
 	/*
+	 * Test of request containing a logical operator
+	 */
+	@Test(expected = HTTP400Exception.class)
+	public void testParamOperator() throws HTTP400Exception
+	{
+		String param1 = "sourceSystem.code",	value1 = "CRS";
+		String param2 = "collectionType",		value2 = "Aves";
+		String param3 = "_logicalOperator";
+		String logicalOperator = "AND";
+		
+		MultivaluedHashMap<String, String> parameterMap = new MultivaluedHashMap<String, String>();
+		parameterMap.put(param1, new ArrayList<>(Arrays.asList(value1)));
+		parameterMap.put(param2, new ArrayList<>(Arrays.asList(value2)));
+		parameterMap.put(param3, new ArrayList<>(Arrays.asList(logicalOperator)));
+
+		UriInfo uriInfo = mock(UriInfo.class);
+		when(uriInfo.getQueryParameters()).thenReturn(parameterMap);
+		QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
+		assertTrue("Test with logical operator AND", (qs.getLogicalOperator() == LogicalOperator.AND) );
+
+		logicalOperator = "&&";
+		parameterMap.put(param3, new ArrayList<>(Arrays.asList(logicalOperator)));
+		qs = new HttpQuerySpecBuilder(uriInfo).build();
+		assertTrue("Test with logical operator &&", (qs.getLogicalOperator() == LogicalOperator.AND) );
+		
+		logicalOperator = "OR";
+		parameterMap.put(param3, new ArrayList<>(Arrays.asList(logicalOperator)));
+		qs = new HttpQuerySpecBuilder(uriInfo).build();
+		assertTrue("Test with logical operator OR", (qs.getLogicalOperator() == LogicalOperator.OR) );
+
+		logicalOperator = "||";
+		parameterMap.put(param3, new ArrayList<>(Arrays.asList(logicalOperator)));
+		qs = new HttpQuerySpecBuilder(uriInfo).build();
+		assertTrue("Test with logical operator ||", (qs.getLogicalOperator() == LogicalOperator.OR) );
+
+		logicalOperator = "FAIL";
+		parameterMap.put(param3, new ArrayList<>(Arrays.asList(logicalOperator)));
+		new HttpQuerySpecBuilder(uriInfo).build();
+		assertTrue("Test with illegal logical operator", true);
+	}
+
+	
+	/*
 	 * Test of the _querySpec parameter (method: buildFromSearchSpecParam)
 	 */
 	public void testBuildFromSearchSpecParam() throws HTTP400Exception

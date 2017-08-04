@@ -9,7 +9,6 @@ import static nl.naturalis.nba.common.json.JsonUtil.deserialize;
 import static nl.naturalis.nba.utils.ConfigObject.isTrueValue;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.ws.rs.core.MultivaluedMap;
@@ -27,7 +26,6 @@ import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.SortField;
 import nl.naturalis.nba.rest.exception.HTTP400Exception;
-import nl.naturalis.nba.utils.CollectionUtil;
 import nl.naturalis.nba.utils.ConfigObject;
 
 /**
@@ -61,7 +59,8 @@ public class HttpGroupByScientificNameQuerySpecBuilder {
 	private static final String ERR_BAD_PARAM = "Invalid value for parameter %s: \"%s\"";
 	private static final String ERR_BAD_INT_PARAM = "Parameter %s must be an integer (was \"%s\")";
 	private static final String ERR_SORT_PARAM = "Parameter %s: sort order must be \"ASC\" or \"DESC\"";
-	private static final String ERR_BAD_PARAM_COMBI = "Parameter _querySpec cannot be combined with %s";
+	//private static final String ERR_BAD_PARAM_COMBI = "Parameter _querySpec cannot be combined with %s";
+	private static final String ERR_BAD_PARAM_COMBI = "Parameter _querySpec cannot be combined with any other parameter.";
 
 	private static final Logger logger = LogManager
 			.getLogger(HttpGroupByScientificNameQuerySpecBuilder.class);
@@ -197,13 +196,8 @@ public class HttpGroupByScientificNameQuerySpecBuilder {
 
 	private void checkParams(UriInfo uriInfo)
 	{
-		if (params.containsKey(PARAM_QUERY_SPEC)) {
-			List<String> forbidden = new ArrayList<>(Arrays.asList(PARAM_FIELDS, PARAM_FROM, PARAM_SIZE, PARAM_SORT_FIELDS, PARAM_OPERATOR));			
-			if (forbidden.removeAll(params.keySet())) {
-				String imploded = CollectionUtil.implode(forbidden);
-				String msg = String.format(ERR_BAD_PARAM_COMBI, imploded);
-				throw new HTTP400Exception(uriInfo, msg);
-			}
+		if (params.containsKey(PARAM_QUERY_SPEC) && params.size() > 1) {
+			throw new HTTP400Exception(uriInfo, ERR_BAD_PARAM_COMBI);
 		}
 	}
 

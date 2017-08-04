@@ -20,7 +20,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * @author Ayco Holleman
  *
  */
-public final class Path {
+public final class Path implements Comparable<Path>{
 
 	private String[] elems;
 
@@ -228,6 +228,12 @@ public final class Path {
 		catch (NumberFormatException e) {
 			return false;
 		}
+	}
+
+	@Override
+	public int compareTo(Path other)
+	{
+		return toString().compareTo(other.toString());
 	}
 
 }

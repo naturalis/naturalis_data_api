@@ -1,14 +1,14 @@
 package nl.naturalis.nba.rest.util;
 
-import static nl.naturalis.nba.api.ComparisonOperator.*;
+import static nl.naturalis.nba.api.ComparisonOperator.EQUALS;
 import static nl.naturalis.nba.api.ComparisonOperator.EQUALS_IC;
+import static nl.naturalis.nba.api.ComparisonOperator.NOT_EQUALS;
 import static nl.naturalis.nba.api.SortOrder.ASC;
 import static nl.naturalis.nba.api.SortOrder.DESC;
 import static nl.naturalis.nba.common.json.JsonUtil.deserialize;
 import static nl.naturalis.nba.utils.ConfigObject.isTrueValue;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.ws.rs.core.MultivaluedMap;
@@ -24,7 +24,6 @@ import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.SortField;
 import nl.naturalis.nba.rest.exception.HTTP400Exception;
-import nl.naturalis.nba.utils.CollectionUtil;
 
 /**
  * Extracts {@link QuerySpec} objects from HTTP requests.
@@ -32,6 +31,7 @@ import nl.naturalis.nba.utils.CollectionUtil;
  * @see QuerySpec
  * 
  * @author Ayco Holleman
+ * @author Tom Gilissen
  *
  */
 public class HttpQuerySpecBuilder {
@@ -48,11 +48,11 @@ public class HttpQuerySpecBuilder {
 	private static final String ERR_NO_UNDERSCORE = "Unknown or illegal parameter: "
 			+ "querySpec. Did you mean _querySpec?";
 	private static final String ERR_DUPLICATE_PARAM = "Duplicate parameter not allowed: %s";
+	private static final String ERR_DUPLICATE_SORT = "Duplicate sort field not allowed: %s";
 	private static final String ERR_BAD_PARAM = "Invalid value for parameter %s: \"%s\"";
 	private static final String ERR_BAD_INT_PARAM = "Parameter %s must be an integer (was \"%s\")";
 	private static final String ERR_SORT_PARAM = "Parameter %s: sort order must be \"ASC\" or \"DESC\"";
-	private static final String ERR_BAD_PARAM_COMBI = "Parameter _querySpec cannot be combined with %s";
-
+	private static final String ERR_BAD_PARAM_COMBI = "Parameter _querySpec cannot be combined with any other parameter.";
 	private static final Logger logger = LogManager.getLogger(HttpQuerySpecBuilder.class);
 
 	private UriInfo uriInfo;
@@ -81,17 +81,20 @@ public class HttpQuerySpecBuilder {
 		this.params = formData;
 		this.uriInfo = uriInfo;
 	}
-
+	
 	public QuerySpec build()
 	{
 		logger.info("Extracting QuerySpec object from request");
 		checkParams(uriInfo);
+
 		List<String> values = params.get(PARAM_QUERY_SPEC);
 		if (values != null) {
 			return buildFromSearchSpecParam(values);
 		}
+
 		QuerySpec qs = new QuerySpec();
 		ComparisonOperator operator = getComparisonOperator();
+
 		for (String param : params.keySet()) {
 			values = params.get(param);
 			if (values.size() != 1) {
@@ -100,11 +103,12 @@ public class HttpQuerySpecBuilder {
 			}
 			String value = values.iterator().next();
 			logger.info("Processing parameter {}: \"{}\"", param, value);
+
 			switch (param) {
 				case "querySpec":
 					throw new HTTP400Exception(uriInfo, ERR_NO_UNDERSCORE);
 				case PARAM_IGNORE_CASE:
-					break;
+					break;					
 				case PARAM_SORT_FIELDS:
 					qs.setSortFields(getSortFields(value));
 					break;
@@ -156,15 +160,8 @@ public class HttpQuerySpecBuilder {
 
 	private void checkParams(UriInfo uriInfo)
 	{
-		if (params.containsKey(PARAM_QUERY_SPEC)) {
-			List<String> forbidden = Arrays.asList(PARAM_FIELDS, PARAM_FROM, PARAM_SIZE,
-					PARAM_SORT_FIELDS, PARAM_OPERATOR);
-			if (forbidden.removeAll(params.keySet())) {
-				String imploded = CollectionUtil.implode(forbidden);
-				String msg = String.format(ERR_BAD_PARAM_COMBI, imploded);
-				throw new HTTP400Exception(uriInfo, msg);
-			}
-		}
+		if (params.containsKey(PARAM_QUERY_SPEC) && params.size() != 1)
+			throw new HTTP400Exception(uriInfo, ERR_BAD_PARAM_COMBI);
 	}
 
 	/*
@@ -225,24 +222,35 @@ public class HttpQuerySpecBuilder {
 			return null;
 		}
 		String[] chunks = value.split(",");
+		List<String> fieldsAdded = new ArrayList<>(chunks.length);
 		List<SortField> sortFields = new ArrayList<>(chunks.length);
 		for (String chunk : chunks) {
+			// First, check if the sort sortfield has not been used before
+			String fieldName = chunk.split(":")[0].toString();
+			if (fieldsAdded.contains(fieldName)) {
+				String msg = String.format(ERR_DUPLICATE_SORT, fieldName);
+				throw new HTTP400Exception(uriInfo, msg);
+			}
 			int i = chunk.indexOf(':');
 			if (i == -1) {
 				sortFields.add(new SortField(chunk));
+				fieldsAdded.add(chunk);
 			}
 			else {
 				String path = chunk.substring(0, i).trim();
 				if (i == chunk.length() - 1) {
 					sortFields.add(new SortField(path));
+					fieldsAdded.add(path.toString());
 				}
 				else {
 					String order = chunk.substring(i + 1).trim().toUpperCase();
 					if (order.equals("ASC")) {
 						sortFields.add(new SortField(path, ASC));
+						fieldsAdded.add(path.toString());
 					}
 					else if (order.equals("DESC")) {
 						sortFields.add(new SortField(path, DESC));
+						fieldsAdded.add(path.toString());
 					}
 					else {
 						String msg = String.format(ERR_SORT_PARAM, PARAM_SORT_FIELDS, value);

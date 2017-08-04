@@ -1,0 +1,122 @@
+package nl.naturalis.nba.rest.util;
+
+import static nl.naturalis.nba.api.ComparisonOperator.EQUALS;
+import static nl.naturalis.nba.api.ComparisonOperator.EQUALS_IC;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+
+import javax.ws.rs.core.MultivaluedHashMap;
+import javax.ws.rs.core.UriInfo;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import nl.naturalis.nba.api.GroupByScientificNameQuerySpec;
+import nl.naturalis.nba.api.QueryCondition;
+import nl.naturalis.nba.api.QuerySpec;
+import nl.naturalis.nba.rest.exception.HTTP400Exception;
+
+
+public class HttpGroupByScientificNameQuerySpecBuilderTest {
+
+	@Before
+	public void setUp() throws Exception
+	{
+	}
+
+	@After
+	public void tearDown() throws Exception
+	{
+	}
+
+	/*
+	 * Test of request containing illegal parameter "_querySpec"
+	 */
+	@Test(expected = HTTP400Exception.class)
+	public void testBuildCheckParams() throws Exception
+	{
+		String param1 = "_querySpec", value1 = "whatever";
+		String param2 = "sourceSystem.code", value2 = "CRS";
+		String param3 = "_fields", value3 = "unitID";
+
+		MultivaluedHashMap<String, String> parameterMap = new MultivaluedHashMap<String, String>();
+		parameterMap.put(param1, new ArrayList<>(Arrays.asList(value1)));
+		parameterMap.put(param2, new ArrayList<>(Arrays.asList(value2)));
+		parameterMap.put(param3, new ArrayList<>(Arrays.asList(value3)));
+
+		UriInfo uriInfo = mock(UriInfo.class);
+		when(uriInfo.getQueryParameters()).thenReturn(parameterMap);
+
+		@SuppressWarnings("unused")
+		GroupByScientificNameQuerySpec qs = new HttpGroupByScientificNameQuerySpecBuilder(uriInfo).build();
+	}
+
+	/*
+	 * Test of getComparisonOperator()
+	 */
+	@Test
+	public void testBuildGetComparisonOperator()
+	{
+		String param1 = "sourceSystem.code", value1 = "BRAHMS";
+		String param2 = "collectionType", value2 = "Botany";
+		String param3 = "license", value3 = "CC0";
+		String param4 = "_fields", value4 = "unitID,recordBasis,gatheringEvent.country";
+
+		MultivaluedHashMap<String, String> parameterMap = new MultivaluedHashMap<String, String>();
+		parameterMap.put(param1, new ArrayList<>(Arrays.asList(value1)));
+		parameterMap.put(param2, new ArrayList<>(Arrays.asList(value2)));
+		parameterMap.put(param3, new ArrayList<>(Arrays.asList(value3)));
+		parameterMap.put(param4, new ArrayList<>(Arrays.asList(value4)));
+
+		// Start by testing EQUALS_IC
+		String param5 = "_ignoreCase", value5 = "true";
+		parameterMap.put(param5, new ArrayList<>(Arrays.asList(value5)));
+		
+		UriInfo uriInfo = mock(UriInfo.class);
+		when(uriInfo.getQueryParameters()).thenReturn(parameterMap);
+		GroupByScientificNameQuerySpec qs = new HttpGroupByScientificNameQuerySpecBuilder(uriInfo).build();
+
+		Boolean operatorTest = false;
+		for (QueryCondition cond : qs.getConditions()) {
+			if (cond.getOperator() == EQUALS_IC) {
+				operatorTest = true;
+			} else {
+				operatorTest = false;
+				break;
+			}
+		}
+		assertTrue("Test of parameter: _ignoreCase=true", operatorTest);
+		
+		// next, test for EQUALS
+		value5 = ""; // NULL, "" or " " should all lead to EQUALS
+		parameterMap.get(param5).set(0, value5);
+		
+		uriInfo = mock(UriInfo.class);
+		when(uriInfo.getQueryParameters()).thenReturn(parameterMap);
+		qs = new HttpGroupByScientificNameQuerySpecBuilder(uriInfo).build();
+		
+		operatorTest = false;
+		for (QueryCondition cond : qs.getConditions()) {
+			if (cond.getOperator() == EQUALS) {
+				operatorTest = true;
+			} else {
+				operatorTest = false;
+				break;
+			}
+		}
+		assertTrue("Test of parameter: _ignoreCase=\"\"", operatorTest);		
+	}
+
+	
+	@Test
+	public void testBuild()
+	{
+		fail("Not yet implemented");
+	}
+
+}

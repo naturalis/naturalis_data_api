@@ -14,6 +14,8 @@
 		          files="${common.module.artifact}" />
 		<filelist dir="${dao.module.location}/build" files="${dao.module.artifact}" />
 	</path>
+	
+	<property name="junit.suite.classname" value="nl.naturalis.nba.rest.AllTests" />
 
 	<!-- Creates version.properties which is used by a REST service -->
 	<target name="create-version-file" depends="git-info">
@@ -28,7 +30,7 @@
 		</propertyfile>
 	</target>
 
-	<target name="create-war-file" depends="create-version-file,test">
+	<target name="create-war-file" depends="create-version-file,run-tests">
 		<property name="assembly.dir" location="${basedir}/build/assemble" />
 		<delete dir="${assembly.dir}" quiet="true" />
 		<mkdir dir="${assembly.dir}" />

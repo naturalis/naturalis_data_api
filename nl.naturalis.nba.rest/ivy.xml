@@ -16,5 +16,6 @@
 		<dependency org="org.apache.commons" name="commons-text" rev="1.1"/>
 		<dependency org="javax.ejb" name="javax.ejb-api" rev="3.2"/>
 		<dependency org="org.reflections" name="reflections" rev="0.9.11"/>
+		<dependency org="org.mockito" name="mockito-all" rev="1.10.19"/>
 	</dependencies>
 </ivy-module>

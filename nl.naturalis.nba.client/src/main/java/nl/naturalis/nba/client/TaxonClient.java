@@ -21,12 +21,12 @@ import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.ScientificNameGroup;
 import nl.naturalis.nba.api.model.Taxon;
-import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.utils.IOUtil;
-import nl.naturalis.nba.utils.http.SimpleHttpGet;
+import nl.naturalis.nba.utils.http.SimpleHttpRequest;
 
 /**
- * Client-side implementation of the {@link ITaxonAccess taxon API}.
+ * Provides access to taxon-related information. Client-side implementation of
+ * the {@link ITaxonAccess}.
  * 
  * @author Ayco Holleman
  *
@@ -43,10 +43,7 @@ public class TaxonClient extends NbaClient<Taxon> implements ITaxonAccess {
 	@Override
 	public void dwcaQuery(QuerySpec querySpec, OutputStream out) throws InvalidQueryException
 	{
-		String json = JsonUtil.toJson(querySpec);
-		SimpleHttpGet request = new SimpleHttpGet();
-		request.setBaseUrl(config.getBaseUrl());
-		request.setPath("taxon/dwca/query/" + json);
+		SimpleHttpRequest request = newQuerySpecRequest("dwca/query", querySpec);
 		sendRequest(request);
 		int status = request.getStatus();
 		if (status != HTTP_OK) {
@@ -67,9 +64,7 @@ public class TaxonClient extends NbaClient<Taxon> implements ITaxonAccess {
 	@Override
 	public void dwcaGetDataSet(String name, OutputStream out) throws NoSuchDataSetException
 	{
-		SimpleHttpGet request = new SimpleHttpGet();
-		request.setBaseUrl(config.getBaseUrl());
-		request.setPath("taxon/dwca/getDataSet/" + name);
+		SimpleHttpRequest request = newGetRequest("dwca/getDataSet/" + name);
 		sendRequest(request);
 		int status = request.getStatus();
 		if (status != HTTP_OK) {
@@ -90,12 +85,26 @@ public class TaxonClient extends NbaClient<Taxon> implements ITaxonAccess {
 	@Override
 	public String[] dwcaGetDataSetNames()
 	{
-		SimpleHttpGet request = getJson("taxon/dwca/getDataSetNames");
+		SimpleHttpRequest request = getJson("dwca/getDataSetNames");
 		int status = request.getStatus();
 		if (status != HTTP_OK) {
 			throw newServerException(status, request.getResponseBody());
 		}
 		return getObject(request.getResponseBody(), String[].class);
+	}
+
+	@Override
+	public QueryResult<ScientificNameGroup> groupByScientificName(
+			GroupByScientificNameQuerySpec querySpec) throws InvalidQueryException
+	{
+		SimpleHttpRequest request = newQuerySpecRequest("groupByScientificName", querySpec);
+		sendRequest(request);
+		int status = request.getStatus();
+		if (status != HTTP_OK) {
+			throw newServerException(status, request.getResponseBody());
+		}
+		return getObject(request.getResponseBody(),
+				new TypeReference<QueryResult<ScientificNameGroup>>() {});
 	}
 
 	@Override
@@ -114,25 +123,6 @@ public class TaxonClient extends NbaClient<Taxon> implements ITaxonAccess {
 	TypeReference<QueryResult<Taxon>> queryResultTypeReference()
 	{
 		return new TypeReference<QueryResult<Taxon>>() {};
-	}
-
-	@Override
-	public QueryResult<ScientificNameGroup> groupByScientificName(
-			GroupByScientificNameQuerySpec querySpec) throws InvalidQueryException
-	{
-		String json = JsonUtil.toJson(querySpec);
-		SimpleHttpGet request = new SimpleHttpGet();
-		request.setBaseUrl(config.getBaseUrl());
-		request.setPath("taxon/groupByScientificName/");
-		request.addQueryParam("_querySpec", json);
-		sendRequest(request);
-		int status = request.getStatus();
-		if (status != HTTP_OK) {
-			throw newServerException(status, request.getResponseBody());
-		}
-		return getObject(request.getResponseBody(),
-				new TypeReference<QueryResult<ScientificNameGroup>>() {});
-		
 	}
 
 }

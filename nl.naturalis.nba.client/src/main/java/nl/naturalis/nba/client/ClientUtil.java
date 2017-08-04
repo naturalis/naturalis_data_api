@@ -95,7 +95,7 @@ public class ClientUtil {
 		}
 		catch (JsonMappingException e0) {
 			String fmt = "Could not convert JSON response to %s:\n\n%s\n";
-			String msg = String.format(fmt, type.getSimpleName(), response);
+			String msg = String.format(fmt, type.getName(), response);
 			throw new ClientException(msg);
 		}
 		catch (IOException e) {
@@ -154,7 +154,8 @@ public class ClientUtil {
 
 	/**
 	 * Converts the specified object to JSON and writes it to
-	 * {@code System.out}. Fields with {@code null} values are ignored.
+	 * {@code System.out}. Fields whose value is {@code null} values are
+	 * ignored.
 	 * 
 	 * @param obj
 	 */
@@ -174,8 +175,8 @@ public class ClientUtil {
 
 	/**
 	 * Converts the specified object to JSON and writes it to
-	 * {@code System.out}. Fields with {@code null} values are include in the
-	 * output.
+	 * {@code System.out}. Fields whose value is {@code null} values are
+	 * included in the output.
 	 * 
 	 * @param obj
 	 */
@@ -192,7 +193,7 @@ public class ClientUtil {
 			throw new ClientException(e);
 		}
 	}
-	
+
 	static SimpleHttpRequest sendRequest(SimpleHttpRequest request)
 	{
 		URI uri = getURI(request);
@@ -213,21 +214,16 @@ public class ClientUtil {
 		return request;
 	}
 
-
-	
 	private static URI getURI(SimpleHttpRequest request)
 	{
-		URI uri = null;
 		try {
-			uri = request.createUri();
+			return request.createUri();
 		}
 		catch (URISyntaxException e) {
 			String fmt = "Invalid URL (path: \"%s\"; query: \"%s\")";
 			String msg = String.format(fmt, request.getPath(), request.getQuery());
 			throw new ClientException(msg);
 		}
-		return uri;
 	}
-
 
 }

@@ -6,6 +6,13 @@ import nl.naturalis.nba.api.IMultiMediaObjectAccess;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.model.MultiMediaObject;
 
+/**
+ * Provides access to multimedia-related information. Client-side implementation
+ * of the {@link IMultiMediaObjectAccess}.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public class MultiMediaObjectClient extends NbaClient<MultiMediaObject>
 		implements IMultiMediaObjectAccess {
 

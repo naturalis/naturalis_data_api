@@ -16,17 +16,17 @@ import nl.naturalis.nba.api.QuerySpec;
 public enum NbaSetting
 {
 	/**
-	 * &#34;operator.LIKE.min.term.length&#34;. The minimum length of a search
-	 * term when using operator {@link ComparisonOperator#LIKE} or
-	 * {@link ComparisonOperator#NOT_LIKE}.
+	 * &#34;operator.CONTAINS.min.term.length&#34;. The minimum length of a search
+	 * term when using operator {@link ComparisonOperator#CONTAINS} or
+	 * {@link ComparisonOperator#NOT_CONTAINS}.
 	 */
-	OPERATOR_LIKE_MIN_TERM_LENGTH("operator.LIKE.min_term_length"),
+	OPERATOR_CONTAINS_MIN_TERM_LENGTH("operator.CONTAINS.min_term_length"),
 	/**
-	 * &#34;operator.LIKE.max.term.length&#34;. The maximum length of a search
-	 * term when using operator {@link ComparisonOperator#LIKE} or
-	 * {@link ComparisonOperator#NOT_LIKE}.
+	 * &#34;operator.CONTAINS.max.term.length&#34;. The maximum length of a search
+	 * term when using operator {@link ComparisonOperator#CONTAINS} or
+	 * {@link ComparisonOperator#NOT_CONTAINS}.
 	 */
-	OPERATOR_LIKE_MAX_TERM_LENGTH("operator.LIKE.max_term_length"),
+	OPERATOR_CONTAINS_MAX_TERM_LENGTH("operator.CONTAINS.max_term_length"),
 
 	/**
 	 * &#34;index.max_result_window&#34;. The size of the result window. When

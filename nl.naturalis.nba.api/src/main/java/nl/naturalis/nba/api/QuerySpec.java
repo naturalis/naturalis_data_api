@@ -135,7 +135,7 @@ import nl.naturalis.nba.api.model.Taxon;
  * <p>
  * 
  * <pre>
- * Condition condition1 = new Condition("gatheringEvent.gatheringPersons.fullName", LIKE, "burg");
+ * Condition condition1 = new Condition("gatheringEvent.gatheringPersons.fullName", CONTAINS, "burg");
  * condition1.and("unitID", "=", "ZMA.MAM.100");
  * Condition condition2 = new Condition("phaseOrStage", EQUALS_IC, "EGG");
  * QuerySpec query = new QuerySpec();
@@ -156,7 +156,7 @@ import nl.naturalis.nba.api.model.Taxon;
  * {
  *    "conditions" : [ {
  *        "field" : "gatheringEvent.gatheringPersons.fullName",
- *        "operator" : "LIKE",
+ *        "operator" : "CONTAINS",
  *        "value" : "burg",
  *        "and" : [ {
  *            "field" : "unitID",

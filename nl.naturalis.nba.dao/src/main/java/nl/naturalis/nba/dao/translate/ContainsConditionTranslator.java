@@ -11,11 +11,11 @@ import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 
-class LikeConditionTranslator extends ConditionTranslator {
+class ContainsConditionTranslator extends ConditionTranslator {
 
 	private static final String MY_MULTIFIELD = LIKE_MULTIFIELD.getName();
 
-	LikeConditionTranslator(QueryCondition condition, MappingInfo<?> mappingInfo)
+	ContainsConditionTranslator(QueryCondition condition, MappingInfo<?> mappingInfo)
 	{
 		super(condition, mappingInfo);
 	}

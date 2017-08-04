@@ -108,14 +108,14 @@ public enum ComparisonOperator
 	 * only be used for text fields. Search term and field value are compared in
 	 * a case insensitive way. The query value must not be null.
 	 */
-	LIKE,
+	CONTAINS,
 
 	/**
 	 * Operator used to establish that a field does not contain the query
 	 * string. Can only be used for text fields. Search term and field value are
 	 * compared in a case insensitive way. The query value must not be null.
 	 */
-	NOT_LIKE,
+	NOT_CONTAINS,
 
 	/**
 	 * <pre>
@@ -322,6 +322,13 @@ public enum ComparisonOperator
 				}
 				if (s.equalsIgnoreCase(op.name())) {
 					return op;
+				}
+				/* Remove when Bioportal has made the switch : */
+				if (s.equalsIgnoreCase("LIKE")) {
+					return CONTAINS;
+				}
+				if (s.equalsIgnoreCase("NOT_LIKE")) {
+					return NOT_CONTAINS;
 				}
 			}
 		}

@@ -1,6 +1,6 @@
 package nl.naturalis.nba.dao.translate;
 
-import static nl.naturalis.nba.api.ComparisonOperator.LIKE;
+import static nl.naturalis.nba.api.ComparisonOperator.CONTAINS;
 import static nl.naturalis.nba.dao.translate.ConditionTranslatorFactory.getTranslator;
 
 import org.junit.BeforeClass;
@@ -39,7 +39,7 @@ public class LikeConditionTranslatorTest {
 	@Test(expected = InvalidConditionException.class)
 	public void testWithNonStringValue_01() throws InvalidConditionException
 	{
-		QueryCondition c = new QueryCondition("firstName", LIKE, new Object());
+		QueryCondition c = new QueryCondition("firstName", CONTAINS, new Object());
 		ConditionTranslator ct = getTranslator(c, likeTestObjectMappingInfo);
 		ct.translate();
 	}
@@ -51,7 +51,7 @@ public class LikeConditionTranslatorTest {
 	@Test(expected = IllegalOperatorException.class)
 	public void testWithNonStringField_01() throws InvalidConditionException
 	{
-		QueryCondition c = new QueryCondition("age", LIKE, "foo");
+		QueryCondition c = new QueryCondition("age", CONTAINS, "foo");
 		ConditionTranslator ct = getTranslator(c, likeTestObjectMappingInfo);
 		ct.translate();
 	}
@@ -63,7 +63,7 @@ public class LikeConditionTranslatorTest {
 	@Test(expected = InvalidConditionException.class)
 	public void testWithMinNGramSize_01() throws InvalidConditionException
 	{
-		QueryCondition c = new QueryCondition("firstName", LIKE, "ab");
+		QueryCondition c = new QueryCondition("firstName", CONTAINS, "ab");
 		ConditionTranslator ct = getTranslator(c, likeTestObjectMappingInfo);
 		ct.translate();
 	}
@@ -75,7 +75,7 @@ public class LikeConditionTranslatorTest {
 	@Test(expected = InvalidConditionException.class)
 	public void testWithMaxNGramSize_01() throws InvalidConditionException
 	{
-		QueryCondition c = new QueryCondition("firstName", LIKE, "12345678901234567890");
+		QueryCondition c = new QueryCondition("firstName", CONTAINS, "12345678901234567890");
 		ConditionTranslator ct = getTranslator(c, likeTestObjectMappingInfo);
 		ct.translate();
 	}
@@ -88,7 +88,7 @@ public class LikeConditionTranslatorTest {
 	public void testWithLikeOperatorNotAllowed() throws InvalidConditionException
 	{
 		// address field has no @Analyzers annotation
-		QueryCondition c = new QueryCondition("address", LIKE, "foo");
+		QueryCondition c = new QueryCondition("address", CONTAINS, "foo");
 		ConditionTranslator ct = getTranslator(c, likeTestObjectMappingInfo);
 		ct.translate();
 	}

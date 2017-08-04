@@ -2,7 +2,7 @@ package nl.naturalis.nba.dao;
 
 import static nl.naturalis.nba.api.ComparisonOperator.EQUALS;
 import static nl.naturalis.nba.api.ComparisonOperator.EQUALS_IC;
-import static nl.naturalis.nba.api.ComparisonOperator.LIKE;
+import static nl.naturalis.nba.api.ComparisonOperator.CONTAINS;
 import static nl.naturalis.nba.api.ComparisonOperator.NOT_EQUALS;
 import static nl.naturalis.nba.api.ComparisonOperator.NOT_EQUALS_IC;
 import static nl.naturalis.nba.api.UnaryBooleanOperator.NOT;
@@ -363,10 +363,10 @@ public class SpecimenDaoTest_Miscellaneous {
 		condition2 = new QueryCondition(system, EQUALS, "BRAHMS").or(system, EQUALS, "CRS");
 		// This exludes malusSylvestrisSpecimen01 (collected in United Kingdom)
 		condition3 = new QueryCondition(country, EQUALS, "United States");
-		condition3.and(locality, LIKE, "Montana");
+		condition3.and(locality, CONTAINS, "Montana");
 		// This exludes tRexSpecimen01 (collected in United States)
 		condition4 = new QueryCondition(country, EQUALS, "United Kingdom");
-		condition4.and(locality, LIKE, "Dorchester");
+		condition4.and(locality, CONTAINS, "Dorchester");
 		// But this will include them both again: condition3.or(condition4);
 		condition1.and(condition2).and(condition3.or(condition4));
 		QuerySpec qs = new QuerySpec();

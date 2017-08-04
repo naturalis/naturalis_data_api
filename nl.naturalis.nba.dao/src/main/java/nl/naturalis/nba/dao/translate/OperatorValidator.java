@@ -6,7 +6,7 @@ import static nl.naturalis.nba.api.ComparisonOperator.EQUALS_IC;
 import static nl.naturalis.nba.api.ComparisonOperator.GT;
 import static nl.naturalis.nba.api.ComparisonOperator.GTE;
 import static nl.naturalis.nba.api.ComparisonOperator.IN;
-import static nl.naturalis.nba.api.ComparisonOperator.LIKE;
+import static nl.naturalis.nba.api.ComparisonOperator.CONTAINS;
 import static nl.naturalis.nba.api.ComparisonOperator.LT;
 import static nl.naturalis.nba.api.ComparisonOperator.LTE;
 import static nl.naturalis.nba.api.ComparisonOperator.MATCHES;
@@ -14,7 +14,7 @@ import static nl.naturalis.nba.api.ComparisonOperator.NOT_BETWEEN;
 import static nl.naturalis.nba.api.ComparisonOperator.NOT_EQUALS;
 import static nl.naturalis.nba.api.ComparisonOperator.NOT_EQUALS_IC;
 import static nl.naturalis.nba.api.ComparisonOperator.NOT_IN;
-import static nl.naturalis.nba.api.ComparisonOperator.NOT_LIKE;
+import static nl.naturalis.nba.api.ComparisonOperator.NOT_CONTAINS;
 import static nl.naturalis.nba.api.ComparisonOperator.*;
 import static nl.naturalis.nba.common.es.map.ESDataType.BOOLEAN;
 import static nl.naturalis.nba.common.es.map.ESDataType.BYTE;
@@ -144,7 +144,7 @@ public class OperatorValidator {
 					|| operator == NOT_STARTS_WITH_IC) {
 				return ((KeywordField) field).hasMultiField(IGNORE_CASE_MULTIFIELD);
 			}
-			if (operator == LIKE || operator == NOT_LIKE) {
+			if (operator == CONTAINS || operator == NOT_CONTAINS) {
 				return ((KeywordField) field).hasMultiField(LIKE_MULTIFIELD);
 			}
 			if (operator == MATCHES || operator == NOT_MATCHES) {

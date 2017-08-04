@@ -225,7 +225,8 @@ public class HttpQuerySpecBuilder {
 		List<String> fieldsAdded = new ArrayList<>(chunks.length);
 		List<SortField> sortFields = new ArrayList<>(chunks.length);
 		for (String chunk : chunks) {
-			// First, check if the sort sortfield has not been used before
+			// First, check if the sort sortfield has not been used before, because
+			// it may fail the duplicate parameter check
 			String fieldName = chunk.split(":")[0].toString();
 			if (fieldsAdded.contains(fieldName)) {
 				String msg = String.format(ERR_DUPLICATE_SORT, fieldName);

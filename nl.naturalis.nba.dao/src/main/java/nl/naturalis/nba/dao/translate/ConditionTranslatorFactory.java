@@ -128,9 +128,9 @@ public class ConditionTranslatorFactory {
 			case NOT_BETWEEN:
 				translator = new BetweenConditionTranslator(condition, mappingInfo);
 				break;
-			case LIKE:
-			case NOT_LIKE:
-				translator = new LikeConditionTranslator(condition, mappingInfo);
+			case CONTAINS:
+			case NOT_CONTAINS:
+				translator = new ContainsConditionTranslator(condition, mappingInfo);
 				break;
 			case IN:
 			case NOT_IN:

@@ -1,7 +1,7 @@
 package nl.naturalis.nba.dao;
 
-import static nl.naturalis.nba.api.ComparisonOperator.LIKE;
-import static nl.naturalis.nba.api.ComparisonOperator.NOT_LIKE;
+import static nl.naturalis.nba.api.ComparisonOperator.CONTAINS;
+import static nl.naturalis.nba.api.ComparisonOperator.NOT_CONTAINS;
 import static nl.naturalis.nba.dao.util.es.ESUtil.createIndex;
 import static nl.naturalis.nba.dao.util.es.ESUtil.deleteIndex;
 import static org.junit.Assert.assertEquals;
@@ -67,9 +67,9 @@ public class SpecimenDaoTest_Like {
 	@Test
 	public void testWithNullValue_01()
 	{
-		String expecting = "Search value must not be null when using operator LIKE";
+		String expecting = "Search value must not be null when using operator CONTAINS";
 		String field = "identifications.scientificName.genusOrMonomial";
-		QueryCondition condition = new QueryCondition(field, LIKE, null);
+		QueryCondition condition = new QueryCondition(field, CONTAINS, null);
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
@@ -90,7 +90,7 @@ public class SpecimenDaoTest_Like {
 	{
 		String field0 = "identifications.scientificName.genusOrMonomial";
 		QuerySpec qs = new QuerySpec();
-		qs.addCondition(new QueryCondition(field0, LIKE, "aru"));
+		qs.addCondition(new QueryCondition(field0, CONTAINS, "aru"));
 		SpecimenDao dao = new SpecimenDao();
 		QueryResult<Specimen> result = dao.query(qs);
 		// Larus fuscus (twice) and Parus major
@@ -106,8 +106,8 @@ public class SpecimenDaoTest_Like {
 		String field0 = "identifications.scientificName.genusOrMonomial";
 		String field1 = "identifications.scientificName.specificEpithet";
 		QuerySpec qs = new QuerySpec();
-		qs.addCondition(new QueryCondition(field0, LIKE, "aru"));
-		qs.addCondition(new QueryCondition(field1, LIKE, "ajor"));
+		qs.addCondition(new QueryCondition(field0, CONTAINS, "aru"));
+		qs.addCondition(new QueryCondition(field1, CONTAINS, "ajor"));
 		SpecimenDao dao = new SpecimenDao();
 		QueryResult<Specimen> result = dao.query(qs);
 		// Parus major!
@@ -122,7 +122,7 @@ public class SpecimenDaoTest_Like {
 	{
 		String field = "gatheringEvent.localityText";
 		QuerySpec qs = new QuerySpec();
-		qs.addCondition(new QueryCondition(field, LIKE, "Dorchester,"));
+		qs.addCondition(new QueryCondition(field, CONTAINS, "Dorchester,"));
 		SpecimenDao dao = new SpecimenDao();
 		QueryResult<Specimen> result = dao.query(qs);
 		// M. sylvestris!
@@ -137,7 +137,7 @@ public class SpecimenDaoTest_Like {
 	{
 		String field = "gatheringEvent.localityText";
 		QuerySpec qs = new QuerySpec();
-		qs.addCondition(new QueryCondition(field, LIKE, ", U.S.A"));
+		qs.addCondition(new QueryCondition(field, CONTAINS, ", U.S.A"));
 		SpecimenDao dao = new SpecimenDao();
 		QueryResult<Specimen> result = dao.query(qs);
 		// T. rex!
@@ -152,7 +152,7 @@ public class SpecimenDaoTest_Like {
 	{
 		String field = "gatheringEvent.localityText";
 		QuerySpec qs = new QuerySpec();
-		qs.addCondition(new QueryCondition(field, NOT_LIKE, "Dorchester,"));
+		qs.addCondition(new QueryCondition(field, NOT_CONTAINS, "Dorchester,"));
 		SpecimenDao dao = new SpecimenDao();
 		QueryResult<Specimen> result = dao.query(qs);
 		// All but M. sylvestris
@@ -180,7 +180,7 @@ public class SpecimenDaoTest_Like {
 	{
 		String field = "gatheringEvent.localityText";
 		QuerySpec qs = new QuerySpec();
-		qs.addCondition(new QueryCondition(field, LIKE, "dorchester"));
+		qs.addCondition(new QueryCondition(field, CONTAINS, "dorchester"));
 		SpecimenDao dao = new SpecimenDao();
 		QueryResult<Specimen> result = dao.query(qs);
 		// M. sylvestris!
@@ -195,7 +195,7 @@ public class SpecimenDaoTest_Like {
 	{
 		String field = "gatheringEvent.localityText";
 		QuerySpec qs = new QuerySpec();
-		qs.addCondition(new QueryCondition(field, NOT_LIKE, "dorchester"));
+		qs.addCondition(new QueryCondition(field, NOT_CONTAINS, "dorchester"));
 		SpecimenDao dao = new SpecimenDao();
 		QueryResult<Specimen> result = dao.query(qs);
 		// All but M. sylvestris

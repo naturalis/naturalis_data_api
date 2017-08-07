@@ -2,6 +2,7 @@ package nl.naturalis.nba.client;
 
 import static nl.naturalis.nba.client.ClientUtil.getBoolean;
 import static nl.naturalis.nba.client.ClientUtil.getObject;
+import static nl.naturalis.nba.client.ClientUtil.sendRequest;
 import static nl.naturalis.nba.client.ServerException.newServerException;
 import static nl.naturalis.nba.utils.http.SimpleHttpRequest.HTTP_OK;
 
@@ -21,12 +22,12 @@ import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.ScientificNameGroup;
 import nl.naturalis.nba.api.model.Specimen;
-import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.utils.IOUtil;
-import nl.naturalis.nba.utils.http.SimpleHttpGet;
+import nl.naturalis.nba.utils.http.SimpleHttpRequest;
 
 /**
- * Client-side implementation of the {@link ISpecimenAccess specimen API}.
+ * Provides access to specimen-related information. Client-side implementation
+ * of the {@link ISpecimenAccess}.
  * 
  * @author Ayco Holleman
  *
@@ -43,7 +44,7 @@ public class SpecimenClient extends NbaClient<Specimen> implements ISpecimenAcce
 	@Override
 	public boolean exists(String unitID)
 	{
-		SimpleHttpGet request = getJson("specimen/exists/" + unitID);
+		SimpleHttpRequest request = getJson("exists/" + unitID);
 		int status = request.getStatus();
 		if (status != HTTP_OK) {
 			throw newServerException(status, request.getResponseBody());
@@ -54,7 +55,7 @@ public class SpecimenClient extends NbaClient<Specimen> implements ISpecimenAcce
 	@Override
 	public Specimen[] findByUnitID(String unitID)
 	{
-		SimpleHttpGet request = getJson("specimen/findByUnitID/" + unitID);
+		SimpleHttpRequest request = getJson("findByUnitID/" + unitID);
 		int status = request.getStatus();
 		if (status != HTTP_OK) {
 			throw newServerException(status, request.getResponseBody());
@@ -65,7 +66,7 @@ public class SpecimenClient extends NbaClient<Specimen> implements ISpecimenAcce
 	@Override
 	public String[] getNamedCollections()
 	{
-		SimpleHttpGet request = getJson("specimen/getNamedCollections");
+		SimpleHttpRequest request = getJson("getNamedCollections");
 		int status = request.getStatus();
 		if (status != HTTP_OK) {
 			throw newServerException(status, request.getResponseBody());
@@ -76,8 +77,8 @@ public class SpecimenClient extends NbaClient<Specimen> implements ISpecimenAcce
 	@Override
 	public String[] getIdsInCollection(String collectionName)
 	{
-		String url = "specimen/getIdsInCollection/" + collectionName;
-		SimpleHttpGet request = getJson(url);
+		String path = "getIdsInCollection/" + collectionName;
+		SimpleHttpRequest request = getJson(path);
 		int status = request.getStatus();
 		if (status != HTTP_OK) {
 			throw newServerException(status, request.getResponseBody());
@@ -88,10 +89,7 @@ public class SpecimenClient extends NbaClient<Specimen> implements ISpecimenAcce
 	@Override
 	public void dwcaQuery(QuerySpec querySpec, OutputStream out) throws InvalidQueryException
 	{
-		String json = JsonUtil.toJson(querySpec);
-		SimpleHttpGet request = new SimpleHttpGet();
-		request.setBaseUrl(config.getBaseUrl());
-		request.setPath("specimen/dwca/query/" + json);
+		SimpleHttpRequest request = newQuerySpecRequest("dwca/query", querySpec);
 		sendRequest(request);
 		int status = request.getStatus();
 		if (status != HTTP_OK) {
@@ -112,9 +110,7 @@ public class SpecimenClient extends NbaClient<Specimen> implements ISpecimenAcce
 	@Override
 	public void dwcaGetDataSet(String name, OutputStream out) throws NoSuchDataSetException
 	{
-		SimpleHttpGet request = new SimpleHttpGet();
-		request.setBaseUrl(config.getBaseUrl());
-		request.setPath("specimen/dwca/getDataSet/" + name);
+		SimpleHttpRequest request = newGetRequest("dwca/getDataSet/" + name);
 		sendRequest(request);
 		int status = request.getStatus();
 		if (status != HTTP_OK) {
@@ -135,7 +131,7 @@ public class SpecimenClient extends NbaClient<Specimen> implements ISpecimenAcce
 	@Override
 	public String[] dwcaGetDataSetNames()
 	{
-		SimpleHttpGet request = getJson("specimen/dwca/getDataSetNames");
+		SimpleHttpRequest request = getJson("dwca/getDataSetNames");
 		int status = request.getStatus();
 		if (status != HTTP_OK) {
 			throw newServerException(status, request.getResponseBody());
@@ -147,11 +143,7 @@ public class SpecimenClient extends NbaClient<Specimen> implements ISpecimenAcce
 	public QueryResult<ScientificNameGroup> groupByScientificName(
 			GroupByScientificNameQuerySpec querySpec) throws InvalidQueryException
 	{
-		String json = JsonUtil.toJson(querySpec);
-		SimpleHttpGet request = new SimpleHttpGet();
-		request.setBaseUrl(config.getBaseUrl());
-		request.setPath("specimen/groupByScientificName/");
-		request.addQueryParam("_querySpec", json);
+		SimpleHttpRequest request = newQuerySpecRequest("groupByScientificName", querySpec);
 		sendRequest(request);
 		int status = request.getStatus();
 		if (status != HTTP_OK) {

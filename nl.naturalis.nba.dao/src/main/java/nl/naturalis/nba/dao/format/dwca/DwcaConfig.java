@@ -25,6 +25,7 @@ import nl.naturalis.nba.utils.ConfigObject;
 import nl.naturalis.nba.utils.ConfigObject.MissingPropertyException;
 import nl.naturalis.nba.utils.ConfigObject.PropertyNotSetException;
 import nl.naturalis.nba.utils.FileUtil;
+import static nl.naturalis.nba.utils.CollectionUtil.*;
 
 /**
  * Captures the information in the XML configuration file for a DarwinCore
@@ -170,6 +171,11 @@ public class DwcaConfig {
 
 	IScroller createScroller(QuerySpec query) throws InvalidQueryException
 	{
+		if (!isEmpty(query.getFields())) {
+			logger.warn("Nullifying QuerySpec.fields for DwCA download (all "
+					+ "fields required for generating DwCA file)");
+			query.setFields(null);
+		}
 		/*
 		 * TODO: Maybe softcode the integer constants here in dwca.properties or
 		 * nba.properties. For small datasets we use the Elasticsearch scroll

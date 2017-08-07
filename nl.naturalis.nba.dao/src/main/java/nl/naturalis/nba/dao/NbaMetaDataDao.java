@@ -1,7 +1,7 @@
 package nl.naturalis.nba.dao;
 
-import static nl.naturalis.nba.api.model.metadata.NbaSetting.OPERATOR_LIKE_MAX_TERM_LENGTH;
-import static nl.naturalis.nba.api.model.metadata.NbaSetting.OPERATOR_LIKE_MIN_TERM_LENGTH;
+import static nl.naturalis.nba.api.model.metadata.NbaSetting.OPERATOR_CONTAINS_MAX_TERM_LENGTH;
+import static nl.naturalis.nba.api.model.metadata.NbaSetting.OPERATOR_CONTAINS_MIN_TERM_LENGTH;
 import static nl.naturalis.nba.common.json.JsonUtil.deserialize;
 import static nl.naturalis.nba.common.json.JsonUtil.readField;
 
@@ -48,10 +48,10 @@ public class NbaMetaDataDao implements INbaMetaData {
 			Map<String, Object> esSettings = deserialize(is);
 			String path = "analysis.tokenizer.like_tokenizer.min_gram";
 			Object val = readField(esSettings, path);
-			settings.put(OPERATOR_LIKE_MIN_TERM_LENGTH, val);
+			settings.put(OPERATOR_CONTAINS_MIN_TERM_LENGTH, val);
 			path = "analysis.tokenizer.like_tokenizer.max_gram";
 			val = readField(esSettings, path);
-			settings.put(OPERATOR_LIKE_MAX_TERM_LENGTH, val);
+			settings.put(OPERATOR_CONTAINS_MAX_TERM_LENGTH, val);
 		}
 		return settings;
 	}

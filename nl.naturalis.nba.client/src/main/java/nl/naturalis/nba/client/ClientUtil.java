@@ -1,6 +1,8 @@
 package nl.naturalis.nba.client;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -13,6 +15,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.common.json.ObjectMapperLocator;
+import nl.naturalis.nba.utils.http.SimpleHttpException;
+import nl.naturalis.nba.utils.http.SimpleHttpRequest;
 
 /**
  * 
@@ -21,7 +25,6 @@ import nl.naturalis.nba.common.json.ObjectMapperLocator;
  */
 public class ClientUtil {
 
-	@SuppressWarnings("unused")
 	private static final Logger logger = LogManager.getLogger(ClientUtil.class);
 	private static final ObjectMapperLocator oml = ObjectMapperLocator.getInstance();
 
@@ -92,7 +95,7 @@ public class ClientUtil {
 		}
 		catch (JsonMappingException e0) {
 			String fmt = "Could not convert JSON response to %s:\n\n%s\n";
-			String msg = String.format(fmt, type.getSimpleName(), response);
+			String msg = String.format(fmt, type.getName(), response);
 			throw new ClientException(msg);
 		}
 		catch (IOException e) {
@@ -151,7 +154,8 @@ public class ClientUtil {
 
 	/**
 	 * Converts the specified object to JSON and writes it to
-	 * {@code System.out}. Fields with {@code null} values are ignored.
+	 * {@code System.out}. Fields whose value is {@code null} values are
+	 * ignored.
 	 * 
 	 * @param obj
 	 */
@@ -171,8 +175,8 @@ public class ClientUtil {
 
 	/**
 	 * Converts the specified object to JSON and writes it to
-	 * {@code System.out}. Fields with {@code null} values are include in the
-	 * output.
+	 * {@code System.out}. Fields whose value is {@code null} values are
+	 * included in the output.
 	 * 
 	 * @param obj
 	 */
@@ -187,6 +191,38 @@ public class ClientUtil {
 		}
 		catch (JsonProcessingException e) {
 			throw new ClientException(e);
+		}
+	}
+
+	static SimpleHttpRequest sendRequest(SimpleHttpRequest request)
+	{
+		URI uri = getURI(request);
+		logger.info("Sending {} request:\n{}", request.getMethod(), uri);
+		try {
+			request.execute();
+		}
+		catch (Throwable t) {
+			if (t instanceof SimpleHttpException) {
+				if (t.getMessage().indexOf("Connection refused") != -1) {
+					String fmt = "NBA server down or invalid base URL: %s";
+					String msg = String.format(fmt, request.getBaseUrl());
+					throw new ClientException(msg);
+				}
+			}
+			throw t;
+		}
+		return request;
+	}
+
+	private static URI getURI(SimpleHttpRequest request)
+	{
+		try {
+			return request.createUri();
+		}
+		catch (URISyntaxException e) {
+			String fmt = "Invalid URL (path: \"%s\"; query: \"%s\")";
+			String msg = String.format(fmt, request.getPath(), request.getQuery());
+			throw new ClientException(msg);
 		}
 	}
 

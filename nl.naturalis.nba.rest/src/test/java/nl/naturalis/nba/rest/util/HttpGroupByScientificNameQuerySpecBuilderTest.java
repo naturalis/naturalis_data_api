@@ -2,9 +2,10 @@ package nl.naturalis.nba.rest.util;
 
 import static nl.naturalis.nba.api.ComparisonOperator.EQUALS;
 import static nl.naturalis.nba.api.ComparisonOperator.EQUALS_IC;
+import static nl.naturalis.nba.api.ComparisonOperator.NOT_EQUALS;
+import static nl.naturalis.nba.utils.ConfigObject.isTrueValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -21,6 +22,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import nl.naturalis.nba.api.ComparisonOperator;
+import nl.naturalis.nba.api.Filter;
 import nl.naturalis.nba.api.GroupByScientificNameQuerySpec;
 import nl.naturalis.nba.api.GroupByScientificNameQuerySpec.GroupSort;
 import nl.naturalis.nba.api.LogicalOperator;
@@ -34,12 +37,6 @@ import nl.naturalis.nba.rest.exception.HTTP400Exception;
  * Unit Test for HttpGroupByScientificNameQuerySpecBuilder
  * 
  * @author Tom Gilissen
- * 
- * Sample queries:
- * 
- * http://localhost:8080/v2/specimen/groupByScientificName/?sourceSystem.code=CRS&identifications.scientificName.genusOrMonomial=Lepus&identifications.scientificName.specificEpithet=europaeus
- *
- * http://localhost:8080/v2/specimen/groupByScientificName/?_querySpec=%7B%22conditions%22%3A%5B%7B%22field%22%3A%22collectionType%22%2C%22operator%22%3A%22%3D%22%2C%22value%22%3A%22Aves%22%7D%5D%7D
  * 
  */
 
@@ -391,6 +388,10 @@ public class HttpGroupByScientificNameQuerySpecBuilderTest {
 		groupFilter = "larus fuscus,larus ridibundus";
 		parameterMap.put(param3, new ArrayList<>(Arrays.asList(groupFilter)));
 		new HttpGroupByScientificNameQuerySpecBuilder(uriInfo).build();
+//		for (String field : qs.getGroupFilter().getAcceptValues()) {
+//			System.out.println(field);
+//		}
+//		System.out.println(JsonUtil.toPrettyJson(qs));
 		assertTrue("Test with a multiple values as groupFilter", true);
 	}
 
@@ -451,13 +452,174 @@ public class HttpGroupByScientificNameQuerySpecBuilderTest {
 		assertTrue("Test illegal parameter",
 				paramTest && msg.contains("Unknown or illegal parameter"));
 	}
+	
+	
+	/*
+	 * Test of request containing a parameter that equals @NULL@
+	 */
+	@Test
+	public void testBuildCaseParameterEqualsNull()
+	{
+		String param1 = "sourceSystem.code", value1 = "BRAHMS";
+		String param2 = "collectionType", value2 = "@NULL@";
+
+		MultivaluedHashMap<String, String> parameterMap = new MultivaluedHashMap<String, String>();
+		parameterMap.put(param1, new ArrayList<>(Arrays.asList(value1)));
+		parameterMap.put(param2, new ArrayList<>(Arrays.asList(value2)));
+
+		UriInfo uriInfo = mock(UriInfo.class);
+		when(uriInfo.getQueryParameters()).thenReturn(parameterMap);
+		GroupByScientificNameQuerySpec qs = new HttpGroupByScientificNameQuerySpecBuilder(uriInfo).build();
+
+		Boolean nullValueTest = false;
+		for (QueryCondition condition : qs.getConditions()) {
+			if (condition.getField().toString().equals(param2)) {
+				if (condition.getValue() == null && condition.getOperator() == EQUALS) {
+					nullValueTest = true;
+					break;
+				}
+			}
+		}
+		assertTrue("Test NULL value in parameter", nullValueTest);
+	}
 
 	
+	/*
+	 * Test of request containing a parameter that equals @NOT_NULL@
+	 */
+	@Test
+	public void testBuildCaseParameterEqualsNotNull()
+	{
+		String param1 = "sourceSystem.code", value1 = "BRAHMS";
+		String param2 = "collectionType", value2 = "@NOT_NULL@";
+		String param3 = "kindOfUnit", value3 = "@NULL@";
 
+		MultivaluedHashMap<String, String> parameterMap = new MultivaluedHashMap<String, String>();
+		parameterMap.put(param1, new ArrayList<>(Arrays.asList(value1)));
+		parameterMap.put(param2, new ArrayList<>(Arrays.asList(value2)));
+		parameterMap.put(param3, new ArrayList<>(Arrays.asList(value3)));
+
+		UriInfo uriInfo = mock(UriInfo.class);
+		when(uriInfo.getQueryParameters()).thenReturn(parameterMap);
+		GroupByScientificNameQuerySpec qs = new HttpGroupByScientificNameQuerySpecBuilder(uriInfo).build();
+
+		Boolean notNullValueTest = false;
+		for (QueryCondition condition : qs.getConditions()) {
+			if (condition.getField().toString().equals(param2)) {
+				if (condition.getValue() == null && condition.getOperator() == NOT_EQUALS) {
+					notNullValueTest = true;
+					break;
+				}
+			}
+		}
+		assertTrue("Test NULL value in parameter", notNullValueTest);
+	}
+
+	
 	@Test
 	public void testBuild()
 	{
-		fail("Not yet implemented");
+		// The parameters used in the Human Readable Query
+		String param1 = "sourceSystem.code",		value1 = "CRS";
+		String param2 = "collectionType",			value2 = "Hymenoptera";
+		String param3 = "kindOfUnit",				value3 = "WholeOrganism";
+		String param4 = "gatheringEvent.country",	value4 = "Greece";
+
+		String param5 = "_logicalOperator",			logicalOperatorStr = "AND";
+		String param6 = "_size",					sizeStr = "10";
+		String param7 = "_from",					fromStr = "25";
+		String param8 = "_fields",					fieldsStr = "sourceSystemId,identifications.scientificName.fullScientificName";
+		String param9 = "_sortFields",				sortFieldsStr = "id,identifications.scientificName.fullScientificName:DESC";
+		String param10 = "_ignoreCase",				ignoreCaseStr = "true";
+		String param11 = "_groupSort",				groupSortStr = "NAME_DESC";
+		String param12 = "_groupFilter",			groupFilterStr = "larus.*";
+		String param13 = "_noTaxa",					noTaxa = "yes";
+		
+
+		ComparisonOperator comparisonOperatorStr = EQUALS;
+		if (isTrueValue(ignoreCaseStr)) {
+			comparisonOperatorStr = EQUALS_IC;
+		}
+
+		// Build the Actual Query Spec
+		MultivaluedHashMap<String, String> parameterMap = new MultivaluedHashMap<String, String>();
+		parameterMap.put(param1, new ArrayList<>(Arrays.asList(value1)));
+		parameterMap.put(param2, new ArrayList<>(Arrays.asList(value2)));
+		parameterMap.put(param3, new ArrayList<>(Arrays.asList(value3)));
+		parameterMap.put(param4, new ArrayList<>(Arrays.asList(value4)));
+
+		parameterMap.put(param5, new ArrayList<>(Arrays.asList(logicalOperatorStr)));
+		parameterMap.put(param6, new ArrayList<>(Arrays.asList(sizeStr)));
+		parameterMap.put(param7, new ArrayList<>(Arrays.asList(fromStr)));
+		parameterMap.put(param8, new ArrayList<>(Arrays.asList(fieldsStr)));
+		parameterMap.put(param9, new ArrayList<>(Arrays.asList(sortFieldsStr)));
+		parameterMap.put(param10, new ArrayList<>(Arrays.asList(ignoreCaseStr)));
+		
+		// Extra conditions to a regular query spec
+		parameterMap.put(param11, new ArrayList<>(Arrays.asList(groupSortStr)));
+		parameterMap.put(param12, new ArrayList<>(Arrays.asList(groupFilterStr)));
+		parameterMap.put(param13, new ArrayList<>(Arrays.asList(noTaxa)));
+		
+		
+
+		UriInfo uriInfo = mock(UriInfo.class);
+		when(uriInfo.getQueryParameters()).thenReturn(parameterMap);
+		GroupByScientificNameQuerySpec qsActual = new HttpGroupByScientificNameQuerySpecBuilder(uriInfo).build();		
+
+		// Build the Expected Query Spec
+		GroupByScientificNameQuerySpec qsExpected = new GroupByScientificNameQuerySpec();
+		QueryCondition cond1 = new QueryCondition(param1, comparisonOperatorStr, value1);
+		QueryCondition cond2 = new QueryCondition(param2, comparisonOperatorStr, value2);
+		QueryCondition cond3 = new QueryCondition(param3, comparisonOperatorStr, value3);
+		QueryCondition cond4 = new QueryCondition(param4, comparisonOperatorStr, value4);
+		qsExpected.addCondition(cond1);
+		qsExpected.addCondition(cond2);
+		qsExpected.addCondition(cond3);
+		qsExpected.addCondition(cond4);
+		
+		qsExpected.setLogicalOperator(LogicalOperator.parse(logicalOperatorStr));
+		qsExpected.setSize(Integer.parseInt(sizeStr));
+		qsExpected.setFrom(Integer.parseInt(fromStr));
+		qsExpected.addFields(fieldsStr.split(","));
+		List<SortField> sortFields = new ArrayList<>();
+		for (String sortFieldStr : sortFieldsStr.split(",")) {
+			if (sortFieldStr.indexOf(":") < 0) {
+				sortFields.add(new SortField(sortFieldStr, SortOrder.ASC));
+			}
+			else {
+				sortFields.add(new SortField(sortFieldStr.split(":")[0],
+						SortOrder.parse(sortFieldStr.split(":")[1])));
+			}
+		}
+		qsExpected.setSortFields(sortFields);		
+		
+		qsExpected.setGroupSort(GroupSort.parse(groupSortStr));
+
+		Filter groupFilter = new Filter();
+		groupFilter.acceptRegexp(groupFilterStr);
+		qsExpected.setGroupFilter(groupFilter);
+		qsExpected.setNoTaxa(true);
+
+				
+		// Verify if both Query Specs are equal
+		assertTrue("Comparison of Human Readable and Complex Query Spec #1", HttpQuerySpecUtil.compareQuerySpecs(qsActual, qsExpected));
+
+		// Re-test but now with a groupFilter of more than 1 value
+		groupFilterStr = "larus fuscus,larus ridibundus";
+
+		// Rebuild the actual qs
+		parameterMap.put(param12, new ArrayList<>(Arrays.asList(groupFilterStr)));
+		qsActual = new HttpGroupByScientificNameQuerySpecBuilder(uriInfo).build();
+
+		// and the expected qs
+		groupFilter.acceptRegexp(null);
+		qsExpected.setGroupFilter(groupFilter);
+		groupFilter.acceptValues(groupFilterStr.split(","));
+		qsExpected.setGroupFilter(groupFilter);
+
+		// Verify if both Query Specs are equal
+		assertTrue("Comparison of Human Readable and Complex Query Spec #2", HttpQuerySpecUtil.compareQuerySpecs(qsActual, qsExpected));
+	
 	}
 
 }

@@ -11,9 +11,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.UriInfo;
@@ -551,71 +549,7 @@ public class HttpQuerySpecBuilderTest<qs> {
 		qsExpected.setSortFields(sortFields);
 
 		// Verify if both Query Specs are equal
-		assertTrue("Comparison of Human Readable and Complex Query Spec",
-				compareQuerySpecs(qsActual, qsExpected));
-	}
+		assertTrue("Comparison of Human Readable and Complex Query Spec", HttpQuerySpecUtil.compareQuerySpecs(qsActual, qsExpected));
 
-	
-	/**
-	 * Compares two Query Specs
-	 * 
-	 * @param qs1  QuerySpec one
-	 * @param qs2  QuerySpec two
-	 * @return  true if the Query Specs are equal, false otherwise
-	 */
-	static Boolean compareQuerySpecs(QuerySpec qs1, QuerySpec qs2)
-	{
-
-		// Compare the Logical Operator
-		if (qs1.getLogicalOperator() != qs2.getLogicalOperator())
-			return false;
-
-		// Compare From and Size
-		if (qs1.getSize() != qs2.getSize() || qs1.getFrom() != qs2.getFrom())
-			return false;
-
-		// Compare the Fields
-		if (qs1.getFields().size() != qs2.getFields().size())
-			return false;
-		for (Path field : qs1.getFields()) {
-			if (!qs2.getFields().contains(field)) {
-				return false;
-			}
-		}
-
-		// Compare the Sort Fields
-		if (qs1.getSortFields().size() != qs2.getSortFields().size()) {
-			return false;
-		}
-
-		Map<Path, SortOrder> sortMap1 = new HashMap<>();
-		for (SortField sortField : qs1.getSortFields()) {
-			sortMap1.put(sortField.getPath(), sortField.getSortOrder());
-		}
-		Map<Path, SortOrder> sortMap2 = new HashMap<>();
-		for (SortField sortField : qs2.getSortFields()) {
-			sortMap2.put(sortField.getPath(), sortField.getSortOrder());
-		}
-		if (!sortMap1.equals(sortMap2))
-			return false;
-
-		// Compare the Query Conditions
-		Map<Path, ArrayList<String>> map1 = new HashMap<>();
-		for (QueryCondition cond : qs1.getConditions()) {
-			map1.put(cond.getField(), new ArrayList<>(
-					Arrays.asList(cond.getOperator().toString(), cond.getValue().toString())));
-		}
-
-		Map<Path, ArrayList<String>> map2 = new HashMap<>();
-		for (QueryCondition cond : qs2.getConditions()) {
-			map2.put(cond.getField(), new ArrayList<>(
-					Arrays.asList(cond.getOperator().toString(), cond.getValue().toString())));
-		}
-
-		if (!map1.equals(map2))
-			return false;
-
-		// Query Specs are equal
-		return true;
-	}
+	}	
 }

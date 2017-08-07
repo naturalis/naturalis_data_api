@@ -1,10 +1,10 @@
 package nl.naturalis.nba.client;
 
 import static nl.naturalis.nba.client.ClientUtil.sendRequest;
+import static nl.naturalis.nba.common.json.JsonUtil.toJson;
 import static nl.naturalis.nba.utils.http.SimpleHttpRequest.CT_APPLICATION_JSON;
 
 import nl.naturalis.nba.api.QuerySpec;
-import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.utils.http.SimpleHttpGet;
 import nl.naturalis.nba.utils.http.SimpleHttpPost;
 import nl.naturalis.nba.utils.http.SimpleHttpRequest;
@@ -29,15 +29,18 @@ abstract class Client {
 
 	SimpleHttpRequest newQuerySpecRequest(String path, QuerySpec querySpec)
 	{
-		String json = JsonUtil.toJson(querySpec);
 		SimpleHttpRequest request;
 		if (config.isPreferGET()) {
 			request = newGetRequest(path);
-			request.addQueryParam("_querySpec", json);
+			if (querySpec != null) {
+				request.addQueryParam("_querySpec", toJson(querySpec));
+			}
 		}
 		else {
 			request = newPostRequest(path);
-			request.setRequestBody(json, CT_APPLICATION_JSON);
+			if (querySpec != null) {
+				request.setRequestBody(toJson(querySpec), CT_APPLICATION_JSON);
+			}
 		}
 		return request;
 	}

@@ -2,6 +2,8 @@ package nl.naturalis.nba.client;
 
 import static nl.naturalis.nba.client.ClientUtil.getBoolean;
 import static nl.naturalis.nba.client.ClientUtil.getObject;
+import static nl.naturalis.nba.client.ClientUtil.invalidQueryException;
+import static nl.naturalis.nba.client.ClientUtil.noSuchDataSetException;
 import static nl.naturalis.nba.client.ClientUtil.sendRequest;
 import static nl.naturalis.nba.client.ServerException.newServerException;
 import static nl.naturalis.nba.utils.http.SimpleHttpRequest.HTTP_OK;
@@ -93,7 +95,12 @@ public class SpecimenClient extends NbaClient<Specimen> implements ISpecimenAcce
 		sendRequest(request);
 		int status = request.getStatus();
 		if (status != HTTP_OK) {
-			throw newServerException(status, request.getResponseBody());
+			byte[] response = request.getResponseBody();
+			ServerException exception = newServerException(status, response);
+			if (exception.was(InvalidQueryException.class)) {
+				throw invalidQueryException(exception);
+			}
+			throw exception;
 		}
 		InputStream in = null;
 		try {
@@ -114,7 +121,12 @@ public class SpecimenClient extends NbaClient<Specimen> implements ISpecimenAcce
 		sendRequest(request);
 		int status = request.getStatus();
 		if (status != HTTP_OK) {
-			throw newServerException(status, request.getResponseBody());
+			byte[] response = request.getResponseBody();
+			ServerException exception = newServerException(status, response);
+			if (exception.was(NoSuchDataSetException.class)) {
+				throw noSuchDataSetException(exception);
+			}
+			throw exception;
 		}
 		InputStream in = null;
 		try {
@@ -147,10 +159,16 @@ public class SpecimenClient extends NbaClient<Specimen> implements ISpecimenAcce
 		sendRequest(request);
 		int status = request.getStatus();
 		if (status != HTTP_OK) {
-			throw newServerException(status, request.getResponseBody());
+			byte[] response = request.getResponseBody();
+			ServerException exception = newServerException(status, response);
+			if (exception.was(InvalidQueryException.class)) {
+				throw invalidQueryException(exception);
+			}
+			throw exception;
 		}
-		return getObject(request.getResponseBody(),
-				new TypeReference<QueryResult<ScientificNameGroup>>() {});
+		TypeReference<QueryResult<ScientificNameGroup>> typeRef;
+		typeRef = new TypeReference<QueryResult<ScientificNameGroup>>() {};
+		return getObject(request.getResponseBody(), typeRef);
 	}
 
 	@Override

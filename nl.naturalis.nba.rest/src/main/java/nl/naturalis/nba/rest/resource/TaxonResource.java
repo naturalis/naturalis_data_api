@@ -248,9 +248,9 @@ public class TaxonResource {
 					try {
 						dao.dwcaGetDataSet(name, out);
 					}
-					catch (NoSuchDataSetException e) {
-						throw new HTTP404Exception(uriInfo, e.getMessage());
-					}
+//					catch (NoSuchDataSetException e) {
+//						throw new HTTP404Exception(uriInfo, e.getMessage());
+//					}
 					catch (Throwable e) {
 						throw new RESTException(uriInfo, e);
 					}

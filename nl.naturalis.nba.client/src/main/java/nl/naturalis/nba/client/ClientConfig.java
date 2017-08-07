@@ -14,11 +14,6 @@ public class ClientConfig {
 	private String baseUrl;
 	private boolean preferGET;
 
-	public ClientConfig(String baseUrl)
-	{
-		this.baseUrl = baseUrl;
-	}
-
 	public ClientConfig()
 	{
 		this.baseUrl = PRODUCTION_BASE_URL;

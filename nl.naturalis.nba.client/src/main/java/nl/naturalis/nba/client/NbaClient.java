@@ -1,11 +1,11 @@
 package nl.naturalis.nba.client;
 
-import static nl.naturalis.nba.client.ClientUtil.getObject;
+import static nl.naturalis.nba.client.ClientUtil.*;
 import static nl.naturalis.nba.client.ClientUtil.getQueryResult;
 import static nl.naturalis.nba.client.ClientUtil.sendRequest;
 import static nl.naturalis.nba.client.ServerException.newServerException;
 import static nl.naturalis.nba.utils.ArrayUtil.implode;
-import static nl.naturalis.nba.utils.http.SimpleHttpRequest.HTTP_OK;
+import static nl.naturalis.nba.utils.http.SimpleHttpRequest.*;
 
 import java.util.Map;
 
@@ -45,6 +45,9 @@ abstract class NbaClient<T extends IDocumentObject> extends Client implements IN
 	{
 		SimpleHttpRequest request = getJson("find/" + id);
 		int status = request.getStatus();
+		if (status == HTTP_NOT_FOUND) {
+			return null;
+		}
 		if (status != HTTP_OK) {
 			throw newServerException(status, request.getResponseBody());
 		}
@@ -69,7 +72,12 @@ abstract class NbaClient<T extends IDocumentObject> extends Client implements IN
 		sendRequest(request);
 		int status = request.getStatus();
 		if (status != HTTP_OK) {
-			throw newServerException(status, request.getResponseBody());
+			byte[] response = request.getResponseBody();
+			ServerException exception = newServerException(status, response);
+			if (exception.was(InvalidQueryException.class)) {
+				throw invalidQueryException(exception);
+			}
+			throw exception;
 		}
 		return getQueryResult(request.getResponseBody(), queryResultTypeReference());
 	}
@@ -81,7 +89,12 @@ abstract class NbaClient<T extends IDocumentObject> extends Client implements IN
 		sendRequest(request);
 		int status = request.getStatus();
 		if (status != HTTP_OK) {
-			throw newServerException(status, request.getResponseBody());
+			byte[] response = request.getResponseBody();
+			ServerException exception = newServerException(status, response);
+			if (exception.was(InvalidQueryException.class)) {
+				throw invalidQueryException(exception);
+			}
+			throw exception;
 		}
 		return ClientUtil.getObject(request.getResponseBody(), Long.class);
 	}
@@ -95,7 +108,12 @@ abstract class NbaClient<T extends IDocumentObject> extends Client implements IN
 		sendRequest(request);
 		int status = request.getStatus();
 		if (status != HTTP_OK) {
-			throw newServerException(status, request.getResponseBody());
+			byte[] response = request.getResponseBody();
+			ServerException exception = newServerException(status, response);
+			if (exception.was(InvalidQueryException.class)) {
+				throw invalidQueryException(exception);
+			}
+			throw exception;
 		}
 		TypeReference<Map<String, Long>> typeRef = new TypeReference<Map<String, Long>>() {};
 		return getObject(request.getResponseBody(), typeRef);

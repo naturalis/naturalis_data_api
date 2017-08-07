@@ -4,12 +4,12 @@ import static nl.naturalis.nba.utils.http.SimpleHttpRequest.HTTP_NO_CONTENT;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import nl.naturalis.nba.common.rest.ServerInfo;
+import nl.naturalis.nba.utils.ClassUtil;
 import nl.naturalis.nba.utils.StringUtil;
 import nl.naturalis.nba.utils.debug.BeanPrinter;
 
@@ -22,9 +22,9 @@ import nl.naturalis.nba.utils.debug.BeanPrinter;
  */
 public class ServerException extends RuntimeException {
 
+	@SuppressWarnings("unused")
 	private static Logger logger = LogManager.getLogger(ServerException.class);
 
-	@SuppressWarnings("unchecked")
 	static ServerException newServerException(int status, byte[] response)
 	{
 		if (status == HTTP_NO_CONTENT) {
@@ -32,12 +32,12 @@ public class ServerException extends RuntimeException {
 			if (response == null || response.length == 0) {
 				msg = "The NBA responded with HTTP 204 (No Content), probably "
 						+ "because the Java method to which your request was "
-						+ "dispatched returned null. But neither is supposed "
-						+ "to happen. A.k.a. you found a bug";
+						+ "dispatched returned null. Neither of these things "
+						+ "is supposed to happen. You found a bug!";
 			}
 			else {
 				msg = "The NBA responded with HTTP 204 (No Content), but actually "
-						+ "did return content. A.k.a. you found a bug";
+						+ "did return content. You found a bug!";
 			}
 			throw new ClientException(msg);
 		}
@@ -49,36 +49,23 @@ public class ServerException extends RuntimeException {
 		if (s.startsWith("javax.ws.rs.NotFoundException")) {
 			if (s.indexOf("Could not find resource for full path") != -1) {
 				/*
-				 * Ah, well, this one isn't coming from the bowels of NBA server
-				 * side code. It's Wildfly informing the client it has specified
-				 * a non-existent end point. This should basically count as a
-				 * bug in the Java client.
+				 * Ah, well, this one isn't coming from NBA server-side code.
+				 * It's Wildfly informing the client it has specified a
+				 * non-existent end point. This is a bug in the Java client.
 				 */
 				throw new NoSuchServiceException();
 			}
 		}
-		if (logger.isDebugEnabled()) {
-			logger.debug("Deserializing NBA exception: {}", s);
-		}
-		LinkedHashMap<String, Object> serverInfo;
-		serverInfo = ClientUtil.getObject(response, LinkedHashMap.class);
-		LinkedHashMap<String, Object> exception;
-		exception = (LinkedHashMap<String, Object>) serverInfo.get("exception");
-		String message = (String) exception.get("message");
-		return new ServerException(message, serverInfo);
+		ServerInfo serverInfo = ClientUtil.getObject(response, ServerInfo.class);
+		return new ServerException(serverInfo);
 	}
 
-	private final Map<String, Object> serverInfo;
+	private ServerInfo serverInfo;
 
-	private ServerException(String message, Map<String, Object> serverInfo)
+	private ServerException(ServerInfo serverInfo)
 	{
-		super(message);
+		super(serverInfo.getException().getMessage());
 		this.serverInfo = serverInfo;
-	}
-
-	public Map<String, Object> getServerInfo()
-	{
-		return serverInfo;
 	}
 
 	public String getServerInfoAsString()
@@ -93,6 +80,16 @@ public class ServerException extends RuntimeException {
 	public String toString()
 	{
 		return getServerInfoAsString();
+	}
+
+	ServerInfo getServerInfo()
+	{
+		return serverInfo;
+	}
+
+	boolean was(Class<? extends Throwable> exception)
+	{
+		return ClassUtil.isA(serverInfo.getException().getType(), exception);
 	}
 
 }

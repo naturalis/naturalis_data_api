@@ -1,5 +1,5 @@
 /**
- * Interfaces and classes providing a client-side implementation of the NBA API.
+ * Client-side implementation of the NBA API.
  * 
  * @author Ayco Holleman
  *

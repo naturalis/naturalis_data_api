@@ -76,7 +76,6 @@ public class TaxonClient extends NbaClient<Taxon> implements ITaxonAccess {
 		int status = request.getStatus();
 		if (status != HTTP_OK) {
 			byte[] response = request.getResponseBody();
-			System.err.println(new String(response));
 			ServerException exception = newServerException(status, response);
 			if (exception.was(NoSuchDataSetException.class)) {
 				throw noSuchDataSetException(exception);

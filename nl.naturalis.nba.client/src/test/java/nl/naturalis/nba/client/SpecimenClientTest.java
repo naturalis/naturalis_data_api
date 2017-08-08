@@ -20,10 +20,10 @@ import nl.naturalis.nba.utils.DevNullOutputStream;
  * @author hettling
  *
  */
-public class TaxonClientTest {
+public class SpecimenClientTest {
 
 	private String baseUrl = "http://localhost:8080/v2";
-	private TaxonClient client;
+	private SpecimenClient client;
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception
@@ -42,7 +42,7 @@ public class TaxonClientTest {
 		config.setBaseUrl(baseUrl);
 		config.setPreferGET(true);
 		NbaSession session = new NbaSession(config);
-		client = session.getTaxonClient();
+		client = session.getSpecimenClient();
 	}
 
 	@After
@@ -57,12 +57,13 @@ public class TaxonClientTest {
 	public void test_dwcaQuery01() throws InvalidQueryException
 	{
 		QuerySpec query = new QuerySpec();
-		query.addCondition(new QueryCondition("acceptedName.genusOrMonomial", "=", "Parus"));
+		String field = "identifications.defaultClassification.genus";
+		query.addCondition(new QueryCondition(field, "=", "Parus"));
 		client.dwcaQuery(query, new DevNullOutputStream());
 	}
 
 	/*
-	 * Test with non-existent field & value.
+	 * Test with non-existent field
 	 */
 	@Test(expected = InvalidQueryException.class)
 	public void test_dwcaQuery02() throws InvalidQueryException
@@ -82,13 +83,23 @@ public class TaxonClientTest {
 	}
 
 	/*
+	 * Test with valid dataset.
+	 */
+	@Test
+	public void test_dwcaGetDataSet02() throws NoSuchDataSetException
+	{
+		client.dwcaGetDataSet("collembola", new DevNullOutputStream());
+	}
+
+	/*
 	 * Test woth non-existent dataset.
 	 */
 	@Test
 	public void test_groupByScientificName01() throws InvalidQueryException
 	{
 		GroupByScientificNameQuerySpec query = new GroupByScientificNameQuerySpec();
-		query.addCondition(new QueryCondition("acceptedName.genusOrMonomial", "=", "Parus"));
+		String field = "identifications.defaultClassification.genus";
+		query.addCondition(new QueryCondition(field, "=", "Parus"));
 		client.groupByScientificName(query);
 	}
 

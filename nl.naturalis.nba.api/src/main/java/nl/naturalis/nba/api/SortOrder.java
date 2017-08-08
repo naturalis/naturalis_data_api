@@ -2,6 +2,12 @@ package nl.naturalis.nba.api;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 
+/**
+ * Symbolic constants for ascending and descending sort orders.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public enum SortOrder
 {
 	ASC, DESC;

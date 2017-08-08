@@ -30,6 +30,13 @@ public class RESTException extends RuntimeException {
 		this.status = Status.INTERNAL_SERVER_ERROR;
 	}
 
+	public RESTException(UriInfo request, Status status, Throwable cause)
+	{
+		super(cause);
+		this.request = request;
+		this.status = status;
+	}
+
 	public RESTException(UriInfo request, Status status, String message)
 	{
 		super(message);
@@ -48,41 +55,16 @@ public class RESTException extends RuntimeException {
 		while (throwable.getCause() != null) {
 			throwable = throwable.getCause();
 		}
-		ServerInfo inf = new ServerInfo();
-		inf.setRequestUri(request.getRequestUri().toString());
+		ServerInfo serverInfo = new ServerInfo();
+		serverInfo.setRequestUri(request.getRequestUri().toString());
 		HttpStatusInfo httpStatus = new HttpStatusInfo(status.getStatusCode(), status.toString());
-		inf.setHttpStatus(httpStatus);
+		serverInfo.setHttpStatus(httpStatus);
 		ExceptionInfo exception = new ExceptionInfo();
 		exception.setMessage(throwable.getMessage());
 		exception.setType(throwable.getClass());
 		exception.setRegularStackTrace(throwable.getStackTrace());
-		inf.setException(exception);
-		return inf;
-
-		//		Map<String, Object> info = new LinkedHashMap<>();
-		//		info.put("requestUri", request.getRequestUri().toString());
-		//
-		//		HashMap<String, Object> httpStatusInfo = new LinkedHashMap<>();
-		//		info.put("httpStatus", httpStatusInfo);
-		//		httpStatusInfo.put("code", status.getStatusCode());
-		//		httpStatusInfo.put("message", status.toString());
-		//
-		//		HashMap<String, Object> exceptionInfo = new LinkedHashMap<>();
-		//		info.put("exception", exceptionInfo);
-		//		exceptionInfo.put("message", throwable.getMessage());
-		//		exceptionInfo.put("cause", throwable.getClass().getName());
-		//		StackTraceElement[] stackTrace = throwable.getStackTrace();
-		//		List<String> trace = new ArrayList<>(stackTrace.length);
-		//		for (StackTraceElement e : stackTrace) {
-		//			StringBuilder sb = new StringBuilder(128);
-		//			sb.append("at ");
-		//			sb.append(e.getClassName()).append('.').append(e.getMethodName());
-		//			sb.append('(').append(e.getFileName()).append(':').append(e.getLineNumber())
-		//					.append(')');
-		//			trace.add(sb.toString());
-		//		}
-		//		exceptionInfo.put("stackTrace", trace);
-		//		return info;
+		serverInfo.setException(exception);
+		return serverInfo;
 	}
 
 }

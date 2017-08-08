@@ -18,7 +18,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -31,15 +30,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.api.GroupByScientificNameQuerySpec;
-import nl.naturalis.nba.api.InvalidQueryException;
-import nl.naturalis.nba.api.NoSuchDataSetException;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.ScientificNameGroup;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.SpecimenDao;
-import nl.naturalis.nba.rest.exception.HTTP400Exception;
 import nl.naturalis.nba.rest.exception.HTTP404Exception;
 import nl.naturalis.nba.rest.exception.RESTException;
 import nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder;
@@ -243,9 +239,6 @@ public class SpecimenResource {
 					try {
 						dao.dwcaQuery(qs, out);
 					}
-					catch (InvalidQueryException e) {
-						throw new HTTP400Exception(uriInfo, e.getMessage());
-					}
 					catch (Throwable e) {
 						throw new RESTException(uriInfo, e);
 					}
@@ -271,14 +264,11 @@ public class SpecimenResource {
 			StreamingOutput stream = new StreamingOutput() {
 
 				@Override
-				public void write(OutputStream out) throws IOException, WebApplicationException
+				public void write(OutputStream out) throws IOException
 				{
 					SpecimenDao dao = new SpecimenDao();
 					try {
 						dao.dwcaGetDataSet(name, out);
-					}
-					catch (NoSuchDataSetException e) {
-						throw new HTTP404Exception(uriInfo, e.getMessage());
 					}
 					catch (Throwable e) {
 						throw new RESTException(uriInfo, e);
@@ -346,8 +336,8 @@ public class SpecimenResource {
 	public QueryResult<ScientificNameGroup> groupByScientificName_GET(@Context UriInfo uriInfo)
 	{
 		try {
-			GroupByScientificNameQuerySpec qs = new HttpGroupByScientificNameQuerySpecBuilder(uriInfo)
-					.build();
+			GroupByScientificNameQuerySpec qs = new HttpGroupByScientificNameQuerySpecBuilder(
+					uriInfo).build();
 			SpecimenDao dao = new SpecimenDao();
 			return dao.groupByScientificName(qs);
 		}

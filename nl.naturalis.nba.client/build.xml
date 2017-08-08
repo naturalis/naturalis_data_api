@@ -11,7 +11,8 @@
 		<filelist dir="${utils.module.location}/build" files="${utils.module.artifact}" />
 	</path>
 
+	<property name="junit.suite.classname" value="nl.naturalis.nba.client.AllTests" />
+	
 	<target name="build" depends="build-api-module,build-common-module,build-utils-module,clean,package" />
-
 
 </project>

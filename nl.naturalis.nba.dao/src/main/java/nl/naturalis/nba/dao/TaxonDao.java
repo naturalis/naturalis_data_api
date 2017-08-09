@@ -39,6 +39,7 @@ import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QueryResultItem;
 import nl.naturalis.nba.api.QuerySpec;
+import nl.naturalis.nba.api.SortField;
 import nl.naturalis.nba.api.model.ScientificNameGroup;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.Taxon;
@@ -130,45 +131,66 @@ public class TaxonDao extends NbaDao<Taxon> implements ITaxonAccess {
 			logger.debug(printCall("groupByScientificName", sngQuery));
 		}
 		QueryResult<ScientificNameGroup> result = new QueryResult<>();
+
+		/*
+		 * First, get groups (a.k.a. buckets) without anything else. We don't
+		 * want any documents to come back so in the QuerySpec we set from to
+		 * null and size to 0. However we DO use the value of from and size,
+		 * albeit with different semantics. Within the context of a
+		 * groupByScientificName query, from is the offset in the list of
+		 * buckets that we retrieve, and size is the number of buckets to
+		 * retrieve. For those buckets we are going to subsequently retrieve
+		 * taxa and specimens.
+		 */
+		int from = sngQuery.getFrom() == null ? 0 : sngQuery.getFrom();
+		int size = sngQuery.getSize() == null ? 10 : sngQuery.getSize();
+		List<SortField> sortFields = sngQuery.getSortFields();
+		sngQuery.setFrom(null);
+		sngQuery.setSize(0);
+		sngQuery.setSortFields(null);
 		QuerySpecTranslator translator = new QuerySpecTranslator(sngQuery, TAXON);
 		SearchRequestBuilder request = translator.translate();
 		request.addAggregation(createAggregation(sngQuery));
 		SearchResponse response = executeSearchRequest(request);
 		Terms terms = response.getAggregations().get("TERMS");
 		List<Bucket> buckets = terms.getBuckets();
-		//buckets = filterBuckets(buckets, sngQuery.getGroupFilter());
 		result.setTotalSize(buckets.size());
-		int from = sngQuery.getFrom() == null ? 0 : sngQuery.getFrom();
-		int size = sngQuery.getSize() == null ? 10 : sngQuery.getSize();
-		int to = Math.min(buckets.size(), from + size);
+
 		/*
-		 * Contrary to SpecimenDao.groupByScientificName you cannot page through
-		 * the taxa associated with a scientific name, because there can be no
-		 * more than 2 taxa per scientific name. So you just always get all taxa
-		 * associated with a name, unless sngQuery.noTaxa == true.
+		 * With taxa we can have at most 2 Taxon documents per scientific name
+		 * (NSR and/or COL). So contrary to the corresponding method in
+		 * SpecimenDao, we do not allow paging through taxa within a group. We
+		 * still set size to 5, though, just to see if there are any surprises
+		 * with the data (more than 2 Taxon documents per scientific name).
 		 */
 		sngQuery.setFrom(0);
+		sngQuery.setSize(5);
+		sngQuery.setSortFields(sortFields);
+
 		/*
-		 * Unless strange things are going on we can have at most two taxa per
-		 * scientific name (NSR, COL). So setting size to 2 should be enough,
-		 * but just to capture those strange things:
+		 * Now, for the from-th to size-th bucket, retrieve the associated
+		 * specimens and taxa.
 		 */
-		sngQuery.setSize(1000);
 		String field = "acceptedName.scientificNameGroup";
 		QueryCondition extraCondition = new QueryCondition(field, "=", null);
 		extraCondition.setConstantScore(true);
 		sngQuery.addCondition(extraCondition);
+		int to = Math.min(buckets.size(), from + size);
 		List<QueryResultItem<ScientificNameGroup>> resultSet = new ArrayList<>(size);
 		for (int i = from; i < to; i++) {
 			String name = buckets.get(i).getKeyAsString();
 			ScientificNameGroup sng = new ScientificNameGroup(name);
-			resultSet.add(new QueryResultItem<ScientificNameGroup>(sng, 0));
+			QueryResultItem<ScientificNameGroup> qri = new QueryResultItem<>(sng, 0);
+			resultSet.add(qri);
 			if (!sngQuery.isNoTaxa()) {
 				extraCondition.setValue(name);
 				QueryResult<Taxon> taxa = query(sngQuery);
 				sng.setTaxonCount((int) taxa.getTotalSize());
 				for (QueryResultItem<Taxon> taxon : taxa) {
 					sng.addTaxon(taxon.getItem());
+					if (taxon.getScore() > qri.getScore()) {
+						qri.setScore(taxon.getScore());
+					}
 				}
 			}
 			if (sngQuery.getSpecimensSize() == null || sngQuery.getSpecimensSize() > 0) {
@@ -184,7 +206,7 @@ public class TaxonDao extends NbaDao<Taxon> implements ITaxonAccess {
 	{
 		TermsAggregationBuilder tab = terms("TERMS");
 		tab.field("acceptedName.scientificNameGroup");
-		tab.size(10000000);
+		tab.size(10000);
 		if (sngQuery.getGroupSort() == NAME_ASC) {
 			tab.order(Terms.Order.term(true));
 		}
@@ -197,7 +219,7 @@ public class TaxonDao extends NbaDao<Taxon> implements ITaxonAccess {
 		else if (sngQuery.getGroupSort() == COUNT_ASC) {
 			tab.order(Terms.Order.count(true));
 		}
-		else {
+		else { // TOP_HIT_SCORE
 			TopHitsAggregationBuilder thab = topHits("TOP_HITS");
 			thab.size(1);
 			tab.subAggregation(thab);

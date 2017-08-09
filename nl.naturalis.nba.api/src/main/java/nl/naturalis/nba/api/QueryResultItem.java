@@ -60,4 +60,14 @@ public class QueryResultItem<T> {
 		return score;
 	}
 
+	/**
+	 * Sets the relevance of the document returned from the query.
+	 * 
+	 * @param score
+	 */
+	public void setScore(Float score)
+	{
+		this.score = score;
+	}
+
 }

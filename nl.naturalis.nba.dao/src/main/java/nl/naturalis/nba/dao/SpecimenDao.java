@@ -212,19 +212,22 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 			logger.debug(printCall("groupByScientificName", sngQuery));
 		}
 		QueryResult<ScientificNameGroup> result = new QueryResult<>();
+
 		/*
-		 * First, just get ALL groups a.k.a. buckets without anything else.
+		 * First, get groups (a.k.a. buckets) without anything else. We don't
+		 * want any documents to come back so in the QuerySpec we set from to
+		 * null and size to 0. However we DO use the value of from and size,
+		 * albeit with different semantics. Within the context of a
+		 * groupByScientificName query, from is the offset in the list of
+		 * buckets that we retrieve, and size is the number of buckets to
+		 * retrieve. For those buckets we are going to subsequently retrieve
+		 * taxa and specimens.
 		 */
 		int from = sngQuery.getFrom() == null ? 0 : sngQuery.getFrom();
 		int size = sngQuery.getSize() == null ? 10 : sngQuery.getSize();
 		List<SortField> sortFields = sngQuery.getSortFields();
 		sngQuery.setFrom(null);
 		sngQuery.setSize(0);
-		/*
-		 * Elasticsearch is probably intelligent enough to not bother sorting
-		 * when size equals 0, but just to be sure ... (we put the sort fields
-		 * back on the QuerySpec later on)
-		 */
 		sngQuery.setSortFields(null);
 		QuerySpecTranslator translator = new QuerySpecTranslator(sngQuery, SPECIMEN);
 		SearchRequestBuilder request = translator.translate();
@@ -234,17 +237,18 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 		Terms terms = nested.getAggregations().get("TERMS");
 		List<Bucket> buckets = terms.getBuckets();
 		result.setTotalSize(buckets.size());
+
 		/*
-		 * Now extract the from-th to size-th bucket and for each bucket
-		 * retrieve the specimens satisfying the original search criteria PLUS
-		 * an extra condition limiting the specimens to those whose scientific
-		 * name equals the value of the bucket. NB from is the offset in the
-		 * list of buckets, while specimensFrom is the offset in the list of
-		 * specimens for each bucket.
+		 * Now morph the query into a regular Specimen query
 		 */
 		sngQuery.setFrom(sngQuery.getSpecimensFrom());
 		sngQuery.setSize(sngQuery.getSpecimensSize());
 		sngQuery.setSortFields(sortFields);
+
+		/*
+		 * Now, for the from-th to size-th bucket, retrieve the associated
+		 * specimens and taxa.
+		 */
 		String field = "identifications.scientificName.scientificNameGroup";
 		QueryCondition extraCondition = new QueryCondition(field, "=", null);
 		extraCondition.setConstantScore(true);
@@ -254,13 +258,17 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 		for (int i = from; i < to; i++) {
 			String name = buckets.get(i).getKeyAsString();
 			ScientificNameGroup sng = new ScientificNameGroup(name);
-			resultSet.add(new QueryResultItem<ScientificNameGroup>(sng, 0));
+			QueryResultItem<ScientificNameGroup> qri = new QueryResultItem<>(sng, 0);
+			resultSet.add(qri);
 			if (sngQuery.getSpecimensSize() == null || sngQuery.getSpecimensSize() > 0) {
 				extraCondition.setValue(name);
 				QueryResult<Specimen> specimens = query(sngQuery);
 				sng.setSpecimenCount((int) specimens.getTotalSize());
 				for (QueryResultItem<Specimen> specimen : specimens) {
 					sng.addSpecimen(specimen.getItem());
+					if (specimen.getScore() > qri.getScore()) {
+						qri.setScore(specimen.getScore());
+					}
 				}
 			}
 			/*
@@ -300,7 +308,7 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 		else if (sngQuery.getGroupSort() == COUNT_ASC) {
 			tab.order(Terms.Order.count(true));
 		}
-		else {
+		else { // TOP_HIT_SCORE
 			TopHitsAggregationBuilder thab = topHits("TOP_HITS");
 			thab.size(1);
 			tab.subAggregation(thab);

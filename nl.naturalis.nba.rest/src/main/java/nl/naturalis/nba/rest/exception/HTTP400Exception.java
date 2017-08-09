@@ -14,9 +14,4 @@ public class HTTP400Exception extends RESTException {
 		super(uriInfo, Status.BAD_REQUEST, "400 (BAD REQUEST)\n" + message);
 	}
 
-	public HTTP400Exception(UriInfo uriInfo, Throwable t)
-	{
-		super(uriInfo, t, Status.BAD_REQUEST);
-	}
-
 }

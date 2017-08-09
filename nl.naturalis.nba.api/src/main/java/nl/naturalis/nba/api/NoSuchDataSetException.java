@@ -8,7 +8,7 @@ package nl.naturalis.nba.api;
  * @author Ayco Holleman
  *
  */
-public class NoSuchDataSetException extends Exception {
+public class NoSuchDataSetException extends NbaException {
 
 	public NoSuchDataSetException(String dataSet)
 	{

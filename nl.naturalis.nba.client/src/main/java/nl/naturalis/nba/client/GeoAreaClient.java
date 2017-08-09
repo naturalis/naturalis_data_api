@@ -2,6 +2,7 @@ package nl.naturalis.nba.client;
 
 import static nl.naturalis.nba.client.ClientUtil.getObject;
 import static nl.naturalis.nba.client.ServerException.newServerException;
+import static nl.naturalis.nba.utils.http.SimpleHttpRequest.HTTP_NOT_FOUND;
 import static nl.naturalis.nba.utils.http.SimpleHttpRequest.HTTP_OK;
 
 import org.geojson.GeoJsonObject;
@@ -32,6 +33,9 @@ public class GeoAreaClient extends NbaClient<GeoArea> implements IGeoAreaAccess 
 	{
 		SimpleHttpRequest request = getJson("getGeoJsonForLocality/" + id);
 		int status = request.getStatus();
+		if (status == HTTP_NOT_FOUND) {
+			return null;
+		}
 		if (status != HTTP_OK) {
 			throw newServerException(status, request.getResponseBody());
 		}

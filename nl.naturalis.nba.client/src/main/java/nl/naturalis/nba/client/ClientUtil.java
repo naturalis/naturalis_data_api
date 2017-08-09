@@ -13,6 +13,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import nl.naturalis.nba.api.InvalidQueryException;
+import nl.naturalis.nba.api.NoSuchDataSetException;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.common.json.ObjectMapperLocator;
 import nl.naturalis.nba.utils.http.SimpleHttpException;
@@ -94,9 +96,10 @@ public class ClientUtil {
 			return om.readValue(response, type);
 		}
 		catch (JsonMappingException e0) {
+			e0.printStackTrace();
 			String fmt = "Could not convert JSON response to %s:\n\n%s\n";
 			String msg = String.format(fmt, type.getName(), response);
-			throw new ClientException(msg);
+			throw new ClientException(msg, e0);
 		}
 		catch (IOException e) {
 			throw new ClientException(e);
@@ -212,6 +215,22 @@ public class ClientUtil {
 			throw t;
 		}
 		return request;
+	}
+
+	static InvalidQueryException invalidQueryException(ServerException exc)
+	{
+		String message = exc.getServerInfo().getException().getMessage();
+		InvalidQueryException converted = new InvalidQueryException(message);
+		converted.setStackTrace(exc.getServerInfo().getException().getRegularStackTrace());
+		return converted;
+	}
+
+	static NoSuchDataSetException noSuchDataSetException(ServerException exc)
+	{
+		String message = exc.getServerInfo().getException().getMessage();
+		NoSuchDataSetException converted = new NoSuchDataSetException(message);
+		converted.setStackTrace(exc.getServerInfo().getException().getRegularStackTrace());
+		return converted;
 	}
 
 	private static URI getURI(SimpleHttpRequest request)

@@ -72,7 +72,7 @@ public class ExceptionMapperBase implements ExceptionMapper<Throwable> {
 		 * WE SHOULD NOT BE GETTING TO THIS POINT! It means that the developer
 		 * of some resource method (e.g. in the SpecimenResource class) has
 		 * forgotten to trap a RuntimeException (probably bubbling up from the
-		 * DAO layer). Resource methods SHOULD wrap the entire request-response
+		 * DAO layer). Resource methods MUST wrap the entire request-response
 		 * cycle within a try/catch-all block and wrap any exception into a
 		 * (subclass of) RESTException. Note that the Java client will not
 		 * deserialize exceptions properly if you do not do this.

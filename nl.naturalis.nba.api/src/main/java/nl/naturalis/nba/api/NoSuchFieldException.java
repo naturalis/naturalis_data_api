@@ -9,7 +9,7 @@ import static java.lang.String.format;
  * @author Ayco Holleman
  *
  */
-public class NoSuchFieldException extends Exception {
+public class NoSuchFieldException extends NbaException {
 
 	private Path path;
 	private Path element;
@@ -22,7 +22,7 @@ public class NoSuchFieldException extends Exception {
 
 	public NoSuchFieldException(Path path, Path element)
 	{
-		super(format("Field \"%s\" in %s does not exist or cannot be queried", element, path));
+		super(format("Invalid element \"%s\" in path \"%s\"", element, path));
 		this.path = path;
 		this.element = element;
 	}

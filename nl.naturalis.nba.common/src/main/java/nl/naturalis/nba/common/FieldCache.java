@@ -4,6 +4,13 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 
+/**
+ * A two-level cache that, per class, maps field names to {@link Field}
+ * instances.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 class FieldCache {
 
 	private static final HashMap<Class<?>, HashMap<String, Field>> cache = new HashMap<>(64);

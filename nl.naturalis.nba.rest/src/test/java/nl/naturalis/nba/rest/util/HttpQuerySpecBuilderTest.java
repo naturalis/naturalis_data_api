@@ -35,7 +35,8 @@ import nl.naturalis.nba.rest.exception.HTTP400Exception;
  * @author Tom Gilissen
  */
 
-public class HttpQuerySpecBuilderTest<qs> {
+@SuppressWarnings("static-method")
+public class HttpQuerySpecBuilderTest {
 
 	@Before
 	public void setUp() throws Exception
@@ -50,12 +51,16 @@ public class HttpQuerySpecBuilderTest<qs> {
 	/*
 	 * Test of request containing illegal parameter "_querySpec"
 	 */
+
 	@Test(expected = HTTP400Exception.class)
 	public void testBuildCheckParams() throws HTTP400Exception
 	{
-		String param1 = "_querySpec",			value1 = "whatever";
-		String param2 = "sourceSystem.code",	value2 = "CRS";
-		String param3 = "_fields",				value3 = "Aves";
+		String param1 = "_querySpec";
+		String value1 = "whatever";
+		String param2 = "sourceSystem.code";
+		String value2 = "CRS";
+		String param3 = "_fields";
+		String value3 = "Aves";
 
 		MultivaluedHashMap<String, String> parameterMap = new MultivaluedHashMap<String, String>();
 		parameterMap.put(param1, new ArrayList<>(Arrays.asList(value1)));
@@ -67,16 +72,18 @@ public class HttpQuerySpecBuilderTest<qs> {
 		new HttpQuerySpecBuilder(uriInfo).build();
 	}
 
-	
 	/*
 	 * Test of request containing a duplicate parameter
 	 */
 	@Test(expected = HTTP400Exception.class)
 	public void testBuildDuplicateParam() throws HTTP400Exception
 	{
-		String param1 = "sourceSystem.code",	value1 = "CRS";
-		String param2 = "collectionType",		value2 = "Aves";
-		String param3 = param2,					value3 = "Mammalia";
+		String param1 = "sourceSystem.code";
+		String value1 = "CRS";
+		String param2 = "collectionType";
+		String value2 = "Aves";
+		String param3 = param2;
+		String value3 = "Mammalia";
 
 		MultivaluedHashMap<String, String> parameterMap = new MultivaluedHashMap<String, String>();
 		parameterMap.put(param1, new ArrayList<>(Arrays.asList(value1)));
@@ -88,15 +95,16 @@ public class HttpQuerySpecBuilderTest<qs> {
 		new HttpQuerySpecBuilder(uriInfo).build();
 	}
 
-	
 	/*
 	 * Test of request containing a parameter "querySpec"
 	 */
 	@Test(expected = HTTP400Exception.class)
 	public void testBuildCaseParameterQuerySpec() throws HTTP400Exception
 	{
-		String param1 = "sourceSystem.code", value1 = "CRS";
-		String param2 = "querySpec", value2 = "test";
+		String param1 = "sourceSystem.code";
+		String value1 = "CRS";
+		String param2 = "querySpec";
+		String value2 = "test";
 
 		MultivaluedHashMap<String, String> parameterMap = new MultivaluedHashMap<String, String>();
 		parameterMap.put(param1, new ArrayList<>(Arrays.asList(value1)));
@@ -107,16 +115,18 @@ public class HttpQuerySpecBuilderTest<qs> {
 		new HttpQuerySpecBuilder(uriInfo).build();
 	}
 
-	
 	/*
 	 * Test of request containing sort parameters
 	 */
 	@Test(expected = HTTP400Exception.class)
 	public void testBuildCaseParameterSortFields() throws HTTP400Exception
 	{
-		String param1 = "sourceSystem.code", value1 = "CRS";
-		String param2 = "collectionType", value2 = "Aves";
-		String param3 = "_sortFields", value3 = "unitID:ASC,id:DESC,sourceSystemId:ASC,id:DESC";
+		String param1 = "sourceSystem.code";
+		String value1 = "CRS";
+		String param2 = "collectionType";
+		String value2 = "Aves";
+		String param3 = "_sortFields";
+		String value3 = "unitID:ASC,id:DESC,sourceSystemId:ASC,id:DESC";
 
 		MultivaluedHashMap<String, String> parameterMap = new MultivaluedHashMap<String, String>();
 		parameterMap.put(param1, new ArrayList<>(Arrays.asList(value1)));
@@ -128,11 +138,11 @@ public class HttpQuerySpecBuilderTest<qs> {
 		fieldsExpected.add(new Path("unitID"), SortOrder.ASC);
 		fieldsExpected.add(new Path("id"), SortOrder.DESC);
 		fieldsExpected.add(new Path("sourceSystemId"), SortOrder.ASC);
-		
+
 		UriInfo uriInfo = mock(UriInfo.class);
 		when(uriInfo.getQueryParameters()).thenReturn(parameterMap);
 		QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
-		
+
 		// ... and another of the sort parameters included in the query spec
 		MultivaluedHashMap<Path, SortOrder> fieldsActual = new MultivaluedHashMap<>();
 		for (SortField field : qs.getSortFields()) {
@@ -146,15 +156,16 @@ public class HttpQuerySpecBuilderTest<qs> {
 		new HttpQuerySpecBuilder(uriInfo).build();
 	}
 
-	
 	/*
 	 * Test of request containing a parameter starting with an underscore
 	 */
 	@Test
 	public void testBuildCaseIllegalParameter() throws HTTP400Exception
 	{
-		String param1 = "sourceSystem.code", value1 = "CRS";
-		String param2 = "_test", value2 = "test";
+		String param1 = "sourceSystem.code";
+		String value1 = "CRS";
+		String param2 = "_test";
+		String value2 = "test";
 
 		MultivaluedHashMap<String, String> parameterMap = new MultivaluedHashMap<String, String>();
 		parameterMap.put(param1, new ArrayList<>(Arrays.asList(value1)));
@@ -177,15 +188,16 @@ public class HttpQuerySpecBuilderTest<qs> {
 				paramTest && msg.contains("Unknown or illegal parameter"));
 	}
 
-	
 	/*
 	 * Test of request containing a parameter that equals @NULL@
 	 */
 	@Test
 	public void testBuildCaseParameterEqualsNull()
 	{
-		String param1 = "sourceSystem.code", value1 = "BRAHMS";
-		String param2 = "collectionType", value2 = "@NULL@";
+		String param1 = "sourceSystem.code";
+		String value1 = "BRAHMS";
+		String param2 = "collectionType";
+		String value2 = "@NULL@";
 
 		MultivaluedHashMap<String, String> parameterMap = new MultivaluedHashMap<String, String>();
 		parameterMap.put(param1, new ArrayList<>(Arrays.asList(value1)));
@@ -208,16 +220,18 @@ public class HttpQuerySpecBuilderTest<qs> {
 		assertTrue("Test NULL value in parameter", nullValueTest);
 	}
 
-	
 	/*
 	 * Test of request containing a parameter that equals @NOT_NULL@
 	 */
 	@Test
 	public void testBuildCaseParameterEqualsNotNull()
 	{
-		String param1 = "sourceSystem.code", value1 = "BRAHMS";
-		String param2 = "collectionType", value2 = "@NOT_NULL@";
-		String param3 = "kindOfUnit", value3 = "@NULL@";
+		String param1 = "sourceSystem.code";
+		String value1 = "BRAHMS";
+		String param2 = "collectionType";
+		String value2 = "@NOT_NULL@";
+		String param3 = "kindOfUnit";
+		String value3 = "@NULL@";
 
 		MultivaluedHashMap<String, String> parameterMap = new MultivaluedHashMap<String, String>();
 		parameterMap.put(param1, new ArrayList<>(Arrays.asList(value1)));
@@ -240,17 +254,18 @@ public class HttpQuerySpecBuilderTest<qs> {
 		assertTrue("Test NULL value in parameter", notNullValueTest);
 	}
 
-	
 	/*
 	 * Test of request containing filter fields
 	 */
 	@Test
 	public void testBuildCaseParameterFields()
 	{
-		String param1 = "sourceSystem.code", value1 = "CRS";
-		String param2 = "collectionType", value2 = "Aves";
-		String param3 = "_fields",
-				value3 = "unitID, recordBasis,gatheringEvent.country ,identifications.defaultClassification.genus";
+		String param1 = "sourceSystem.code";
+		String value1 = "CRS";
+		String param2 = "collectionType";
+		String value2 = "Aves";
+		String param3 = "_fields";
+		String value3 = "unitID, recordBasis,gatheringEvent.country ,identifications.defaultClassification.genus";
 
 		List<Path> fieldsExpected = new ArrayList<>();
 		String[] chunks = value3.split(",");
@@ -271,17 +286,20 @@ public class HttpQuerySpecBuilderTest<qs> {
 		assertTrue("Test filter", fieldsExpected.equals(fieldsActual));
 	}
 
-	
 	/*
 	 * Test of _ignoreCase parameter
 	 */
 	@Test
 	public void testBuildGetComparisonOperator()
 	{
-		String param1 = "sourceSystem.code", value1 = "BRAHMS";
-		String param2 = "collectionType", value2 = "Botany";
-		String param3 = "license", value3 = "CC0";
-		String param4 = "_fields", value4 = "unitID,recordBasis,gatheringEvent.country";
+		String param1 = "sourceSystem.code";
+		String value1 = "BRAHMS";
+		String param2 = "collectionType";
+		String value2 = "Botany";
+		String param3 = "license";
+		String value3 = "CC0";
+		String param4 = "_fields";
+		String value4 = "unitID,recordBasis,gatheringEvent.country";
 
 		MultivaluedHashMap<String, String> parameterMap = new MultivaluedHashMap<String, String>();
 		parameterMap.put(param1, new ArrayList<>(Arrays.asList(value1)));
@@ -330,17 +348,19 @@ public class HttpQuerySpecBuilderTest<qs> {
 		assertTrue("Test of parameter: _ignoreCase=\"\"", operatorTest);
 	}
 
-	
 	/*
 	 * Test of _size and _from parameters
 	 */
-	@Test (expected = HTTP400Exception.class)
+	@Test(expected = HTTP400Exception.class)
 	public void testGetIntParam() throws HTTP400Exception
 	{
 		// First, test with allowed values and check if the values compare.
-		String param1 = "sourceSystem.code", value1 = "BRAHMS";
-		String param2 = "_size", value2 = "100";
-		String param3 = "_from", value3 = "100";
+		String param1 = "sourceSystem.code";
+		String value1 = "BRAHMS";
+		String param2 = "_size";
+		String value2 = "100";
+		String param3 = "_from";
+		String value3 = "100";
 
 		MultivaluedHashMap<String, String> parameterMap = new MultivaluedHashMap<String, String>();
 		parameterMap.put(param1, new ArrayList<>(Arrays.asList(value1)));
@@ -359,18 +379,19 @@ public class HttpQuerySpecBuilderTest<qs> {
 		new HttpQuerySpecBuilder(uriInfo).build();
 	}
 
-	
 	/*
 	 * Test of request containing a logical operator
 	 */
 	@Test(expected = HTTP400Exception.class)
 	public void testParamOperator() throws HTTP400Exception
 	{
-		String param1 = "sourceSystem.code",	value1 = "CRS";
-		String param2 = "collectionType",		value2 = "Aves";
+		String param1 = "sourceSystem.code";
+		String value1 = "CRS";
+		String param2 = "collectionType";
+		String value2 = "Aves";
 		String param3 = "_logicalOperator";
 		String logicalOperator = "AND";
-		
+
 		MultivaluedHashMap<String, String> parameterMap = new MultivaluedHashMap<String, String>();
 		parameterMap.put(param1, new ArrayList<>(Arrays.asList(value1)));
 		parameterMap.put(param2, new ArrayList<>(Arrays.asList(value2)));
@@ -379,22 +400,26 @@ public class HttpQuerySpecBuilderTest<qs> {
 		UriInfo uriInfo = mock(UriInfo.class);
 		when(uriInfo.getQueryParameters()).thenReturn(parameterMap);
 		QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
-		assertTrue("Test with logical operator AND", (qs.getLogicalOperator() == LogicalOperator.AND) );
+		assertTrue("Test with logical operator AND",
+				(qs.getLogicalOperator() == LogicalOperator.AND));
 
 		logicalOperator = "&&";
 		parameterMap.put(param3, new ArrayList<>(Arrays.asList(logicalOperator)));
 		qs = new HttpQuerySpecBuilder(uriInfo).build();
-		assertTrue("Test with logical operator &&", (qs.getLogicalOperator() == LogicalOperator.AND) );
-		
+		assertTrue("Test with logical operator &&",
+				(qs.getLogicalOperator() == LogicalOperator.AND));
+
 		logicalOperator = "OR";
 		parameterMap.put(param3, new ArrayList<>(Arrays.asList(logicalOperator)));
 		qs = new HttpQuerySpecBuilder(uriInfo).build();
-		assertTrue("Test with logical operator OR", (qs.getLogicalOperator() == LogicalOperator.OR) );
+		assertTrue("Test with logical operator OR",
+				(qs.getLogicalOperator() == LogicalOperator.OR));
 
 		logicalOperator = "||";
 		parameterMap.put(param3, new ArrayList<>(Arrays.asList(logicalOperator)));
 		qs = new HttpQuerySpecBuilder(uriInfo).build();
-		assertTrue("Test with logical operator ||", (qs.getLogicalOperator() == LogicalOperator.OR) );
+		assertTrue("Test with logical operator ||",
+				(qs.getLogicalOperator() == LogicalOperator.OR));
 
 		logicalOperator = "FAIL";
 		parameterMap.put(param3, new ArrayList<>(Arrays.asList(logicalOperator)));
@@ -402,15 +427,16 @@ public class HttpQuerySpecBuilderTest<qs> {
 		assertTrue("Test with illegal logical operator", true);
 	}
 
-	
 	/*
 	 * Test of the _querySpec parameter (method: buildFromSearchSpecParam)
 	 */
 	public void testBuildFromSearchSpecParam() throws HTTP400Exception
 	{
 		// Start by testing a query spec parameter together with another parameter
-		String param1 = "sourceSystem.code",	value1 = "BRAHMS";
-		String param2 = "_querySpec", 			value2 = "{\"conditions\":[{\"field\":\"collectionType\",\"operator\":\"=\",\"value\":\"Botany\"}]}";
+		String param1 = "sourceSystem.code";
+		String value1 = "BRAHMS";
+		String param2 = "_querySpec";
+		String value2 = "{\"conditions\":[{\"field\":\"collectionType\",\"operator\":\"=\",\"value\":\"Botany\"}]}";
 
 		MultivaluedHashMap<String, String> parameterMap = new MultivaluedHashMap<String, String>();
 		parameterMap.put(param1, new ArrayList<>(Arrays.asList(value1)));
@@ -427,7 +453,8 @@ public class HttpQuerySpecBuilderTest<qs> {
 			paramTest = true;
 
 		}
-		assertTrue("Test Build with Query Spec parameter combined with another parameter", paramTest);
+		assertTrue("Test Build with Query Spec parameter combined with another parameter",
+				paramTest);
 
 		// Continue by testing 2 Query Specs at once
 		param1 = "_querySpec";
@@ -466,7 +493,7 @@ public class HttpQuerySpecBuilderTest<qs> {
 		paramTest = false;
 		parameterMap.clear();
 		parameterMap.put(param1, new ArrayList<>(Arrays.asList(value1)));
-		
+
 		try {
 			new HttpQuerySpecBuilder(uriInfo).build();
 			paramTest = true;
@@ -477,26 +504,41 @@ public class HttpQuerySpecBuilderTest<qs> {
 		assertTrue("Test Build with a query spec (JSON)", paramTest);
 	}
 
-	
 	/*
-	 * Final test that compares the expected query spec and the actuel query spec
+	 * Final test that compares the expected query spec and the actuel query
+	 * spec
 	 */
 	@Test
 	public void testBuild()
 	{
 
 		// The parameters used in the Human Readable Query
-		String param1 = "sourceSystem.code",		value1 = "CRS";
-		String param2 = "collectionType",			value2 = "Hymenoptera";
-		String param3 = "kindOfUnit",				value3 = "WholeOrganism";
-		String param4 = "gatheringEvent.country",	value4 = "Greece";
+		String param1 = "sourceSystem.code";
+		String value1 = "CRS";
+		String param2 = "collectionType";
+		String value2 = "Hymenoptera";
+		String param3 = "kindOfUnit";
+		String value3 = "WholeOrganism";
+		String param4 = "gatheringEvent.country";
+		String value4 = "Greece";
 
-		String param5 = "_logicalOperator",			logicalOperatorStr = "AND";
-		String param6 = "_size",					sizeStr = "10";
-		String param7 = "_from",					fromStr = "25";
-		String param8 = "_fields",					fieldsStr = "sourceSystemId,identifications.scientificName.fullScientificName";
-		String param9 = "_sortFields",				sortFieldsStr = "id,identifications.scientificName.fullScientificName:DESC";
-		String param10 = "_ignoreCase",				ignoreCaseStr = "true";
+		String param5 = "_logicalOperator";
+		String logicalOperatorStr = "AND";
+
+		String param6 = "_size";
+		String sizeStr = "10";
+
+		String param7 = "_from";
+		String fromStr = "25";
+
+		String param8 = "_fields";
+		String fieldsStr = "sourceSystemId,identifications.scientificName.fullScientificName";
+
+		String param9 = "_sortFields";
+		String sortFieldsStr = "id,identifications.scientificName.fullScientificName:DESC";
+
+		String param10 = "_ignoreCase";
+		String ignoreCaseStr = "true";
 
 		ComparisonOperator comparisonOperatorStr = EQUALS;
 		if (isTrueValue(ignoreCaseStr)) {
@@ -549,7 +591,8 @@ public class HttpQuerySpecBuilderTest<qs> {
 		qsExpected.setSortFields(sortFields);
 
 		// Verify if both Query Specs are equal
-		assertTrue("Comparison of Human Readable and Complex Query Spec", HttpQuerySpecUtil.compareQuerySpecs(qsActual, qsExpected));
+		assertTrue("Comparison of Human Readable and Complex Query Spec",
+				HttpQuerySpecUtil.compareQuerySpecs(qsActual, qsExpected));
 
-	}	
+	}
 }

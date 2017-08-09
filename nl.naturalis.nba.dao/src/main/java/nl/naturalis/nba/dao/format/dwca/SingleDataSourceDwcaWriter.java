@@ -24,7 +24,9 @@ import nl.naturalis.nba.utils.IOUtil;
 /**
  * Manages the assembly and creation of DarwinCore archives. Use this class if
  * all CSV files in the archive can be generated from a single query (specified
- * using the &lt;shared-data-source&gt; element in the XML configuration file).
+ * using the &lt;shared-data-source&gt; element in the dataset configuration
+ * file). See also the XSD for dataset configuration files in
+ * src/main/resources.
  * 
  * @author Ayco Holleman
  *

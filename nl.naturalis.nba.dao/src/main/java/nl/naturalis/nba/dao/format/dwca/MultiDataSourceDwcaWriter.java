@@ -38,7 +38,10 @@ import nl.naturalis.nba.dao.util.es.ESUtil;
  * Manages the assembly and creation of DarwinCore archives. Use this class if
  * you cannot generate all CSV files from a single query (each CSV file requires
  * a new query to be executed). With this class a separate query is issued for
- * each entity (i.e. each file generated as part of the DwC archive).
+ * each entity (i.e. each file generated as part of the DwC archive). A
+ * {@code MultiDataSourceDwcaWriter} is used for dataset configuration files
+ * where each &;lt;entity&gt; element has its own &;lt;data-source&gt; element.
+ * See also the XSD for dataset configuration files in src/main/resources.
  * 
  * @author Ayco Holleman
  *
@@ -76,7 +79,7 @@ class MultiDataSourceDwcaWriter implements IDwcaWriter {
 			logger.info("Adding eml.xml ({})", cfg.getEmlFile());
 			zos.putNextEntry(new ZipEntry("eml.xml"));
 			zos.write(dwcaPreparator.getEml());
-			writeCsvFilesForQuery(querySpec);			
+			writeCsvFilesForQuery(querySpec);
 			zos.finish();
 		}
 		catch (IOException e) {
@@ -99,7 +102,7 @@ class MultiDataSourceDwcaWriter implements IDwcaWriter {
 			logger.info("Adding eml.xml ({})", cfg.getEmlFile());
 			zos.putNextEntry(new ZipEntry("eml.xml"));
 			zos.write(dwcaPreparator.getEml());
-			writeCsvFilesForDataSet();			
+			writeCsvFilesForDataSet();
 			zos.finish();
 		}
 		catch (IOException e) {

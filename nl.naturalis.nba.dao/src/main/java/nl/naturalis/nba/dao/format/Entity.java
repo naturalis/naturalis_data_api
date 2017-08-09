@@ -1,10 +1,15 @@
 package nl.naturalis.nba.dao.format;
 
+import nl.naturalis.nba.dao.format.config.EntityXmlConfig;
+
 /**
  * An {@code Entity} contains the configuration for how to generate one
  * particular file in a data set. For example, DwC archives may contain multiple
- * CSV files, each containing a different type of data (e.g. taxa, literature
- * references, vernacular names, etc.). These files are referred to as entities.
+ * CSV files, each containing a different type of data (taxa, literature
+ * references, vernacular names, etc.). These CSV files are referred to as
+ * entities. The {@code Entity} class is a stylized version of the
+ * {@link EntityXmlConfig} JAXB class, which represent the &lt;entity&gt;
+ * element in a dataset configuration file.
  * 
  * @author Ayco Holleman
  *

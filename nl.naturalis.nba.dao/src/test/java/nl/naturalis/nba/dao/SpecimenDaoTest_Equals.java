@@ -8,7 +8,6 @@ import static nl.naturalis.nba.dao.mock.SpecimenMock.parusMajorSpecimen01;
 import static nl.naturalis.nba.dao.mock.SpecimenMock.tRexSpecimen01;
 import static nl.naturalis.nba.dao.mock.SpecimenMock.vonSiebold;
 import static nl.naturalis.nba.dao.util.es.ESUtil.createIndex;
-import static nl.naturalis.nba.dao.util.es.ESUtil.createType;
 import static nl.naturalis.nba.dao.util.es.ESUtil.deleteIndex;
 import static org.junit.Assert.assertEquals;
 

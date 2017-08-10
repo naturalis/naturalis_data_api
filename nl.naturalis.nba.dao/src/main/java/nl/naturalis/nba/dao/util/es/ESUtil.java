@@ -82,7 +82,17 @@ public class ESUtil {
 	 */
 	public static <T extends IDocumentObject> T toDocumentObject(SearchHit hit, DocumentType<T> dt)
 	{
-		byte[] json = BytesReference.toBytes(hit.sourceRef());
+		byte[] json;
+		if (hit.sourceRef() == null) {
+			/*
+			 * This happens if the user specified a zero-size List for
+			 * QuerySpec.fields. See QuerySpecTranslator.
+			 */
+			json = "{}".getBytes();
+		}
+		else {
+			json = BytesReference.toBytes(hit.sourceRef());
+		}
 		T obj = JsonUtil.deserialize(dt.getObjectMapper(), json, dt.getJavaType());
 		obj.setId(hit.getId());
 		return obj;

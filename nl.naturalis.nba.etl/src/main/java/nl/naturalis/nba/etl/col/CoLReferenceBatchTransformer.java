@@ -68,7 +68,7 @@ class CoLReferenceBatchTransformer {
 				 * to have huge amounts of orphans, so we are not going to
 				 * report on this in that case.
 				 */
-				if (dry == false || testGenera == null) {
+				if (dry == false && testGenera == null) {
 					++numOrphans;
 					logger.error("{} | Orphan: {} ", id, reference);
 				}

@@ -189,10 +189,10 @@ public class Normalizer<T extends Enum<T>> {
 	 * no mappings exists for the specified value, a special value is returned:
 	 * {@link #NOT_MAPPED}. This allows clients to distinguish between input
 	 * that could not be mapped to a canonical value (illegal input) and input
-	 * that was explicitly mapped to {@code null} (valid input). To be on the
-	 * safe side, clients should compare references rather than use the
-	 * {@code equals} method when comparing the result of
-	 * {@link #normalize(String)} with {@link #NOT_MAPPED}.
+	 * that was explicitly mapped to {@code null} (valid input). Clients should
+	 * compare references rather than use the {@code equals} method when
+	 * comparing the result of {@link #normalize(String)} with
+	 * {@link #NOT_MAPPED}.
 	 * 
 	 * @param input
 	 * @return

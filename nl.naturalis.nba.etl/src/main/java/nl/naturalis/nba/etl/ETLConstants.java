@@ -36,8 +36,9 @@ public interface ETLConstants {
 
 	/**
 	 * &34;nl.naturalis.nba.etl.dry&34;. Optional system property that causes
-	 * the ETL programs only transform and validate the source data, but not
-	 * index it (a &34;dry run&34;).
+	 * the ETL programs only transform and validate the source data, generate
+	 * log files, but not index actually delete, create or update any
+	 * Elasticsearch documents (a &34;dry run&34;).
 	 */
 	String SYSPROP_DRY_RUN = "nl.naturalis.nba.etl.dry";
 

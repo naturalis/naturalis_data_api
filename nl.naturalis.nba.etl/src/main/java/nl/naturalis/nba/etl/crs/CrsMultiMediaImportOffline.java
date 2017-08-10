@@ -15,10 +15,10 @@ import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.dao.DaoRegistry;
 import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.util.es.ESUtil;
+import nl.naturalis.nba.etl.ETLConstants;
 import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.ETLUtil;
-import nl.naturalis.nba.etl.ETLConstants;
 import nl.naturalis.nba.etl.MimeTypeCacheFactory;
 import nl.naturalis.nba.etl.ThemeCache;
 import nl.naturalis.nba.etl.XMLRecordInfo;
@@ -87,7 +87,7 @@ public class CrsMultiMediaImportOffline {
 			logger.error("No multimedia oai.xml files found. Check nda-import.propties");
 			return;
 		}
-		ESUtil.truncate(MULTI_MEDIA_OBJECT, CRS);
+		ETLUtil.truncate(MULTI_MEDIA_OBJECT, CRS);
 		int cacheFailuresBegin = MimeTypeCacheFactory.getInstance().getCache().getMisses();
 		stats = new ETLStatistics();
 		stats.setOneToMany(true);

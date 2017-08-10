@@ -1,16 +1,13 @@
 package nl.naturalis.nba.dao.util.es;
 
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
-import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -30,8 +27,6 @@ import org.elasticsearch.action.admin.indices.settings.put.UpdateSettingsRespons
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.delete.DeleteRequest;
-import org.elasticsearch.action.get.GetRequestBuilder;
-import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
@@ -40,11 +35,7 @@ import org.elasticsearch.common.bytes.BytesReference;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.settings.Settings.Builder;
 import org.elasticsearch.index.IndexNotFoundException;
-import org.elasticsearch.index.query.IdsQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QuerySpec;
@@ -179,7 +170,8 @@ public class ESUtil {
 	}
 
 	/**
-	 * Returns the unique indices for the specified document types.
+	 * Returns the indices hosting the specified NBA document types. Document
+	 * types may share an index, but this method only returns unique indices.
 	 * 
 	 * @param documentTypes
 	 * @return
@@ -194,8 +186,8 @@ public class ESUtil {
 	}
 
 	/**
-	 * Deletes all indices used by the NBA. All NBA data will be lost. WATCH
-	 * OUT!
+	 * Deletes all Elasticsearch indices used by the NBA. Watch out! All NBA
+	 * data will be lost.
 	 */
 	public static void deleteAllIndices()
 	{
@@ -205,8 +197,7 @@ public class ESUtil {
 	}
 
 	/**
-	 * Creates the Elasticsearch indices for the NBA {@link DocumentType
-	 * document types}.
+	 * Creates all Elasticsearch indices used by the NBA.
 	 */
 	public static void createAllIndices()
 	{
@@ -531,6 +522,8 @@ public class ESUtil {
 	{
 		logger.info("Deleting all {} documents", dt.getName());
 		QuerySpec qs = new QuerySpec();
+		qs.setConstantScore(true);
+		qs.setFields(Collections.emptyList());
 		qs.setSize(1000);
 		DirtyDocumentIterator<T> extractor = new DirtyDocumentIterator<>(dt, qs);
 		String index = dt.getIndexInfo().getName();
@@ -566,6 +559,7 @@ public class ESUtil {
 		logger.info("Deleting all {} {} documents", ss.getCode(), dt.getName());
 		QuerySpec qs = new QuerySpec();
 		qs.setConstantScore(true);
+		qs.setFields(Collections.emptyList());
 		qs.setSize(1000);
 		qs.addCondition(new QueryCondition("sourceSystem.code", "=", ss.getCode()));
 		DirtyDocumentIterator<T> extractor = new DirtyDocumentIterator<>(dt, qs);
@@ -586,47 +580,6 @@ public class ESUtil {
 		}
 		refreshIndex(dt);
 		logger.info("Documents deleted: {}", extractor.size());
-	}
-
-	/**
-	 * Retrieves the document with the specified {@code _id} and converts it to
-	 * an instance of the class corresponding to the specified
-	 * {@link DocumentType document type}.
-	 * 
-	 * @param dt
-	 * @param id
-	 * @return
-	 */
-	public static <T extends IDocumentObject> T find(DocumentType<T> dt, String id)
-	{
-		String index = dt.getIndexInfo().getName();
-		String type = dt.getName();
-		Class<T> cls = dt.getJavaType();
-		Client client = ESClientManager.getInstance().getClient();
-		GetRequestBuilder grb = client.prepareGet(index, type, id);
-		GetResponse response = grb.execute().actionGet();
-		ObjectMapper om = dt.getObjectMapper();
-		if (response.isExists()) {
-			try {
-				/*
-				 * NB we don't put the id back on the IDocumentObject instance.
-				 * The reason is we only use this method in the ETL module to
-				 * load a document, enrich it with new data and then save it
-				 * back to Elasticsearch (e.g. see CoLSynonymTransformer).
-				 * Therefore the id field must be blank. It corresponds to the
-				 * document ID (_id), which is not part of the document source.
-				 * If the id field would be set, you would get an error when
-				 * saving the IDocumentObject instance, because there is no id
-				 * field in the document type mapping. Therefore this method is
-				 * of limited use. TODO: think some more about this.
-				 */
-				return om.readValue(response.getSourceAsBytes(), cls);
-			}
-			catch (IOException e) {
-				throw new DaoException(e);
-			}
-		}
-		return null;
 	}
 
 	private static IndicesAdminClient indices()

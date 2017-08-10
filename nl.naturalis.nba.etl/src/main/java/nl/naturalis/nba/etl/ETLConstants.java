@@ -29,7 +29,7 @@ public interface ETLConstants {
 	 * of the value of the genera specified here (comma-separated). This
 	 * applies, of course, only to taxonomic data sources. If you do not specify
 	 * this system property on the Java command line, or if you leave it emtpy,
-	 * all records are imported. String comparison are done in a
+	 * all records are imported. String comparisons are done in a
 	 * case-insensitive way.
 	 */
 	String SYSPROP_TEST_GENERA = "nl.naturalis.nba.etl.testGenera";

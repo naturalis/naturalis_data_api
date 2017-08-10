@@ -10,10 +10,9 @@ import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.dao.ESClientManager;
-import nl.naturalis.nba.dao.util.es.ESUtil;
+import nl.naturalis.nba.etl.ETLConstants;
 import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.ETLStatistics;
-import nl.naturalis.nba.etl.ETLConstants;
 import nl.naturalis.nba.etl.ETLUtil;
 import nl.naturalis.nba.etl.ThemeCache;
 import nl.naturalis.nba.etl.XMLRecordInfo;
@@ -69,7 +68,7 @@ public class CrsSpecimenImport {
 	public void importSpecimens()
 	{
 		long start = System.currentTimeMillis();
-		ESUtil.truncate(SPECIMEN, CRS);
+		ETLUtil.truncate(SPECIMEN, CRS);
 		stats = new ETLStatistics();
 		transformer = new CrsSpecimenTransformer(stats);
 		transformer.setSuppressErrors(suppressErrors);

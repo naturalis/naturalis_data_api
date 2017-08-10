@@ -69,7 +69,7 @@ public class CrsMultiMediaImport {
 	public void importMultimedia()
 	{
 		long start = System.currentTimeMillis();
-		ESUtil.truncate(MULTI_MEDIA_OBJECT, CRS);
+		ETLUtil.truncate(MULTI_MEDIA_OBJECT, CRS);
 		stats = new ETLStatistics();
 		stats.setOneToMany(true);
 		transformer = new CrsMultiMediaTransformer(stats);

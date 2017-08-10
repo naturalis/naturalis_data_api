@@ -21,6 +21,7 @@ import nl.naturalis.nba.etl.CSVExtractor;
 import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.ETLRuntimeException;
 import nl.naturalis.nba.etl.ETLStatistics;
+import nl.naturalis.nba.etl.ETLUtil;
 import nl.naturalis.nba.etl.ThemeCache;
 import nl.naturalis.nba.etl.normalize.SpecimenTypeStatusNormalizer;
 import nl.naturalis.nba.utils.ConfigObject;
@@ -107,7 +108,7 @@ public class BrahmsMultiMediaImporter {
 		ETLStatistics stats = new ETLStatistics();
 		stats.setOneToMany(true);
 		if (ConfigObject.isEnabled(SYSPROP_TRUNCATE, true)) {
-			ESUtil.truncate(MULTI_MEDIA_OBJECT, BRAHMS);
+			ETLUtil.truncate(MULTI_MEDIA_OBJECT, BRAHMS);
 		}
 		for (File f : csvFiles) {
 			processFile(f, stats);

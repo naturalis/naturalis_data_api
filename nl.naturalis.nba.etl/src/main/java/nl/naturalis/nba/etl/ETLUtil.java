@@ -9,7 +9,12 @@ import java.net.URISyntaxException;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.logging.log4j.Logger;
 
+import nl.naturalis.nba.api.model.IDocumentObject;
+import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nba.dao.DaoRegistry;
+import nl.naturalis.nba.dao.DocumentType;
+import nl.naturalis.nba.dao.util.es.ESUtil;
+import nl.naturalis.nba.utils.ConfigObject;
 
 /**
  * Utility class providing common functionality used throughout this library.
@@ -19,7 +24,6 @@ import nl.naturalis.nba.dao.DaoRegistry;
  */
 public final class ETLUtil {
 
-	@SuppressWarnings("unused")
 	private static final Logger logger = getLogger(Loader.class);
 
 	private static final URIBuilder purlBuilder;
@@ -35,8 +39,8 @@ public final class ETLUtil {
 	}
 
 	/**
-	 * Get root cause of the specified {@code Throwable}. Returns the {@code Throwable}
-	 * itself if it doesn't have a cause.
+	 * Get root cause of the specified {@code Throwable}. Returns the
+	 * {@code Throwable} itself if it doesn't have a cause.
 	 * 
 	 * @param t
 	 * @return
@@ -76,7 +80,8 @@ public final class ETLUtil {
 	}
 
 	/**
-	 * Get the duration between {@code start} and {@code end}, formatted as HH:mm:ss.
+	 * Get the duration between {@code start} and {@code end}, formatted as
+	 * HH:mm:ss.
 	 * 
 	 * @param start
 	 * @param end
@@ -107,6 +112,24 @@ public final class ETLUtil {
 	public static Logger getLogger(Class<?> forClass)
 	{
 		return ETLRegistry.getInstance().getLogger(forClass);
+	}
+
+	public static <T extends IDocumentObject> void truncate(DocumentType<T> dt)
+	{
+		if (ConfigObject.isEnabled(ETLConstants.SYSPROP_DRY_RUN)) {
+			logger.info("Truncate skipped dry run mode");
+			return;
+		}
+		ESUtil.truncate(dt);
+	}
+
+	public static <T extends IDocumentObject> void truncate(DocumentType<T> dt, SourceSystem ss)
+	{
+		if (ConfigObject.isEnabled(ETLConstants.SYSPROP_DRY_RUN)) {
+			logger.info("Truncate skipped dry run mode");
+			return;
+		}
+		ESUtil.truncate(dt, ss);
 	}
 
 	public static String[] getTestGenera()

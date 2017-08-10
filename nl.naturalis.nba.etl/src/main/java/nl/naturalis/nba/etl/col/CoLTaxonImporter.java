@@ -18,6 +18,7 @@ import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.ETLRuntimeException;
 import nl.naturalis.nba.etl.ETLStatistics;
+import nl.naturalis.nba.etl.ETLUtil;
 import nl.naturalis.nba.utils.IOUtil;
 
 /**
@@ -74,7 +75,7 @@ public class CoLTaxonImporter extends CoLImporter {
 			File f = new File(path);
 			if (!f.exists())
 				throw new ETLRuntimeException("No such file: " + path);
-			ESUtil.truncate(TAXON, SourceSystem.COL);
+			ETLUtil.truncate(TAXON, SourceSystem.COL);
 			stats = new ETLStatistics();
 			extractor = createExtractor(stats, f);
 			transformer = new CoLTaxonTransformer(stats);

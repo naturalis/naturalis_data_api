@@ -2,28 +2,35 @@ package nl.naturalis.nba.etl;
 
 import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nba.dao.DocumentType;
-import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.utils.ArrayUtil;
 import nl.naturalis.nba.utils.convert.Stringifier;
 
+/**
+ * Utility class that deletes all documents from an index, but leaves the index
+ * intact. Alternatively you can choose to delete only documents belong to a
+ * certain {@link SourceSystem}.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public class NbaTruncate {
 
 	public static void main(String[] args)
 	{
 		try {
-		if (args.length == 2) {
-			DocumentType<?> dt = DocumentType.forName(args[0]);
-			SourceSystem ss = SourceSystem.getInstance(args[1].toUpperCase(), null);
-			ESUtil.truncate(dt, ss);
-			System.exit(0);
+			if (args.length == 2) {
+				DocumentType<?> dt = DocumentType.forName(args[0]);
+				SourceSystem ss = SourceSystem.getInstance(args[1].toUpperCase(), null);
+				ETLUtil.truncate(dt, ss);
+				System.exit(0);
+			}
+			if (args.length == 1) {
+				DocumentType<?> dt = DocumentType.forName(args[0]);
+				ETLUtil.truncate(dt);
+				System.exit(0);
+			}
 		}
-		if (args.length == 1) {
-			DocumentType<?> dt = DocumentType.forName(args[0]);
-			ESUtil.truncate(dt);
-			System.exit(0);
-		}
-		}
-		catch(Throwable t) {
+		catch (Throwable t) {
 			System.err.println(t.getMessage());
 		}
 		error();

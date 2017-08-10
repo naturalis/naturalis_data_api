@@ -67,7 +67,7 @@ public class GeoImporter {
 	public void importAll()
 	{
 		long start = System.currentTimeMillis();
-		ESUtil.truncate(GEO_AREA);
+		ETLUtil.truncate(GEO_AREA);
 		File[] csvFiles = getCsvFiles();
 		if (csvFiles.length == 0) {
 			logger.info("No CSV files to process");

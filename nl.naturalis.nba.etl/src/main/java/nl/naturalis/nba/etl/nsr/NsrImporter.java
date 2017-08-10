@@ -3,10 +3,10 @@ package nl.naturalis.nba.etl.nsr;
 import static nl.naturalis.nba.api.model.SourceSystem.NSR;
 import static nl.naturalis.nba.dao.DocumentType.MULTI_MEDIA_OBJECT;
 import static nl.naturalis.nba.dao.DocumentType.TAXON;
-import static nl.naturalis.nba.etl.ETLUtil.getLogger;
-import static nl.naturalis.nba.etl.ETLUtil.logDuration;
 import static nl.naturalis.nba.etl.ETLConstants.SYSPROP_LOADER_QUEUE_SIZE;
 import static nl.naturalis.nba.etl.ETLConstants.SYSPROP_SUPPRESS_ERRORS;
+import static nl.naturalis.nba.etl.ETLUtil.getLogger;
+import static nl.naturalis.nba.etl.ETLUtil.logDuration;
 import static nl.naturalis.nba.etl.nsr.NsrImportUtil.backupXmlFile;
 import static nl.naturalis.nba.etl.nsr.NsrImportUtil.backupXmlFiles;
 import static nl.naturalis.nba.etl.nsr.NsrImportUtil.getXmlFiles;
@@ -94,8 +94,8 @@ public class NsrImporter {
 			logger.info("No XML files to process");
 			return;
 		}
-		ESUtil.truncate(TAXON, NSR);
-		ESUtil.truncate(MULTI_MEDIA_OBJECT, NSR);
+		ETLUtil.truncate(TAXON, NSR);
+		ETLUtil.truncate(MULTI_MEDIA_OBJECT, NSR);
 		ETLStatistics taxonStats = new ETLStatistics();
 		ETLStatistics mediaStats = new ETLStatistics();
 		mediaStats.setOneToMany(true);
@@ -148,7 +148,7 @@ public class NsrImporter {
 			logger.info("No XML files to process");
 			return;
 		}
-		ESUtil.truncate(TAXON, NSR);
+		ETLUtil.truncate(TAXON, NSR);
 		ETLStatistics stats = new ETLStatistics();
 		NsrTaxonTransformer transformer = new NsrTaxonTransformer(stats);
 		transformer.setSuppressErrors(suppressErrors);
@@ -187,7 +187,7 @@ public class NsrImporter {
 			logger.info("No XML files to process");
 			return;
 		}
-		ESUtil.truncate(MULTI_MEDIA_OBJECT, NSR);
+		ETLUtil.truncate(MULTI_MEDIA_OBJECT, NSR);
 		ETLStatistics stats = new ETLStatistics();
 		stats.setOneToMany(true);
 		NsrMultiMediaTransformer transformer = new NsrMultiMediaTransformer(stats);

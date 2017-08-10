@@ -7,7 +7,8 @@ import static nl.naturalis.nba.etl.ETLConstants.SYSPROP_SUPPRESS_ERRORS;
 import static nl.naturalis.nba.etl.ETLConstants.SYSPROP_TRUNCATE;
 import static nl.naturalis.nba.etl.ETLUtil.getLogger;
 import static nl.naturalis.nba.etl.ETLUtil.logDuration;
-import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.*;
+import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getCsvFiles;
+import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getDataDir;
 
 import java.io.File;
 import java.nio.charset.Charset;
@@ -20,6 +21,7 @@ import nl.naturalis.nba.etl.CSVExtractor;
 import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.ETLRuntimeException;
 import nl.naturalis.nba.etl.ETLStatistics;
+import nl.naturalis.nba.etl.ETLUtil;
 import nl.naturalis.nba.etl.ThemeCache;
 import nl.naturalis.nba.etl.normalize.SpecimenTypeStatusNormalizer;
 import nl.naturalis.nba.utils.ConfigObject;
@@ -102,7 +104,7 @@ public class BrahmsSpecimenImporter {
 		ThemeCache.getInstance().resetMatchCounters();
 		ETLStatistics stats = new ETLStatistics();
 		if (ConfigObject.isEnabled(SYSPROP_TRUNCATE, true)) {
-			ESUtil.truncate(SPECIMEN, BRAHMS);
+			ETLUtil.truncate(SPECIMEN, BRAHMS);
 		}
 		for (File f : csvFiles) {
 			processFile(f, stats);

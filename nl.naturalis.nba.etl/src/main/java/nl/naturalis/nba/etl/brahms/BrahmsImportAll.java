@@ -1,8 +1,9 @@
 package nl.naturalis.nba.etl.brahms;
 
+import static nl.naturalis.nba.api.model.SourceSystem.BRAHMS;
 import static nl.naturalis.nba.dao.DocumentType.MULTI_MEDIA_OBJECT;
 import static nl.naturalis.nba.dao.DocumentType.SPECIMEN;
-import static nl.naturalis.nba.etl.ETLConstants.*;
+import static nl.naturalis.nba.etl.ETLConstants.SYSPROP_LOADER_QUEUE_SIZE;
 import static nl.naturalis.nba.etl.ETLConstants.SYSPROP_SUPPRESS_ERRORS;
 import static nl.naturalis.nba.etl.ETLConstants.SYSPROP_TRUNCATE;
 import static nl.naturalis.nba.etl.ETLUtil.getDuration;
@@ -16,14 +17,13 @@ import java.nio.charset.Charset;
 
 import org.apache.logging.log4j.Logger;
 
-import nl.naturalis.nba.api.model.SourceSystem;
-import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.CSVExtractor;
 import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.ETLStatistics;
+import nl.naturalis.nba.etl.ETLUtil;
 import nl.naturalis.nba.etl.ThemeCache;
 import nl.naturalis.nba.etl.normalize.SpecimenTypeStatusNormalizer;
 import nl.naturalis.nba.utils.ConfigObject;
@@ -141,8 +141,8 @@ public class BrahmsImportAll {
 		mStats.setOneToMany(true);
 		try {
 			if (ConfigObject.isEnabled(SYSPROP_TRUNCATE, true)) {
-				ESUtil.truncate(DocumentType.SPECIMEN, SourceSystem.BRAHMS);
-				ESUtil.truncate(DocumentType.MULTI_MEDIA_OBJECT, SourceSystem.BRAHMS);
+				ETLUtil.truncate(SPECIMEN, BRAHMS);
+				ETLUtil.truncate(MULTI_MEDIA_OBJECT, BRAHMS);
 			}
 			for (File f : csvFiles) {
 				processFile(f, sStats, mStats);

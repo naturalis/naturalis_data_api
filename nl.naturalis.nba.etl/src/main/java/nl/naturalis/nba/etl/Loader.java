@@ -1,5 +1,6 @@
 package nl.naturalis.nba.etl;
 
+import static nl.naturalis.nba.etl.ETLConstants.SYSPROP_DRY_RUN;
 import static nl.naturalis.nba.etl.ETLUtil.getLogger;
 
 import java.io.Closeable;
@@ -13,12 +14,7 @@ import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.dao.DocumentType;
-import nl.naturalis.nba.etl.col.CoLReferenceBatchImporter;
-import nl.naturalis.nba.etl.col.CoLSynonymImporter;
-import nl.naturalis.nba.etl.col.CoLTaxonImporter;
-import nl.naturalis.nba.etl.col.CoLVernacularNameImporter;
 import nl.naturalis.nba.utils.ConfigObject;
-import static nl.naturalis.nba.etl.ETLConstants.*;
 
 /**
  * <p>
@@ -176,17 +172,7 @@ public abstract class Loader<T extends IDocumentObject> implements Closeable {
 	 * Checks if the specified id belongs to a queued object and, if so, returns
 	 * the object. You must explicitly enable queue lookups by calling
 	 * {@link #enableQueueLookups(boolean) enableQueueLookups}, because they
-	 * require some extra internal administration. Queue lookups needed for
-	 * import programs that enrich existing documents rather than create new
-	 * ones. This applies to all CoL import programs except the
-	 * {@link CoLTaxonImporter taxon importer}. The {@link CoLSynonymImporter
-	 * synonym importer}, {@link CoLReferenceBatchImporter literature reference
-	 * importer} and {@link CoLVernacularNameImporter vernacular name importer}
-	 * all enrich taxon documents rather than create their own type of
-	 * documents. In order to enrich the taxon document, they first need to get
-	 * hold of one. This requires that they first check if it is already queued,
-	 * because the preceding CSV record might have wanted to enrich the same
-	 * taxon document.
+	 * require some extra internal administration.
 	 * 
 	 * @param id
 	 * @return

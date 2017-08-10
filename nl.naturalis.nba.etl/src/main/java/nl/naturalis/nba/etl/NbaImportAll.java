@@ -43,7 +43,7 @@ public class NbaImportAll {
 
 			logger.info("[>--- Bootstrapping NBA indices ---<]");
 			NbaBootstrap bootstrap = new NbaBootstrap();
-			bootstrap.bootstrap("all");
+			bootstrap.bootstrap("--all");
 
 			logger.info("[>--- Starting NSR import ---<]");
 			NsrImporter nsrImporter = new NsrImporter();

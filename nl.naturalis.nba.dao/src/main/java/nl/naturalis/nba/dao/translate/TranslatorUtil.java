@@ -12,7 +12,8 @@ class TranslatorUtil {
 
 	/**
 	 * Whether or not the specified condition must be interpreted as the ALWAYS
-	 * TRUE condition (akin to SQL's WHERE 1 = 1).
+	 * TRUE condition (akin to SQL's WHERE 1 = 1). See javadoc for
+	 * {@link QueryCondition}.
 	 * 
 	 * @param condition
 	 * @return
@@ -30,7 +31,8 @@ class TranslatorUtil {
 
 	/**
 	 * Whether or not the specified condition must be interpreted as the ALWAYS
-	 * FALSE condition (akin to SQL's WHERE 1 = 0).
+	 * FALSE condition (akin to SQL's WHERE 1 = 0). See javadoc for
+	 * {@link QueryCondition}.
 	 * 
 	 * @param condition
 	 * @return
@@ -93,8 +95,8 @@ class TranslatorUtil {
 		}
 		catch (NoSuchFieldException e) {
 			/*
-			 * Assumption when calling this method: path already validated;
-			 * won't happen
+			 * It's a program error to call this method without having already
+			 * validated the path
 			 */
 			assert (false);
 			return null;

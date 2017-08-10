@@ -8,7 +8,7 @@ import static nl.naturalis.nba.api.ComparisonOperator.NOT_STARTS_WITH;
 import static nl.naturalis.nba.api.ComparisonOperator.NOT_STARTS_WITH_IC;
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static nl.naturalis.nba.dao.translate.TranslatorUtil.getNestedPath;
-import static nl.naturalis.nba.dao.translate.TranslatorUtil.isTrueCondition;
+import static nl.naturalis.nba.dao.translate.TranslatorUtil.*;
 import static nl.naturalis.nba.utils.CollectionUtil.hasElements;
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.constantScoreQuery;
@@ -35,7 +35,7 @@ import nl.naturalis.nba.common.es.map.MappingInfo;
  * @author Ayco Holleman
  *
  */
-public abstract class ConditionTranslator {
+abstract class ConditionTranslator {
 
 	@SuppressWarnings("unused")
 	private static final Logger logger = getLogger(ConditionTranslator.class);
@@ -53,8 +53,8 @@ public abstract class ConditionTranslator {
 	private static final EnumSet<ComparisonOperator> negatingOperators;
 
 	static {
-		negatingOperators = EnumSet.of(NOT_BETWEEN, NOT_CONTAINS, NOT_IN, NOT_MATCHES, NOT_STARTS_WITH,
-				NOT_STARTS_WITH_IC);
+		negatingOperators = EnumSet.of(NOT_BETWEEN, NOT_CONTAINS, NOT_IN, NOT_MATCHES,
+				NOT_STARTS_WITH, NOT_STARTS_WITH_IC);
 	}
 
 	QueryCondition condition;
@@ -137,7 +137,7 @@ public abstract class ConditionTranslator {
 	 */
 	QueryBuilder postprocess(QueryBuilder query)
 	{
-		if (!isTrueCondition(condition)) {
+		if (!isTrueCondition(condition) && !isFalseCondition(condition)) {
 			String nestedPath = getNestedPath(condition.getField(), mappingInfo);
 			if (nestedPath != null) {
 				query = nestedQuery(nestedPath, query, ScoreMode.Avg);

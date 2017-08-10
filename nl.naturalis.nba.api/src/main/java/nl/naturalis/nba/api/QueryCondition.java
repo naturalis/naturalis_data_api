@@ -75,8 +75,9 @@ import java.util.List;
  * 
  * <p>
  * Analogous to SQL query conditions that always evaluate to true (like
- * {@code WHERE 1 = 1}), the following special query condition will always
- * evaluate to true:
+ * {@code WHERE 1 = 1}) or false (like {@code WHERE 1 = 0}), the following
+ * special query condition will always evaluate to true (it will match all
+ * documents);
  * </p>
  * 
  * <pre>
@@ -84,18 +85,17 @@ import java.util.List;
  * QueryCondition ALWAYS_TRUE = new QueryCondition(true);
  * </pre>
  * <p>
- * Likewise, the following special query condition will always evaluate to false
- * (like {@codeWHERE 1 = 0});
- * </p>
+ * And the following special query condition will always evaluate to false (it
+ * will not match any document):
  * 
  * <pre>
  * 
  * QueryCondition ALWAYS_FALSE = new QueryCondition(false);
  * </pre>
  * <p>
- * Note that you can always write you {@link QuerySpec} without resorting to the
- * ALWAYS TRUE or the ALWAYS FALSE condition, but it might sometimes be easier
- * to conceive your query with these special query conditions at you disposal.
+ * Note that you can always rewrite your query without resorting to the ALWAYS
+ * TRUE or the ALWAYS FALSE condition, but it might sometimes be easier to
+ * conceive your query with these special query conditions at you disposal.
  * </p>
  * 
  * @author Ayco Holleman

@@ -34,28 +34,30 @@ public class NbaBootstrap {
 	private static final Logger logger = ETLRegistry.getInstance().getLogger(NbaBootstrap.class);
 
 	/**
-	 * Creates or re-creates indices hosting the specified document types. Each
-	 * element in the specified array must be the name of a
-	 * {@link DocumentType#getName() document type}. Casing is ignored. You can
-	 * also provide a single-element array containing the value "*" or "all".
-	 * This will cause all indices the be (re-)created.
+	 * Creates the Elasticsearch indices hosting the specified NBA document
+	 * types. Each element in the specified array must be the name of an
+	 * {@link DocumentType#getName() NBA document type}. Casing is ignored. You
+	 * can also pass a single, special value to this method: "all". This will
+	 * cause all indices the be created. If any index already existed, it will
+	 * be deleted first.
 	 * 
 	 * @param documentTypes
 	 */
+	@SuppressWarnings("static-method")
 	public void bootstrap(String... documentTypes)
 	{
 		if (ConfigObject.isEnabled(ETLConstants.SYSPROP_DRY_RUN)) {
-			logger.info("Disabled in dry run: {}", getClass().getName());
+			logger.info("Bootstrap skipped dry run mode");
 			return;
 		}
 		if (documentTypes.length == 0) {
 			throw new IllegalArgumentException("At least one document type name required");
 		}
 		LinkedHashSet<String> docTypeList = new LinkedHashSet<>(Arrays.asList(documentTypes));
-		if (docTypeList.contains("all")) {
+		if (docTypeList.contains("--all")) {
 			if (docTypeList.size() != 1) {
-				throw new IllegalArgumentException(
-						"\"all\" cannot be combined with other arguments");
+				String msg = "Option --all cannot be combined with other arguments";
+				throw new IllegalArgumentException(msg);
 			}
 			ESUtil.deleteAllIndices();
 			ESUtil.createAllIndices();

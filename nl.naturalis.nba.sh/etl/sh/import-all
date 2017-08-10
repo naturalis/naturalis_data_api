@@ -15,7 +15,7 @@ fi
 start=$(date)
 
 scripts=" \
-	bootstrap_all \
+	bootstrap_--all \
 	nsr-import_reset \
 	nsr-import_taxa \
 	nsr-import_multimedia \

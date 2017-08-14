@@ -1,3 +1,25 @@
+RELEASE NOTES v 2.9
+
+* NBAVTWO-121 Date strings in queir condition now
+  more strictly checked
+  
+* NBAVTWO-374 System classification no longer set
+  for specimens and multimedia
+  
+* NBAVTWO-446 Fixed bug where dynamic DwCA download
+  crash when printing longitude values
+  
+* NBAVTWO-447 Fixed bug with strangely formatted
+  dates in DwCA download
+  
+* NBAVTWO-450 "fields" property of QuerySpec now
+  ignored by DwCA module
+  
+* NBAVTWO-451 Java client up-to-date again and
+  provided with unit tests.
+  
+
+
 RELEASE NOTES v 2.8
 
 * NBAVTWO-20 Field export organization for vernacular

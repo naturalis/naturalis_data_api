@@ -20,7 +20,8 @@ import java.util.Date;
  * the date format accepted by NBA indices (yyyy-MM-dd'T'HH:mm:ss.SSSZ). Input
  * for date fields may have any of the following date format patterns:
  * <ol>
- * <li>yyyy-MM-dd'T'HH:mm:ss.SSSZ (a.k.a. ISO8601)
+ * <li>yyyy-MM-dd'T'HH:mm:ss.SSSZ (the date format used by the NBA indices
+ * themselves)
  * <li>yyyy-MM-dd HH:mm:ss
  * <li>yyyy-MM-dd HH:mm
  * <li>yyyy-MM-dd

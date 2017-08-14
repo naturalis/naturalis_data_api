@@ -1,4 +1,4 @@
-package nl.naturalis.nba.dao.util;
+package nl.naturalis.nba.dao.util.es;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -10,11 +10,12 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import nl.naturalis.nba.dao.DaoRegistry;
+import nl.naturalis.nba.dao.util.es.ESDateInput;
 
 @SuppressWarnings("static-method")
-public class DateStringTest {
+public class ESDateInputTest {
 
-	private static final Logger logger = DaoRegistry.getInstance().getLogger(DateStringTest.class);
+	private static final Logger logger = DaoRegistry.getInstance().getLogger(ESDateInputTest.class);
 
 	@BeforeClass
 	public static void before()
@@ -35,7 +36,7 @@ public class DateStringTest {
 	public void test_parse01()
 	{
 		String date = "1204-06-10T08:10:11.888+04:00";
-		OffsetDateTime odt = new DateString().parse(date);
+		OffsetDateTime odt = new ESDateInput().parse(date);
 		assertEquals("01", "1204-06-10T08:10:11.888+04:00", odt.toString());
 	}
 
@@ -46,7 +47,7 @@ public class DateStringTest {
 	public void test_parse02()
 	{
 		String date = "1204-06-10T08:10:11.888Z";
-		OffsetDateTime odt = new DateString().parse(date);
+		OffsetDateTime odt = new ESDateInput().parse(date);
 		assertEquals("01", "1204-06-10T08:10:11.888Z", odt.toString());
 	}
 
@@ -57,7 +58,7 @@ public class DateStringTest {
 	public void test_parse03()
 	{
 		String date = "1204-06-10T08:10:11Z";
-		OffsetDateTime odt = new DateString().parse(date);
+		OffsetDateTime odt = new ESDateInput().parse(date);
 		assertEquals("01", "1204-06-10T08:10:11Z", odt.toString());
 	}
 
@@ -68,7 +69,7 @@ public class DateStringTest {
 	public void test_parse04()
 	{
 		String date = "1204-6-10T08:10:11Z";
-		OffsetDateTime odt = new DateString().parse(date);
+		OffsetDateTime odt = new ESDateInput().parse(date);
 		assertNull("01", odt);
 	}
 
@@ -79,7 +80,7 @@ public class DateStringTest {
 	public void test_parse05()
 	{
 		String date = "1204-06-10 08:10:11";
-		OffsetDateTime odt = new DateString().parse(date);
+		OffsetDateTime odt = new ESDateInput().parse(date);
 		assertEquals("01", "1204-06-10T08:10:11Z", odt.toString());
 	}
 
@@ -90,7 +91,7 @@ public class DateStringTest {
 	public void test_parse06()
 	{
 		String date = "1204-06-10 08:10:1";
-		OffsetDateTime odt = new DateString().parse(date);
+		OffsetDateTime odt = new ESDateInput().parse(date);
 		assertNull("01", odt);
 	}
 
@@ -101,7 +102,7 @@ public class DateStringTest {
 	public void test_parse07()
 	{
 		String date = "1204-06";
-		OffsetDateTime odt = new DateString().parse(date);
+		OffsetDateTime odt = new ESDateInput().parse(date);
 		assertEquals("01", "1204-06-01T00:00Z", odt.toString());
 	}
 
@@ -112,7 +113,7 @@ public class DateStringTest {
 	public void test_parse08()
 	{
 		String date = "1204-13";
-		OffsetDateTime odt = new DateString().parse(date);
+		OffsetDateTime odt = new ESDateInput().parse(date);
 		assertNull("01", odt);
 	}
 
@@ -123,7 +124,7 @@ public class DateStringTest {
 	public void test_parse09()
 	{
 		String date = "2017";
-		OffsetDateTime odt = new DateString().parse(date);
+		OffsetDateTime odt = new ESDateInput().parse(date);
 		assertEquals("01", "2017-01-01T00:00Z", odt.toString());
 	}
 }

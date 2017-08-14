@@ -3,16 +3,14 @@ package nl.naturalis.nba.dao.translate;
 import static nl.naturalis.nba.dao.translate.TranslatorUtil.getESFieldType;
 import static nl.naturalis.nba.dao.translate.TranslatorUtil.invalidDataType;
 
-import java.time.Instant;
 import java.time.OffsetDateTime;
-import java.time.ZoneId;
 import java.util.Collection;
 import java.util.Date;
 
 import nl.naturalis.nba.api.InvalidConditionException;
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.common.es.map.MappingInfo;
-import nl.naturalis.nba.dao.util.DateString;
+import nl.naturalis.nba.dao.util.es.ESDateInput;
 
 /**
  * Executes some always-necessary (operator-independent) preprocessing of a
@@ -79,25 +77,24 @@ class ConditionPreprocessor {
 	private static String convertValueForDateField(Object value, QueryCondition condition)
 			throws InvalidConditionException
 	{
+		ESDateInput dateInput = new ESDateInput();
 		if (value instanceof CharSequence) {
 			if (value.toString().isEmpty()) {
 				return null;
 			}
-			DateString dateString = new DateString();
-			OffsetDateTime odt = dateString.parse(value.toString());
-			if (odt == null) {
+			String esDate = dateInput.toESFormat(value.toString());
+			if (esDate == null) {
 				String fmt = "Invalid date for query condition on field %s: %s";
 				String msg = String.format(fmt, condition.getField(), value);
 				throw new InvalidConditionException(msg);
 			}
-			return odt.toString();
+			return esDate;
 		}
 		if (value instanceof Date) {
-			Instant instant = ((Date) value).toInstant();
-			return instant.atZone(ZoneId.systemDefault()).toOffsetDateTime().toString();
+			return dateInput.toESFormat((Date) value);
 		}
 		if (value instanceof OffsetDateTime) {
-			value.toString();
+			return dateInput.toESFormat((OffsetDateTime) value);
 		}
 		throw invalidDataType(condition);
 	}

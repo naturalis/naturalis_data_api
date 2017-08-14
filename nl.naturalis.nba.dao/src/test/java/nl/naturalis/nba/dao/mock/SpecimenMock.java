@@ -9,11 +9,8 @@ import static nl.naturalis.nba.api.model.SourceSystem.BRAHMS;
 import static nl.naturalis.nba.api.model.SourceSystem.CRS;
 import static nl.naturalis.nba.api.model.SourceSystem.NDFF;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import nl.naturalis.nba.api.model.DefaultClassification;
@@ -24,6 +21,7 @@ import nl.naturalis.nba.api.model.Person;
 import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
+import nl.naturalis.nba.dao.util.es.ESDateInput;
 
 /**
  * Generates 5 Specimen objects used for testing the SpecimenDAO.
@@ -48,7 +46,7 @@ public class SpecimenMock {
 		gathering.setLocalityText("Duinen, nabij Uitgeest");
 		gathering.setCountry("Netherlands");
 		gathering.setCity("Uitgeest");
-		gathering.setDateTimeBegin(datetime("2010/04/03 13:04"));
+		gathering.setDateTimeBegin(new ESDateInput().toJavaUtilDate("2010-04-03 13:04"));
 		gathering.setGatheringPersons(Arrays.asList(ruudAltenBurg()));
 
 		GatheringSiteCoordinates uitgeestCoordinates;
@@ -105,7 +103,7 @@ public class SpecimenMock {
 		gathering.setLocalityText("In de bossen nabij Aalten");
 		gathering.setCountry("Netherlands");
 		gathering.setCity("Aalten");
-		gathering.setDateTimeBegin(datetime("2009/04/03 13:04"));
+		gathering.setDateTimeBegin(new ESDateInput().toJavaUtilDate("2009-04-03 13:04"));
 		gathering.setGatheringPersons(Arrays.asList(ruudAltenBurg()));
 
 		GatheringSiteCoordinates aaltenCoordinates;
@@ -159,7 +157,7 @@ public class SpecimenMock {
 		GatheringEvent gathering = new GatheringEvent();
 		gathering.setCountry("Netherlands");
 		gathering.setCity("Uitgeest");
-		gathering.setDateTimeBegin(datetime("2008/04/03 13:04"));
+		gathering.setDateTimeBegin(new ESDateInput().toJavaUtilDate("2008-04-03 13:04"));
 		gathering.setGatheringPersons(Arrays.asList(ruudAltenBurg(), vonSiebold()));
 
 		GatheringSiteCoordinates uitgeestCoordinates;
@@ -216,7 +214,7 @@ public class SpecimenMock {
 		gathering.setProjectTitle("Project T. Rex");
 		gathering.setLocalityText("Montana, U.S.A.");
 		gathering.setCountry("United States");
-		gathering.setDateTimeBegin(datetime("2007/04/03 13:04"));
+		gathering.setDateTimeBegin(new ESDateInput().toJavaUtilDate("2007-04-03 13:04"));
 		gathering.setGatheringPersons(Arrays.asList(edwinVanHuis()));
 
 		GatheringSiteCoordinates coords;
@@ -349,16 +347,6 @@ public class SpecimenMock {
 		Person person = new Person("Nathaniel Wallich");
 		person.setAgentText(null);
 		return person;
-	}
-
-	private static Date datetime(String s)
-	{
-		try {
-			return new SimpleDateFormat("yyyy/MM/dd HH:mm").parse(s);
-		}
-		catch (ParseException e) {
-			throw new RuntimeException(e);
-		}
 	}
 
 }

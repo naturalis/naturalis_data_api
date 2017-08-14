@@ -16,6 +16,7 @@ import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.Specimen;
+import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.mock.SpecimenMock;
 
 /*
@@ -118,7 +119,7 @@ public class SpecimenDaoTest_LessThan {
 		/*
 		 * Just test with some other of the allowed date formats
 		 */
-		String to = "2000-01-01T00:00:00+200";
+		String to = "2000-01-01T00:00:00+02:00";
 		QueryCondition condition = new QueryCondition("gatheringEvent.dateTimeBegin", LT, to);
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
@@ -184,7 +185,7 @@ public class SpecimenDaoTest_LessThan {
 	@Test
 	public void test_02e() throws InvalidQueryException
 	{
-		String from = "2000-01-01T00:00:00+200";
+		String from = "2000-01-01T00:00:00+02:00";
 		QueryCondition condition = new QueryCondition("gatheringEvent.dateTimeBegin", GT, from);
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
@@ -197,16 +198,17 @@ public class SpecimenDaoTest_LessThan {
 	public void test_03() throws InvalidQueryException
 	{
 		/*
-		 * Test with GREATHER THAN OR EQUAL. "2008/04/03 13:04" is the EXACT
+		 * Test with GREATHER THAN OR EQUAL. "2008-04-03 13:04" is the EXACT
 		 * dateTimeBegin of lFuscus2, so with GTE operator pMajor, lFuscus1 and
 		 * lFuscus2 should come back
 		 */
-		String from = "2008/04/03 13:04";
+		String from = "2008-04-03 13:04";
 		QueryCondition condition = new QueryCondition("gatheringEvent.dateTimeBegin", GTE, from);
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
 		QueryResult<Specimen> result = dao.query(qs);
+		System.out.println(JsonUtil.toPrettyJson(qs));
 		assertEquals("01", 3, result.size());
 	}
 
@@ -214,11 +216,11 @@ public class SpecimenDaoTest_LessThan {
 	public void test_04() throws InvalidQueryException
 	{
 		/*
-		 * Test with GREATHER THAN OR EQUAL. "2008/04/03 13:04" is the EXACT
+		 * Test with GREATHER THAN OR EQUAL. "2008-04-03 13:04" is the EXACT
 		 * dateTimeBegin of lFuscus2, so with LTE operator lFuscus2 and tRex
 		 * should come back (mSylvestris
 		 */
-		String from = "2008/04/03 13:04";
+		String from = "2008-04-03 13:04";
 		QueryCondition condition = new QueryCondition("gatheringEvent.dateTimeBegin", GTE, from);
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);

@@ -1,4 +1,4 @@
-package nl.naturalis.nba.dao.util;
+package nl.naturalis.nba.dao.util.es;
 
 import static nl.naturalis.nba.api.model.SourceSystem.BRAHMS;
 import static nl.naturalis.nba.api.model.SourceSystem.COL;

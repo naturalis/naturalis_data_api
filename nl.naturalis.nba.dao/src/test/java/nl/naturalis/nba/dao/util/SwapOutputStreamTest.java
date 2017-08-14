@@ -7,13 +7,30 @@ import static org.junit.Assert.assertTrue;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import org.apache.logging.log4j.Logger;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
-import nl.naturalis.nba.dao.util.SwapOutputStream;
+import nl.naturalis.nba.dao.DaoRegistry;
 import nl.naturalis.nba.utils.ArrayUtil;
 
 @SuppressWarnings("static-method")
 public class SwapOutputStreamTest {
+
+	private static final Logger logger = DaoRegistry.getInstance()
+			.getLogger(SwapOutputStreamTest.class);
+
+	@BeforeClass
+	public static void before()
+	{
+		logger.info("Start");
+	}
+
+	@BeforeClass
+	public static void after()
+	{
+		logger.info("Finish");
+	}
 
 	@Test
 	public void testSwap_01() throws IOException

@@ -1,21 +1,18 @@
 package nl.naturalis.nba.dao.translate;
 
-import static nl.naturalis.nba.dao.NbaMetaDataDao.DEFAULT_DATE_FORMAT;
-import static nl.naturalis.nba.dao.NbaMetaDataDao.DEFAULT_DATE_PATTERN;
-import static nl.naturalis.nba.dao.NbaMetaDataDao.ACCEPTED_DATE_FORMATS;
 import static nl.naturalis.nba.dao.translate.TranslatorUtil.getESFieldType;
 import static nl.naturalis.nba.dao.translate.TranslatorUtil.invalidDataType;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
+import java.time.ZoneId;
 import java.util.Collection;
 import java.util.Date;
 
 import nl.naturalis.nba.api.InvalidConditionException;
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.common.es.map.MappingInfo;
+import nl.naturalis.nba.dao.util.DateString;
 
 /**
  * Executes some always-necessary (operator-independent) preprocessing of a
@@ -86,32 +83,23 @@ class ConditionPreprocessor {
 			if (value.toString().isEmpty()) {
 				return null;
 			}
-			Date d = toDate(value.toString());
-			if (d == null) {
+			DateString dateString = new DateString();
+			OffsetDateTime odt = dateString.parse(value.toString());
+			if (odt == null) {
 				String fmt = "Invalid date for query condition on field %s: %s";
-				String msg = String.format(fmt, condition.getField());
+				String msg = String.format(fmt, condition.getField(), value);
 				throw new InvalidConditionException(msg);
 			}
-			return DEFAULT_DATE_FORMAT.format(d);
+			return odt.toString();
 		}
 		if (value instanceof Date) {
-			return DEFAULT_DATE_FORMAT.format((Date) value);
+			Instant instant = ((Date) value).toInstant();
+			return instant.atZone(ZoneId.systemDefault()).toOffsetDateTime().toString();
 		}
 		if (value instanceof OffsetDateTime) {
-			DateTimeFormatter dtf = DateTimeFormatter.ofPattern(DEFAULT_DATE_PATTERN);
-			return ((OffsetDateTime) value).format(dtf);
+			value.toString();
 		}
 		throw invalidDataType(condition);
 	}
 
-	private static Date toDate(String value)
-	{
-		for (SimpleDateFormat sdf : ACCEPTED_DATE_FORMATS) {
-			try {
-				return sdf.parse(value);
-			}
-			catch (ParseException e) {}
-		}
-		return null;
-	}
 }

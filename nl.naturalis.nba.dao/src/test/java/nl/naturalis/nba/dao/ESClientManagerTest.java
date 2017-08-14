@@ -1,4 +1,4 @@
-package nl.naturalis.nba.dao.util;
+package nl.naturalis.nba.dao;
 
 import static org.junit.Assert.assertNotNull;
 

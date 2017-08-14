@@ -142,7 +142,9 @@ public class SwapOutputStream extends OutputStream {
 			return;
 		}
 		swapped = true;
-		logger.info("Buffer overflow. Swapping out {} kB", (cnt / 1024));
+		if (logger.isDebugEnabled()) {
+			logger.debug("Buffer overflow. Swapping out {} bytes", cnt);
+		}
 		out.write(buf, 0, cnt);
 	}
 

@@ -1,7 +1,7 @@
-This folder the NBA Java client library: nba-java-client.jar
+This folder contains the NBA Java client library: nba-java-client.jar
 
 The "dependencies" subdirectory contains all 3rd party dependencies
-you will need alongside the nba java client library.
+you will need alongside the NBA java client library.
 
 In case you are using Maven, Ivy or some other dependency management
 tool, check the ivy.xml file in this folder to see which dependencies

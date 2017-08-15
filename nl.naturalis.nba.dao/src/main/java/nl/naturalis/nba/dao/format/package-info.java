@@ -1,6 +1,7 @@
 /**
  * Interfaces and classes providing general functionality for generating
- * formatted output - anything that is not JSON.
+ * formatted output, e&#46;g&#46; XML, CSV, RDF, DwCA - anything that is not
+ * JSON.
  * 
  * @author Ayco Holleman
  */

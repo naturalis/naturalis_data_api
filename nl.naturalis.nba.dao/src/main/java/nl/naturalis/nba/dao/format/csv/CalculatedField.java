@@ -7,6 +7,13 @@ import nl.naturalis.nba.dao.format.EntityObject;
 import nl.naturalis.nba.dao.format.FieldWriteException;
 import nl.naturalis.nba.dao.format.ICalculator;
 
+/**
+ * A {@code CalculatedField} uses an {@link ICalculator} instance to produce a
+ * value for a CSV field.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 class CalculatedField extends AbstractField {
 
 	private ICalculator calculator;

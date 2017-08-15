@@ -11,7 +11,7 @@ import nl.naturalis.nba.dao.format.EntityObject;
 import nl.naturalis.nba.dao.format.IField;
 
 /**
- * An implementation if {@link IField} that retrieves its value from the nested
+ * An implementation of {@link IField} that retrieves its value from the nested
  * object that functions as the {@link EntityObject}. See also
  * {@link DocumentField}.
  * 

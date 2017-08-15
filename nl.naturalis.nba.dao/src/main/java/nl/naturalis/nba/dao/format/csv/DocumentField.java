@@ -14,14 +14,14 @@ import nl.naturalis.nba.dao.format.IField;
 
 /**
  * An implementation of {@link IField} which retrieves its value from the parent
- * document rather than from the nested object that is the main data source for
- * the CSV file being written. See {@link EntityObject}. For example, if you
- * wanted to create a CSV file with vernacular names, the {@link VernacularName}
- * object within the {@link Taxon} document would be the entity object: several
- * CSV records might be written from the same {@code Taxon} document, because a
+ * document rather than from the nested object that is the prime focus of the
+ * CSV file being written. See {@link EntityObject}. For example, if you wanted
+ * to create a CSV file with vernacular names, the {@link VernacularName} object
+ * within the {@link Taxon} document would be the entity object: several CSV
+ * records might be written from the same {@code Taxon} document, because a
  * {@code Taxon} document may contain multiple {@code VernacularName} objects.
  * However, you would probably still also want to include the taxon ID in the
- * CSV record. In that case you would need a {@code DocumentDataField}, because
+ * CSV record. In that case you would need a {@code DocumentField}, because
  * the taxon ID is not part of the {@code VernacularName} object. It sits at the
  * top-most level of the {@code Taxon} document. See also {@link EntityField}.
  */

@@ -6,8 +6,6 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
-import nl.naturalis.nba.dao.exception.DwcaCreationException;
-
 /**
  * Generates the meta&#46;xml file of a DarwinCore archive.
  * 

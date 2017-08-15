@@ -4,6 +4,9 @@
 // Any modifications to this file will be lost upon recompilation of the source schema. 
 // Generated on: 2016.10.10 at 11:48:11 AM CEST 
 //
-
+/**
+ * JAXB classes copying the structure of the XML configuration files for DwCA
+ * datasets.
+ */
 @javax.xml.bind.annotation.XmlSchema(namespace = "http://data.naturalis.nl/nba-dataset-config", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
 package nl.naturalis.nba.dao.format.config;

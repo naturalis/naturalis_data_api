@@ -20,6 +20,13 @@ import nl.naturalis.nba.dao.format.IFieldFactory;
  * @author Ayco Holleman
  *
  */
+/*
+ * TODO: Since CSV escaping has been moved from the IField implementations (like
+ * EntityField and DocumentField) to CSVRecordWriter, these IField
+ * implementations now have a more generic nature; there is nothing specifically
+ * CSV-ish about them. They should be moved to the parent package, or some other
+ * package.
+ */
 public class CsvFieldFactory implements IFieldFactory {
 
 	@Override

@@ -4,7 +4,7 @@
 
 action="${1}"
 
-if [ "$action" = -d || "$action" = --detailed ]
+if [ "$action" = detailed ]
 then
     java -cp ${classpath} ${JAVA_OPTS} ${root_package}.brahms.BrahmsDuplicateChecker ${action}
     

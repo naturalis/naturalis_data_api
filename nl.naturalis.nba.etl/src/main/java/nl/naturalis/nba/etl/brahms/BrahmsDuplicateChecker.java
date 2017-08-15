@@ -7,7 +7,6 @@ import java.io.File;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -36,7 +35,6 @@ public class BrahmsDuplicateChecker {
 	private final boolean suppressErrors = true;
 
 	private Set<String> objectIDs = new HashSet<>(4096);
-	private Set<String> duplicateIDs = new HashSet<>(100);
 	private HashMap<String, Integer> duplicateIDsCount = new HashMap<>();
 
 	public static void main(String[] args)
@@ -54,22 +52,20 @@ public class BrahmsDuplicateChecker {
 
 	public void checkImportFiles(String option)
 	{
+		logger.info("--- Start with duplicate check ---");
 		File[] csvFiles = getCsvFiles();
-		// option = "detailed";
 		if (csvFiles.length == 0) {
 			logger.info("No CSV files to process");
 			System.exit(1);
 		}
 		for (File csvFile : csvFiles) {
 			objectIDs.clear();
-			duplicateIDs.clear();
 			duplicateIDsCount.clear();
+			// option = "detailed";
 			switch (option) {
-
 				case "detailed":
 					thoroughCheckFile(csvFile);
 					break;
-
 				default:
 					fastCheckFile(csvFile);
 			}
@@ -81,11 +77,10 @@ public class BrahmsDuplicateChecker {
 	 * taken from the field BARCODE. Sends a warning to the log file when there
 	 * is a difference between the two.
 	 * 
-	 * @param f
-	 *            the file to be checked
+	 * @param f  the file to be checked
 	 */
-	public void fastCheckFile(File f)
-	{
+	public void fastCheckFile(File f) {
+
 		CSVExtractor<BrahmsCsvField> extractor = null;
 		ETLStatistics extractionStats = new ETLStatistics();
 		extractor = createExtractor(f, extractionStats);
@@ -93,7 +88,6 @@ public class BrahmsDuplicateChecker {
 		String barcode = "";
 
 		logger.info(" ");
-		logger.info("--- Start with duplicate check ---");
 		logger.info("Checking file: " + f.getName());
 
 		for (CSVRecordInfo<BrahmsCsvField> rec : extractor) {
@@ -103,33 +97,30 @@ public class BrahmsDuplicateChecker {
 			barcode = rec.get(BARCODE);
 			if (barcode != null) {
 				objectIDs.add(rec.get(BARCODE));
-				// logger.warn("Duplicate ID: {}", barcode);
 			}
 			else {
 				extractionStats.recordsRejected++;
 			}
 			extractionStats.recordsProcessed++;
 		}
-
+		
 		int uniqueIDs = objectIDs.size();
 		int recordsProcessed = extractionStats.recordsProcessed;
 		int recordsRejected = extractionStats.recordsRejected;
-
-		logger.info("Check finished in {} seconds",
-				nl.naturalis.nba.etl.ETLUtil.getDuration(start));
+		
+		logger.info("Check finished in {} seconds", nl.naturalis.nba.etl.ETLUtil.getDuration(start) );
 		logger.info("Records processed: {}", recordsProcessed);
 		logger.info("Records rejected: {}", extractionStats.recordsRejected);
 		logger.info("Total number of unique IDs: " + uniqueIDs);
 
 		if (recordsProcessed == (uniqueIDs + recordsRejected)) {
 			logger.info("File contains no duplicates.");
-		}
-		else {
-			logger.warn("File contains {} duplicate records!",
-					(recordsProcessed - recordsRejected - uniqueIDs));
+		} else {
+			logger.warn("File contains {} duplicate records!", (recordsProcessed - recordsRejected - uniqueIDs));
 		}
 	}
 
+		
 	/**
 	 * Compares the number of records in the file with the number of unique IDs,
 	 * taken from the field BARCODE, and counts the number of duplicate ID's.
@@ -147,34 +138,41 @@ public class BrahmsDuplicateChecker {
 		String barcode = "";
 
 		logger.info(" ");
-		logger.info("--- Start with detailed duplicate check ---");
 		logger.info("Checking file: " + f.getName());
 
 		for (CSVRecordInfo<BrahmsCsvField> rec : extractor) {
-			if (rec == null)
-				continue;
+			if (rec == null) {
+				continue;			
+			}
 
-			extractionStats.recordsProcessed++;
 			barcode = rec.get(BARCODE);
+			if (barcode == null) {
+				extractionStats.recordsRejected++;
+				extractionStats.recordsProcessed++;
+				continue;
+			}
+
 			if (objectIDs.contains(barcode)) {
-				// logger.warn("Duplicate ID: {}", barcode);
+				// We have a duplicate!
 				if (duplicateIDsCount.get(barcode) == null) {
-					duplicateIDsCount.put(barcode, 2);
+					duplicateIDsCount.put(barcode, 2); // This is the first duplicate so this barcode has been used twice so far
 				}
 				else {
 					duplicateIDsCount.put(barcode, duplicateIDsCount.get(barcode) + 1);
 				}
 			}
 			else {
+				// Not a duplicate so add to the set
 				objectIDs.add(barcode);
 			}
+			extractionStats.recordsProcessed++;
 		}
 
 		int uniqueIDs = objectIDs.size();
 		int recordsProcessed = extractionStats.recordsProcessed;
 		int recordsRejected = extractionStats.recordsRejected;
 
-		if (duplicateIDsCount.size() > 0) {
+		if (!duplicateIDsCount.isEmpty()) {
 			for (Map.Entry<String, Integer> IDCount : duplicateIDsCount.entrySet()) {
 				logger.info("{} occurs {} times", IDCount.getKey(), IDCount.getValue());
 			}
@@ -193,6 +191,8 @@ public class BrahmsDuplicateChecker {
 					(duplicateIDsCount.size()));
 		}
 	}
+
+
 
 	private CSVExtractor<BrahmsCsvField> createExtractor(File f, ETLStatistics extractionStats)
 	{

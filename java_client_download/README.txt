@@ -1,7 +1,10 @@
 This folder the NBA Java client library: nl.naturalis.nba.client.jar
 
 This library depends on three other NBA Java libraries, also present in
-this folder.
+this folder:
+o  nl.naturalis.nba.common.jar
+o  nl.naturalis.nba.api.jar
+o  nl.naturalis.nba.utils.jar
 
 The "dependencies" subdirectory contains all 3rd party dependencies.
 

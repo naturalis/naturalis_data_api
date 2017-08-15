@@ -16,6 +16,9 @@
 
 	<target name="build"
 	        depends="build-api-module,build-common-module,build-utils-module,clean,package" />
+	
+	<target name="create-super-jar">
+	</target>
 
 	<target name="install" depends="build">
 		<delete dir="../java_client_download/dependencies">

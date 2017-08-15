@@ -31,6 +31,50 @@ import nl.naturalis.nba.utils.http.SimpleHttpGet;
  * NbaSession session = new NbaSession();
  * SpecimenClient client = session.getSpecimenClient();
  * Specimen specimen = client.findByUnitID("ZMA.RMNH.12345");
+ * System.out.printf("Record basis for specimen ZMA.RMNH.12345: " + specimen.getRecordBasis());
+ * </pre>
+ * </p>
+ * <p>
+ * Here is a more interesting example:
+ * 
+ * <pre>
+ * NbaSession session = new NbaSession();
+ * TaxonClient client = session.getTaxonClient();
+ * QueryCondition condition = new QueryCondition("acceptedName.genusOrMonomial", "=", "Larus");
+ * condition.and("acceptedName.specificEpithet", "=", "Fuscus");
+ * QuerySpec query = new QuerySpec();
+ * query.addCondition(condition);
+ * Taxon[] taxa = client.query(query);
+ * for (Taxon taxon : taxa) {
+ * 	System.out.println("Taxon id: " + taxon.getId());
+ * }
+ * </pre>
+ * </p>
+ * <p>
+ * Here is how you can download that same query as a DarwinCore archive:
+ * 
+ * <pre>
+ * TaxonClient client = session.getTaxonClient();
+ * QueryCondition condition = new QueryCondition("acceptedName.genusOrMonomial", "=", "Larus");
+ * condition.and("acceptedName.specificEpithet", "=", "Fuscus");
+ * QuerySpec query = new QuerySpec();
+ * query.addCondition(condition);
+ * FileOutputStream fos = new FileOutputStream("C:/tmp/my-dwca.zip");
+ * client.dwcaQuery(query, fos);
+ * fos.close();
+ * </pre>
+ * </p>
+ * <p>
+ * And here is how you can download all pre-defined specimen datasets:
+ * 
+ * <pre>
+ * NbaSession session = new NbaSession();
+ * SpecimenClient client = session.getSpecimenClient();
+ * for(String dataset : client.dwcaGetDataSetNames()) {
+ * 	FileOutputStream fos = new FileOutputStream("C:/tmp/" + dataset + ".zip");
+ * 	client.dwcaGetDataSet(dataset, fos);
+ * 	fos.close();
+ * }
  * </pre>
  * </p>
  * 

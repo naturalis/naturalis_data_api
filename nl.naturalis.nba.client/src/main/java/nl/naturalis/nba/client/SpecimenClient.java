@@ -31,6 +31,8 @@ import nl.naturalis.nba.utils.http.SimpleHttpRequest;
  * Provides access to specimen-related information. Client-side implementation
  * of the {@link ISpecimenAccess}.
  * 
+ * @see NbaSession
+ * 
  * @author Ayco Holleman
  *
  */

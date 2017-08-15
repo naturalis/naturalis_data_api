@@ -7,12 +7,36 @@
 	<!-- Project dependencies -->
 	<path id="non-ivy-dependencies">
 		<filelist dir="${api.module.location}/build" files="${api.module.artifact}" />
-		<filelist dir="${common.module.location}/build" files="${common.module.artifact}" />
+		<filelist dir="${common.module.location}/build"
+		          files="${common.module.artifact}" />
 		<filelist dir="${utils.module.location}/build" files="${utils.module.artifact}" />
 	</path>
 
 	<property name="junit.suite.classname" value="nl.naturalis.nba.client.AllTests" />
-	
-	<target name="build" depends="build-api-module,build-common-module,build-utils-module,clean,package" />
+
+	<target name="build"
+	        depends="build-api-module,build-common-module,build-utils-module,clean,package" />
+
+	<target name="install" depends="build">
+		<delete dir="../java_client_download/dependencies">
+			<include name="**/*" />
+		</delete>
+		<delete file="../java_client_download/nl.naturalis.nba.client.jar" />
+		<copy todir="../java_client_download" file="ivy.xml" overwrite="true" />
+		<copy todir="../java_client_download"
+		      file="build/nl.naturalis.nba.client.jar"
+		      overwrite="true" />
+		<copy todir="../java_client_download" overwrite="true">
+			<fileset dir="build/classpath">
+				<include name="nl.naturalis.*.jar" />
+			</fileset>
+		</copy>
+		<copy todir="../java_client_download/dependencies" overwrite="true">
+			<fileset dir="build/classpath">
+				<include name="**/*.jar" />
+				<exclude name="nl.naturalis.*.jar" />
+			</fileset>
+		</copy>
+	</target>
 
 </project>

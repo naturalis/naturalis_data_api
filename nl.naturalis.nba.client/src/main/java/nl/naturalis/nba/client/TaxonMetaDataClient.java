@@ -5,6 +5,8 @@ import nl.naturalis.nba.api.model.Taxon;
 /**
  * Provides access to information about the NBA's {@link Taxon} index.
  * 
+ * @see NbaSession
+ * 
  * @author Ayco Holleman
  *
  */

@@ -63,6 +63,14 @@
 		<sleep seconds="3" />
 	</target>
 
+	<target name="install-java-client">
+		<ant antfile="${client.module.location}/build.xml"
+		     useNativeBasedir="true"
+		     inheritAll="false"
+		     inheritRefs="false"
+		     target="install" />
+	</target>
+
 	<target name="install-service">
 		<ant antfile="${rest.module.location}/build.xml"
 		     useNativeBasedir="true"

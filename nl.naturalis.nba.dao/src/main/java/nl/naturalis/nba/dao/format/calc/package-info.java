@@ -1,6 +1,6 @@
 /**
- * Contains calculator classes (implementations of
- * {@link nl.naturalis.nba.dao.format.ICalculator ICalculator}).
+ * Contains implementations of {@link nl.naturalis.nba.dao.format.ICalculator
+ * ICalculator}.
  * 
  * @author Ayco Holleman
  *

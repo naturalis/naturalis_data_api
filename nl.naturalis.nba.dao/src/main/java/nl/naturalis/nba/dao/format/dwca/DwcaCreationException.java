@@ -1,6 +1,14 @@
-package nl.naturalis.nba.dao.exception;
+package nl.naturalis.nba.dao.format.dwca;
 
+import nl.naturalis.nba.dao.exception.DaoException;
 
+/**
+ * Thrown if DwCA module encountered an unexpected error while generating a
+ * DarwinCore archive.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public class DwcaCreationException extends DaoException {
 
 	public DwcaCreationException(String message)

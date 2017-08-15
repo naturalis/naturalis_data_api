@@ -1,7 +1,7 @@
 package nl.naturalis.nba.dao.exception;
 
 /**
- * Base class for runtime exceptions emanating from the DAO module.
+ * Base class for runtime exceptions emanating from the data access module.
  * 
  * @author Ayco Holleman
  *

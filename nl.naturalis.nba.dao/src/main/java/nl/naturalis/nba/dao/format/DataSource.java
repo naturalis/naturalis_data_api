@@ -3,7 +3,20 @@ package nl.naturalis.nba.dao.format;
 import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.common.es.map.Mapping;
+import nl.naturalis.nba.dao.format.config.DataSourceXmlConfig;
 
+/**
+ * A {@code DataSource} contains the configuration for how to retrieve the
+ * Elasticsearch documents from which a dataset is created. It also optionally
+ * specifies the path to a nested object within the documents that is the prime
+ * focus of the dataset. See {@link EntityObject}. This class basically
+ * corresponds to the &lt;shared-data-source&gt; c.q. &lt;data-source&gt;
+ * element of the XML configuration file for a dataset and is a beautified
+ * version of JAXB class {@link DataSourceXmlConfig}.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public class DataSource {
 
 	private Mapping<?> mapping;

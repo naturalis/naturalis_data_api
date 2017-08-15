@@ -11,6 +11,14 @@ import nl.naturalis.nba.common.PathValueReader;
 import nl.naturalis.nba.dao.format.AbstractField;
 import nl.naturalis.nba.dao.format.EntityObject;
 
+/**
+ * A {@code EntityDateField} writes a date string to a CSV field, which it reads
+ * from a date field within a nested object within an Elasticsearch document
+ * (the so-called {@link EntityObject}).
+ * 
+ * @author Ayco Holleman
+ *
+ */
 class EntityDateField extends AbstractField {
 
 	private PathValueReader pvr;

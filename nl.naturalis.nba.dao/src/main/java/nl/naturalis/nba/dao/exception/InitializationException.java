@@ -1,10 +1,7 @@
 package nl.naturalis.nba.dao.exception;
 
-import nl.naturalis.nba.dao.DaoRegistry;
-
 /**
- * Thrown during the instantiation of the central {@link DaoRegistry} object if
- * anything goes wrong while configuring the services it provides.
+ * Thrown if anything goes wrong in the NBA start-up phase.
  * 
  * @author Ayco Holleman
  *

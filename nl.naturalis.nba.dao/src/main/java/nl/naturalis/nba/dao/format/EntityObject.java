@@ -15,23 +15,24 @@ import nl.naturalis.nba.dao.DocumentType;
  * object within the {@link Specimen#getGatheringEvent() gatheringEvent} object
  * within the {@link DocumentType#SPECIMEN Specimen} document type. Since there
  * may be multiple collectors associated with a specimen, one specimen document
- * may yield multiple CSV records. Therefore the class responsible for printing
- * the CSV records cannot be fed with raw Specimen documents. Instead, each
- * document is first pulled through a {@link DocumentFlattener}, which produces
- * a list of entity objects, which are then fed to the class responsible for
- * printing the CSV records.
+ * may yield multiple CSV records. We don't want to make the class that prints
+ * CSV records responsible for extracting data from an Elasticsearch document.
+ * It should just be fed a single object which it then prints as a CSV record.
+ * Therefore the class responsible for printing the CSV records cannot be fed
+ * with raw Specimen documents. Instead, each document is first pulled through a
+ * {@link DocumentFlattener}, which produces a list of entity objects, which are
+ * then fed one by one to the class responsible for printing the CSV records.
  * </p>
  * <p>
  * An entity object maintains a direct reference to the Elasticsearch document
  * from which it was extracted, because you might want to include data from it
  * in your CSV record. For example, if you are printing records containing
- * literature references for taxa, you might still want to have a CSV field
- * containing the ID of the taxon that the literature reference refers to. An
- * entity object also maintains a reference to its direct parent object. This
- * becomes important if you want to include some data from the parent object in
- * the CSV record (if the parent object is itself an array or list element, you
- * cannot navigate unambiguously from the root of the document to the entity
- * object).
+ * literature references for taxa, you might still want to print the ID of the
+ * taxon that the literature reference refers to. An entity object also
+ * maintains a reference to its direct parent object. This becomes important if
+ * you want to include some data from the parent object in the CSV record (if
+ * the parent object is itself an array or list element, you cannot navigate
+ * unambiguously from the root of the document to the entity object).
  * </p>
  * 
  * See also {@link Entity#toString()}.

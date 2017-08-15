@@ -58,19 +58,25 @@ public class BrahmsDuplicateChecker {
 			logger.info("No CSV files to process");
 			System.exit(1);
 		}
-		for (File csvFile : csvFiles) {
-			objectIDs.clear();
-			duplicateIDsCount.clear();
-			// option = "detailed";
-			switch (option) {
-				case "detailed":
-					thoroughCheckFile(csvFile);
-					break;
-				default:
-					fastCheckFile(csvFile);
+		option = "all";
+		if (option.equals("all")) {
+			checkAllAtOnce(csvFiles);
+		} else {
+			for (File csvFile : csvFiles) {
+				objectIDs.clear();
+				duplicateIDsCount.clear();
+				// option = "detailed";
+				switch (option) {
+					case "detailed":
+						thoroughCheckFile(csvFile);
+						break;
+					default:
+						fastCheckFile(csvFile);
+				}
 			}
 		}
 	}
+
 
 	/**
 	 * Compares the number of records in the file with the number of unique IDs,
@@ -192,7 +198,52 @@ public class BrahmsDuplicateChecker {
 		}
 	}
 
+	private void checkAllAtOnce(File[] files)
+	{
+		objectIDs.clear();
+		duplicateIDsCount.clear();
 
+		CSVExtractor<BrahmsCsvField> extractor = null;
+		ETLStatistics extractionStats = new ETLStatistics();
+		
+		long start = System.currentTimeMillis();
+		
+		for (File f : files) {
+
+			extractor = createExtractor(f, extractionStats);
+			String barcode = "";
+			logger.info(" ");
+			logger.info("Checking file: " + f.getName());
+
+			for (CSVRecordInfo<BrahmsCsvField> rec : extractor) {
+				if (rec == null) {
+					continue;
+				}
+				barcode = rec.get(BARCODE);
+				if (barcode != null) {
+					objectIDs.add(rec.get(BARCODE));
+				}
+				else {
+					extractionStats.recordsRejected++;
+				}
+				extractionStats.recordsProcessed++;
+			}
+			
+			logger.info("Check {} finished in {} seconds" , f.getName(), nl.naturalis.nba.etl.ETLUtil.getDuration(start));
+			logger.info("Subtotal of records processed: {}", extractionStats.recordsProcessed);
+			logger.info("Subtotal of unique records: {}", objectIDs.size());
+		}
+		
+		logger.info("");
+		logger.info("Total check finished in {} seconds" , nl.naturalis.nba.etl.ETLUtil.getDuration(start));
+		logger.info("Total size of records: {}", extractionStats.recordsProcessed);
+		logger.info("Total records rejected: {}", extractionStats.recordsRejected);
+		logger.info("Total size of unique records: {}", objectIDs.size());
+		logger.info("Total duplicate records: {}", extractionStats.recordsProcessed - extractionStats.recordsRejected - objectIDs.size());
+	}
+
+	
+	
 
 	private CSVExtractor<BrahmsCsvField> createExtractor(File f, ETLStatistics extractionStats)
 	{

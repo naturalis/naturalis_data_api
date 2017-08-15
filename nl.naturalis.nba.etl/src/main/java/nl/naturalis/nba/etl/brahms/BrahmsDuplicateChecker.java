@@ -58,7 +58,7 @@ public class BrahmsDuplicateChecker {
 			logger.info("No CSV files to process");
 			System.exit(1);
 		}
-		option = "all";
+		// option = "all";
 		if (option.equals("all")) {
 			checkAllAtOnce(csvFiles);
 		} else {

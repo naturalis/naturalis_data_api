@@ -31,7 +31,7 @@ import nl.naturalis.nba.utils.http.SimpleHttpGet;
  * NbaSession session = new NbaSession();
  * SpecimenClient client = session.getSpecimenClient();
  * Specimen specimen = client.findByUnitID("ZMA.RMNH.12345");
- * System.out.printf("Record basis for specimen ZMA.RMNH.12345: " + specimen.getRecordBasis());
+ * System.out.println("Record basis for specimen ZMA.RMNH.12345: " + specimen.getRecordBasis());
  * </pre>
  * </p>
  * <p>
@@ -41,7 +41,7 @@ import nl.naturalis.nba.utils.http.SimpleHttpGet;
  * NbaSession session = new NbaSession();
  * TaxonClient client = session.getTaxonClient();
  * QueryCondition condition = new QueryCondition("acceptedName.genusOrMonomial", "=", "Larus");
- * condition.and("acceptedName.specificEpithet", "=", "Fuscus");
+ * condition.and("acceptedName.specificEpithet", "=", "fuscus");
  * QuerySpec query = new QuerySpec();
  * query.addCondition(condition);
  * Taxon[] taxa = client.query(query);

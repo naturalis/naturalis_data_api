@@ -16,24 +16,32 @@
 
 	<target name="build"
 	        depends="build-api-module,build-common-module,build-utils-module,clean,package" />
-	
+
+	<!--
+		Creates one single jar bundling the client module, the api module, the
+		common module and the utils module
+	-->
 	<target name="create-super-jar">
+		<mkdir dir="build/super-jar" />
+		<copy includeemptydirs="false" todir="build/super-jar">
+			<fileset dir="build/main" />
+			<fileset dir="${api.module.location}/build/main" />
+			<fileset dir="${common.module.location}/build/main" />
+			<fileset dir="${utils.module.location}/build/main" />
+		</copy>
+		<jar destfile="build/nba-java-client.jar"
+		     basedir="build/super-jar"
+		     excludes="**/.git*" />
 	</target>
 
-	<target name="install" depends="build">
+	<target name="install" depends="build,create-super-jar">
 		<delete dir="../java_client_download/dependencies">
 			<include name="**/*" />
 		</delete>
-		<delete file="../java_client_download/nl.naturalis.nba.client.jar" />
-		<copy todir="../java_client_download" file="ivy.xml" overwrite="true" />
 		<copy todir="../java_client_download"
-		      file="build/nl.naturalis.nba.client.jar"
+		      file="build/nba-java-client.jar"
 		      overwrite="true" />
-		<copy todir="../java_client_download" overwrite="true">
-			<fileset dir="build/classpath">
-				<include name="nl.naturalis.*.jar" />
-			</fileset>
-		</copy>
+		<copy todir="../java_client_download" file="ivy.xml" overwrite="true" />
 		<copy todir="../java_client_download/dependencies" overwrite="true">
 			<fileset dir="build/classpath">
 				<include name="**/*.jar" />

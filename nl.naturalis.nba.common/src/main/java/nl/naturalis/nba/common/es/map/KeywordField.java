@@ -3,15 +3,20 @@ package nl.naturalis.nba.common.es.map;
 import java.util.LinkedHashMap;
 
 import nl.naturalis.nba.api.ComparisonOperator;
-import nl.naturalis.nba.api.annotations.Analyzer;
+import nl.naturalis.nba.api.annotations.Analyzers;
+import nl.naturalis.nba.api.model.Specimen;
 
 /**
- * An {@code StringField} is a {@link SimpleField} with data type
- * {@link ESDataType#KEYWORD}. This type of field can be indexed in multiple
- * ways through {@link Analyzer analyzers}. The field itself always remains
- * unanalyzed (meaning you can always create {@link ComparisonOperator#EQUALS}
- * queries for it. Other indexes are specified through a virtual
- * {@link MultiField multi-field} underneath it.
+ * A {@code KeywordField} is a {@link SimpleField} with Elasticsearch data type
+ * {@link ESDataType#KEYWORD keyword}. String fields in Java model classes like
+ * {@link Specimen} will always be mapped to Elasticsearch document fields of
+ * type "keyword". Therefore, you can <i>always</i> use operator
+ * {@link ComparisonOperator#EQUALS EQUALS} to query a string field. In
+ * addition, a String field in a Java model class can be decorated with the
+ * {@link Analyzers} annotation, which causes the corresponding Elasticsearch
+ * field to be analyzed according to the value of the {@link Analyzers}
+ * annotation.
+ * 
  * 
  * @author Ayco Holleman
  *

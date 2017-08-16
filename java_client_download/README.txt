@@ -7,6 +7,9 @@ In case you are using Maven, Ivy or some other dependency management
 tool, check the ivy.xml file in this folder to see which dependencies
 you need to declare in your own pom.xml or ivy.xml
 
+For the javadocs, see here:
+http://naturalis.github.io/naturalis_data_api/javadoc/v2/client/
+
 
 EXAMPLES:
 
@@ -30,7 +33,7 @@ QuerySpec query = new QuerySpec();
 query.addCondition(condition);
 Taxon[] taxa = client.query(query);
 for (Taxon taxon : taxa) {
-	System.out.println("Taxon id: " + taxon.getId());
+	System.out.println("Taxon ID: " + taxon.getId());
 }
 
 
@@ -53,6 +56,7 @@ And here is how you can download all pre-defined specimen datasets:
 NbaSession session = new NbaSession();
 SpecimenClient client = session.getSpecimenClient();
 for(String dataset : client.dwcaGetDataSetNames()) {
+	System.out.println("Downloading dataset " + dataset);
 	FileOutputStream fos = new FileOutputStream("C:/tmp/" + dataset + ".zip");
 	client.dwcaGetDataSet(dataset, fos);
 	fos.close();

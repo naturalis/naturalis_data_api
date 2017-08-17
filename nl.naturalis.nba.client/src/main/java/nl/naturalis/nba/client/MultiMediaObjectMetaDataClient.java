@@ -5,6 +5,8 @@ import nl.naturalis.nba.api.model.MultiMediaObject;
 /**
  * Provides access to information about the NBA's {@link MultiMediaObject} index.
  * 
+ * @see NbaSession
+ * 
  * @author Ayco Holleman
  *
  */

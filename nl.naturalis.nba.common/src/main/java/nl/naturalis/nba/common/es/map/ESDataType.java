@@ -2,6 +2,13 @@ package nl.naturalis.nba.common.es.map;
 
 import java.util.HashMap;
 
+/**
+ * Symbolic constants for the data types a field can have in an Elasticsearch
+ * document type mapping.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public enum ESDataType
 {
 
@@ -26,7 +33,7 @@ public enum ESDataType
 	private static final HashMap<String, ESDataType> reverse;
 
 	static {
-		reverse = new HashMap<String, ESDataType>(16, 1);
+		reverse = new HashMap<>(16, 1F);
 		for (ESDataType t : values()) {
 			reverse.put(t.esName, t);
 		}

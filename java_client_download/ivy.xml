@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ivy-module version="2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
+       
+    <info
+        organisation="Naturalis"
+        module="nl.naturalis.nda.client"
+        status="integration">
+	</info>
+	
+	<dependencies>
+		<dependency org="org.apache.logging.log4j" name="log4j-api" rev="2.7" />
+		<dependency org="org.apache.logging.log4j" name="log4j-core" rev="2.7" />
+		<dependency org="org.apache.httpcomponents" name="httpclient" rev="4.5.2"/>
+		<dependency org="com.fasterxml.jackson.core" name="jackson-databind" rev="2.8.3"/>
+		<dependency org="de.grundid.opendatalab" name="geojson-jackson" rev="1.6"/>
+	</dependencies>
+	
+</ivy-module>

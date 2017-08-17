@@ -30,6 +30,8 @@ import nl.naturalis.nba.utils.http.SimpleHttpRequest;
  * Provides access to taxon-related information. Client-side implementation of
  * the {@link ITaxonAccess}.
  * 
+ * @see NbaSession
+ * 
  * @author Ayco Holleman
  *
  */

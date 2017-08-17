@@ -10,6 +10,8 @@ import nl.naturalis.nba.api.model.MultiMediaObject;
  * Provides access to multimedia-related information. Client-side implementation
  * of the {@link IMultiMediaObjectAccess}.
  * 
+ * @see NbaSession
+ * 
  * @author Ayco Holleman
  *
  */

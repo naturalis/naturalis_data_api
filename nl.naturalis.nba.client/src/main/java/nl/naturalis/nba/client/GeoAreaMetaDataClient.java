@@ -5,6 +5,8 @@ import nl.naturalis.nba.api.model.GeoArea;
 /**
  * Provides access to information about the NBA's {@link GeoArea} index.
  * 
+ * @see NbaSession
+ * 
  * @author Ayco Holleman
  *
  */

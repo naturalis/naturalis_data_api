@@ -1,6 +1,7 @@
 package nl.naturalis.nba.utils.debug;
 
 import static nl.naturalis.nba.utils.ClassUtil.isNumber;
+import static nl.naturalis.nba.utils.StringUtil.zpad;
 import static org.apache.commons.lang3.StringEscapeUtils.escapeJava;
 
 import java.io.File;
@@ -229,4 +230,33 @@ public class DebugUtil {
 		return log(toFile, msg + System.getProperty("line.separator"));
 	}
 
+	/**
+	 * Returns the time elapsed since {@code start} using format
+	 * hours:minutes:seconds
+	 * 
+	 * @param start
+	 * @return
+	 */
+	public static String getDuration(long start)
+	{
+		return getDuration(start, System.currentTimeMillis());
+	}
+
+	/**
+	 * Returns the time elapsed between {@code start} and {@code end} using
+	 * format hours:minutes:seconds
+	 * 
+	 * @param start
+	 * @return
+	 */
+	public static String getDuration(long start, long end)
+	{
+		int millis = (int) (end - start);
+		int hours = millis / (60 * 60 * 1000);
+		millis = millis % (60 * 60 * 1000);
+		int minutes = millis / (60 * 1000);
+		millis = millis % (60 * 1000);
+		int seconds = millis / 1000;
+		return zpad(hours, 2, ":") + zpad(minutes, 2, ":") + zpad(seconds, 2);
+	}
 }

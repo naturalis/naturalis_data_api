@@ -5,6 +5,8 @@ import nl.naturalis.nba.api.model.Specimen;
 /**
  * Provides access to information about the NBA's {@link Specimen} index.
  * 
+ * @see NbaSession
+ * 
  * @author Ayco Holleman
  *
  */

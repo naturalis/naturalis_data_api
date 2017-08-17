@@ -21,6 +21,8 @@ import nl.naturalis.nba.utils.http.SimpleHttpRequest;
  * Provides access to NBA-wide metadata. Client-side implementation of
  * {@link INbaMetaData}.
  * 
+ * @see NbaSession
+ * 
  * @author Ayco Holleman
  *
  */

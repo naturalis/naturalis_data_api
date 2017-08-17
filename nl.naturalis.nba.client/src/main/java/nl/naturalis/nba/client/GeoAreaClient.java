@@ -18,6 +18,8 @@ import nl.naturalis.nba.utils.http.SimpleHttpRequest;
  * Provides access to location-related information. Client-side implementation
  * of the {@link IGeoAreaAccess}.
  * 
+ * @see NbaSession
+ * 
  * @author Ayco Holleman
  *
  */

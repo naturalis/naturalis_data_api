@@ -40,14 +40,13 @@ public class BrahmsDuplicateChecker {
 
 	public static void main(String[] args)
 	{
-		String[] options = {"", "fast", "file", "all"};
+		String[] allowedOptions = {"", "fast", "file", "all"};
 		String option = "";
-		args = new String[] {""};
-		if (args.length != 0 && Arrays.asList(options).contains(args[0])) {
+		if (args.length != 0)
 			option = args[0];
-		} else {
+		if (!Arrays.asList(allowedOptions).contains(option)) {
 			logger.error("Unknown option. Please choose from: \"fast\", \"file\" or \"all\".");
-			logger.error("Using fast check now ...");
+			logger.error("Using fast check ...");
 		}	
 		try {
 			new BrahmsDuplicateChecker().checkImportFiles(option);

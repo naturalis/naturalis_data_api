@@ -65,13 +65,13 @@ public class BrahmsDuplicateChecker {
 		}	
 		switch (option) {
 			case "file":
-				detailedFileCheck(csvFiles);
+				doDetailedCheck(csvFiles);
 				break;
 			case "all":
-				allFilesCheck(csvFiles);
+				checkAllFiles(csvFiles);
 				break;
 			default:
-				fastFileCheck(csvFiles);
+				checkFast(csvFiles);
 		}
 	}
 
@@ -83,7 +83,7 @@ public class BrahmsDuplicateChecker {
 	 * @param f
 	 *            the file to be checked
 	 */
-	public void fastFileCheck(File[] files)
+	public void checkFast(File[] files)
 	{
 
 		logger.info("--- Fast checking files for duplicates --- ");
@@ -141,7 +141,7 @@ public class BrahmsDuplicateChecker {
 	 * 
 	 * @param f
 	 */
-	public void detailedFileCheck(File[] files)
+	public void doDetailedCheck(File[] files)
 	{
 
 		logger.info("--- Detailed check for duplicates per file --- ");
@@ -175,7 +175,8 @@ public class BrahmsDuplicateChecker {
 
 				if (objectIDs.contains(barcode)) { // We have a duplicate!
 					if (duplicateIDsCount.get(barcode) == null) {
-						duplicateIDsCount.put(barcode, 2); // This is the first duplicate so this barcode has been used twice so far
+						// This is the first duplicate so this barcode has been used twice so far
+						duplicateIDsCount.put(barcode, 2); 
 					}
 					else {
 						duplicateIDsCount.put(barcode, duplicateIDsCount.get(barcode) + 1);
@@ -218,7 +219,7 @@ public class BrahmsDuplicateChecker {
 	 * 
 	 * @param files
 	 */
-	public void allFilesCheck(File[] files)
+	public void checkAllFiles(File[] files)
 	{
 		logger.info("--- Detailed check for duplicates in all files --- ");
 		long start = System.currentTimeMillis();

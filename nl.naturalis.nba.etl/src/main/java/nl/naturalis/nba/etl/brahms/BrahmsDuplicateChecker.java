@@ -2,6 +2,7 @@ package nl.naturalis.nba.etl.brahms;
 
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.BARCODE;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getCsvFiles;
+import static nl.naturalis.nba.etl.ETLUtil.*;
 
 import java.io.File;
 import java.nio.charset.Charset;
@@ -40,14 +41,14 @@ public class BrahmsDuplicateChecker {
 
 	public static void main(String[] args)
 	{
-		String[] allowedOptions = {"", "fast", "file", "all"};
+		String[] allowedOptions = { "", "fast", "file", "all" };
 		String option = "";
 		if (args.length != 0)
 			option = args[0];
 		if (!Arrays.asList(allowedOptions).contains(option)) {
 			logger.error("Unknown option. Please choose from: \"fast\", \"file\" or \"all\".");
 			logger.error("Using fast check ...");
-		}	
+		}
 		try {
 			new BrahmsDuplicateChecker().checkImportFiles(option);
 		}
@@ -62,7 +63,7 @@ public class BrahmsDuplicateChecker {
 		if (csvFiles.length == 0) {
 			logger.info("No CSV files to process");
 			System.exit(1);
-		}	
+		}
 		switch (option) {
 			case "file":
 				doDetailedCheck(csvFiles);
@@ -117,8 +118,7 @@ public class BrahmsDuplicateChecker {
 			uniqueIDs = objectIDs.size();
 			recordsProcessed = extractionStats.recordsProcessed;
 			recordsRejected = extractionStats.recordsRejected;
-			logger.info("Check finished in {} seconds",
-					nl.naturalis.nba.etl.ETLUtil.getDuration(start));
+			logger.info("Check finished in {} seconds", getDuration(start));
 			logger.info("Records processed: {}", recordsProcessed);
 			logger.info("Records rejected: {}", recordsRejected);
 			logger.info("Total number of unique IDs: " + uniqueIDs);
@@ -176,7 +176,7 @@ public class BrahmsDuplicateChecker {
 				if (objectIDs.contains(barcode)) { // We have a duplicate!
 					if (duplicateIDsCount.get(barcode) == null) {
 						// This is the first duplicate so this barcode has been used twice so far
-						duplicateIDsCount.put(barcode, 2); 
+						duplicateIDsCount.put(barcode, 2);
 					}
 					else {
 						duplicateIDsCount.put(barcode, duplicateIDsCount.get(barcode) + 1);
@@ -198,8 +198,7 @@ public class BrahmsDuplicateChecker {
 				}
 			}
 
-			logger.info("Check finished in {} seconds",
-					nl.naturalis.nba.etl.ETLUtil.getDuration(start));
+			logger.info("Check finished in {} seconds", getDuration(start));
 			logger.info("Records processed: {}", recordsProcessed);
 			logger.info("Records rejected: {}", recordsRejected);
 			logger.info("Total number of unique IDs: " + uniqueIDs);
@@ -208,8 +207,10 @@ public class BrahmsDuplicateChecker {
 				logger.info("File contains no duplicates.");
 			}
 			else {
-				logger.warn("Total number of duplicate records: {}", (recordsProcessed - recordsRejected - uniqueIDs));
-				logger.warn("Number of barcodes used more than once: {}", (duplicateIDsCount.size()));
+				logger.warn("Total number of duplicate records: {}",
+						(recordsProcessed - recordsRejected - uniqueIDs));
+				logger.warn("Number of barcodes used more than once: {}",
+						(duplicateIDsCount.size()));
 			}
 		}
 	}
@@ -266,10 +267,11 @@ public class BrahmsDuplicateChecker {
 			recordsProcessed += extractionStats.recordsProcessed;
 			recordsRejected += extractionStats.recordsRejected;
 			uniqueIDs = objectIDs.size();
-			
+
 			logger.info("Records processed: {}", recordsProcessed);
 			logger.info("Unique records sofar: {}", uniqueIDs);
-			logger.info("Duplicate records sofar: {}", recordsProcessed - recordsRejected - uniqueIDs);
+			logger.info("Duplicate records sofar: {}",
+					recordsProcessed - recordsRejected - uniqueIDs);
 		}
 
 		if (!duplicateIDsCount.isEmpty()) {
@@ -283,8 +285,7 @@ public class BrahmsDuplicateChecker {
 
 		logger.info("");
 		logger.info("--- Summary of the duplicate check ---");
-		logger.info("Check finished in {} seconds",
-				nl.naturalis.nba.etl.ETLUtil.getDuration(start));
+		logger.info("Check finished in {} seconds", getDuration(start));
 		logger.info("Total number of records processed: {}", recordsProcessed);
 		logger.info("Total number of records rejected: {}", recordsRejected);
 		logger.info("Total number of unique records: {}", uniqueIDs);
@@ -292,7 +293,8 @@ public class BrahmsDuplicateChecker {
 			logger.info("No duplicates have been found.");
 		}
 		else {
-			logger.warn("Total number of duplicate records: {}", recordsProcessed - recordsRejected - uniqueIDs);
+			logger.warn("Total number of duplicate records: {}",
+					recordsProcessed - recordsRejected - uniqueIDs);
 			logger.warn("Number of barcodes used more than once: {}", duplicateIDsCount.size());
 		}
 	}

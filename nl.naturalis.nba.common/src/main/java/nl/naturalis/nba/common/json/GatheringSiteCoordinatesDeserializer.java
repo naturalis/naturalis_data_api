@@ -10,6 +10,10 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 
+/*
+ * Deserialization now via @JsonCreator annotation
+ */
+@Deprecated
 class GatheringSiteCoordinatesDeserializer extends JsonDeserializer<GatheringSiteCoordinates> {
 
 	@Override

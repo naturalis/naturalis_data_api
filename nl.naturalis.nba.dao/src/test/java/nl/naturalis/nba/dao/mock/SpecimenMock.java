@@ -21,7 +21,7 @@ import nl.naturalis.nba.api.model.Person;
 import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
-import nl.naturalis.nba.dao.util.es.ESDateInput;
+import nl.naturalis.nba.common.es.ESDateInput;
 
 /**
  * Generates 5 Specimen objects used for testing the SpecimenDAO.
@@ -46,7 +46,7 @@ public class SpecimenMock {
 		gathering.setLocalityText("Duinen, nabij Uitgeest");
 		gathering.setCountry("Netherlands");
 		gathering.setCity("Uitgeest");
-		gathering.setDateTimeBegin(new ESDateInput().toJavaUtilDate("2010-04-03 13:04"));
+		gathering.setDateTimeBegin(new ESDateInput().parse("2010-04-03 13:04"));
 		gathering.setGatheringPersons(Arrays.asList(ruudAltenBurg()));
 
 		GatheringSiteCoordinates uitgeestCoordinates;
@@ -103,7 +103,7 @@ public class SpecimenMock {
 		gathering.setLocalityText("In de bossen nabij Aalten");
 		gathering.setCountry("Netherlands");
 		gathering.setCity("Aalten");
-		gathering.setDateTimeBegin(new ESDateInput().toJavaUtilDate("2009-04-03 13:04"));
+		gathering.setDateTimeBegin(new ESDateInput().parse("2009-04-03 13:04"));
 		gathering.setGatheringPersons(Arrays.asList(ruudAltenBurg()));
 
 		GatheringSiteCoordinates aaltenCoordinates;
@@ -157,7 +157,7 @@ public class SpecimenMock {
 		GatheringEvent gathering = new GatheringEvent();
 		gathering.setCountry("Netherlands");
 		gathering.setCity("Uitgeest");
-		gathering.setDateTimeBegin(new ESDateInput().toJavaUtilDate("2008-04-03 13:04"));
+		gathering.setDateTimeBegin(new ESDateInput().parse("2008-04-03 13:04"));
 		gathering.setGatheringPersons(Arrays.asList(ruudAltenBurg(), vonSiebold()));
 
 		GatheringSiteCoordinates uitgeestCoordinates;
@@ -214,7 +214,7 @@ public class SpecimenMock {
 		gathering.setProjectTitle("Project T. Rex");
 		gathering.setLocalityText("Montana, U.S.A.");
 		gathering.setCountry("United States");
-		gathering.setDateTimeBegin(new ESDateInput().toJavaUtilDate("2007-04-03 13:04"));
+		gathering.setDateTimeBegin(new ESDateInput().parse("2007-04-03 13:04"));
 		gathering.setGatheringPersons(Arrays.asList(edwinVanHuis()));
 
 		GatheringSiteCoordinates coords;

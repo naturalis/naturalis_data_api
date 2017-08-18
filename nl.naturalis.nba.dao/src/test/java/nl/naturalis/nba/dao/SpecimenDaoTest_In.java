@@ -65,7 +65,7 @@ public class SpecimenDaoTest_In {
 	@Test
 	public void testQuery__SearchSpec__01() throws InvalidQueryException
 	{
-		Date gatheringDate = pMajor.getGatheringEvent().getDateTimeBegin();
+		OffsetDateTime gatheringDate = pMajor.getGatheringEvent().getDateTimeBegin();
 		Instant instant = gatheringDate.toInstant();
 		ZoneId dfault = ZoneId.systemDefault();
 		OffsetDateTime date1 = OffsetDateTime.ofInstant(instant, dfault);
@@ -88,7 +88,7 @@ public class SpecimenDaoTest_In {
 	@Test
 	public void testQuery__SearchSpec__02() throws InvalidQueryException
 	{
-		Date gatheringDate = pMajor.getGatheringEvent().getDateTimeBegin();
+		OffsetDateTime gatheringDate = pMajor.getGatheringEvent().getDateTimeBegin();
 		Instant instant = gatheringDate.toInstant();
 		ZoneId dfault = ZoneId.systemDefault();
 		OffsetDateTime date1 = OffsetDateTime.ofInstant(instant, dfault);
@@ -110,7 +110,7 @@ public class SpecimenDaoTest_In {
 	@Test
 	public void testQuery__SearchSpec__03() throws InvalidQueryException
 	{
-		Date gatheringDate = pMajor.getGatheringEvent().getDateTimeBegin();
+		OffsetDateTime gatheringDate = pMajor.getGatheringEvent().getDateTimeBegin();
 		Instant instant = gatheringDate.toInstant();
 		ZoneId dfault = ZoneId.systemDefault();
 		OffsetDateTime date1 = OffsetDateTime.ofInstant(instant, dfault);

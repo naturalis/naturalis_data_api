@@ -7,13 +7,13 @@ import static nl.naturalis.nba.etl.ETLConstants.SOURCE_INSTITUTION_ID;
 import static nl.naturalis.nba.etl.ETLUtil.getTestGenera;
 import static nl.naturalis.nba.etl.TransformUtil.equalizeNameComponents;
 import static nl.naturalis.nba.etl.TransformUtil.guessMimeType;
-import static nl.naturalis.nba.etl.TransformUtil.parseDate;
 import static nl.naturalis.nba.etl.nsr.NsrImportUtil.val;
 import static nl.naturalis.nba.utils.DOMUtil.getDescendants;
 import static nl.naturalis.nba.utils.DOMUtil.getValue;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,6 +25,7 @@ import nl.naturalis.nba.api.model.MultiMediaGatheringEvent;
 import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.api.model.ServiceAccessPoint;
 import nl.naturalis.nba.api.model.Taxon;
+import nl.naturalis.nba.common.es.ESDateInput;
 import nl.naturalis.nba.etl.AbstractXMLTransformer;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.NameMismatchException;
@@ -139,7 +140,7 @@ class NsrMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 				MultiMediaGatheringEvent ge = new MultiMediaGatheringEvent();
 				mmo.setGatheringEvents(Arrays.asList(ge));
 				ge.setLocalityText(locality);
-				ge.setDateTimeBegin(parseDate(date));
+				ge.setDateTimeBegin(parseDateTaken(date));
 				ge.setDateTimeEnd(ge.getDateTimeBegin());
 			}
 			stats.objectsAccepted++;
@@ -149,6 +150,21 @@ class NsrMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 			handleError(t);
 			return null;
 		}
+	}
+
+	private OffsetDateTime parseDateTaken(String date)
+	{
+		ESDateInput input = new ESDateInput();
+		OffsetDateTime odt = input.parseAsLocalDate(date, "dd MMMM yyyy");
+		if (odt == null) {
+			odt = input.parseAsLocalDate(date, "d MMMM yyyy");
+		}
+		if (odt == null) {
+			if (!suppressErrors) {
+				warn("Invalid input for <date_taken>: " + date);
+			}
+		}
+		return odt;
 	}
 
 	private MultiMediaObject newMediaObject() throws NameMismatchException

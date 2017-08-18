@@ -1,6 +1,6 @@
 package nl.naturalis.nba.api.model;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
 
 /**
  * A {@code Reference} represents a literature reference or common name.
@@ -14,7 +14,7 @@ public class Reference implements INbaModelObject {
 	private String citationDetail;
 	private String uri;
 	private Person author;
-	private Date publicationDate;
+	private OffsetDateTime publicationDate;
 
 	public String getTitleCitation()
 	{
@@ -56,12 +56,12 @@ public class Reference implements INbaModelObject {
 		this.author = author;
 	}
 
-	public Date getPublicationDate()
+	public OffsetDateTime getPublicationDate()
 	{
 		return publicationDate;
 	}
 
-	public void setPublicationDate(Date publicationDate)
+	public void setPublicationDate(OffsetDateTime publicationDate)
 	{
 		this.publicationDate = publicationDate;
 	}

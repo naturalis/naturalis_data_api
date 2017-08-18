@@ -1,4 +1,4 @@
-package nl.naturalis.nba.dao.util.es;
+package nl.naturalis.nba.common.es;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -34,7 +34,10 @@ import java.util.Date;
  */
 public class ESDateInput {
 
-	private static final String ES_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
+	/**
+	 * The date format used to store dates in the NBA indices.
+	 */
+	public static final String ES_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
 
 	private static final String[] ACCEPTED_LOCAL_DATE_TIME_FORMATS = new String[] {
 			"yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm" };
@@ -43,6 +46,27 @@ public class ESDateInput {
 
 	private static final String[] ACCEPTED_YEAR_MONTH_FORMATS = new String[] { "yyyy-MM" };
 
+	/**
+	 * Formats the specified date according to the date format pattern used by
+	 * the NBA indices (&34;yyyy-MM-dd'T'HH:mm:ss.SSSZ&34;).
+	 * 
+	 * @param odt
+	 * @return
+	 */
+	public static String format(OffsetDateTime odt)
+	{
+		if (odt == null) {
+			return null;
+		}
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(ES_DATE_FORMAT);
+		return odt.format(formatter);
+	}
+
+	/**
+	 * Returns the accepted query-time date formats. See class comments.
+	 * 
+	 * @return
+	 */
 	public static String[] getAcceptedDateFormats()
 	{
 		ArrayList<String> formats = new ArrayList<>();
@@ -56,7 +80,7 @@ public class ESDateInput {
 
 	/**
 	 * Reformats the specified date string according to the date format pattern
-	 * used by the NBA indices.
+	 * used by the NBA indices (&34;yyyy-MM-dd'T'HH:mm:ss.SSSZ&34;).
 	 * 
 	 * @param dateString
 	 * @return
@@ -71,8 +95,9 @@ public class ESDateInput {
 	}
 
 	/**
-	 * Formats the specified date string according to the date format pattern
-	 * used by the NBA indices.
+	 * Formats a &34;classic&34; {@link Date java.util.Date} string according to
+	 * the date format pattern used by the NBA indices
+	 * (&34;yyyy-MM-dd'T'HH:mm:ss.SSSZ&34;).
 	 * 
 	 * @param dateString
 	 * @return
@@ -83,8 +108,8 @@ public class ESDateInput {
 	}
 
 	/**
-	 * Formats the specified date string according to the date format pattern
-	 * used by the NBA indices.
+	 * Formats the specified date according to the date format pattern used by
+	 * the NBA indices (&34;yyyy-MM-dd'T'HH:mm:ss.SSSZ&34;).
 	 * 
 	 * @param dateString
 	 * @return
@@ -112,33 +137,41 @@ public class ESDateInput {
 	}
 
 	/**
-	 * Parses the specified date string into an {@link OffsetDateTime}.
+	 * Attempts to parse the specified date string into an
+	 * {@link OffsetDateTime} using any of the accepted date format pattern,
+	 * starting with the most detailed pattern down to the year-only pattern.
 	 * 
 	 * @param dateString
 	 * @return
 	 */
-	@SuppressWarnings("static-method")
 	public OffsetDateTime parse(String dateString)
 	{
 		OffsetDateTime date;
-		if (null != (date = tryIso8601(dateString))) {
+		if (null != (date = parseAsIso8601(dateString))) {
 			return date;
 		}
-		if (null != (date = tryLocalDateTime(dateString))) {
+		if (null != (date = parseAsLocalDateTime(dateString))) {
 			return date;
 		}
-		if (null != (date = tryLocalDate(dateString))) {
+		if (null != (date = parseAsLocalDate(dateString))) {
 			return date;
 		}
-		if (null != (date = tryYearMonth(dateString))) {
+		if (null != (date = parseAsYearMonth(dateString))) {
 			return date;
 		}
-		if (null != (date = tryYear(dateString))) {
+		if (null != (date = parseAsYear(dateString))) {
 			return date;
 		}
 		return null;
 	}
 
+	/**
+	 * Converts a classic {@link Date java.util.Date} to an
+	 * {@link OffsetDateTime} instance.
+	 * 
+	 * @param date
+	 * @return
+	 */
 	@SuppressWarnings("static-method")
 	public OffsetDateTime convert(Date date)
 	{
@@ -146,7 +179,14 @@ public class ESDateInput {
 		return instant.atZone(ZoneId.systemDefault()).toOffsetDateTime();
 	}
 
-	private static OffsetDateTime tryIso8601(String dateString)
+	/**
+	 * Parses the specified date string using pattern yyyy-MM-dd'T'HH:mm:ss.SSSZ
+	 * 
+	 * @param dateString
+	 * @return
+	 */
+	@SuppressWarnings("static-method")
+	public OffsetDateTime parseAsIso8601(String dateString)
 	{
 		try {
 			return OffsetDateTime.parse(dateString);
@@ -155,7 +195,14 @@ public class ESDateInput {
 		return null;
 	}
 
-	private static OffsetDateTime tryLocalDateTime(String dateString)
+	/**
+	 * Parses the specified date string using the accepted date+time patterns.
+	 * 
+	 * @param dateString
+	 * @return
+	 */
+	@SuppressWarnings("static-method")
+	public OffsetDateTime parseAsLocalDateTime(String dateString)
 	{
 		DateTimeFormatter formatter;
 		for (String format : ACCEPTED_LOCAL_DATE_TIME_FORMATS) {
@@ -169,7 +216,14 @@ public class ESDateInput {
 		return null;
 	}
 
-	private static OffsetDateTime tryLocalDate(String dateString)
+	/**
+	 * Parses the specified date string using the accepted date patterns.
+	 * 
+	 * @param dateString
+	 * @return
+	 */
+	@SuppressWarnings("static-method")
+	public OffsetDateTime parseAsLocalDate(String dateString)
 	{
 		DateTimeFormatter formatter;
 		for (String format : ACCEPTED_LOCAL_DATE_FORMATS) {
@@ -183,7 +237,33 @@ public class ESDateInput {
 		return null;
 	}
 
-	private static OffsetDateTime tryYearMonth(String dateString)
+	/**
+	 * Parses the specified date string using the specified pattern.
+	 * 
+	 * @param dateString
+	 * @param pattern
+	 * @return
+	 */
+	@SuppressWarnings("static-method")
+	public OffsetDateTime parseAsLocalDate(String dateString, String pattern)
+	{
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+		try {
+			LocalDate date = LocalDate.parse(dateString, formatter);
+			return OffsetDateTime.of(date.atStartOfDay(), ZoneOffset.UTC);
+		}
+		catch (DateTimeParseException e) {}
+		return null;
+	}
+
+	/**
+	 * Parses the specified date string using the accepted year+month patterns.
+	 * 
+	 * @param dateString
+	 * @return
+	 */
+	@SuppressWarnings("static-method")
+	public OffsetDateTime parseAsYearMonth(String dateString)
 	{
 		DateTimeFormatter formatter;
 		for (String format : ACCEPTED_YEAR_MONTH_FORMATS) {
@@ -197,7 +277,14 @@ public class ESDateInput {
 		return null;
 	}
 
-	private static OffsetDateTime tryYear(String dateString)
+	/**
+	 * Parses the specified date string using the accepted pattern yyyy.
+	 * 
+	 * @param dateString
+	 * @return
+	 */
+	@SuppressWarnings("static-method")
+	public OffsetDateTime parseAsYear(String dateString)
 	{
 		try {
 			Year year = Year.parse(dateString);
@@ -205,12 +292,6 @@ public class ESDateInput {
 		}
 		catch (DateTimeParseException e) {}
 		return null;
-	}
-
-	private static String format(OffsetDateTime odt)
-	{
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(ES_DATE_FORMAT);
-		return odt.format(formatter);
 	}
 
 }

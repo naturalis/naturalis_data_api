@@ -1,6 +1,8 @@
 package nl.naturalis.nba.dao.format;
 
 import java.text.SimpleDateFormat;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 import org.apache.logging.log4j.Logger;
@@ -29,14 +31,15 @@ public class FormatUtil {
 	 * @param esDate
 	 * @return
 	 */
-	public static String formatDate(Date esDate)
+	public static String formatDate(OffsetDateTime esDate)
 	{
 		/*
 		 * NB Do not store the SimpleDateFormat in a private static final field.
 		 * SimpleDateFormat is not thread-save, which becomes very relevant with
 		 * multiple concurrent DwCA downloads.
 		 */
-		return new SimpleDateFormat("yyyy/MM/dd").format(esDate);
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+		return esDate.format(formatter);
 	}
 
 	private FormatUtil()

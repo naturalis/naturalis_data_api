@@ -1,5 +1,6 @@
 package nl.naturalis.nba.api.model;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -9,7 +10,7 @@ public abstract class TaxonomicIdentification implements INbaModelObject {
 	private String taxonRank;
 	private ScientificName scientificName;
 	private SpecimenTypeStatus typeStatus;
-	private Date dateIdentified;
+	private OffsetDateTime dateIdentified;
 	
 	private DefaultClassification defaultClassification;
 	
@@ -58,12 +59,12 @@ public abstract class TaxonomicIdentification implements INbaModelObject {
 		this.typeStatus = typeStatus;
 	}
 
-	public Date getDateIdentified()
+	public OffsetDateTime getDateIdentified()
 	{
 		return dateIdentified;
 	}
 
-	public void setDateIdentified(Date dateIdentified)
+	public void setDateIdentified(OffsetDateTime dateIdentified)
 	{
 		this.dateIdentified = dateIdentified;
 	}

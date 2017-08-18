@@ -16,7 +16,7 @@ import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nba.api.model.SpecimenTypeStatus;
 import nl.naturalis.nba.api.model.TaxonomicStatus;
 import nl.naturalis.nba.api.model.metadata.NbaSetting;
-import nl.naturalis.nba.dao.util.es.ESDateInput;
+import nl.naturalis.nba.common.es.ESDateInput;
 
 public class NbaMetaDataDao implements INbaMetaData {
 

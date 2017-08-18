@@ -9,7 +9,11 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 
 import nl.naturalis.nba.api.model.Sex;
 
-public class SexDeserializer extends JsonDeserializer<Sex> {
+/*
+ * Deserialization now via @JsonCreator annotation
+ */
+@Deprecated
+class SexDeserializer extends JsonDeserializer<Sex> {
 
 	public Sex deserialize(JsonParser jp, DeserializationContext ctx)
 			throws IOException, JsonProcessingException

@@ -15,8 +15,9 @@
 		<dependency org="org.elasticsearch" name="elasticsearch" rev="5.1.2"/>
 		<dependency org="org.elasticsearch.client" name="transport" rev="5.1.2"/>	
 		
-		<dependency org="com.fasterxml.jackson.core" name="jackson-databind" rev="2.8.3"/>
-		<dependency org="de.grundid.opendatalab" name="geojson-jackson" rev="1.6"/>
+		<dependency org="com.fasterxml.jackson.core" name="jackson-databind" rev="2.8.5"/>
+		<dependency org="com.fasterxml.jackson.datatype" name="jackson-datatype-jsr310" rev="2.9.0"/>
+		<dependency org="de.grundid.opendatalab" name="geojson-jackson" rev="1.8"/>
 		<dependency org="org.apache.commons" name="commons-text" rev="1.1"/>		
 	</dependencies>
 	

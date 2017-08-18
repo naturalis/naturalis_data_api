@@ -9,7 +9,11 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 
 import nl.naturalis.nba.api.model.SpecimenTypeStatus;
 
-public class TypeStatusDeserializer extends JsonDeserializer<SpecimenTypeStatus> {
+/*
+ * Deserialization now via @JsonCreator annotation
+ */
+@Deprecated
+class TypeStatusDeserializer extends JsonDeserializer<SpecimenTypeStatus> {
 
 	public SpecimenTypeStatus deserialize(JsonParser jp, DeserializationContext ctx)
 			throws IOException, JsonProcessingException

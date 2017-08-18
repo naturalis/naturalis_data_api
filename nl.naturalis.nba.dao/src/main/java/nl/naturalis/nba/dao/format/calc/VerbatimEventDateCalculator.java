@@ -3,6 +3,7 @@ package nl.naturalis.nba.dao.format.calc;
 import static nl.naturalis.nba.dao.format.FormatUtil.EMPTY_STRING;
 import static nl.naturalis.nba.dao.format.FormatUtil.formatDate;
 
+import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.Map;
 
@@ -32,11 +33,11 @@ public class VerbatimEventDateCalculator implements ICalculator {
 		if (specimen.getGatheringEvent() == null) {
 			return EMPTY_STRING;
 		}
-		Date beginDate = specimen.getGatheringEvent().getDateTimeBegin();
+		OffsetDateTime beginDate = specimen.getGatheringEvent().getDateTimeBegin();
 		if (beginDate == null) {
 			return EMPTY_STRING;
 		}
-		Date endDate = specimen.getGatheringEvent().getDateTimeEnd();
+		OffsetDateTime endDate = specimen.getGatheringEvent().getDateTimeEnd();
 		if (endDate == null || beginDate.equals(endDate)) {
 			return formatDate(beginDate);
 		}

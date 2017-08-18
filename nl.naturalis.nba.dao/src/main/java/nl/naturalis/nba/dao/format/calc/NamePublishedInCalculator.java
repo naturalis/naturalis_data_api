@@ -2,7 +2,7 @@ package nl.naturalis.nba.dao.format.calc;
 
 import static nl.naturalis.nba.dao.format.FormatUtil.EMPTY_STRING;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -78,7 +78,7 @@ public class NamePublishedInCalculator implements ICalculator {
 		if (ref.getAuthor() != null) {
 			author = ref.getAuthor().getFullName();
 		}
-		Date date = ref.getPublicationDate();
+		OffsetDateTime date = ref.getPublicationDate();
 		if (title == null && author == null && date == null) {
 			return EMPTY_STRING;
 		}

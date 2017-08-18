@@ -9,8 +9,8 @@ import java.util.Date;
 
 import nl.naturalis.nba.api.InvalidConditionException;
 import nl.naturalis.nba.api.QueryCondition;
+import nl.naturalis.nba.common.es.ESDateInput;
 import nl.naturalis.nba.common.es.map.MappingInfo;
-import nl.naturalis.nba.dao.util.es.ESDateInput;
 
 /**
  * Executes some always-necessary (operator-independent) preprocessing of a

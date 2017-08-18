@@ -18,6 +18,7 @@ import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.exception.DaoException;
+import nl.naturalis.nba.utils.debug.DebugUtil;
 
 public class BulkIndexer<T extends IDocumentObject> {
 
@@ -76,6 +77,8 @@ public class BulkIndexer<T extends IDocumentObject> {
 			IndexRequestBuilder irb = client.prepareIndex(index, type);
 			try {
 				irb.setSource(om.writeValueAsBytes(documents.get(i)));
+				//DebugUtil.log("/tmp/ayco.txt", new String(om.writeValueAsBytes(documents.get(i))));
+				//System.exit(0);
 				if (ids != null) {
 					irb.setId(ids.get(i));
 				}

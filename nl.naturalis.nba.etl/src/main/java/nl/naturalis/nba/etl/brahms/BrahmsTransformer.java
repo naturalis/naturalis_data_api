@@ -1,6 +1,7 @@
 package nl.naturalis.nba.etl.brahms;
 
-import static nl.naturalis.nba.etl.ETLConstants.*;
+import static nl.naturalis.nba.etl.ETLConstants.SYSPROP_SUPPRESS_ERRORS;
+import static nl.naturalis.nba.etl.ETLUtil.getTestGenera;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.BARCODE;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.COLLECTOR;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.CONTINENT;
@@ -14,12 +15,12 @@ import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.MAJORAREA;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.MONTH;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.TYPE;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.YEAR;
-import static nl.naturalis.nba.etl.ETLUtil.*;
 
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.YearMonth;
+import java.time.ZoneOffset;
 import java.util.Arrays;
-import java.util.Date;
-
-import org.joda.time.LocalDate;
 
 import nl.naturalis.nba.api.model.GatheringEvent;
 import nl.naturalis.nba.api.model.GatheringSiteCoordinates;
@@ -176,15 +177,16 @@ abstract class BrahmsTransformer<T extends IDocumentObject>
 	}
 
 	/*
-	 * Constructs a Date object from the date fields in a Brahms export file. Used to
-	 * construct a begin and end date from problematic gathering event dates in the source
-	 * data. If year is empty or zero, null is returned. If month is empty or zero, the
-	 * month is set to january. If day is empty or zero, the day is set to the first day
-	 * or the last day of the month depending on the value of the lastDayOfMonth argument.
-	 * If year, month or day are not numeric, a warning is logged, and null is returned.
-	 * If month or day are out-of-range (e.g. 13 for month), the result is undefined.
+	 * Constructs a Date object from the date fields in a Brahms export file.
+	 * Used to construct a begin and end date from problematic gathering event
+	 * dates in the source data. If year is empty or zero, null is returned. If
+	 * month is empty or zero, the month is set to january. If day is empty or
+	 * zero, the day is set to the first day or the last day of the month
+	 * depending on the value of the lastDayOfMonth argument. If year, month or
+	 * day are not numeric, a warning is logged, and null is returned. If month
+	 * or day are out-of-range (e.g. 13 for month), the result is undefined.
 	 */
-	Date getDate(String year, String month, String day, boolean lastDayOfMonth)
+	OffsetDateTime getDate(String year, String month, String day, boolean lastDayOfMonth)
 	{
 		try {
 
@@ -213,14 +215,17 @@ abstract class BrahmsTransformer<T extends IDocumentObject>
 			}
 			LocalDate date;
 			if (dayInt == -1) {
-				date = new LocalDate(yearInt, monthInt, 1);
-				if (lastDayOfMonth)
-					date = date.dayOfMonth().withMaximumValue();
+				if (lastDayOfMonth) {
+					date = LocalDate.of(yearInt, monthInt, 1);
+				}
+				else {
+					date = YearMonth.of(yearInt, monthInt).atEndOfMonth();
+				}
 			}
 			else {
-				date = new LocalDate(yearInt, monthInt, dayInt);
+				date = LocalDate.of(yearInt, monthInt, dayInt);
 			}
-			return date.toDate();
+			return date.atStartOfDay().atOffset(ZoneOffset.UTC);
 		}
 		catch (Exception e) {
 			if (!suppressErrors) {
@@ -230,7 +235,7 @@ abstract class BrahmsTransformer<T extends IDocumentObject>
 		}
 	}
 
-	Date getDate(String year, String month, String day)
+	OffsetDateTime getDate(String year, String month, String day)
 	{
 		try {
 			if ((year = year.trim()).length() == 0)
@@ -253,8 +258,8 @@ abstract class BrahmsTransformer<T extends IDocumentObject>
 				if (dayInt == 0)
 					dayInt = 1;
 			}
-			LocalDate date = new LocalDate(yearInt, monthInt, dayInt);
-			return date.toDate();
+			LocalDate date = LocalDate.of(yearInt, monthInt, dayInt);
+			return date.atStartOfDay().atOffset(ZoneOffset.UTC);
 		}
 		catch (Exception e) {
 			if (!suppressErrors) {

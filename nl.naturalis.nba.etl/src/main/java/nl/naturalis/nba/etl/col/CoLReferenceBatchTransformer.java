@@ -12,9 +12,9 @@ import static nl.naturalis.nba.etl.col.CoLReferenceCsvField.description;
 import static nl.naturalis.nba.etl.col.CoLReferenceCsvField.taxonID;
 import static nl.naturalis.nba.etl.col.CoLReferenceCsvField.title;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -30,10 +30,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.naturalis.nba.api.model.Person;
 import nl.naturalis.nba.api.model.Reference;
 import nl.naturalis.nba.api.model.Taxon;
+import nl.naturalis.nba.common.es.ESDateInput;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.CSVRecordInfo;
-import nl.naturalis.nba.etl.TransformUtil;
 import nl.naturalis.nba.utils.ConfigObject;
 
 class CoLReferenceBatchTransformer {
@@ -142,8 +142,14 @@ class CoLReferenceBatchTransformer {
 		ref.setCitationDetail(record.get(description));
 		String s;
 		if ((s = record.get(date)) != null) {
-			Date pubDate = TransformUtil.parseDate(s);
-			ref.setPublicationDate(pubDate);
+			ESDateInput input = new ESDateInput();
+			OffsetDateTime odt = input.parseAsYear(s);
+			if (odt == null) {
+				logger.warn("Invalid date: {}", s);
+			}
+			else {
+				ref.setPublicationDate(odt);
+			}
 		}
 		if ((s = record.get(creator)) != null) {
 			ref.setAuthor(new Person(s));

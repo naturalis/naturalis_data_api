@@ -4,6 +4,7 @@ import static nl.naturalis.nba.api.annotations.Analyzer.CASE_INSENSITIVE;
 import static nl.naturalis.nba.api.annotations.Analyzer.DEFAULT;
 import static nl.naturalis.nba.api.annotations.Analyzer.LIKE;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -33,8 +34,8 @@ public class GatheringEvent implements INbaModelObject {
 	private String sublocality;
 	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private String localityText;
-	private Date dateTimeBegin;
-	private Date dateTimeEnd;
+	private OffsetDateTime dateTimeBegin;
+	private OffsetDateTime dateTimeEnd;
 	private String method;
 	private String altitude;
 	private String altitudeUnifOfMeasurement;
@@ -194,22 +195,22 @@ public class GatheringEvent implements INbaModelObject {
 		this.localityText = localityText;
 	}
 
-	public Date getDateTimeBegin()
+	public OffsetDateTime getDateTimeBegin()
 	{
 		return dateTimeBegin;
 	}
 
-	public void setDateTimeBegin(Date dateTimeBegin)
+	public void setDateTimeBegin(OffsetDateTime dateTimeBegin)
 	{
 		this.dateTimeBegin = dateTimeBegin;
 	}
 
-	public Date getDateTimeEnd()
+	public OffsetDateTime getDateTimeEnd()
 	{
 		return dateTimeEnd;
 	}
 
-	public void setDateTimeEnd(Date dateTimeEnd)
+	public void setDateTimeEnd(OffsetDateTime dateTimeEnd)
 	{
 		this.dateTimeEnd = dateTimeEnd;
 	}

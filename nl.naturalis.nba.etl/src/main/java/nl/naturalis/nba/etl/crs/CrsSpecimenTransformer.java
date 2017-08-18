@@ -9,11 +9,9 @@ import static nl.naturalis.nba.etl.ETLUtil.getTestGenera;
 import static nl.naturalis.nba.etl.TransformUtil.sortIdentificationsPreferredFirst;
 import static nl.naturalis.nba.utils.StringUtil.rpad;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import org.w3c.dom.Element;
@@ -33,6 +31,7 @@ import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.api.model.SpecimenTypeStatus;
 import nl.naturalis.nba.api.model.VernacularName;
+import nl.naturalis.nba.common.es.ESDateInput;
 import nl.naturalis.nba.etl.AbstractXMLTransformer;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.ETLUtil;
@@ -538,9 +537,9 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 	}
 
 	private static final String MSG_BAD_DATE = "Invalid date in element %s: \"%s\"";
-	private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+	//private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 
-	private Date date(Element e, String tag)
+	private OffsetDateTime date(Element e, String tag)
 	{
 		String s = val(e, tag);
 		if (s == null)
@@ -556,14 +555,12 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 			chars[5] = '1';
 		if (chars[6] == '0' && chars[7] == '0')
 			chars[7] = '1';
-		try {
-			return sdf.parse(String.valueOf(chars));
+		ESDateInput input = new ESDateInput();
+		OffsetDateTime odt = input.parseAsLocalDate(String.valueOf(chars), "yyyyMMdd");
+		if (odt == null && !suppressErrors) {
+			warn(MSG_BAD_DATE, tag, s);
 		}
-		catch (ParseException exc) {
-			if (!suppressErrors)
-				warn(MSG_BAD_DATE, tag, s);
-			return null;
-		}
+		return odt;
 	}
 
 	private Double dval(Element e, String tag)

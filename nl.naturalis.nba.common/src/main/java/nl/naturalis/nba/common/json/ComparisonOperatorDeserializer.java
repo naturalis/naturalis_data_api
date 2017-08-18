@@ -9,7 +9,8 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 
 import nl.naturalis.nba.api.ComparisonOperator;
 
-public class ComparisonOperatorDeserializer extends JsonDeserializer<ComparisonOperator> {
+@Deprecated
+class ComparisonOperatorDeserializer extends JsonDeserializer<ComparisonOperator> {
 
 	public ComparisonOperator deserialize(JsonParser jp, DeserializationContext ctx)
 			throws IOException, JsonProcessingException

@@ -9,7 +9,11 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 
 import nl.naturalis.nba.api.model.PhaseOrStage;
 
-public class PhaseOrStageDeserializer extends JsonDeserializer<PhaseOrStage> {
+/*
+ * Deserialization now via @JsonCreator annotation
+ */
+@Deprecated
+class PhaseOrStageDeserializer extends JsonDeserializer<PhaseOrStage> {
 
 	public PhaseOrStage deserialize(JsonParser jp, DeserializationContext ctx)
 			throws IOException, JsonProcessingException

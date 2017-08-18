@@ -2,16 +2,11 @@ package nl.naturalis.nba.etl.ndff;
 
 import static nl.naturalis.nba.etl.ndff.NdffCsvField.abundance_min;
 import static nl.naturalis.nba.etl.ndff.NdffCsvField.ndff_identity;
-import static nl.naturalis.nba.etl.ndff.NdffCsvField.period_start;
-import static nl.naturalis.nba.etl.ndff.NdffCsvField.period_stop;
 import static nl.naturalis.nba.etl.ndff.NdffCsvField.rd_x_5km;
 import static nl.naturalis.nba.etl.ndff.NdffCsvField.rd_y_5km;
 import static nl.naturalis.nba.etl.ndff.NdffCsvField.species_sci;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import nl.naturalis.nba.api.model.GatheringEvent;
@@ -31,7 +26,7 @@ import nl.naturalis.nba.etl.ETLStatistics;
 
 public class NdffSpecimenTransformer extends AbstractCSVTransformer<NdffCsvField, Specimen> {
 
-	private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	//private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 	public NdffSpecimenTransformer(ETLStatistics stats)
 	{
@@ -74,8 +69,8 @@ public class NdffSpecimenTransformer extends AbstractCSVTransformer<NdffCsvField
 
 			GatheringEvent ge = new GatheringEvent();
 			specimen.setGatheringEvent(ge);
-			ge.setDateTimeBegin(getDate(period_start));
-			ge.setDateTimeEnd(getDate(period_stop));
+			//ge.setDateTimeBegin(getDate(period_start));
+			//ge.setDateTimeEnd(getDate(period_stop));
 			GatheringSiteCoordinates coords = new GatheringSiteCoordinates();
 			ge.setSiteCoordinates(Arrays.asList(coords));
 			coords.setGridLatitudeDecimal(getCoordinate(rd_y_5km));
@@ -93,19 +88,19 @@ public class NdffSpecimenTransformer extends AbstractCSVTransformer<NdffCsvField
 		}
 	}
 
-	private Date getDate(NdffCsvField field)
-	{
-		String s = input.get(field);
-		if (s != null) {
-			try {
-				return sdf.parse(s);
-			}
-			catch (ParseException e) {
-				warn("Invalid value for field %s: \"%s\"", field, s);
-			}
-		}
-		return null;
-	}
+//	private Date getDate(NdffCsvField field)
+//	{
+//		String s = input.get(field);
+//		if (s != null) {
+//			try {
+//				return sdf.parse(s);
+//			}
+//			catch (ParseException e) {
+//				warn("Invalid value for field %s: \"%s\"", field, s);
+//			}
+//		}
+//		return null;
+//	}
 
 	private Double getCoordinate(NdffCsvField field)
 	{

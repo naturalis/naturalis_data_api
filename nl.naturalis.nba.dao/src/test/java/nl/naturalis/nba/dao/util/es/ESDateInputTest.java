@@ -9,8 +9,8 @@ import org.apache.logging.log4j.Logger;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import nl.naturalis.nba.common.es.ESDateInput;
 import nl.naturalis.nba.dao.DaoRegistry;
-import nl.naturalis.nba.dao.util.es.ESDateInput;
 
 @SuppressWarnings("static-method")
 public class ESDateInputTest {

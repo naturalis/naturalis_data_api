@@ -8,13 +8,14 @@ import static nl.naturalis.nba.common.es.map.ESDataType.FLOAT;
 import static nl.naturalis.nba.common.es.map.ESDataType.GEO_POINT;
 import static nl.naturalis.nba.common.es.map.ESDataType.GEO_SHAPE;
 import static nl.naturalis.nba.common.es.map.ESDataType.INTEGER;
+import static nl.naturalis.nba.common.es.map.ESDataType.KEYWORD;
 import static nl.naturalis.nba.common.es.map.ESDataType.LONG;
 import static nl.naturalis.nba.common.es.map.ESDataType.SHORT;
-import static nl.naturalis.nba.common.es.map.ESDataType.KEYWORD;
 
 import java.net.URI;
 import java.net.URL;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -70,8 +71,9 @@ class DataTypeMap {
 		java2es.put(boolean.class, BOOLEAN);
 		java2es.put(Boolean.class, BOOLEAN);
 		/* Date types */
-		java2es.put(LocalDateTime.class, DATE);
-		java2es.put(Date.class, DATE);
+		//java2es.put(LocalDateTime.class, DATE);
+		java2es.put(OffsetDateTime.class, DATE);
+		//java2es.put(Date.class, DATE); // SHOULD NOT HAVE THESE IN OUR DATA MODEL ANYLONGER
 		/* GEO types */
 		java2es.put(GeoJsonObject.class, GEO_SHAPE);
 		java2es.put(GeoPoint.class, GEO_POINT);

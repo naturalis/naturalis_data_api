@@ -7,7 +7,6 @@ import static nl.naturalis.nba.api.model.TaxonomicStatus.HOMONYM;
 import static nl.naturalis.nba.api.model.TaxonomicStatus.MISSPELLED_NAME;
 import static nl.naturalis.nba.api.model.TaxonomicStatus.SYNONYM;
 import static nl.naturalis.nba.etl.ETLUtil.getTestGenera;
-import static nl.naturalis.nba.etl.TransformUtil.parseDate;
 import static nl.naturalis.nba.etl.TransformUtil.setScientificNameGroup;
 import static nl.naturalis.nba.etl.nsr.NsrImportUtil.val;
 import static nl.naturalis.nba.utils.DOMUtil.getChild;
@@ -15,9 +14,9 @@ import static nl.naturalis.nba.utils.DOMUtil.getChildren;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -34,6 +33,7 @@ import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.api.model.TaxonDescription;
 import nl.naturalis.nba.api.model.TaxonomicStatus;
 import nl.naturalis.nba.api.model.VernacularName;
+import nl.naturalis.nba.common.es.ESDateInput;
 import nl.naturalis.nba.etl.AbstractXMLTransformer;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.utils.DOMUtil;
@@ -449,7 +449,7 @@ class NsrTaxonTransformer extends AbstractXMLTransformer<Taxon> {
 		return vn;
 	}
 
-	private Date getReferenceDate(Element e)
+	private OffsetDateTime getReferenceDate(Element e)
 	{
 		String date = val(e, "reference_date");
 		if (date == null) {
@@ -457,11 +457,16 @@ class NsrTaxonTransformer extends AbstractXMLTransformer<Taxon> {
 		}
 		if (date.toLowerCase().startsWith("in prep")) {
 			if (logger.isDebugEnabled()) {
-				logger.debug("Invalid date: \"{}\"", date);
+				logger.debug("Invalid input for <reference_date>: \"{}\"", date);
 			}
 			return null;
 		}
-		return parseDate(date);
+		ESDateInput input = new ESDateInput();
+		OffsetDateTime odt = input.parseAsYear(date);
+		if (odt == null && !suppressErrors) {
+			warn("Invalid input for <reference_date>:", date);
+		}
+		return odt;
 	}
 
 	private TaxonomicStatus getTaxonomicStatus(Element nameElem)

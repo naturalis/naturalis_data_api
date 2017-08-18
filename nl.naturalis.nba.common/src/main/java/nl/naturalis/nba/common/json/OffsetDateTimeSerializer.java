@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 
 import nl.naturalis.nba.common.es.ESDateInput;
 
-public class OffsetDateTimeSerializer extends JsonSerializer<OffsetDateTime> {
+class OffsetDateTimeSerializer extends JsonSerializer<OffsetDateTime> {
 	
 	@Override
 	public void serialize(OffsetDateTime value, JsonGenerator gen, SerializerProvider serializers)

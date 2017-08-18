@@ -14,9 +14,7 @@ import static nl.naturalis.nba.common.es.map.ESDataType.SHORT;
 
 import java.net.URI;
 import java.net.URL;
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
-import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;

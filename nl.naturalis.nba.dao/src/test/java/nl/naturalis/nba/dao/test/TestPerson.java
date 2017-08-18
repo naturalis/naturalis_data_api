@@ -4,7 +4,7 @@ import static nl.naturalis.nba.api.annotations.Analyzer.CASE_INSENSITIVE;
 import static nl.naturalis.nba.api.annotations.Analyzer.DEFAULT;
 import static nl.naturalis.nba.api.annotations.Analyzer.LIKE;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 import nl.naturalis.nba.api.annotations.Analyzers;
@@ -23,7 +23,7 @@ public class TestPerson implements IDocumentObject {
 	private String firstName;
 	@Analyzers({ CASE_INSENSITIVE, LIKE, DEFAULT })
 	private String lastName;
-	private Date birthDate;
+	private OffsetDateTime birthDate;
 	private int numChildren;
 	private float height;
 	private boolean smoker;
@@ -65,12 +65,12 @@ public class TestPerson implements IDocumentObject {
 		this.lastName = lastName;
 	}
 
-	public Date getBirthDate()
+	public OffsetDateTime getBirthDate()
 	{
 		return birthDate;
 	}
 
-	public void setBirthDate(Date birthDate)
+	public void setBirthDate(OffsetDateTime birthDate)
 	{
 		this.birthDate = birthDate;
 	}

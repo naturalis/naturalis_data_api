@@ -1,4 +1,5 @@
 {
+  "dynamic" : "strict",
   "properties" : {
     "firstName" : {
       "type" : "keyword",
@@ -26,7 +27,7 @@
     },
     "birthDate" : {
       "type" : "date",
-      "format" : "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+      "format" : "yyyy-MM-dd'T'HH:mm:ssZ"
     },
     "numChildren" : {
       "type" : "integer"
@@ -244,6 +245,5 @@
         }
       }
     }
-  },
-  "dynamic" : "strict"
+  }
 }

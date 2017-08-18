@@ -1,6 +1,6 @@
 package nl.naturalis.nba.common.mock;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 import nl.naturalis.nba.api.annotations.NotStored;
@@ -18,7 +18,7 @@ public class TestPerson implements IDocumentObject {
 	private String id;
 	private String firstName;
 	private String lastName;
-	private Date birthDate;
+	private OffsetDateTime birthDate;
 	private int numChildren;
 	private float height;
 	private boolean smoker;
@@ -60,12 +60,12 @@ public class TestPerson implements IDocumentObject {
 		this.lastName = lastName;
 	}
 
-	public Date getBirthDate()
+	public OffsetDateTime getBirthDate()
 	{
 		return birthDate;
 	}
 
-	public void setBirthDate(Date birthDate)
+	public void setBirthDate(OffsetDateTime birthDate)
 	{
 		this.birthDate = birthDate;
 	}

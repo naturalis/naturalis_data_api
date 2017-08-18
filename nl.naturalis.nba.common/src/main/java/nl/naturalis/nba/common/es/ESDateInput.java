@@ -17,10 +17,10 @@ import java.util.Date;
 /**
  * Handles input for date fields in an Elasticsearch index. The input can be
  * index-time date strings or query-time date strings. Both are re-formatted to
- * the date format accepted by NBA indices (yyyy-MM-dd'T'HH:mm:ss.SSSZ). Input
- * for date fields may have any of the following date format patterns:
+ * the date format accepted by NBA indices (yyyy-MM-dd'T'HH:mm:ssZ). Input for
+ * date fields may have any of the following date format patterns:
  * <ol>
- * <li>yyyy-MM-dd'T'HH:mm:ss.SSSZ (the date format used by the NBA indices
+ * <li>yyyy-MM-dd'T'HH:mm:ssZ (the date format used by the NBA indices
  * themselves)
  * <li>yyyy-MM-dd HH:mm:ss
  * <li>yyyy-MM-dd HH:mm
@@ -48,7 +48,7 @@ public class ESDateInput {
 
 	/**
 	 * Formats the specified date according to the date format pattern used by
-	 * the NBA indices (&34;yyyy-MM-dd'T'HH:mm:ss.SSSZ&34;).
+	 * the NBA indices (&34;yyyy-MM-dd'T'HH:mm:ssZ&34;).
 	 * 
 	 * @param odt
 	 * @return
@@ -80,7 +80,7 @@ public class ESDateInput {
 
 	/**
 	 * Reformats the specified date string according to the date format pattern
-	 * used by the NBA indices (&34;yyyy-MM-dd'T'HH:mm:ss.SSSZ&34;).
+	 * used by the NBA indices (&34;yyyy-MM-dd'T'HH:mm:ssZ&34;).
 	 * 
 	 * @param dateString
 	 * @return
@@ -97,7 +97,7 @@ public class ESDateInput {
 	/**
 	 * Formats a &34;classic&34; {@link Date java.util.Date} string according to
 	 * the date format pattern used by the NBA indices
-	 * (&34;yyyy-MM-dd'T'HH:mm:ss.SSSZ&34;).
+	 * (&34;yyyy-MM-dd'T'HH:mm:ssZ&34;).
 	 * 
 	 * @param dateString
 	 * @return
@@ -109,7 +109,7 @@ public class ESDateInput {
 
 	/**
 	 * Formats the specified date according to the date format pattern used by
-	 * the NBA indices (&34;yyyy-MM-dd'T'HH:mm:ss.SSSZ&34;).
+	 * the NBA indices (&34;yyyy-MM-dd'T'HH:mm:ssZ&34;).
 	 * 
 	 * @param dateString
 	 * @return
@@ -180,7 +180,7 @@ public class ESDateInput {
 	}
 
 	/**
-	 * Parses the specified date string using pattern yyyy-MM-dd'T'HH:mm:ss.SSSZ
+	 * Parses the specified date string using pattern yyyy-MM-dd'T'HH:mm:ssZ
 	 * 
 	 * @param dateString
 	 * @return

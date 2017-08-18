@@ -65,13 +65,8 @@ public class ObjectMapperLocator {
 		om.enable(WRITE_ENUMS_USING_TO_STRING);
 		SimpleModule module = new SimpleModule();
 		module.addSerializer(OffsetDateTime.class, new OffsetDateTimeSerializer());
+		module.addDeserializer(OffsetDateTime.class, new OffsetDateTimeDeserializer());
 		om.registerModule(module);
-		//om.setDateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ"));
-		//module.addDeserializer(PhaseOrStage.class, new PhaseOrStageDeserializer());
-		//module.addDeserializer(Sex.class, new SexDeserializer());
-		//module.addDeserializer(TaxonomicStatus.class, new TaxonomicStatusDeserializer());
-		//module.addDeserializer(ComparisonOperator.class, new ComparisonOperatorDeserializer());
-		//module.addDeserializer(SpecimenTypeStatus.class, new TypeStatusDeserializer());
 		return om;
 	}
 

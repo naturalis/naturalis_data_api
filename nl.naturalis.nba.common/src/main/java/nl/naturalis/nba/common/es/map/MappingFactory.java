@@ -96,6 +96,7 @@ public class MappingFactory {
 			HashSet<Class<?>> ancestors)
 	{
 		for (Field javaField : getFields(type)) {
+			//System.out.println("Mapping field " + javaField);
 			ESField esField = createESField(javaField, ancestors);
 			esField.setName(javaField.getName());
 			esField.setParent(document);
@@ -103,6 +104,7 @@ public class MappingFactory {
 			document.addField(javaField.getName(), esField);
 		}
 		for (Method javaMethod : getMappedProperties(type)) {
+			//System.out.println("Mapping method " + javaMethod);
 			String methodName = javaMethod.getName();
 			String fieldName = extractFieldFromGetter(methodName);
 			ESField esField = createESField(javaMethod, ancestors);

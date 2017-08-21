@@ -78,8 +78,8 @@ class BrahmsSpecimenTransformer extends BrahmsTransformer<Specimen> {
 		stats.objectsProcessed++;
 		try {
 			Specimen specimen = new Specimen();
+			specimen.setId(objectID + "@" + SourceSystem.BRAHMS.getCode());
 			specimen.setSourceSystemId(objectID);
-			specimen.setId(specimen.getSourceSystemId() + "@" + SourceSystem.BRAHMS.getCode());
 			specimen.setUnitID(objectID);
 			if (unitIDPattern.matcher(objectID).matches()) {
 				specimen.setUnitGUID(getSpecimenPurl(objectID));

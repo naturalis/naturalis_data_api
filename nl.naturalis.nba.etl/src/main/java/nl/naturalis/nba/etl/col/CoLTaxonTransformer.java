@@ -48,6 +48,7 @@ import nl.naturalis.nba.etl.TransformUtil;
  * The transformer component in the CoL ETL cycle.
  * 
  * @author Ayco Holleman
+ * @author Tom Gilissen
  *
  */
 class CoLTaxonTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, Taxon> {
@@ -109,6 +110,7 @@ class CoLTaxonTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, Taxon
 			stats.recordsAccepted++;
 			stats.objectsProcessed++;
 			Taxon taxon = new Taxon();
+			taxon.setId(objectID + "@" + SourceSystem.COL.getCode());
 			taxon.setSourceSystem(SourceSystem.COL);
 			taxon.setSourceSystemId(input.get(taxonID));
 			taxon.setTaxonRank(input.get(taxonRank));

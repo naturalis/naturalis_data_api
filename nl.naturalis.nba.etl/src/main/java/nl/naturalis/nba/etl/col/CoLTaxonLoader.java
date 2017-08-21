@@ -26,17 +26,4 @@ public class CoLTaxonLoader extends Loader<Taxon> {
 		super(TAXON, queueSize, stats);
 	}
 
-	@Override
-	protected IdGenerator<Taxon> getIdGenerator()
-	{
-		return new IdGenerator<Taxon>() {
-
-			@Override
-			public String getId(Taxon obj)
-			{
-				return getElasticsearchId(COL, obj.getSourceSystemId());
-			}
-		};
-	}
-
 }

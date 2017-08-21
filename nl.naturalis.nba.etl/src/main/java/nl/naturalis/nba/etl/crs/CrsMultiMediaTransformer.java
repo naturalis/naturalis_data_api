@@ -31,6 +31,7 @@ import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.api.model.Person;
 import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.ServiceAccessPoint;
+import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nba.api.model.SpecimenTypeStatus;
 import nl.naturalis.nba.api.model.VernacularName;
 import nl.naturalis.nba.etl.AbstractXMLTransformer;
@@ -177,6 +178,7 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 					unitID = info.medialibId;
 				}
 				mmo.setUnitID(unitID);
+				mmo.setId(unitID + "@" + SourceSystem.CRS.getCode());
 				mmo.setSourceSystemId(unitID);
 				String title = getTitle(frmDigitaleBestandenElem, unitID);
 				mmo.setTitle(title);

@@ -27,6 +27,7 @@ import nl.naturalis.nba.api.model.Person;
 import nl.naturalis.nba.api.model.PhaseOrStage;
 import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.Sex;
+import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.api.model.SpecimenTypeStatus;
@@ -47,6 +48,7 @@ import nl.naturalis.nba.utils.DOMUtil;
  * The transformer component for the CRS specimen import.
  * 
  * @author Ayco Holleman
+ * @author Tom Gilissen
  *
  */
 class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
@@ -145,6 +147,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 			String tmp;
 			specimen.setSourceSystem(CRS);
 			specimen.setUnitID(objectID);
+			specimen.setId(objectID + "@" + SourceSystem.CRS.getCode());
 			specimen.setSourceSystemId(specimen.getUnitID());
 			ThemeCache tsc = ThemeCache.getInstance();
 			List<String> themes = tsc.lookup(objectID, SPECIMEN, CRS);

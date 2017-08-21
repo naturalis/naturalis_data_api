@@ -21,17 +21,4 @@ class CrsSpecimenLoader extends Loader<Specimen> {
 		super(SPECIMEN, queueSize, stats);
 	}
 
-	@Override
-	protected IdGenerator<Specimen> getIdGenerator()
-	{
-		return new IdGenerator<Specimen>() {
-
-			@Override
-			public String getId(Specimen obj)
-			{
-				return getElasticsearchId(CRS, obj.getUnitID());
-			}
-		};
-	}
-
 }

@@ -21,6 +21,13 @@ import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nba.etl.AbstractCSVTransformer;
 import nl.naturalis.nba.etl.ETLStatistics;
 
+/**
+ * The transformer component in the Geo ETL cycle.
+ * 
+ * @author Ayco Holleman
+ * @author Tom Gilissen
+ *
+ */
 class GeoTransformer extends AbstractCSVTransformer<GeoCsvField, GeoArea> {
 
 	private ObjectMapper mapper = new ObjectMapper();
@@ -63,6 +70,7 @@ class GeoTransformer extends AbstractCSVTransformer<GeoCsvField, GeoArea> {
 			return null;
 		}
 		GeoArea area = new GeoArea();
+		area.setId(objectID + "@" + SourceSystem.GEO.getCode());
 		area.setLocality(loc);
 		area.setSourceSystem(SourceSystem.GEO);
 		area.setSourceSystemId(input.get(gid));

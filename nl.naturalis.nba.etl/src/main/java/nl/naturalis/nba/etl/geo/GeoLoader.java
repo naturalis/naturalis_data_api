@@ -15,17 +15,4 @@ class GeoLoader extends Loader<GeoArea> {
 		super(GEO_AREA, treshold, stats);
 	}
 
-	@Override
-	protected IdGenerator<GeoArea> getIdGenerator()
-	{
-		return new IdGenerator<GeoArea>() {
-
-			@Override
-			public String getId(GeoArea obj)
-			{
-				return getElasticsearchId(GEO, obj.getSourceSystemId());
-			}
-		};
-	}
-
 }

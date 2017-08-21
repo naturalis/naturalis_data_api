@@ -28,6 +28,7 @@ import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.ServiceAccessPoint;
 import nl.naturalis.nba.api.model.ServiceAccessPoint.Variant;
+import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nba.api.model.VernacularName;
 import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.ETLStatistics;
@@ -72,6 +73,7 @@ class BrahmsMultiMediaTransformer extends BrahmsTransformer<MultiMediaObject> {
 			MultiMediaObject mmo = newMultiMediaObject();
 			String uriHash = String.valueOf(uri.toString().hashCode()).replace('-', '0');
 			mmo.setUnitID(objectID + '_' + uriHash);
+			mmo.setId(mmo.getUnitID() + "@" + SourceSystem.BRAHMS.getCode());
 			mmo.setSourceSystemId(mmo.getUnitID());
 			String specimenID = getElasticsearchId(BRAHMS, objectID);
 			mmo.setAssociatedSpecimenReference(specimenID);

@@ -38,6 +38,7 @@ import nl.naturalis.nba.api.model.DefaultClassification;
 import nl.naturalis.nba.api.model.GatheringEvent;
 import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.ServiceAccessPoint;
+import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.api.model.VernacularName;
@@ -50,6 +51,7 @@ import nl.naturalis.nba.etl.ThemeCache;
  * The transformer component in the Brahms ETL cycle for specimens.
  * 
  * @author Ayco Holleman
+ * @author Tom Gilissen
  *
  */
 class BrahmsSpecimenTransformer extends BrahmsTransformer<Specimen> {
@@ -77,6 +79,7 @@ class BrahmsSpecimenTransformer extends BrahmsTransformer<Specimen> {
 		try {
 			Specimen specimen = new Specimen();
 			specimen.setSourceSystemId(objectID);
+			specimen.setId(specimen.getSourceSystemId() + "@" + SourceSystem.BRAHMS.getCode());
 			specimen.setUnitID(objectID);
 			if (unitIDPattern.matcher(objectID).matches()) {
 				specimen.setUnitGUID(getSpecimenPurl(objectID));

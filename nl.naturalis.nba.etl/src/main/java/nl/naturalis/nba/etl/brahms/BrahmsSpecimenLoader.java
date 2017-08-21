@@ -16,24 +16,24 @@ import nl.naturalis.nba.etl.Loader;
  */
 class BrahmsSpecimenLoader extends Loader<Specimen> {
 
-	private static final IdGenerator<Specimen> ID_GENERATOR = new IdGenerator<Specimen>() {
-
-		@Override
-		public String getId(Specimen obj)
-		{
-			return getElasticsearchId(BRAHMS, obj.getUnitID());
-		}
-	};
+//	private static final IdGenerator<Specimen> ID_GENERATOR = new IdGenerator<Specimen>() {
+//
+//		@Override
+//		public String getId(Specimen obj)
+//		{
+//			return getElasticsearchId(BRAHMS, obj.getUnitID());
+//		}
+//	};
 
 	public BrahmsSpecimenLoader(int queueSize, ETLStatistics stats)
 	{
 		super(SPECIMEN, queueSize, stats);
 	}
 
-	@Override
-	protected IdGenerator<Specimen> getIdGenerator()
-	{
-		return ID_GENERATOR;
-	}
+//	@Override
+//	protected IdGenerator<Specimen> getIdGenerator()
+//	{
+//		return ID_GENERATOR;
+//	}
 
 }

@@ -16,24 +16,24 @@ import nl.naturalis.nba.etl.Loader;
  */
 class BrahmsMultiMediaLoader extends Loader<MultiMediaObject> {
 
-	private static final IdGenerator<MultiMediaObject> ID_GENERATOR = new IdGenerator<MultiMediaObject>() {
-
-		@Override
-		public String getId(MultiMediaObject obj)
-		{
-			return getElasticsearchId(BRAHMS, obj.getUnitID());
-		}
-	};
+//	private static final IdGenerator<MultiMediaObject> ID_GENERATOR = new IdGenerator<MultiMediaObject>() {
+//
+//		@Override
+//		public String getId(MultiMediaObject obj)
+//		{
+//			return getElasticsearchId(BRAHMS, obj.getUnitID());
+//		}
+//	};
 
 	public BrahmsMultiMediaLoader(int queueSize, ETLStatistics stats)
 	{
 		super(MULTI_MEDIA_OBJECT, queueSize, stats);
 	}
 
-	@Override
-	protected IdGenerator<MultiMediaObject> getIdGenerator()
-	{
-		return ID_GENERATOR;
-	}
+//	@Override
+//	protected IdGenerator<MultiMediaObject> getIdGenerator()
+//	{
+//		return ID_GENERATOR;
+//	}
 
 }

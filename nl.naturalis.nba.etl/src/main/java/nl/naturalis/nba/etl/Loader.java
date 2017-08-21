@@ -31,6 +31,7 @@ import nl.naturalis.nba.utils.ConfigObject;
  * </p>
  * 
  * @author Ayco Holleman
+ * @author Tom Gilissen
  *
  * @param <T>
  *            The type of object to be converted to and stored as a JSON
@@ -38,55 +39,68 @@ import nl.naturalis.nba.utils.ConfigObject;
  */
 public abstract class Loader<T extends IDocumentObject> implements Closeable {
 
-	/**
-	 * An interface that specifies how an ElasticSearch {@code _id} is to be
-	 * extracted from the object about to be indexed.
-	 * 
-	 * @author Ayco Holleman
-	 *
-	 * @param <T>
-	 *            The object to be indexed
-	 */
-	public interface IdGenerator<T> {
+// ***********************************************************************************
+// Aim is to make the next bit obsolete. The Loader class should no longer be 
+//		concerned with creating ID's; the transformers should be dealing with that.
 
-		/**
-		 * Extract a document ID from the specified object.
-		 * 
-		 * @param obj
-		 *            The object to extract the id from
-		 * @return The document ID
-		 */
-		String getId(T obj);
-	}
 
-	/**
-	 * An interface that specifies how an ElasticSearch {@code _parent} is to be
-	 * extracted from the object about to be indexed.
-	 * 
-	 * @author Ayco Holleman
-	 *
-	 * @param <T>
-	 *            The object to be indexed
-	 */
-	public interface ParentIdGenerator<T> {
+// To be made redundant!!!
 
-		/**
-		 * Extract the ID of the parent document from the specified object.
-		 * 
-		 * @param obj
-		 *            The object to extract the parent id from
-		 * @return The ID of the parent document
-		 */
-		String getParentId(T obj);
-	}
+//	/**
+//	 * An interface that specifies how an ElasticSearch {@code _id} is to be
+//	 * extracted from the object about to be indexed.
+//	 * 
+//	 * @author Ayco Holleman
+//	 *
+//	 * @param <T>
+//	 *            The object to be indexed
+//	 */
+//	public interface IdGenerator<T> {
+//
+//		/**
+//		 * Extract a document ID from the specified object.
+//		 * 
+//		 * @param obj
+//		 *            The object to extract the id from
+//		 * @return The document ID
+//		 */
+//		String getId(T obj);
+//	}
+
+
+// To be made redundant!!!
+
+//	/**
+//	 * An interface that specifies how an ElasticSearch {@code _parent} is to be
+//	 * extracted from the object about to be indexed.
+//	 * 
+//	 * @author Ayco Holleman
+//	 *
+//	 * @param <T>
+//	 *            The object to be indexed
+//	 */
+//	
+//	public interface ParentIdGenerator<T> {
+//
+//		/**
+//		 * Extract the ID of the parent document from the specified object.
+//		 * 
+//		 * @param obj
+//		 *            The object to extract the parent id from
+//		 * @return The ID of the parent document
+//		 */
+//		String getParentId(T obj);
+//	}
+//
+// ***********************************************************************************
 
 	private static final Logger logger = getLogger(Loader.class);
 
 	private final BulkIndexer<T> indexer;
 	private final ETLStatistics stats;
 	private final ArrayList<T> objs;
-	private final ArrayList<String> ids;
-	private final ArrayList<String> parIds;
+//	private final ArrayList<String> ids;
+//	private final ArrayList<String> parIds;
 
 	private int tresh;
 	private boolean suppressErrors;
@@ -118,18 +132,18 @@ public abstract class Loader<T extends IDocumentObject> implements Closeable {
 		 */
 		int sz = queueSize == 0 ? 256 : queueSize + 16;
 		objs = new ArrayList<>(sz);
-		if (getIdGenerator() == null) {
-			ids = null;
-		}
-		else {
-			ids = new ArrayList<>(sz);
-		}
-		if (getParentIdGenerator() == null) {
-			parIds = null;
-		}
-		else {
-			parIds = new ArrayList<>(sz);
-		}
+//		if (getIdGenerator() == null) {
+//			ids = null;
+//		}
+//		else {
+//			ids = new ArrayList<>(sz);
+//		}
+//		if (getParentIdGenerator() == null) {
+//			parIds = null;
+//		}
+//		else {
+//			parIds = new ArrayList<>(sz);
+//		}
 	}
 
 	/**
@@ -148,21 +162,21 @@ public abstract class Loader<T extends IDocumentObject> implements Closeable {
 			return;
 		}
 		objs.addAll(objects);
-		if (ids != null) {
-			for (T item : objects) {
-				ids.add(getIdGenerator().getId(item));
-			}
-			if (idObjMap != null) {
-				for (T item : objects) {
-					idObjMap.put(getIdGenerator().getId(item), item);
-				}
-			}
-		}
-		if (parIds != null) {
-			for (T item : objects) {
-				parIds.add(getParentIdGenerator().getParentId(item));
-			}
-		}
+//		if (ids != null) {
+//			for (T item : objects) {
+//				ids.add(getIdGenerator().getId(item));
+//			}
+//			if (idObjMap != null) {
+//				for (T item : objects) {
+//					idObjMap.put(getIdGenerator().getId(item), item);
+//				}
+//			}
+//		}
+//		if (parIds != null) {
+//			for (T item : objects) {
+//				parIds.add(getParentIdGenerator().getParentId(item));
+//			}
+//		}
 		if (tresh != 0 && tresh < objs.size()) {
 			flush();
 		}
@@ -205,7 +219,8 @@ public abstract class Loader<T extends IDocumentObject> implements Closeable {
 		if (!objs.isEmpty()) {
 			try {
 				if (!dry) {
-					indexer.index(objs, ids, parIds);
+//					indexer.index(objs, ids, parIds);
+					indexer.index(objs);
 					stats.documentsIndexed += objs.size();
 				}
 			}
@@ -217,39 +232,39 @@ public abstract class Loader<T extends IDocumentObject> implements Closeable {
 				}
 			}
 			objs.clear();
-			if (ids != null) {
-				ids.clear();
-			}
-			if (parIds != null) {
-				parIds.clear();
-			}
-			if (idObjMap != null) {
-				idObjMap.clear();
-			}
+//			if (ids != null) {
+//				ids.clear();
+//			}
+//			if (parIds != null) {
+//				parIds.clear();
+//			}
+//			if (idObjMap != null) {
+//				idObjMap.clear();
+//			}
 		}
 	}
 
-	/**
-	 * Produce an object that can generate IDs for ElasticSearch documents.
-	 * 
-	 * @return
-	 * 
-	 * @see IdGenerator
-	 */
-	protected abstract IdGenerator<T> getIdGenerator();
+//	/**
+//	 * Produce an object that can generate IDs for ElasticSearch documents.
+//	 * 
+//	 * @return
+//	 * 
+//	 * @see IdGenerator
+//	 */
+//	protected abstract IdGenerator<T> getIdGenerator();
 
-	/**
-	 * Produce an object that can generate parent IDs for ElasticSearch
-	 * documents.
-	 * 
-	 * @return
-	 * 
-	 * @see ParentIdGenerator
-	 */
-	protected ParentIdGenerator<T> getParentIdGenerator()
-	{
-		return null;
-	}
+//	/**
+//	 * Produce an object that can generate parent IDs for ElasticSearch
+//	 * documents.
+//	 * 
+//	 * @return
+//	 * 
+//	 * @see ParentIdGenerator
+//	 */
+//	protected ParentIdGenerator<T> getParentIdGenerator()
+//	{
+//		return null;
+//	}
 
 	/**
 	 * Determines whether to suppress ERROR and WARN messages while still

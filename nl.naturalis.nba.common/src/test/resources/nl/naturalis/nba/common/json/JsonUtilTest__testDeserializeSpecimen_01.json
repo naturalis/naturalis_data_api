@@ -1,0 +1,70 @@
+{
+	"sourceSystem": {
+		"code": "BRAHMS",
+		"name": "Naturalis - Botany catalogues"
+	},
+	"sourceSystemId": "L.2105386",
+	"unitID": "L.2105386",
+	"unitGUID": "http://data.biodiversitydata.nl/naturalis/specimen/L.2105386",
+	"collectorsFieldNumber": "Hoekstra, O; Ploeg, DTE van der  s.n. ",
+	"assemblageID": "569174@BRAHMS",
+	"sourceInstitutionID": "Naturalis Biodiversity Center",
+	"sourceID": "Brahms",
+	"owner": "Naturalis Biodiversity Center",
+	"licenseType": "Copyright",
+	"license": "CC0",
+	"recordBasis": "Herbarium sheet",
+	"collectionType": "Botany",
+	"numberOfSpecimen": 0,
+	"fromCaptivity": false,
+	"objectPublic": true,
+	"multiMediaPublic": false,
+	"gatheringEvent": {
+		"worldRegion": "Europe",
+		"continent": "Europe",
+		"country": "Netherlands",
+		"provinceState": "Friesland",
+		"locality": "Kooten Aldedijk.",
+		"localityText": "Europe; Netherlands; Friesland; Kooten Aldedijk.",
+		"dateTimeBegin": "1976-08-26T00:00:00+0000",
+		"dateTimeEnd": "1976-08-26T00:00:00+0000",
+		"gatheringPersons": [
+			{
+				"fullName": "Hoekstra, O; Ploeg, DTE van der"
+			}
+		]
+	},
+	"identifications": [
+		{
+			"taxonRank": "species",
+			"scientificName": {
+				"fullScientificName": "Rosa dumalis Bechst.",
+				"genusOrMonomial": "Rosa",
+				"specificEpithet": "dumalis",
+				"authorshipVerbatim": "Bechst.",
+				"scientificNameGroup": "rosa dumalis"
+			},
+			"defaultClassification": {
+				"kingdom": "Plantae",
+				"className": "Magnoliopsida",
+				"order": "Rosales",
+				"family": "Rosaceae",
+				"genus": "Rosa",
+				"specificEpithet": "dumalis"
+			},
+			"identifiers": [
+				{
+					"agentText": "Bakker, PA; Maes, N"
+				}
+			],
+			"preferred": false
+		}
+	],
+	"associatedMultiMediaUris": [
+		{
+			"accessUri": "http://medialib.naturalis.nl/file/id/L.2105386/format/large",
+			"format": "image/jpeg",
+			"variant": "MEDIUM_QUALITY"
+		}
+	]
+}

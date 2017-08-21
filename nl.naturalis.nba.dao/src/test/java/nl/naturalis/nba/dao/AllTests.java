@@ -17,7 +17,6 @@ import nl.naturalis.nba.dao.translate.MatchesConditionTranslatorTest;
 import nl.naturalis.nba.dao.translate.ShapeInShapeConditionTranslatorTest;
 import nl.naturalis.nba.dao.util.SwapFileOutputStreamTest;
 import nl.naturalis.nba.dao.util.SwapOutputStreamTest;
-import nl.naturalis.nba.dao.util.es.ESDateInputTest;
 import nl.naturalis.nba.dao.util.es.ESUtilTest;
 
 @RunWith(Suite.class)
@@ -26,7 +25,6 @@ import nl.naturalis.nba.dao.util.es.ESUtilTest;
 	RegistryTest.class,
 	ESClientManagerTest.class,
 	ESUtilTest.class,
-	ESDateInputTest.class,
 	NamePublishedInCalculatorTest.class,
 	SwapOutputStreamTest.class,
 	SwapFileOutputStreamTest.class,

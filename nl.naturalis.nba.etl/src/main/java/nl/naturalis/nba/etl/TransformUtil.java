@@ -5,13 +5,9 @@ import static nl.naturalis.nba.api.model.TaxonomicRank.SPECIES;
 import static nl.naturalis.nba.api.model.TaxonomicRank.SUBGENUS;
 import static nl.naturalis.nba.api.model.TaxonomicRank.SUBSPECIES;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.logging.log4j.Logger;
@@ -38,50 +34,6 @@ import nl.naturalis.nba.utils.StringUtil;
 public class TransformUtil {
 
 	private static final Logger logger = ETLRegistry.getInstance().getLogger(TransformUtil.class);
-
-	private static final SimpleDateFormat DATE_FORMAT0 = new SimpleDateFormat("yyyyMMdd");
-	private static final SimpleDateFormat DATE_FORMAT1 = new SimpleDateFormat("yyyy/MM/dd");
-	private static final SimpleDateFormat DATE_FORMAT2 = new SimpleDateFormat("yyyy-MM-dd");
-	private static final SimpleDateFormat DATE_FORMAT3 = new SimpleDateFormat("dd MMMM yyyy");
-	private static final SimpleDateFormat DATE_FORMAT4 = new SimpleDateFormat("MM/yyyy");
-	private static final SimpleDateFormat DATE_FORMAT5 = new SimpleDateFormat("yyyy");
-	private static final SimpleDateFormat DATE_FORMAT6 = new SimpleDateFormat("yy");
-
-	public static final List<SimpleDateFormat> DATE_FORMATS = Arrays.asList(DATE_FORMAT0,
-			DATE_FORMAT1, DATE_FORMAT2, DATE_FORMAT3, DATE_FORMAT4, DATE_FORMAT5, DATE_FORMAT6);
-
-	/**
-	 * Attempts to parse the specified string into a date using the following
-	 * date patterns:
-	 * <ul>
-	 * <li>yyyyMMdd</li>
-	 * <li>yyyy/MM/dd</li>
-	 * <li>yyyy-MM-dd</li>
-	 * <li>dd MMMM yyyy</li>
-	 * <li>yyyy</li>
-	 * <li>yy</li>
-	 * </ul>
-	 * If none of the patterns work, a warning is issued and {@code null} is
-	 * returned.
-	 * 
-	 * @param s
-	 * @return
-	 */
-	public static Date parseDate(String s)
-	{
-		if (s == null)
-			return null;
-		if ((s = s.trim()).length() == 0)
-			return null;
-		for (SimpleDateFormat df : DATE_FORMATS) {
-			try {
-				return df.parse(s);
-			}
-			catch (ParseException e) {}
-		}
-		logger.warn(String.format("Invalid date: \"%s\"", s));
-		return null;
-	}
 
 	private static final String EQUALIZE = "Equalizing value of %s (copy from %s to %s: \"%s\")";
 	private static final String NAME = "scientific name";

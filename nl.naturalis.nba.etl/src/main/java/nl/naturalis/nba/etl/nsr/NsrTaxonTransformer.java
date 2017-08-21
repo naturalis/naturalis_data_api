@@ -461,8 +461,7 @@ class NsrTaxonTransformer extends AbstractXMLTransformer<Taxon> {
 			}
 			return null;
 		}
-		ESDateInput input = new ESDateInput();
-		OffsetDateTime odt = input.parseAsYear(date);
+		OffsetDateTime odt = new ESDateInput(date).parseAsYear();
 		if (odt == null && !suppressErrors) {
 			warn("Invalid input for <reference_date>:", date);
 		}

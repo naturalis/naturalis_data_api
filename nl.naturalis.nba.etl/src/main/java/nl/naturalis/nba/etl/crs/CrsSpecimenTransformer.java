@@ -10,6 +10,7 @@ import static nl.naturalis.nba.etl.TransformUtil.sortIdentificationsPreferredFir
 import static nl.naturalis.nba.utils.StringUtil.rpad;
 
 import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -510,8 +511,9 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 	{
 		String raw = val(elem, "abcd:NomenclaturalTypeText");
 		if (raw == null) {
-			if (!suppressErrors)
-				warn("Missing type status");
+			if (logger.isDebugEnabled()) {
+				debug("Missing type status");
+			}
 			return null;
 		}
 		try {
@@ -540,7 +542,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 	}
 
 	private static final String MSG_BAD_DATE = "Invalid date in element %s: \"%s\"";
-	//private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+	private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 
 	private OffsetDateTime date(Element e, String tag)
 	{
@@ -558,8 +560,8 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 			chars[5] = '1';
 		if (chars[6] == '0' && chars[7] == '0')
 			chars[7] = '1';
-		ESDateInput input = new ESDateInput();
-		OffsetDateTime odt = input.parseAsLocalDate(String.valueOf(chars), "yyyyMMdd");
+		ESDateInput input = new ESDateInput(String.valueOf(chars));
+		OffsetDateTime odt = input.parseAsLocalDate(formatter);
 		if (odt == null && !suppressErrors) {
 			warn(MSG_BAD_DATE, tag, s);
 		}

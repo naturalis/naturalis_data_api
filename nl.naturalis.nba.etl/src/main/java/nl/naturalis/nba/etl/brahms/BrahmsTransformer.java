@@ -79,8 +79,8 @@ abstract class BrahmsTransformer<T extends IDocumentObject>
 			return typeStatusNormalizer.map(input.get(TYPE));
 		}
 		catch (UnmappedValueException e) {
-			if (!suppressErrors) {
-				warn(e.getMessage());
+			if (logger.isDebugEnabled()) {
+				debug(e.getMessage());
 			}
 			return null;
 		}

@@ -84,8 +84,8 @@ class BrahmsSpecimenTransformer extends BrahmsTransformer<Specimen> {
 			if (unitIDPattern.matcher(objectID).matches()) {
 				specimen.setUnitGUID(getSpecimenPurl(objectID));
 			}
-			else if (!suppressErrors) {
-				warn("PURL generation suppressed for problematic UnitID: \"%s\"", objectID);
+			else if (logger.isDebugEnabled()) {
+				debug("PURL generation suppressed for problematic UnitID: \"%s\"", objectID);
 			}
 			setConstants(specimen);
 			List<String> themes = themeCache.lookup(objectID, SPECIMEN, BRAHMS);

@@ -14,6 +14,7 @@ import static nl.naturalis.nba.utils.DOMUtil.getValue;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -152,12 +153,15 @@ class NsrMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 		}
 	}
 
+	private static final DateTimeFormatter formatter0 = DateTimeFormatter.ofPattern("dd MMMM yyyy");
+	private static final DateTimeFormatter formatter1 = DateTimeFormatter.ofPattern("d MMMM yyyy");
+
 	private OffsetDateTime parseDateTaken(String date)
 	{
-		ESDateInput input = new ESDateInput();
-		OffsetDateTime odt = input.parseAsLocalDate(date, "dd MMMM yyyy");
+		ESDateInput input = new ESDateInput(date);
+		OffsetDateTime odt = input.parseAsLocalDate(formatter0);
 		if (odt == null) {
-			odt = input.parseAsLocalDate(date, "d MMMM yyyy");
+			odt = input.parseAsLocalDate(formatter1);
 		}
 		if (odt == null) {
 			if (!suppressErrors) {

@@ -6,10 +6,8 @@ import static nl.naturalis.nba.dao.util.es.ESUtil.createIndex;
 import static nl.naturalis.nba.dao.util.es.ESUtil.deleteIndex;
 import static org.junit.Assert.assertEquals;
 
-import java.time.Instant;
 import java.time.OffsetDateTime;
-import java.time.ZoneId;
-import java.util.Date;
+import java.time.format.DateTimeFormatter;
 
 import org.apache.logging.log4j.Logger;
 import org.junit.After;
@@ -65,19 +63,17 @@ public class SpecimenDaoTest_Between {
 	public void test__01() throws InvalidQueryException
 	{
 		OffsetDateTime gatheringDate = pMajor.getGatheringEvent().getDateTimeBegin();
-		Instant instant = gatheringDate.toInstant();
-		ZoneId dfault = ZoneId.systemDefault();
 		/*
 		 * Construct 2 dates just around gatheringEvent.dateTimeBegin of pMajor.
 		 * Each test specimen has a gatheringEvent.dateTimeBegin that lies one
 		 * year after the next test specimen, so we can have only one query
 		 * result (pMajor).
 		 */
-		OffsetDateTime two = OffsetDateTime.ofInstant(instant, dfault).minusDays(7L);
-		OffsetDateTime t = OffsetDateTime.ofInstant(instant, dfault).plusDays(7L);
-		OffsetDateTime[] fromTo = new OffsetDateTime[] { two, t };
-		QueryCondition condition = new QueryCondition("gatheringEvent.dateTimeBegin", BETWEEN,
-				fromTo);
+		OffsetDateTime from = gatheringDate.minusDays(7L);
+		OffsetDateTime to = gatheringDate.plusDays(7L);
+		OffsetDateTime[] fromTo = new OffsetDateTime[] { from, to };
+		String field = "gatheringEvent.dateTimeBegin";
+		QueryCondition condition = new QueryCondition(field, BETWEEN, fromTo);
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
@@ -89,10 +85,8 @@ public class SpecimenDaoTest_Between {
 	public void test__02() throws InvalidQueryException
 	{
 		OffsetDateTime gatheringDate = pMajor.getGatheringEvent().getDateTimeBegin();
-		Instant instant = gatheringDate.toInstant();
-		ZoneId dfault = ZoneId.systemDefault();
-		OffsetDateTime from = OffsetDateTime.ofInstant(instant, dfault).minusDays(7L);
-		OffsetDateTime to = OffsetDateTime.ofInstant(instant, dfault).plusDays(7L);
+		OffsetDateTime from = gatheringDate.minusDays(7L);
+		OffsetDateTime to = gatheringDate.plusDays(7L);
 		OffsetDateTime[] fromTo = new OffsetDateTime[] { from, to };
 		QueryCondition condition = new QueryCondition("gatheringEvent.dateTimeBegin", NOT_BETWEEN,
 				fromTo);
@@ -104,6 +98,61 @@ public class SpecimenDaoTest_Between {
 		// back.
 		assertEquals("01", 4, result.size());
 	}
+	
+	/*
+	 * Make sure we can use the other accepted date formats ("yyyy-MM-dd")
+	 */
+	@Test
+	public void test__acceptedDateFormat01() throws InvalidQueryException {
+		OffsetDateTime gatheringDate = pMajor.getGatheringEvent().getDateTimeBegin();
+		/*
+		 * Construct 2 dates just around gatheringEvent.dateTimeBegin of pMajor.
+		 * Each test specimen has a gatheringEvent.dateTimeBegin that lies one
+		 * year after the next test specimen, so we can have only one query
+		 * result (pMajor).
+		 */
+		OffsetDateTime from = gatheringDate.minusDays(7L);
+		OffsetDateTime to = gatheringDate.plusDays(7L);
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		String fromString = from.format(formatter);
+		String toString = to.format(formatter);
+		String[] fromTo = new String[] { fromString, toString };
+		String field = "gatheringEvent.dateTimeBegin";
+		QueryCondition condition = new QueryCondition(field, BETWEEN, fromTo);
+		QuerySpec qs = new QuerySpec();
+		qs.addCondition(condition);
+		SpecimenDao dao = new SpecimenDao();
+		QueryResult<Specimen> result = dao.query(qs);
+		assertEquals("01", 1, result.size());	
+	}
+	
+	/*
+	 * Make sure we can use the other accepted date formats ("yyyy-MM")
+	 */
+	@Test
+	public void test__acceptedDateFormat02() throws InvalidQueryException {
+		OffsetDateTime gatheringDate = pMajor.getGatheringEvent().getDateTimeBegin();
+		/*
+		 * Construct 2 dates just around gatheringEvent.dateTimeBegin of pMajor.
+		 * Each test specimen has a gatheringEvent.dateTimeBegin that lies one
+		 * year after the next test specimen, so we can have only one query
+		 * result (pMajor).
+		 */
+		OffsetDateTime from = gatheringDate.minusWeeks(8L);
+		OffsetDateTime to = gatheringDate.plusWeeks(8L);
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM");
+		String fromString = from.format(formatter);
+		String toString = to.format(formatter);
+		String[] fromTo = new String[] { fromString, toString };
+		String field = "gatheringEvent.dateTimeBegin";
+		QueryCondition condition = new QueryCondition(field, BETWEEN, fromTo);
+		QuerySpec qs = new QuerySpec();
+		qs.addCondition(condition);
+		SpecimenDao dao = new SpecimenDao();
+		QueryResult<Specimen> result = dao.query(qs);
+		assertEquals("01", 1, result.size());	
+	}
+	
 
 	/*
 	 * Test with plain "string dates"

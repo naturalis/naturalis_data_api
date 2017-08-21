@@ -15,7 +15,7 @@ class OffsetDateTimeDeserializer extends JsonDeserializer<OffsetDateTime> {
 	public OffsetDateTime deserialize(JsonParser jp, DeserializationContext ctx)
 			throws IOException, JsonProcessingException
 	{
-			return new ESDateInput().parseAsIso8601(jp.getText());
+		return new ESDateInput(jp.getText()).parseAsOffsetDateTime(ESDateInput.ES_DATE_FORMAT);
 	}
 
 }

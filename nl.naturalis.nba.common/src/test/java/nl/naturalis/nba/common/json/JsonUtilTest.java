@@ -21,9 +21,25 @@ import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.SortField;
 import nl.naturalis.nba.api.SortOrder;
+import nl.naturalis.nba.api.model.Specimen;
 
 @SuppressWarnings("static-method")
 public class JsonUtilTest {
+
+	@Test
+	public void testDeserializeSpecimen01()
+	{
+		try (InputStream is = JsonUtilTest.class
+				.getResourceAsStream("JsonUtilTest__testDeserializeSpecimen_01.json")) {
+			Specimen specimen = JsonUtil.deserialize(is, Specimen.class);
+			assertNotNull("01",specimen.getGatheringEvent());
+			assertNotNull("02",specimen.getGatheringEvent().getDateTimeBegin());
+		}
+		catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+
+	}
 
 	@Test
 	public void testDeserialize()
@@ -294,7 +310,6 @@ public class JsonUtilTest {
 		assertTrue("04", 1.3f == condition.getBoost());
 	}
 
-
 	/*
 	 * Test deserialization of QuerySpec.
 	 */
@@ -309,6 +324,5 @@ public class JsonUtilTest {
 		assertEquals("02", "gatheringEvent.dateTimeBegin", field);
 		assertTrue("03", ss.isConstantScore());
 	}
-
 
 }

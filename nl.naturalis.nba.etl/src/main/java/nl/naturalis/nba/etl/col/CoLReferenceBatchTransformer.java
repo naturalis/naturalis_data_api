@@ -142,8 +142,7 @@ class CoLReferenceBatchTransformer {
 		ref.setCitationDetail(record.get(description));
 		String s;
 		if ((s = record.get(date)) != null) {
-			ESDateInput input = new ESDateInput();
-			OffsetDateTime odt = input.parseAsYear(s);
+			OffsetDateTime odt = new ESDateInput(s).parseAsYear();
 			if (odt == null) {
 				logger.warn("Invalid date: {}", s);
 			}

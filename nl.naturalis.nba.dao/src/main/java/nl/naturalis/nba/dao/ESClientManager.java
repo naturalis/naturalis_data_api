@@ -7,12 +7,9 @@ import java.net.UnknownHostException;
 import java.util.Arrays;
 
 import org.apache.logging.log4j.Logger;
-import org.elasticsearch.action.admin.cluster.stats.ClusterStatsRequest;
-import org.elasticsearch.action.admin.cluster.stats.ClusterStatsResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.NoNodeAvailableException;
 import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.cluster.health.ClusterHealthStatus;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.settings.Settings.Builder;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
@@ -71,7 +68,7 @@ public class ESClientManager {
 				((TransportClient) client).addTransportAddress(addr);
 			}
 			logger.info("Connected");
-			//ping();
+			ping();
 		}
 		return client;
 	}
@@ -150,29 +147,20 @@ public class ESClientManager {
 		throw new ConnectionFailureException(msg);
 	}
 
-	@SuppressWarnings("unused")
 	private void ping()
 	{
-		ClusterStatsRequest request = new ClusterStatsRequest();
-		ClusterStatsResponse response = null;
 		try {
-			response = client.admin().cluster().clusterStats(request).actionGet();
+			// Do some request
+			client.admin().indices().prepareGetIndex().get();
 		}
 		catch (NoNodeAvailableException e) {
 			String cluster = config.required("elasticsearch.cluster.name");
-			String hosts = config.required("elasticsearch.transportaddress.host");
-			String ports = config.get("elasticsearch.transportaddress.port");
-			String msg = "Ping resulted in NoNodeAvailableException\n" + "* Check configuration:\n"
-					+ "  > elasticsearch.cluster.name={}\n"
-					+ "  > elasticsearch.transportaddress.host={}\n"
-					+ "  > elasticsearch.transportaddress.port={}\n"
-					+ "* Make sure Elasticsearch is running\n"
-					+ "* Make sure client version matches server version";
-			logger.error(msg, cluster, hosts, ports);
-			throw new ConnectionFailureException(e);
-		}
-		if (response.getStatus().equals(ClusterHealthStatus.RED)) {
-			throw new ConnectionFailureException("Elasticsearch cluster in bad health");
+			String host = config.required("elasticsearch.transportaddress.host");
+			String port = config.get("elasticsearch.transportaddress.port");
+			String fmt = "Cluster: %s. Host: %s. Port: %s. Is Elasticsearch down?";
+			String msg = String.format(fmt, cluster, host, port);
+			logger.error(msg);
+			throw new ConnectionFailureException(msg);
 		}
 	}
 }

@@ -77,12 +77,11 @@ class ConditionPreprocessor {
 	private static String convertValueForDateField(Object value, QueryCondition condition)
 			throws InvalidConditionException
 	{
-		ESDateInput dateInput = new ESDateInput();
 		if (value instanceof CharSequence) {
 			if (value.toString().isEmpty()) {
 				return null;
 			}
-			String esDate = dateInput.toESFormat(value.toString());
+			String esDate = new ESDateInput(value.toString()).toESFormat();
 			if (esDate == null) {
 				String fmt = "Invalid date for query condition on field %s: %s";
 				String msg = String.format(fmt, condition.getField(), value);
@@ -91,10 +90,10 @@ class ConditionPreprocessor {
 			return esDate;
 		}
 		if (value instanceof Date) {
-			return dateInput.toESFormat((Date) value);
+			return ESDateInput.format((Date) value);
 		}
 		if (value instanceof OffsetDateTime) {
-			return dateInput.toESFormat((OffsetDateTime) value);
+			return ESDateInput.format((OffsetDateTime) value);
 		}
 		throw invalidDataType(condition);
 	}

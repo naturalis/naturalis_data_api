@@ -13,7 +13,6 @@
 		<dependency org="org.apache.logging.log4j" name="log4j-core" rev="2.7" />
 		<dependency org="org.apache.httpcomponents" name="httpclient" rev="4.5.2"/>
 		<dependency org="com.fasterxml.jackson.core" name="jackson-databind" rev="2.8.5"/>
-		<dependency org="com.fasterxml.jackson.datatype" name="jackson-datatype-jsr310" rev="2.9.0"/>
 		<dependency org="de.grundid.opendatalab" name="geojson-jackson" rev="1.8"/>
 	</dependencies>
 	

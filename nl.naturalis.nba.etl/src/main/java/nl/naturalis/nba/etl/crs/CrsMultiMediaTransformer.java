@@ -457,8 +457,9 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 	{
 		String raw = val(elem, "abcd:TypeStatus");
 		if (raw == null) {
-			if (!suppressErrors)
-				warn("Missing type status");
+			if (logger.isDebugEnabled()) {
+				debug("Missing type status");
+			}
 			return null;
 		}
 		try {

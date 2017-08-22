@@ -1,4 +1,4 @@
-package nl.naturalis.nba.utils;
+package nl.naturalis.nba.utils.debug;
 
 import java.io.IOException;
 import java.io.OutputStream;

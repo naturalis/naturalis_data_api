@@ -14,7 +14,7 @@ import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.NoSuchDataSetException;
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QuerySpec;
-import nl.naturalis.nba.utils.DevNullOutputStream;
+import nl.naturalis.nba.utils.debug.DevNullOutputStream;
 
 /**
  * @author hettling

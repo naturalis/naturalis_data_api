@@ -86,8 +86,8 @@ public final class ESDateInput {
 	}
 
 	/**
-	 * Formats a &34;classic&34; {@link Date java.util.Date} string according to
-	 * the date format pattern used by the NBA indices.
+	 * Formats a classic {@link Date java.util.Date} string according to the
+	 * date format pattern used by the NBA indices.
 	 * 
 	 * @param dateString
 	 * @return

@@ -12,16 +12,19 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Date;
 
-import nl.naturalis.nba.api.QueryCondition;
+import nl.naturalis.nba.api.QuerySpec;
 
 /**
+ * <p>
  * Handles input for date fields in an Elasticsearch index. Generally this means
- * query-time input for date fields (date strings in {@link QueryCondition query
- * conditions}). However this class is also useful for data imports. The date
- * format accepted by the NBA indices is yyyy-MM-dd'T'HH:mm:ssZ (for example:
+ * query-time input (i.e. date strings in {@link QuerySpec} objects). However
+ * this class is also useful for data imports. The date format accepted by the
+ * NBA indices is yyyy-MM-dd'T'HH:mm:ssZ (for example:
  * 2017-08-21T08:40:59+0200). Consequently, all date strings in query conditions
  * need to be re-formatted using this pattern. The following date formats are
- * recognized and allowed in query conditions:
+ * recognized and allowed:
+ * </p>
+ * <p>
  * <ol>
  * <li>yyyy-MM-dd'T'HH:mm:ssZ - The date format used by the NBA indices
  * themselves. Example: 2017-08-21T08:40:59+0200
@@ -38,6 +41,10 @@ import nl.naturalis.nba.api.QueryCondition;
  * <li>yyyy-MM
  * <li>yyyy
  * </ol>
+ * </p>
+ * <p>
+ * This class is immutable and thread-safe.
+ * </p>
  * 
  * @author Ayco Holleman
  *

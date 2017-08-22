@@ -10,7 +10,7 @@ import org.w3c.dom.Element;
 
 import nl.naturalis.nba.dao.DaoRegistry;
 import nl.naturalis.nba.etl.ETLRegistry;
-import nl.naturalis.nba.utils.DOMUtil;
+import nl.naturalis.nba.utils.xml.DOMUtil;
 
 /**
  * Class providing common functionality for NSR imports.

@@ -12,9 +12,11 @@ import nl.naturalis.nba.dao.format.EntityObject;
 import nl.naturalis.nba.dao.format.ICalculator;
 
 /**
- * Generates a value for the DarwinCore &#34;namePublishedIn&#34; term. Assumes
- * the entity object is a plain {@link Taxon} document or the
- * {@link Taxon#getSynonyms() synonyms} entity within a {@code Taxon} document.
+ * A calculator for the scientificNameAuthorship field in a DarwinCore archive
+ * for taxa. Assumes the {@link EntityObject entity object} either is a plain
+ * {@link Taxon} document or a {@link Taxon#getSynonyms() synonym} or a
+ * {@link Taxon#getVernacularNames() vernacular name} within a {@code Taxon}
+ * document.
  * 
  * @author Ayco Holleman
  *

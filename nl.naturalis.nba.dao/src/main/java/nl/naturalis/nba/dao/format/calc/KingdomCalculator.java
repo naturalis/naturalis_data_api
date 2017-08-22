@@ -12,6 +12,14 @@ import nl.naturalis.nba.dao.format.CalculatorInitializationException;
 import nl.naturalis.nba.dao.format.EntityObject;
 import nl.naturalis.nba.dao.format.ICalculator;
 
+/**
+ * A calculator for the kingdom field in a DarwinCore archive for specimens.
+ * Assumes the {@link EntityObject entity object} is a plain {@link Specimen}
+ * document.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public class KingdomCalculator implements ICalculator {
 
 	@Override
@@ -24,7 +32,7 @@ public class KingdomCalculator implements ICalculator {
 	{
 		Specimen specimen = (Specimen) entity.getDocument();
 		SpecimenIdentification si = specimen.getIdentifications().iterator().next();
-		if(si.getDefaultClassification() == null) {
+		if (si.getDefaultClassification() == null) {
 			return EMPTY_STRING;
 		}
 		String kingdom = si.getDefaultClassification().getKingdom();

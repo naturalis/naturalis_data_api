@@ -13,7 +13,7 @@ import nl.naturalis.nba.etl.ETLRuntimeException;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.XMLRecordInfo;
-import nl.naturalis.nba.utils.DOMUtil;
+import nl.naturalis.nba.utils.xml.DOMUtil;
 
 import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;

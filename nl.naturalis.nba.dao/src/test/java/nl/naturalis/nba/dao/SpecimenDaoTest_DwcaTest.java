@@ -13,7 +13,7 @@ import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.dao.mock.SpecimenMock;
-import nl.naturalis.nba.utils.DevNullOutputStream;
+import nl.naturalis.nba.utils.debug.DevNullOutputStream;
 
 @SuppressWarnings("static-method")
 public class SpecimenDaoTest_DwcaTest {

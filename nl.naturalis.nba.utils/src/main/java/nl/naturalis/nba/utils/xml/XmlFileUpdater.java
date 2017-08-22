@@ -1,7 +1,7 @@
 package nl.naturalis.nba.utils.xml;
 
-import static nl.naturalis.nba.utils.DOMUtil.getDescendant;
-import static nl.naturalis.nba.utils.DOMUtil.getDocument;
+import static nl.naturalis.nba.utils.xml.DOMUtil.getDescendant;
+import static nl.naturalis.nba.utils.xml.DOMUtil.getDocument;
 
 import java.io.File;
 import java.io.OutputStream;

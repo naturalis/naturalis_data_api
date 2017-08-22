@@ -4,7 +4,6 @@ import static nl.naturalis.nba.dao.format.FormatUtil.EMPTY_STRING;
 import static nl.naturalis.nba.dao.format.FormatUtil.formatDate;
 
 import java.time.OffsetDateTime;
-import java.util.Date;
 import java.util.Map;
 
 import nl.naturalis.nba.api.model.Specimen;
@@ -13,8 +12,9 @@ import nl.naturalis.nba.dao.format.EntityObject;
 import nl.naturalis.nba.dao.format.ICalculator;
 
 /**
- * Generates a value for the DarwinCore &#34;verbatimEventDate&#34; term.
- * Assumes the entity object is a plain {@link Specimen} document.
+ * A calculator for the verbatimEventDate field in a DarwinCore archive for
+ * specimens. Assumes the {@link EntityObject entity object} is a plain
+ * {@link Specimen} document.
  * 
  * @author Ayco Holleman
  *

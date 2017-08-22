@@ -13,6 +13,14 @@ import nl.naturalis.nba.dao.format.CalculatorInitializationException;
 import nl.naturalis.nba.dao.format.EntityObject;
 import nl.naturalis.nba.dao.format.ICalculator;
 
+/**
+ * A calculator for the recordedBy field in a DarwinCore archive for specimens.
+ * Assumes the {@link EntityObject entity object} is a plain {@link Specimen}
+ * document.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public class RecordedByCalculator implements ICalculator {
 
 	@Override
@@ -37,7 +45,7 @@ public class RecordedByCalculator implements ICalculator {
 			return EMPTY_STRING;
 		}
 		String fullName = person.getFullName();
-		if(fullName == null) {
+		if (fullName == null) {
 			return EMPTY_STRING;
 		}
 		return fullName.replaceAll("[,\\[\\]]", "");

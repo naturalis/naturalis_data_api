@@ -10,11 +10,11 @@ import static nl.naturalis.nba.etl.ETLConstants.LICENCE_TYPE;
 import static nl.naturalis.nba.etl.ETLConstants.SOURCE_INSTITUTION_ID;
 import static nl.naturalis.nba.etl.MimeTypeCache.MEDIALIB_URL_START;
 import static nl.naturalis.nba.etl.normalize.Normalizer.NOT_MAPPED;
-import static nl.naturalis.nba.utils.DOMUtil.getChild;
-import static nl.naturalis.nba.utils.DOMUtil.getDescendant;
-import static nl.naturalis.nba.utils.DOMUtil.getDescendantValue;
-import static nl.naturalis.nba.utils.DOMUtil.getDescendants;
 import static nl.naturalis.nba.utils.StringUtil.rpad;
+import static nl.naturalis.nba.utils.xml.DOMUtil.getChild;
+import static nl.naturalis.nba.utils.xml.DOMUtil.getDescendant;
+import static nl.naturalis.nba.utils.xml.DOMUtil.getDescendantValue;
+import static nl.naturalis.nba.utils.xml.DOMUtil.getDescendants;
 
 import java.net.URI;
 import java.net.URISyntaxException;

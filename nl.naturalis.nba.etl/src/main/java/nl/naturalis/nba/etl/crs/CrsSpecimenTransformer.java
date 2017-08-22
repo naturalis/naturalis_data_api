@@ -43,7 +43,7 @@ import nl.naturalis.nba.etl.normalize.PhaseOrStageNormalizer;
 import nl.naturalis.nba.etl.normalize.SexNormalizer;
 import nl.naturalis.nba.etl.normalize.SpecimenTypeStatusNormalizer;
 import nl.naturalis.nba.etl.normalize.UnmappedValueException;
-import nl.naturalis.nba.utils.DOMUtil;
+import nl.naturalis.nba.utils.xml.DOMUtil;
 
 /**
  * The transformer component for the CRS specimen import.

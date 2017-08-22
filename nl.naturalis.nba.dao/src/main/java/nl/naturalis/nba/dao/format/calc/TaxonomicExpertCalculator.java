@@ -13,10 +13,11 @@ import nl.naturalis.nba.dao.format.EntityObject;
 import nl.naturalis.nba.dao.format.ICalculator;
 
 /**
- * Generates a value for the &#34;expert&#34; field. Assumes the entity object
- * is a plain {@link Taxon} document or the {@link Taxon#getSynonyms() synonyms}
- * entity or {@link Taxon#getVernacularNames() vernacularNames} entity within a
- * {@code Taxon} document.
+ * A calculator for the expert field in a DarwinCore archive for taxa. Assumes
+ * the {@link EntityObject entity object} either is a plain {@link Taxon}
+ * document or a {@link Taxon#getSynonyms() synonym} or a
+ * {@link Taxon#getVernacularNames() vernacular name} within a {@code Taxon}
+ * document.
  * 
  * @author Ayco Holleman
  *

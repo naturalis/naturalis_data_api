@@ -9,8 +9,8 @@ import static nl.naturalis.nba.api.model.TaxonomicStatus.SYNONYM;
 import static nl.naturalis.nba.etl.ETLUtil.getTestGenera;
 import static nl.naturalis.nba.etl.TransformUtil.setScientificNameGroup;
 import static nl.naturalis.nba.etl.nsr.NsrImportUtil.val;
-import static nl.naturalis.nba.utils.DOMUtil.getChild;
-import static nl.naturalis.nba.utils.DOMUtil.getChildren;
+import static nl.naturalis.nba.utils.xml.DOMUtil.getChild;
+import static nl.naturalis.nba.utils.xml.DOMUtil.getChildren;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -37,7 +37,7 @@ import nl.naturalis.nba.api.model.VernacularName;
 import nl.naturalis.nba.common.es.ESDateInput;
 import nl.naturalis.nba.etl.AbstractXMLTransformer;
 import nl.naturalis.nba.etl.ETLStatistics;
-import nl.naturalis.nba.utils.DOMUtil;
+import nl.naturalis.nba.utils.xml.DOMUtil;
 
 /**
  * The transformer component in the NSR ETL cycle for taxa.

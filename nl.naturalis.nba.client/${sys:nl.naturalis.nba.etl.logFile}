@@ -1,0 +1,150 @@
+13:31:08.225|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/geo/getGeoJsonForLocality/FOO
+13:31:08.458|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/geo/getGeoJsonForLocality/Amsterdam
+13:31:08.465|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/specimen/findByUnitID/FOO
+13:31:08.470|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/specimen/findByUnitID/RMNH.AVES.P.1036
+13:31:08.524|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/specimen/query?_querySpec=%7B%22constantScore%22%3Afalse%2C%22conditions%22%3A%5B%7B%22field%22%3A%22FOO%22%2C%22operator%22%3A%22EQUALS%22%2C%22value%22%3A%22BAR%22%2C%22constantScore%22%3Afalse%2C%22boost%22%3A1.0%7D%5D%7D
+13:31:08.531|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/specimen/query?_querySpec=%7B%22constantScore%22%3Afalse%2C%22conditions%22%3A%5B%7B%22field%22%3A%22unitID%22%2C%22operator%22%3A%22EQUALS%22%2C%22value%22%3A%22FOO%22%2C%22constantScore%22%3Afalse%2C%22boost%22%3A1.0%7D%5D%7D
+13:31:08.536|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/specimen/query?_querySpec=%7B%22constantScore%22%3Afalse%2C%22conditions%22%3A%5B%7B%22field%22%3A%22unitID%22%2C%22operator%22%3A%22EQUALS%22%2C%22value%22%3A%22RMNH.AVES.P.1036%22%2C%22constantScore%22%3Afalse%2C%22boost%22%3A1.0%7D%5D%7D
+13:31:08.541|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/specimen/find/FOO
+13:31:08.546|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/specimen/find/RMNH.AVES.P.1036@CRS
+13:31:08.550|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/specimen/count?_querySpec=%7B%22constantScore%22%3Afalse%2C%22conditions%22%3A%5B%7B%22field%22%3A%22FOO%22%2C%22operator%22%3A%22EQUALS%22%2C%22value%22%3A%22BAR%22%2C%22constantScore%22%3Afalse%2C%22boost%22%3A1.0%7D%5D%7D
+13:31:08.555|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/specimen/count?_querySpec=%7B%22constantScore%22%3Afalse%2C%22conditions%22%3A%5B%7B%22field%22%3A%22unitID%22%2C%22operator%22%3A%22EQUALS%22%2C%22value%22%3A%22FOO%22%2C%22constantScore%22%3Afalse%2C%22boost%22%3A1.0%7D%5D%7D
+13:31:08.559|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/specimen/count?_querySpec=%7B%22constantScore%22%3Afalse%2C%22conditions%22%3A%5B%7B%22field%22%3A%22unitID%22%2C%22operator%22%3A%22EQUALS%22%2C%22value%22%3A%22RMNH.AVES.P.1036%22%2C%22constantScore%22%3Afalse%2C%22boost%22%3A1.0%7D%5D%7D
+13:31:08.563|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/specimen/getDistinctValues/collectionType
+13:31:08.567|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/specimen/getDistinctValues/collectionType?_querySpec=%7B%22constantScore%22%3Afalse%2C%22conditions%22%3A%5B%7B%22field%22%3A%22unitID%22%2C%22operator%22%3A%22EQUALS%22%2C%22value%22%3A%22RMNH.AVES.P.1036%22%2C%22constantScore%22%3Afalse%2C%22boost%22%3A1.0%7D%5D%7D
+13:31:08.571|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/specimen/dwca/query?_querySpec=%7B%22constantScore%22%3Afalse%2C%22conditions%22%3A%5B%7B%22field%22%3A%22identifications.defaultClassification.genus%22%2C%22operator%22%3A%22EQUALS%22%2C%22value%22%3A%22Parus%22%2C%22constantScore%22%3Afalse%2C%22boost%22%3A1.0%7D%5D%7D
+13:31:08.575|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/specimen/dwca/query?_querySpec=%7B%22constantScore%22%3Afalse%2C%22conditions%22%3A%5B%7B%22field%22%3A%22FOO%22%2C%22operator%22%3A%22EQUALS%22%2C%22value%22%3A%22BAR%22%2C%22constantScore%22%3Afalse%2C%22boost%22%3A1.0%7D%5D%7D
+13:31:08.581|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/specimen/dwca/getDataSet/FOO
+13:31:08.584|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/specimen/dwca/getDataSet/collembola
+13:31:08.591|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/specimen/groupByScientificName?_querySpec=%7B%22constantScore%22%3Afalse%2C%22conditions%22%3A%5B%7B%22field%22%3A%22identifications.defaultClassification.genus%22%2C%22operator%22%3A%22EQUALS%22%2C%22value%22%3A%22Parus%22%2C%22constantScore%22%3Afalse%2C%22boost%22%3A1.0%7D%5D%2C%22noTaxa%22%3Afalse%7D
+13:31:08.596|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/taxon/dwca/query?_querySpec=%7B%22constantScore%22%3Afalse%2C%22conditions%22%3A%5B%7B%22field%22%3A%22acceptedName.genusOrMonomial%22%2C%22operator%22%3A%22EQUALS%22%2C%22value%22%3A%22Parus%22%2C%22constantScore%22%3Afalse%2C%22boost%22%3A1.0%7D%5D%7D
+13:31:08.600|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/taxon/dwca/query?_querySpec=%7B%22constantScore%22%3Afalse%2C%22conditions%22%3A%5B%7B%22field%22%3A%22FOO%22%2C%22operator%22%3A%22EQUALS%22%2C%22value%22%3A%22BAR%22%2C%22constantScore%22%3Afalse%2C%22boost%22%3A1.0%7D%5D%7D
+13:31:08.603|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/taxon/dwca/getDataSet/FOO
+13:31:08.607|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/taxon/groupByScientificName?_querySpec=%7B%22constantScore%22%3Afalse%2C%22conditions%22%3A%5B%7B%22field%22%3A%22acceptedName.genusOrMonomial%22%2C%22operator%22%3A%22EQUALS%22%2C%22value%22%3A%22Parus%22%2C%22constantScore%22%3Afalse%2C%22boost%22%3A1.0%7D%5D%2C%22noTaxa%22%3Afalse%7D
+13:32:37.247|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/geo/getGeoJsonForLocality/FOO
+13:32:39.273|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/geo/getGeoJsonForLocality/Amsterdam
+13:32:39.303|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/specimen/findByUnitID/FOO
+13:32:39.520|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/specimen/findByUnitID/RMNH.AVES.P.1036
+13:32:39.660|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/specimen/query?_querySpec=%7B%22constantScore%22%3Afalse%2C%22conditions%22%3A%5B%7B%22field%22%3A%22FOO%22%2C%22operator%22%3A%22EQUALS%22%2C%22value%22%3A%22BAR%22%2C%22constantScore%22%3Afalse%2C%22boost%22%3A1.0%7D%5D%7D
+13:32:39.711|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/specimen/query?_querySpec=%7B%22constantScore%22%3Afalse%2C%22conditions%22%3A%5B%7B%22field%22%3A%22unitID%22%2C%22operator%22%3A%22EQUALS%22%2C%22value%22%3A%22FOO%22%2C%22constantScore%22%3Afalse%2C%22boost%22%3A1.0%7D%5D%7D
+13:32:39.738|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/specimen/query?_querySpec=%7B%22constantScore%22%3Afalse%2C%22conditions%22%3A%5B%7B%22field%22%3A%22unitID%22%2C%22operator%22%3A%22EQUALS%22%2C%22value%22%3A%22RMNH.AVES.P.1036%22%2C%22constantScore%22%3Afalse%2C%22boost%22%3A1.0%7D%5D%7D
+13:32:39.761|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/specimen/find/FOO
+13:32:39.777|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/specimen/find/RMNH.AVES.P.1036@CRS
+13:32:39.785|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/specimen/count?_querySpec=%7B%22constantScore%22%3Afalse%2C%22conditions%22%3A%5B%7B%22field%22%3A%22FOO%22%2C%22operator%22%3A%22EQUALS%22%2C%22value%22%3A%22BAR%22%2C%22constantScore%22%3Afalse%2C%22boost%22%3A1.0%7D%5D%7D
+13:32:39.804|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/specimen/count?_querySpec=%7B%22constantScore%22%3Afalse%2C%22conditions%22%3A%5B%7B%22field%22%3A%22unitID%22%2C%22operator%22%3A%22EQUALS%22%2C%22value%22%3A%22FOO%22%2C%22constantScore%22%3Afalse%2C%22boost%22%3A1.0%7D%5D%7D
+13:32:39.818|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/specimen/count?_querySpec=%7B%22constantScore%22%3Afalse%2C%22conditions%22%3A%5B%7B%22field%22%3A%22unitID%22%2C%22operator%22%3A%22EQUALS%22%2C%22value%22%3A%22RMNH.AVES.P.1036%22%2C%22constantScore%22%3Afalse%2C%22boost%22%3A1.0%7D%5D%7D
+13:32:39.837|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/specimen/getDistinctValues/collectionType
+13:32:39.867|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/specimen/getDistinctValues/collectionType?_querySpec=%7B%22constantScore%22%3Afalse%2C%22conditions%22%3A%5B%7B%22field%22%3A%22unitID%22%2C%22operator%22%3A%22EQUALS%22%2C%22value%22%3A%22RMNH.AVES.P.1036%22%2C%22constantScore%22%3Afalse%2C%22boost%22%3A1.0%7D%5D%7D
+13:32:39.881|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/specimen/dwca/query?_querySpec=%7B%22constantScore%22%3Afalse%2C%22conditions%22%3A%5B%7B%22field%22%3A%22identifications.defaultClassification.genus%22%2C%22operator%22%3A%22EQUALS%22%2C%22value%22%3A%22Parus%22%2C%22constantScore%22%3Afalse%2C%22boost%22%3A1.0%7D%5D%7D
+13:32:40.585|INFO |nl.naturalis.nba.client.SpecimenClient: Downloading DarwinCore archive
+13:32:41.149|INFO |nl.naturalis.nba.client.SpecimenClient: DarwinCore archive download complete
+13:32:41.149|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/specimen/dwca/query?_querySpec=%7B%22constantScore%22%3Afalse%2C%22conditions%22%3A%5B%7B%22field%22%3A%22FOO%22%2C%22operator%22%3A%22EQUALS%22%2C%22value%22%3A%22BAR%22%2C%22constantScore%22%3Afalse%2C%22boost%22%3A1.0%7D%5D%7D
+13:32:41.221|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/specimen/dwca/getDataSet/FOO
+13:32:41.232|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/specimen/dwca/getDataSet/collembola
+13:32:41.307|INFO |nl.naturalis.nba.client.SpecimenClient: Downloading DarwinCore archive
+13:32:41.310|INFO |nl.naturalis.nba.client.SpecimenClient: DarwinCore archive download complete
+13:32:41.314|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/specimen/groupByScientificName?_querySpec=%7B%22constantScore%22%3Afalse%2C%22conditions%22%3A%5B%7B%22field%22%3A%22identifications.defaultClassification.genus%22%2C%22operator%22%3A%22EQUALS%22%2C%22value%22%3A%22Parus%22%2C%22constantScore%22%3Afalse%2C%22boost%22%3A1.0%7D%5D%2C%22noTaxa%22%3Afalse%7D
+13:32:41.879|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/taxon/dwca/query?_querySpec=%7B%22constantScore%22%3Afalse%2C%22conditions%22%3A%5B%7B%22field%22%3A%22acceptedName.genusOrMonomial%22%2C%22operator%22%3A%22EQUALS%22%2C%22value%22%3A%22Parus%22%2C%22constantScore%22%3Afalse%2C%22boost%22%3A1.0%7D%5D%7D
+13:32:41.950|INFO |nl.naturalis.nba.client.TaxonClient: Downloading DarwinCore archive
+13:32:41.953|INFO |nl.naturalis.nba.client.TaxonClient: DarwinCore archive download complete
+13:32:41.954|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/taxon/dwca/query?_querySpec=%7B%22constantScore%22%3Afalse%2C%22conditions%22%3A%5B%7B%22field%22%3A%22FOO%22%2C%22operator%22%3A%22EQUALS%22%2C%22value%22%3A%22BAR%22%2C%22constantScore%22%3Afalse%2C%22boost%22%3A1.0%7D%5D%7D
+13:32:42.001|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/taxon/dwca/getDataSet/FOO
+13:32:42.016|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/taxon/groupByScientificName?_querySpec=%7B%22constantScore%22%3Afalse%2C%22conditions%22%3A%5B%7B%22field%22%3A%22acceptedName.genusOrMonomial%22%2C%22operator%22%3A%22EQUALS%22%2C%22value%22%3A%22Parus%22%2C%22constantScore%22%3Afalse%2C%22boost%22%3A1.0%7D%5D%2C%22noTaxa%22%3Afalse%7D
+13:40:12.776|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/geo/getGeoJsonForLocality/FOO
+13:40:13.031|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/geo/getGeoJsonForLocality/Amsterdam
+13:40:13.276|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/specimen/findByUnitID/FOO
+13:40:13.442|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/specimen/findByUnitID/RMNH.AVES.P.1036
+13:40:13.498|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/specimen/query?_querySpec=%7B%22constantScore%22%3Afalse%2C%22conditions%22%3A%5B%7B%22field%22%3A%22FOO%22%2C%22operator%22%3A%22EQUALS%22%2C%22value%22%3A%22BAR%22%2C%22constantScore%22%3Afalse%2C%22boost%22%3A1.0%7D%5D%7D
+13:40:13.533|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/specimen/query?_querySpec=%7B%22constantScore%22%3Afalse%2C%22conditions%22%3A%5B%7B%22field%22%3A%22unitID%22%2C%22operator%22%3A%22EQUALS%22%2C%22value%22%3A%22FOO%22%2C%22constantScore%22%3Afalse%2C%22boost%22%3A1.0%7D%5D%7D
+13:40:13.555|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/specimen/query?_querySpec=%7B%22constantScore%22%3Afalse%2C%22conditions%22%3A%5B%7B%22field%22%3A%22unitID%22%2C%22operator%22%3A%22EQUALS%22%2C%22value%22%3A%22RMNH.AVES.P.1036%22%2C%22constantScore%22%3Afalse%2C%22boost%22%3A1.0%7D%5D%7D
+13:40:13.579|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/specimen/find/FOO
+13:40:13.591|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/specimen/find/RMNH.AVES.P.1036@CRS
+13:40:13.601|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/specimen/count?_querySpec=%7B%22constantScore%22%3Afalse%2C%22conditions%22%3A%5B%7B%22field%22%3A%22FOO%22%2C%22operator%22%3A%22EQUALS%22%2C%22value%22%3A%22BAR%22%2C%22constantScore%22%3Afalse%2C%22boost%22%3A1.0%7D%5D%7D
+13:40:13.616|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/specimen/count?_querySpec=%7B%22constantScore%22%3Afalse%2C%22conditions%22%3A%5B%7B%22field%22%3A%22unitID%22%2C%22operator%22%3A%22EQUALS%22%2C%22value%22%3A%22FOO%22%2C%22constantScore%22%3Afalse%2C%22boost%22%3A1.0%7D%5D%7D
+13:40:13.631|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/specimen/count?_querySpec=%7B%22constantScore%22%3Afalse%2C%22conditions%22%3A%5B%7B%22field%22%3A%22unitID%22%2C%22operator%22%3A%22EQUALS%22%2C%22value%22%3A%22RMNH.AVES.P.1036%22%2C%22constantScore%22%3Afalse%2C%22boost%22%3A1.0%7D%5D%7D
+13:40:13.645|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/specimen/getDistinctValues/collectionType
+13:40:13.659|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/specimen/getDistinctValues/collectionType?_querySpec=%7B%22constantScore%22%3Afalse%2C%22conditions%22%3A%5B%7B%22field%22%3A%22unitID%22%2C%22operator%22%3A%22EQUALS%22%2C%22value%22%3A%22RMNH.AVES.P.1036%22%2C%22constantScore%22%3Afalse%2C%22boost%22%3A1.0%7D%5D%7D
+13:40:13.677|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/specimen/dwca/query?_querySpec=%7B%22constantScore%22%3Afalse%2C%22conditions%22%3A%5B%7B%22field%22%3A%22identifications.defaultClassification.genus%22%2C%22operator%22%3A%22EQUALS%22%2C%22value%22%3A%22Parus%22%2C%22constantScore%22%3Afalse%2C%22boost%22%3A1.0%7D%5D%7D
+13:40:13.952|INFO |nl.naturalis.nba.client.SpecimenClient: Downloading DarwinCore archive
+13:40:14.451|INFO |nl.naturalis.nba.client.SpecimenClient: DarwinCore archive download complete
+13:40:14.452|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/specimen/dwca/query?_querySpec=%7B%22constantScore%22%3Afalse%2C%22conditions%22%3A%5B%7B%22field%22%3A%22FOO%22%2C%22operator%22%3A%22EQUALS%22%2C%22value%22%3A%22BAR%22%2C%22constantScore%22%3Afalse%2C%22boost%22%3A1.0%7D%5D%7D
+13:40:14.508|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/specimen/dwca/getDataSet/FOO
+13:40:14.516|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/specimen/dwca/getDataSet/collembola
+13:40:14.581|INFO |nl.naturalis.nba.client.SpecimenClient: Downloading DarwinCore archive
+13:40:14.583|INFO |nl.naturalis.nba.client.SpecimenClient: DarwinCore archive download complete
+13:40:14.586|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/specimen/groupByScientificName?_querySpec=%7B%22constantScore%22%3Afalse%2C%22conditions%22%3A%5B%7B%22field%22%3A%22identifications.defaultClassification.genus%22%2C%22operator%22%3A%22EQUALS%22%2C%22value%22%3A%22Parus%22%2C%22constantScore%22%3Afalse%2C%22boost%22%3A1.0%7D%5D%2C%22noTaxa%22%3Afalse%7D
+13:40:14.949|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/taxon/dwca/query?_querySpec=%7B%22constantScore%22%3Afalse%2C%22conditions%22%3A%5B%7B%22field%22%3A%22acceptedName.genusOrMonomial%22%2C%22operator%22%3A%22EQUALS%22%2C%22value%22%3A%22Parus%22%2C%22constantScore%22%3Afalse%2C%22boost%22%3A1.0%7D%5D%7D
+13:40:15.004|INFO |nl.naturalis.nba.client.TaxonClient: Downloading DarwinCore archive
+13:40:15.005|INFO |nl.naturalis.nba.client.TaxonClient: DarwinCore archive download complete
+13:40:15.006|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/taxon/dwca/query?_querySpec=%7B%22constantScore%22%3Afalse%2C%22conditions%22%3A%5B%7B%22field%22%3A%22FOO%22%2C%22operator%22%3A%22EQUALS%22%2C%22value%22%3A%22BAR%22%2C%22constantScore%22%3Afalse%2C%22boost%22%3A1.0%7D%5D%7D
+13:40:15.045|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/taxon/dwca/getDataSet/FOO
+13:40:15.079|INFO |nl.naturalis.nba.client.ClientUtil: Sending GET request:
+http://localhost:8080/v2/taxon/groupByScientificName?_querySpec=%7B%22constantScore%22%3Afalse%2C%22conditions%22%3A%5B%7B%22field%22%3A%22acceptedName.genusOrMonomial%22%2C%22operator%22%3A%22EQUALS%22%2C%22value%22%3A%22Parus%22%2C%22constantScore%22%3Afalse%2C%22boost%22%3A1.0%7D%5D%2C%22noTaxa%22%3Afalse%7D

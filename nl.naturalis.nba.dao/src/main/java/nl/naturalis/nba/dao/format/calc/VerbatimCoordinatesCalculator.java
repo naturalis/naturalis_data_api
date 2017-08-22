@@ -12,6 +12,14 @@ import nl.naturalis.nba.dao.format.CalculatorInitializationException;
 import nl.naturalis.nba.dao.format.EntityObject;
 import nl.naturalis.nba.dao.format.ICalculator;
 
+/**
+ * A calculator for the verbatimCoordinates field in a DarwinCore archive for
+ * specimens. Assumes the {@link EntityObject entity object} is a plain
+ * {@link Specimen} document.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public class VerbatimCoordinatesCalculator implements ICalculator {
 
 	@Override

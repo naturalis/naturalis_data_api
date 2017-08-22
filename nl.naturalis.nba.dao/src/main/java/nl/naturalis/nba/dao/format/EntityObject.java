@@ -24,15 +24,16 @@ import nl.naturalis.nba.dao.DocumentType;
  * then fed one by one to the class responsible for printing the CSV records.
  * </p>
  * <p>
- * An entity object maintains a direct reference to the Elasticsearch document
+ * An entity object still maintains a reference to the Elasticsearch document
  * from which it was extracted, because you might want to include data from it
  * in your CSV record. For example, if you are printing records containing
  * literature references for taxa, you might still want to print the ID of the
  * taxon that the literature reference refers to. An entity object also
  * maintains a reference to its direct parent object. This becomes important if
- * you want to include some data from the parent object in the CSV record (if
- * the parent object is itself an array or list element, you cannot navigate
- * unambiguously from the root of the document to the entity object).
+ * you want to include some data from the parent object in the CSV record. If
+ * the parent object or any of its ancestors is itself an array or list element,
+ * you need to know which element in the array or list is the entity object's
+ * parent.
  * </p>
  * 
  * See also {@link Entity#toString()}.

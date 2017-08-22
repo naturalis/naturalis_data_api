@@ -9,6 +9,15 @@ import nl.naturalis.nba.dao.format.CalculatorInitializationException;
 import nl.naturalis.nba.dao.format.EntityObject;
 import nl.naturalis.nba.dao.format.ICalculator;
 
+/**
+ * A calculator for the taxonID field in a DarwinCore archive for taxa <i>if</i>
+ * the CSV record being written is a synonym rather than an accepted name.
+ * Assumes the {@link EntityObject entity object} is a plain {@link Taxon}
+ * document.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public class SynonymIdCalculator implements ICalculator {
 
 	@Override

@@ -72,6 +72,6 @@ class NdffImportUtil {
 
 	private static File getDataDir()
 	{
-		return DaoRegistry.getInstance().getConfiguration().getDirectory("ndff.csv_dir");
+		return DaoRegistry.getInstance().getConfiguration().getDirectory("ndff.data.dir");
 	}
 }

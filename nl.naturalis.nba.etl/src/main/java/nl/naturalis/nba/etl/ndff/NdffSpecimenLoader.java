@@ -8,24 +8,17 @@ import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.Loader;
 
+/**
+ * The loader component in the ETL cycle for NDFF specimens.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public class NdffSpecimenLoader extends Loader<Specimen> {
 
 	public NdffSpecimenLoader(ETLStatistics stats, int treshold)
 	{
 		super(SPECIMEN, treshold, stats);
-	}
-
-	@Override
-	protected IdGenerator<Specimen> getIdGenerator()
-	{
-		return new IdGenerator<Specimen>() {
-
-			@Override
-			public String getId(Specimen obj)
-			{
-				return getElasticsearchId(CRS, obj.getUnitID());
-			}
-		};
 	}
 
 }

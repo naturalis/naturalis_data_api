@@ -17,13 +17,14 @@ import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.etl.AbstractCSVTransformer;
 import nl.naturalis.nba.etl.ETLStatistics;
+
 /**
  * The transformer component for the NDFF specimen import.
  * 
  * @author Ayco Holleman
+ * @author Tom Gilissen
  *
  */
-
 public class NdffSpecimenTransformer extends AbstractCSVTransformer<NdffCsvField, Specimen> {
 
 	//private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -46,6 +47,7 @@ public class NdffSpecimenTransformer extends AbstractCSVTransformer<NdffCsvField
 		stats.objectsProcessed++;
 		try {
 			Specimen specimen = new Specimen();
+			specimen.setId(objectID + "@" + SourceSystem.NDFF.getCode());
 			specimen.setSourceSystem(SourceSystem.NDFF);
 			specimen.setSourceSystemId(objectID);
 			specimen.setUnitID(objectID);
@@ -77,6 +79,7 @@ public class NdffSpecimenTransformer extends AbstractCSVTransformer<NdffCsvField
 			coords.setGridLongitudeDecimal(getCoordinate(rd_x_5km));
 			coords.setGridCellSystem("Amersfoort");
 			stats.objectsAccepted++;
+			logger.info("ID: {}", specimen.getId());
 			return Arrays.asList(specimen);
 		}
 		catch (Throwable t) {

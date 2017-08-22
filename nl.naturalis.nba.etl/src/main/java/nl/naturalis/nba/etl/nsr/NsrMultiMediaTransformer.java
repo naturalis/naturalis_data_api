@@ -36,6 +36,7 @@ import nl.naturalis.nba.etl.NameMismatchException;
  * Transforms and validates NSR source data.
  * 
  * @author Ayco Holleman
+ * @author Tom Gilissen
  *
  */
 class NsrMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> {

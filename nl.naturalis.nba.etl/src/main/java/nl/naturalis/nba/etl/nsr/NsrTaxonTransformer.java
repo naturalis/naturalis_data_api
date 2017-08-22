@@ -43,6 +43,7 @@ import nl.naturalis.nba.utils.DOMUtil;
  * The transformer component in the NSR ETL cycle for taxa.
  * 
  * @author Ayco Holleman
+ * @author Tom Gilissen
  *
  */
 class NsrTaxonTransformer extends AbstractXMLTransformer<Taxon> {

@@ -25,6 +25,7 @@ import nl.naturalis.nba.api.model.MultiMediaContentIdentification;
 import nl.naturalis.nba.api.model.MultiMediaGatheringEvent;
 import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.api.model.ServiceAccessPoint;
+import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.common.es.ESDateInput;
 import nl.naturalis.nba.etl.AbstractXMLTransformer;
@@ -113,6 +114,7 @@ class NsrMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 			MultiMediaObject mmo = newMediaObject();
 			String uriHash = String.valueOf(uri.hashCode()).replace('-', '0');
 			mmo.setSourceSystemId(objectID + '_' + uriHash);
+			mmo.setId(mmo.getSourceSystemId() + "@" + SourceSystem.NSR.getCode());
 			mmo.setUnitID(mmo.getSourceSystemId());
 			String format = getValue(e, "mime_type");
 			if (format == null || format.length() == 0) {

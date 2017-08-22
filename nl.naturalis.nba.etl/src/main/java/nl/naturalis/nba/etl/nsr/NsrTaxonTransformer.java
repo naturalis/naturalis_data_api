@@ -29,6 +29,7 @@ import nl.naturalis.nba.api.model.Organization;
 import nl.naturalis.nba.api.model.Person;
 import nl.naturalis.nba.api.model.Reference;
 import nl.naturalis.nba.api.model.ScientificName;
+import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.api.model.TaxonDescription;
 import nl.naturalis.nba.api.model.TaxonomicStatus;
@@ -86,6 +87,7 @@ class NsrTaxonTransformer extends AbstractXMLTransformer<Taxon> {
 				return null;
 			}
 			Taxon taxon = new Taxon();
+			taxon.setId(objectID + "@" + SourceSystem.NSR.getCode());
 			if (!addScientificNames(taxon)) {
 				return null;
 			}

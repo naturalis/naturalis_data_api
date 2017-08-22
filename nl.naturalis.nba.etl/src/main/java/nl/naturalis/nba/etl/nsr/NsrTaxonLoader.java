@@ -21,17 +21,4 @@ class NsrTaxonLoader extends Loader<Taxon> {
 		super(TAXON, queueSize, stats);
 	}
 
-	@Override
-	protected IdGenerator<Taxon> getIdGenerator()
-	{
-		return new IdGenerator<Taxon>() {
-
-			@Override
-			public String getId(Taxon obj)
-			{
-				return getElasticsearchId(NSR, obj.getSourceSystemId());
-			}
-		};
-	}
-
 }

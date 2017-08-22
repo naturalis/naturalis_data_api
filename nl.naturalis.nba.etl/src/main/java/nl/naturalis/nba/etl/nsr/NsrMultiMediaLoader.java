@@ -21,17 +21,4 @@ public class NsrMultiMediaLoader extends Loader<MultiMediaObject> {
 		super(MULTI_MEDIA_OBJECT, queueSize, stats);
 	}
 
-	@Override
-	protected IdGenerator<MultiMediaObject> getIdGenerator()
-	{
-		return new IdGenerator<MultiMediaObject>() {
-
-			@Override
-			public String getId(MultiMediaObject obj)
-			{
-				return getElasticsearchId(NSR, obj.getSourceSystemId());
-			}
-		};
-	}
-
 }

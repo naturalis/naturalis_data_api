@@ -18,7 +18,6 @@ import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.exception.DaoException;
-import nl.naturalis.nba.utils.debug.DebugUtil;
 
 public class BulkIndexer<T extends IDocumentObject> {
 
@@ -48,10 +47,11 @@ public class BulkIndexer<T extends IDocumentObject> {
 		 */
 		for (int i = 0; i < objs.size(); i++) {
 			ids[i] = objs.get(i).getId();
-		}
-		for (int i = 0; i < objs.size(); i++) {
 			objs.get(i).setId(null);
 		}
+//		for (int i = 0; i < objs.size(); i++) {
+//			objs.get(i).setId(null);
+//		}
 		index(objs, Arrays.asList(ids), null);
 		for (int i = 0; i < objs.size(); i++) {
 			objs.get(i).setId(ids[i]);

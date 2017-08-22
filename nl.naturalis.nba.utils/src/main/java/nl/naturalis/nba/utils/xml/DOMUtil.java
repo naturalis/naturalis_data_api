@@ -1,4 +1,4 @@
-package nl.naturalis.nba.utils;
+package nl.naturalis.nba.utils.xml;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,6 +14,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
+
+import nl.naturalis.nba.utils.StringUtil;
 
 /**
  * W3C DOM utilities.

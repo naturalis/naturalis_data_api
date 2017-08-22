@@ -8,8 +8,8 @@ import static nl.naturalis.nba.etl.ETLUtil.getTestGenera;
 import static nl.naturalis.nba.etl.TransformUtil.equalizeNameComponents;
 import static nl.naturalis.nba.etl.TransformUtil.guessMimeType;
 import static nl.naturalis.nba.etl.nsr.NsrImportUtil.val;
-import static nl.naturalis.nba.utils.DOMUtil.getDescendants;
-import static nl.naturalis.nba.utils.DOMUtil.getValue;
+import static nl.naturalis.nba.utils.xml.DOMUtil.getDescendants;
+import static nl.naturalis.nba.utils.xml.DOMUtil.getValue;
 
 import java.net.URI;
 import java.net.URISyntaxException;

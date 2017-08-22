@@ -27,7 +27,7 @@ import org.xml.sax.SAXException;
 
 import nl.naturalis.nba.dao.DaoRegistry;
 import nl.naturalis.nba.utils.ConfigObject;
-import nl.naturalis.nba.utils.DOMUtil;
+import nl.naturalis.nba.utils.xml.DOMUtil;
 
 /**
  * Utility class for searching the locally stored XML files for a value.

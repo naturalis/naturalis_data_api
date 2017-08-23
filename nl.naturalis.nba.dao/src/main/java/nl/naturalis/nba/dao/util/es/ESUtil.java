@@ -47,7 +47,6 @@ import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.IndexInfo;
 import nl.naturalis.nba.dao.exception.DaoException;
-import nl.naturalis.nba.utils.debug.DebugUtil;
 
 /**
  * Methods for interacting with Elasticsearch, mostly intended to be used for

@@ -323,13 +323,6 @@ public enum ComparisonOperator
 				if (s.equalsIgnoreCase(op.name())) {
 					return op;
 				}
-				/* Remove when Bioportal has made the switch : */
-				if (s.equalsIgnoreCase("LIKE")) {
-					return CONTAINS;
-				}
-				if (s.equalsIgnoreCase("NOT_LIKE")) {
-					return NOT_CONTAINS;
-				}
 			}
 		}
 		throw new IllegalArgumentException("No such comparison operator: " + s);

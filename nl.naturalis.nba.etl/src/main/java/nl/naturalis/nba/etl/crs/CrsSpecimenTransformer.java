@@ -269,7 +269,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 				sn.setFullScientificName(sb.toString().trim());
 		}
 		if (collectionType.equals("Mineralogy and Petrology") || collectionType.equals("Mineralogy") || collectionType.equals("Mineralogy and Petrology")) {
-			sn.setScientificNameGroup(sn.getFullScientificName());
+			sn.setScientificNameGroup(sn.getFullScientificName().toLowerCase());
 		}
 		else {
 			TransformUtil.setScientificNameGroup(sn);

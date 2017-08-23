@@ -84,6 +84,7 @@ public class DirtyDocumentIterator<T extends IDocumentObject> implements IDocume
 	 * 
 	 * @return
 	 */
+	@Override
 	public long size()
 	{
 		checkReady();

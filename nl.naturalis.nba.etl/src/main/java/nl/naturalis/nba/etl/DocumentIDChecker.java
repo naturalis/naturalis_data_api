@@ -5,7 +5,6 @@ import static nl.naturalis.nba.etl.ETLUtil.logDuration;
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.index.IndexNotFoundException;
 
-import nl.naturalis.nba.api.InvalidConditionException;
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.IDocumentObject;

@@ -42,7 +42,7 @@ public class DocumentIDChecker {
 	}
 
 	
-	public <T> DocumentIDChecker(DocumentType<?> dt)
+	public DocumentIDChecker(DocumentType<?> dt)
 	{
 		this.dt = dt;
 	}

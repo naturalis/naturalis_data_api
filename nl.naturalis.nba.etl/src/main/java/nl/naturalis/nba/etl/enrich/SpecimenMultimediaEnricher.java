@@ -1,7 +1,7 @@
 package nl.naturalis.nba.etl.enrich;
 
 import static nl.naturalis.nba.dao.DocumentType.SPECIMEN;
-import static nl.naturalis.nba.etl.ETLConstants.SYS_PROP_ENRICH_READ_BATCH_SIZE;
+import static nl.naturalis.nba.etl.ETLConstants.*;
 import static nl.naturalis.nba.etl.ETLConstants.SYS_PROP_ENRICH_WRITE_BATCH_SIZE;
 import static nl.naturalis.nba.etl.ETLUtil.getLogger;
 import static nl.naturalis.nba.etl.ETLUtil.logDuration;
@@ -33,6 +33,7 @@ import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.BulkIndexException;
 import nl.naturalis.nba.etl.BulkIndexer;
 import nl.naturalis.nba.etl.ETLRuntimeException;
+import nl.naturalis.nba.utils.ConfigObject;
 import nl.naturalis.nba.utils.IOUtil;
 
 public class SpecimenMultimediaEnricher {
@@ -65,6 +66,10 @@ public class SpecimenMultimediaEnricher {
 
 	public void enrich() throws IOException, BulkIndexException
 	{
+		if (ConfigObject.isEnabled(SYSPROP_DRY_RUN)) {
+			logger.info("Enrichment skipped dry run mode");
+			return;
+		}
 		long start = System.currentTimeMillis();
 		tempFile = createTempFile(getClass().getSimpleName());
 		logger.info("Writing enriched specimens to " + tempFile.getAbsolutePath());
@@ -114,6 +119,7 @@ public class SpecimenMultimediaEnricher {
 
 	private void importTempFile() throws IOException, BulkIndexException
 	{
+		boolean dryRun = ConfigObject.isEnabled(SYSPROP_DRY_RUN);
 		BulkIndexer<Specimen> indexer = new BulkIndexer<>(SPECIMEN);
 		List<Specimen> batch = new ArrayList<>(writeBatchSize);
 		LineNumberReader lnr = null;
@@ -126,7 +132,9 @@ public class SpecimenMultimediaEnricher {
 				Specimen specimen = JsonUtil.deserialize(line, Specimen.class);
 				batch.add(specimen);
 				if (batch.size() == writeBatchSize) {
-					indexer.index(batch);
+					if (!dryRun) {
+						indexer.index(batch);
+					}
 					batch.clear();
 				}
 				if (++processed % 100000 == 0) {

@@ -1,14 +1,15 @@
 package nl.naturalis.nba.etl.enrich;
 
 import static nl.naturalis.nba.dao.DocumentType.SPECIMEN;
+import static nl.naturalis.nba.etl.ETLConstants.SYSPROP_DRY_RUN;
 import static nl.naturalis.nba.etl.ETLConstants.SYS_PROP_ENRICH_READ_BATCH_SIZE;
 import static nl.naturalis.nba.etl.ETLConstants.SYS_PROP_ENRICH_WRITE_BATCH_SIZE;
 import static nl.naturalis.nba.etl.ETLUtil.getLogger;
 import static nl.naturalis.nba.etl.ETLUtil.logDuration;
 import static nl.naturalis.nba.etl.enrich.EnrichmentUtil.NOT_ENRICHABLE;
 import static nl.naturalis.nba.etl.enrich.EnrichmentUtil.createEnrichments;
-import static nl.naturalis.nba.etl.enrich.EnrichmentUtil.createTempFile;
 import static nl.naturalis.nba.etl.enrich.EnrichmentUtil.createTaxonLookupTableForSpecimens;
+import static nl.naturalis.nba.etl.enrich.EnrichmentUtil.createTempFile;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -37,6 +38,7 @@ import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.BulkIndexException;
 import nl.naturalis.nba.etl.BulkIndexer;
 import nl.naturalis.nba.etl.ETLRuntimeException;
+import nl.naturalis.nba.utils.ConfigObject;
 import nl.naturalis.nba.utils.IOUtil;
 
 public class SpecimenTaxonomicEnricher2 {
@@ -115,6 +117,7 @@ public class SpecimenTaxonomicEnricher2 {
 
 	private void importFromTempFile() throws IOException, BulkIndexException
 	{
+		boolean dryRun = ConfigObject.isEnabled(SYSPROP_DRY_RUN);
 		BulkIndexer<Specimen> indexer = new BulkIndexer<>(SPECIMEN);
 		List<Specimen> batch = new ArrayList<>(writeBatchSize);
 		LineNumberReader lnr = null;
@@ -127,7 +130,9 @@ public class SpecimenTaxonomicEnricher2 {
 				Specimen specimen = JsonUtil.deserialize(line, Specimen.class);
 				batch.add(specimen);
 				if (batch.size() == writeBatchSize) {
-					indexer.index(batch);
+					if (!dryRun) {
+						indexer.index(batch);
+					}
 					batch.clear();
 				}
 				if (++processed % 100000 == 0) {

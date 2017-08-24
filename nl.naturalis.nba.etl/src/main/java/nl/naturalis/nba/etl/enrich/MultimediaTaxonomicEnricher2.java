@@ -1,6 +1,7 @@
 package nl.naturalis.nba.etl.enrich;
 
 import static nl.naturalis.nba.dao.DocumentType.MULTI_MEDIA_OBJECT;
+import static nl.naturalis.nba.etl.ETLConstants.SYSPROP_DRY_RUN;
 import static nl.naturalis.nba.etl.ETLConstants.SYS_PROP_ENRICH_READ_BATCH_SIZE;
 import static nl.naturalis.nba.etl.ETLConstants.SYS_PROP_ENRICH_WRITE_BATCH_SIZE;
 import static nl.naturalis.nba.etl.ETLUtil.getLogger;
@@ -37,6 +38,7 @@ import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.BulkIndexException;
 import nl.naturalis.nba.etl.BulkIndexer;
 import nl.naturalis.nba.etl.ETLRuntimeException;
+import nl.naturalis.nba.utils.ConfigObject;
 import nl.naturalis.nba.utils.IOUtil;
 
 public class MultimediaTaxonomicEnricher2 {
@@ -116,6 +118,7 @@ public class MultimediaTaxonomicEnricher2 {
 
 	private void importFromTempFile() throws IOException, BulkIndexException
 	{
+		boolean dryRun = ConfigObject.isEnabled(SYSPROP_DRY_RUN);
 		BulkIndexer<MultiMediaObject> indexer = new BulkIndexer<>(MULTI_MEDIA_OBJECT);
 		List<MultiMediaObject> batch = new ArrayList<>(writeBatchSize);
 		LineNumberReader lnr = null;
@@ -128,7 +131,9 @@ public class MultimediaTaxonomicEnricher2 {
 				MultiMediaObject mmo = JsonUtil.deserialize(line, MultiMediaObject.class);
 				batch.add(mmo);
 				if (batch.size() == writeBatchSize) {
-					indexer.index(batch);
+					if (!dryRun) {
+						indexer.index(batch);
+					}
 					batch.clear();
 				}
 				if (++processed % 100000 == 0) {

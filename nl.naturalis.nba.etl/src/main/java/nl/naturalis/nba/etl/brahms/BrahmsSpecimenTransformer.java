@@ -3,6 +3,7 @@ package nl.naturalis.nba.etl.brahms;
 import static nl.naturalis.nba.api.model.ServiceAccessPoint.Variant.MEDIUM_QUALITY;
 import static nl.naturalis.nba.api.model.SourceSystem.BRAHMS;
 import static nl.naturalis.nba.dao.DocumentType.SPECIMEN;
+import static nl.naturalis.nba.dao.util.es.ESUtil.getElasticsearchId;
 import static nl.naturalis.nba.etl.ETLConstants.BRAHMS_ABCD_COLLECTION_TYPE;
 import static nl.naturalis.nba.etl.ETLConstants.BRAHMS_ABCD_SOURCE_ID;
 import static nl.naturalis.nba.etl.ETLConstants.LICENCE;
@@ -38,7 +39,6 @@ import nl.naturalis.nba.api.model.DefaultClassification;
 import nl.naturalis.nba.api.model.GatheringEvent;
 import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.ServiceAccessPoint;
-import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.api.model.VernacularName;
@@ -78,7 +78,7 @@ class BrahmsSpecimenTransformer extends BrahmsTransformer<Specimen> {
 		stats.objectsProcessed++;
 		try {
 			Specimen specimen = new Specimen();
-			specimen.setId(objectID + "@" + SourceSystem.BRAHMS.getCode());
+			specimen.setId(getElasticsearchId(BRAHMS, objectID));
 			specimen.setSourceSystemId(objectID);
 			specimen.setUnitID(objectID);
 			if (unitIDPattern.matcher(objectID).matches()) {

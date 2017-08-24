@@ -2,6 +2,7 @@ package nl.naturalis.nba.etl.crs;
 
 import static nl.naturalis.nba.api.model.SourceSystem.CRS;
 import static nl.naturalis.nba.dao.DocumentType.SPECIMEN;
+import static nl.naturalis.nba.dao.util.es.ESUtil.getElasticsearchId;
 import static nl.naturalis.nba.etl.ETLConstants.LICENCE;
 import static nl.naturalis.nba.etl.ETLConstants.LICENCE_TYPE;
 import static nl.naturalis.nba.etl.ETLConstants.SOURCE_INSTITUTION_ID;
@@ -28,7 +29,6 @@ import nl.naturalis.nba.api.model.Person;
 import nl.naturalis.nba.api.model.PhaseOrStage;
 import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.Sex;
-import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.api.model.SpecimenTypeStatus;
@@ -148,7 +148,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 			String tmp;
 			specimen.setSourceSystem(CRS);
 			specimen.setUnitID(objectID);
-			specimen.setId(objectID + "@" + SourceSystem.CRS.getCode());
+			specimen.setId(getElasticsearchId(CRS, objectID));
 			specimen.setSourceSystemId(specimen.getUnitID());
 			ThemeCache tsc = ThemeCache.getInstance();
 			List<String> themes = tsc.lookup(objectID, SPECIMEN, CRS);

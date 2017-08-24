@@ -1,5 +1,7 @@
 package nl.naturalis.nba.etl.geo;
 
+import static nl.naturalis.nba.api.model.SourceSystem.GEO;
+import static nl.naturalis.nba.dao.util.es.ESUtil.getElasticsearchId;
 import static nl.naturalis.nba.etl.geo.GeoCsvField.country_nl;
 import static nl.naturalis.nba.etl.geo.GeoCsvField.geojson;
 import static nl.naturalis.nba.etl.geo.GeoCsvField.gid;
@@ -70,7 +72,7 @@ class GeoTransformer extends AbstractCSVTransformer<GeoCsvField, GeoArea> {
 			return null;
 		}
 		GeoArea area = new GeoArea();
-		area.setId(objectID + "@" + SourceSystem.GEO.getCode());
+		area.setId(getElasticsearchId(GEO, objectID));
 		area.setLocality(loc);
 		area.setSourceSystem(SourceSystem.GEO);
 		area.setSourceSystemId(input.get(gid));

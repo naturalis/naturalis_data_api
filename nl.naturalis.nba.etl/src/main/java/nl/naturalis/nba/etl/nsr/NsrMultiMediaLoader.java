@@ -1,8 +1,6 @@
 package nl.naturalis.nba.etl.nsr;
 
-import static nl.naturalis.nba.api.model.SourceSystem.NSR;
 import static nl.naturalis.nba.dao.DocumentType.MULTI_MEDIA_OBJECT;
-import static nl.naturalis.nba.dao.util.es.ESUtil.getElasticsearchId;
 
 import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.etl.ETLStatistics;

@@ -1,5 +1,6 @@
 package nl.naturalis.nba.etl.col;
 
+import static nl.naturalis.nba.api.model.SourceSystem.COL;
 import static nl.naturalis.nba.api.model.TaxonomicRank.CLASS;
 import static nl.naturalis.nba.api.model.TaxonomicRank.FAMILY;
 import static nl.naturalis.nba.api.model.TaxonomicRank.GENUS;
@@ -10,6 +11,7 @@ import static nl.naturalis.nba.api.model.TaxonomicRank.SPECIES;
 import static nl.naturalis.nba.api.model.TaxonomicRank.SUBGENUS;
 import static nl.naturalis.nba.api.model.TaxonomicRank.SUBSPECIES;
 import static nl.naturalis.nba.api.model.TaxonomicRank.SUPER_FAMILY;
+import static nl.naturalis.nba.dao.util.es.ESUtil.getElasticsearchId;
 import static nl.naturalis.nba.etl.ETLUtil.getTestGenera;
 import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.acceptedNameUsageID;
 import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.classRank;
@@ -36,7 +38,6 @@ import java.util.List;
 import nl.naturalis.nba.api.model.DefaultClassification;
 import nl.naturalis.nba.api.model.Monomial;
 import nl.naturalis.nba.api.model.ScientificName;
-import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.api.model.TaxonDescription;
 import nl.naturalis.nba.api.model.TaxonomicStatus;
@@ -110,8 +111,8 @@ class CoLTaxonTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, Taxon
 			stats.recordsAccepted++;
 			stats.objectsProcessed++;
 			Taxon taxon = new Taxon();
-			taxon.setId(objectID + "@" + SourceSystem.COL.getCode());
-			taxon.setSourceSystem(SourceSystem.COL);
+			taxon.setId(getElasticsearchId(COL, objectID));
+			taxon.setSourceSystem(COL);
 			taxon.setSourceSystemId(input.get(taxonID));
 			taxon.setTaxonRank(input.get(taxonRank));
 			taxon.setAcceptedName(getScientificName());

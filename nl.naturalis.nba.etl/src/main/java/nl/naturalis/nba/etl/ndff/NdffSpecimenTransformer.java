@@ -1,5 +1,7 @@
 package nl.naturalis.nba.etl.ndff;
 
+import static nl.naturalis.nba.api.model.SourceSystem.NDFF;
+import static nl.naturalis.nba.dao.util.es.ESUtil.getElasticsearchId;
 import static nl.naturalis.nba.etl.ndff.NdffCsvField.abundance_min;
 import static nl.naturalis.nba.etl.ndff.NdffCsvField.ndff_identity;
 import static nl.naturalis.nba.etl.ndff.NdffCsvField.rd_x_5km;
@@ -12,7 +14,6 @@ import java.util.List;
 import nl.naturalis.nba.api.model.GatheringEvent;
 import nl.naturalis.nba.api.model.GatheringSiteCoordinates;
 import nl.naturalis.nba.api.model.ScientificName;
-import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.etl.AbstractCSVTransformer;
@@ -47,8 +48,8 @@ public class NdffSpecimenTransformer extends AbstractCSVTransformer<NdffCsvField
 		stats.objectsProcessed++;
 		try {
 			Specimen specimen = new Specimen();
-			specimen.setId(objectID + "@" + SourceSystem.NDFF.getCode());
-			specimen.setSourceSystem(SourceSystem.NDFF);
+			specimen.setId(getElasticsearchId(NDFF, objectID));
+			specimen.setSourceSystem(NDFF);
 			specimen.setSourceSystemId(objectID);
 			specimen.setUnitID(objectID);
 			specimen.setRecordBasis("humanObservation");

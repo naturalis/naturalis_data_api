@@ -4,10 +4,10 @@ import static nl.naturalis.nba.api.model.ServiceAccessPoint.Variant.MEDIUM_QUALI
 import static nl.naturalis.nba.api.model.SourceSystem.CRS;
 import static nl.naturalis.nba.dao.DocumentType.MULTI_MEDIA_OBJECT;
 import static nl.naturalis.nba.dao.util.es.ESUtil.getElasticsearchId;
-import static nl.naturalis.nba.etl.ETLUtil.getTestGenera;
 import static nl.naturalis.nba.etl.ETLConstants.LICENCE;
 import static nl.naturalis.nba.etl.ETLConstants.LICENCE_TYPE;
 import static nl.naturalis.nba.etl.ETLConstants.SOURCE_INSTITUTION_ID;
+import static nl.naturalis.nba.etl.ETLUtil.getTestGenera;
 import static nl.naturalis.nba.etl.MimeTypeCache.MEDIALIB_URL_START;
 import static nl.naturalis.nba.etl.normalize.Normalizer.NOT_MAPPED;
 import static nl.naturalis.nba.utils.StringUtil.rpad;
@@ -31,7 +31,6 @@ import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.api.model.Person;
 import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.ServiceAccessPoint;
-import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nba.api.model.SpecimenTypeStatus;
 import nl.naturalis.nba.api.model.VernacularName;
 import nl.naturalis.nba.etl.AbstractXMLTransformer;
@@ -178,7 +177,7 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 					unitID = info.medialibId;
 				}
 				mmo.setUnitID(unitID);
-				mmo.setId(unitID + "@" + SourceSystem.CRS.getCode());
+				mmo.setId(getElasticsearchId(CRS, objectID));
 				mmo.setSourceSystemId(unitID);
 				String title = getTitle(frmDigitaleBestandenElem, unitID);
 				mmo.setTitle(title);

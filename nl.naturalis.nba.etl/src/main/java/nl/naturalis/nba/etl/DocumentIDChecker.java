@@ -2,14 +2,15 @@ package nl.naturalis.nba.etl;
 
 import static nl.naturalis.nba.etl.ETLUtil.logDuration;
 
+import java.util.ArrayList;
+
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.index.IndexNotFoundException;
 
-import nl.naturalis.nba.api.QueryCondition;
+import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.dao.DocumentType;
-import nl.naturalis.nba.dao.exception.DaoException;
 import nl.naturalis.nba.dao.util.es.DirtyDocumentIterator;
 
 /**
@@ -31,13 +32,10 @@ public class DocumentIDChecker {
 		for (DocumentType<?> dt : DocumentType.getAllDocumentTypes()) {
 			try {
 				DocumentIDChecker checker = new DocumentIDChecker(dt);
-				checker.CheckIDs();
+				checker.checkIDs();
 			}
 			catch (IndexNotFoundException e) {
 				logger.warn("There is no index for {} document.", dt.getName());
-			}
-			catch (DaoException e) {
-				logger.warn("Query for retrieving {} documents is incorrect: {}", dt.getName(), e.getMessage());
 			}
 			finally {}
 		}
@@ -56,19 +54,18 @@ public class DocumentIDChecker {
 	 *  
 	 * @throws Exception
 	 */
-	public void CheckIDs() throws Exception
+	public void checkIDs() throws Exception
 	{
 		long start = System.currentTimeMillis();
 		int batchSize = 1000;
 		int processed = 0;
 		int errors = 0;
 		String documentType = dt.getName();
-		String field = "sourceSystemId";
 
 		QuerySpec qs = new QuerySpec();
 		qs.setConstantScore(true);
 		qs.setSize(batchSize);
-		qs.addCondition(new QueryCondition(field, "NOT_EQUALS", null));
+		qs.setFields(new ArrayList<Path>());
 		DirtyDocumentIterator<?> iterator = new DirtyDocumentIterator<>(dt, qs);
 		
 		logger.info("-----------------------------");

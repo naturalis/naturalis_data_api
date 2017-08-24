@@ -142,9 +142,13 @@ class NsrMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 			if (locality != null || date != null) {
 				MultiMediaGatheringEvent ge = new MultiMediaGatheringEvent();
 				mmo.setGatheringEvents(Arrays.asList(ge));
-				ge.setLocalityText(locality);
-				ge.setDateTimeBegin(parseDateTaken(date));
-				ge.setDateTimeEnd(ge.getDateTimeBegin());
+				if (locality != null) {
+					ge.setLocalityText(locality);
+				}
+				if (date != null) {
+					ge.setDateTimeBegin(parseDateTaken(date));
+					ge.setDateTimeEnd(ge.getDateTimeBegin());
+				}
 			}
 			stats.objectsAccepted++;
 			return mmo;

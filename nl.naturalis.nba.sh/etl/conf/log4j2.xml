@@ -4,10 +4,10 @@
 		<Console name="CONSOLE">
 			<PatternLayout pattern="%d{HH:mm:ss.SSS}|%-5level|%c{10}: %msg%n" />
 		</Console>
-		<File name="FILE" fileName="${sys:nl.naturalis.nba.etl.logFile}.log">
+		<File name="FILE" fileName="${sys:nl.naturalis.nba.logFileBaseName}.log">
 			<PatternLayout pattern="%d{HH:mm:ss.SSS}|%-5level|%c{10}: %msg%n" />
 		</File>
-		<File name="JSON" fileName="${sys:nl.naturalis.nba.etl.logFile}.json">
+		<File name="JSON" fileName="${sys:nl.naturalis.nba.logFileBaseName}.json">
 			<JSONLayout complete="false" compact="true"
 				includeStacktrace="false" eventEol="true" />
 		</File>

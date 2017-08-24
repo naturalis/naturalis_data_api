@@ -177,8 +177,8 @@
 			<arg value="${junit.suite.classname}" />
 			<sysproperty key="log4j.configurationFile"
 			             value="${build.module.location}/log4j2.xml" />
-			<sysproperty key="nba.v2.log.file"
-			             value="${build.module.location}/log/test.${test.datetime}.log" />
+			<sysproperty key="nl.naturalis.nba.logFileBaseName"
+			             value="${build.module.location}/log/test.${test.datetime}" />
 			<sysproperty key="nba.v2.conf.dir" value="${proto.conf.dir}" />
 			<sysproperty key="file.encoding" value="UTF-8" />
 			<classpath>

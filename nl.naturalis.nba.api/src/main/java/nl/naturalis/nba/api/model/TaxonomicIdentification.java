@@ -2,7 +2,6 @@ package nl.naturalis.nba.api.model;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public abstract class TaxonomicIdentification implements INbaModelObject {

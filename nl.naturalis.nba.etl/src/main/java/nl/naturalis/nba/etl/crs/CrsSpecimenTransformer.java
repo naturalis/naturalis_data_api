@@ -586,11 +586,11 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 		}
 	}
 
-	private int ival(Element e, String tag)
+	private Integer ival(Element e, String tag)
 	{
 		String s = val(e, tag);
 		if (s == null)
-			return 0;
+			return null;
 		try {
 			return Integer.parseInt(s);
 		}
@@ -598,7 +598,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 			if (suppressErrors) {
 				warn("Invalid integer in element <%s>: \"%s\"", tag, s);
 			}
-			return 0;
+			return null;
 		}
 	}
 

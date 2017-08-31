@@ -36,7 +36,7 @@ public class Specimen extends NbaTraceableObject implements IDocumentObject {
 	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String notes;
 	private String preparationType;
-	private int numberOfSpecimen;
+	private Integer numberOfSpecimen;
 	private boolean fromCaptivity;
 	private boolean objectPublic;
 	private boolean multiMediaPublic;
@@ -240,12 +240,12 @@ public class Specimen extends NbaTraceableObject implements IDocumentObject {
 		this.preparationType = preparationType;
 	}
 
-	public int getNumberOfSpecimen()
+	public Integer getNumberOfSpecimen()
 	{
 		return numberOfSpecimen;
 	}
 
-	public void setNumberOfSpecimen(int numberOfSpecimen)
+	public void setNumberOfSpecimen(Integer numberOfSpecimen)
 	{
 		this.numberOfSpecimen = numberOfSpecimen;
 	}

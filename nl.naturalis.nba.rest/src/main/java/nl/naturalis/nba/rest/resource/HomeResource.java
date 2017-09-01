@@ -137,13 +137,17 @@ public class HomeResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Swagger referenceDoc(@Context UriInfo uriInfo)
 	{
-		// get classes that are annotated in this package
-		Reflections reflections = new Reflections(this.getClass().getPackage().getName());
-		Set<Class<?>> classes = reflections.getTypesAnnotatedWith(Api.class);
-
-		// return swagger JSON
-		Swagger swagger = new Reader(new Swagger()).read(classes);
-		return swagger;
+		try {
+        		// get classes that are annotated in this package
+        		Reflections reflections = new Reflections(this.getClass().getPackage().getName());
+        		Set<Class<?>> classes = reflections.getTypesAnnotatedWith(Api.class);
+        
+        		// return swagger JSON
+        		Swagger swagger = new Reader(new Swagger()).read(classes);
+        		return swagger;
+		} catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
 	}
 
 }

@@ -20,6 +20,10 @@ public class ResourceUtil {
 	 */
 	public static final String JSON_CONTENT_TYPE = "application/json;charset=UTF-8";
 
+	public static final String TEXT_CONTENT_TYPE = "text/plain;charset=UTF-8";
+	
+	public static final String ZIP_CONTENT_TYPE = "application/zip";
+	
 	public static RESTException handleError(UriInfo request, Throwable throwable)
 	{
 		if (throwable instanceof RESTException) {

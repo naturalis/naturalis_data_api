@@ -296,7 +296,7 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 		TermsAggregationBuilder tab = terms("TERMS");
 		tab.field("identifications.scientificName.scientificNameGroup");
 		tab.size(Integer.parseInt(
-				DaoRegistry.getInstance().getConfiguration().required("nl.naturalis.nba.dao.specimenDao.tabSize"))
+				DaoRegistry.getInstance().getConfiguration().required("nl.naturalis.nba.dao.specimenDao.maxNumBuckets"))
 				);
 		if (sngQuery.getGroupSort() == NAME_ASC) {
 			tab.order(Terms.Order.term(true));

@@ -207,7 +207,7 @@ public class TaxonDao extends NbaDao<Taxon> implements ITaxonAccess {
 		TermsAggregationBuilder tab = terms("TERMS");
 		tab.field("acceptedName.scientificNameGroup");
 		tab.size(Integer.parseInt(
-				DaoRegistry.getInstance().getConfiguration().required("nl.naturalis.nba.dao.taxonDao.tabSize"))
+				DaoRegistry.getInstance().getConfiguration().required("nl.naturalis.nba.dao.taxonDao.maxNumBuckets"))
 				);
 		if (sngQuery.getGroupSort() == NAME_ASC) {
 			tab.order(Terms.Order.term(true));

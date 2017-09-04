@@ -25,3 +25,7 @@ elasticsearch.index.2.types=MultiMediaObject
 
 elasticsearch.index.3.name=geoareas
 elasticsearch.index.3.types=GeoArea
+
+# Bucket size
+nl.naturalis.nba.dao.specimenDao.tabSize=10000
+nl.naturalis.nba.dao.taxonDao.tabSize=10000

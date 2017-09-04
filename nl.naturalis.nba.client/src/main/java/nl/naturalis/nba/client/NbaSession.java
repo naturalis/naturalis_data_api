@@ -7,7 +7,7 @@ import static nl.naturalis.nba.utils.http.SimpleHttpRequest.HTTP_OK;
 
 import java.io.UnsupportedEncodingException;
 
-import nl.naturalis.nba.api.IDocumentMetaData;
+import nl.naturalis.nba.api.INbaDocumentMetaData;
 import nl.naturalis.nba.api.IGeoAreaAccess;
 import nl.naturalis.nba.api.IMultiMediaObjectAccess;
 import nl.naturalis.nba.api.INbaMetaData;
@@ -117,7 +117,7 @@ public class NbaSession {
 
 	/**
 	 * Returns a client providing information about the NBA's {@link Specimen}
-	 * index. See {@link IDocumentMetaData}.
+	 * index. See {@link INbaDocumentMetaData}.
 	 * 
 	 * @return
 	 */
@@ -139,7 +139,7 @@ public class NbaSession {
 
 	/**
 	 * Returns a client providing informationabout the NBA's {@link Taxon}
-	 * index. See {@link IDocumentMetaData}.
+	 * index. See {@link INbaDocumentMetaData}.
 	 * 
 	 * @return
 	 */
@@ -161,7 +161,7 @@ public class NbaSession {
 
 	/**
 	 * Returns a client providing information about the NBA's
-	 * {@link MultiMediaObject} index. See {@link IDocumentMetaData}.
+	 * {@link MultiMediaObject} index. See {@link INbaDocumentMetaData}.
 	 * 
 	 * @return
 	 */
@@ -183,7 +183,7 @@ public class NbaSession {
 
 	/**
 	 * Returns a client providing information about the NBA's {@link GeoArea}
-	 * index. See {@link IDocumentMetaData}.
+	 * index. See {@link INbaDocumentMetaData}.
 	 * 
 	 * @return
 	 */

@@ -15,7 +15,7 @@ import org.apache.logging.log4j.Logger;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import nl.naturalis.nba.api.ComparisonOperator;
-import nl.naturalis.nba.api.IDocumentMetaData;
+import nl.naturalis.nba.api.INbaDocumentMetaData;
 import nl.naturalis.nba.api.NoSuchFieldException;
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.api.model.metadata.FieldInfo;
@@ -23,7 +23,7 @@ import nl.naturalis.nba.api.model.metadata.NbaSetting;
 import nl.naturalis.nba.utils.http.SimpleHttpRequest;
 
 abstract class NbaDocumentMetaDataClient<T extends IDocumentObject> extends Client
-		implements IDocumentMetaData<T> {
+		implements INbaDocumentMetaData<T> {
 
 	@SuppressWarnings("unused")
 	private static final Logger logger = LogManager.getLogger(NbaClient.class);

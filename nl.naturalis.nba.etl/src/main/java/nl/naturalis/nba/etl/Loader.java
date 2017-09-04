@@ -176,7 +176,7 @@ public abstract class Loader<T extends IDocumentObject> implements Closeable {
 	public void enableQueueLookups(boolean enableQueueLookups)
 	{
 		if (enableQueueLookups) {
-			idObjMap = new HashMap<String, T>(objs.size());
+			idObjMap = new HashMap<>(objs.size());
 		}
 		else {
 			idObjMap = null;

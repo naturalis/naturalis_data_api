@@ -253,7 +253,7 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 		List<QueryResultItem<T>> items = new ArrayList<>(hits.length);
 		for (SearchHit hit : hits) {
 			T obj = toDocumentObject(hit, dt);
-			items.add(new QueryResultItem<T>(obj, hit.getScore()));
+			items.add(new QueryResultItem<>(obj, hit.getScore()));
 		}
 		return items;
 	}

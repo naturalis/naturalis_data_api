@@ -12,7 +12,7 @@ import nl.naturalis.nba.api.model.metadata.NbaSetting;
 /**
  * Specifies methods for retrieving general metadata about the NBA. Note that
  * there also is an interface that specifies methods for retrieving metadata
- * about a specific document type ({@link IDocumentMetaData}).
+ * about a specific document type ({@link INbaDocumentMetaData}).
  * 
  * @author Ayco Holleman
  *
@@ -22,8 +22,8 @@ public interface INbaMetaData {
 	/**
 	 * Returns the value of a document-independent configuration setting. Note
 	 * that document-specific settings are retrieved using
-	 * {@link IDocumentMetaData#getSetting(NbaSetting)} or
-	 * {@link IDocumentMetaData#getSettings()}.
+	 * {@link INbaDocumentMetaData#getSetting(NbaSetting)} or
+	 * {@link INbaDocumentMetaData#getSettings()}.
 	 * </p>
 	 * <h5>REST API</h5>
 	 * <p>
@@ -43,8 +43,8 @@ public interface INbaMetaData {
 	/**
 	 * Returns a map of all document-independent configuration settings and
 	 * their values. Note that document-specific settings are retrieved using
-	 * {@link IDocumentMetaData#getSetting(NbaSetting)} or
-	 * {@link IDocumentMetaData#getSettings()}.
+	 * {@link INbaDocumentMetaData#getSetting(NbaSetting)} or
+	 * {@link INbaDocumentMetaData#getSettings()}.
 	 * </p>
 	 * <h5>REST API</h5>
 	 * <p>

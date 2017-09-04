@@ -16,7 +16,7 @@ import nl.naturalis.nba.api.model.metadata.NbaSetting;
  *            The class representing the Elasticsearch document about which you
  *            get through an implementation of this interface.
  */
-public interface IDocumentMetaData<DOCUMENT_OBJECT extends IDocumentObject> {
+public interface INbaDocumentMetaData<DOCUMENT_OBJECT extends IDocumentObject> {
 
 	/**
 	 * Returns the value of a configuration setting related to the Elasticsearch

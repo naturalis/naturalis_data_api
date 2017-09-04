@@ -33,6 +33,9 @@ import org.reflections.scanners.MethodAnnotationsScanner;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import nl.naturalis.nba.api.model.PhaseOrStage;
 import nl.naturalis.nba.api.model.Sex;
 import nl.naturalis.nba.api.model.SourceSystem;
@@ -47,6 +50,8 @@ import nl.naturalis.nba.utils.StringUtil;
 @Stateless
 @LocalBean
 @SuppressWarnings("static-method")
+@Api(value = "metadata")
+
 public class NbaMetaDataResource {
 
 	@SuppressWarnings("unused")
@@ -57,118 +62,120 @@ public class NbaMetaDataResource {
 
 	@GET
 	@Path("/getSetting/{name}")
+	@ApiOperation(value = "Get the value of an NBA setting", response = Object.class, notes = "All settings can be queried with /metadata/getSettings")
 	@Produces(JSON_CONTENT_TYPE)
-	public Object getSetting(@PathParam("name") String name, @Context UriInfo uriInfo)
+	public Object getSetting(
+			@ApiParam(value = "name of setting", required = true, defaultValue = "operator.CONTAINS.min_term_length") @PathParam("name") String name,
+			@Context UriInfo uriInfo)
 	{
 		try {
 			NbaSetting setting = NbaSetting.parse(name);
 			return new NbaMetaDataDao().getSetting(setting);
-		}
-		catch (Throwable t) {
+		} catch (Throwable t) {
 			throw handleError(uriInfo, t);
 		}
 	}
 
 	@GET
 	@Path("/getSettings")
+	@ApiOperation(value = "List all publicly available configuration settings for the NBA", response = Map.class, notes = "The value of a specific setting can be queried with metadata/getSetting/{name}")
 	@Produces(JSON_CONTENT_TYPE)
 	public Map<NbaSetting, Object> getSettings(@Context UriInfo uriInfo)
 	{
 		try {
 			return new NbaMetaDataDao().getSettings();
-		}
-		catch (Throwable t) {
+		} catch (Throwable t) {
 			throw handleError(uriInfo, t);
 		}
 	}
 
 	@GET
 	@Path("/getSourceSystems")
+	@ApiOperation(value = "Get the data sources from which the data was retrieved", response = SourceSystem[].class, notes = "Returns code and name of all source systems")
 	@Produces(JSON_CONTENT_TYPE)
 	public SourceSystem[] getSourceSystems(@Context UriInfo uriInfo)
 	{
 		try {
 			return new NbaMetaDataDao().getSourceSystems();
-		}
-		catch (Throwable t) {
+		} catch (Throwable t) {
 			throw handleError(uriInfo, t);
 		}
 	}
 
 	@GET
 	@Path("/getControlledLists")
+	@ApiOperation(value = "Get the names of fields for which a controlled vocabulary exists", response = String[].class, notes = "Possible values for fields with controlled vocabularies can be queried with metadata/getControlledList/{field}")
 	@Produces(JSON_CONTENT_TYPE)
 	public String[] getControlledLists(@Context UriInfo uriInfo)
 	{
 		try {
 			return new NbaMetaDataDao().getControlledLists();
-		}
-		catch (Throwable t) {
+		} catch (Throwable t) {
 			throw handleError(uriInfo, t);
 		}
 	}
 
 	@GET
 	@Path("/getControlledList/Sex")
+	@ApiOperation(value = "Get allowed values for the field 'Sex' in a specimen document", response = Sex[].class, notes = "")
 	@Produces(JSON_CONTENT_TYPE)
 	public Sex[] getControlledListSex(@Context UriInfo uriInfo)
 	{
 		try {
 			return new NbaMetaDataDao().getControlledListSex();
-		}
-		catch (Throwable t) {
+		} catch (Throwable t) {
 			throw handleError(uriInfo, t);
 		}
 	}
 
 	@GET
 	@Path("/getControlledList/PhaseOrStage")
+	@ApiOperation(value = "Get allowed values for the field 'PhaseOrStage' in a specimen document", response = PhaseOrStage[].class, notes = "")
 	@Produces(JSON_CONTENT_TYPE)
 	public PhaseOrStage[] getControlledListPhaseOrStage(@Context UriInfo uriInfo)
 	{
 		try {
 			return new NbaMetaDataDao().getControlledListPhaseOrStage();
-		}
-		catch (Throwable t) {
+		} catch (Throwable t) {
 			throw handleError(uriInfo, t);
 		}
 	}
 
 	@GET
 	@Path("/getControlledList/TaxonomicStatus")
+	@ApiOperation(value = "Get allowed values for the field 'TaxonomicStatus' in specimen and taxon documents", response = TaxonomicStatus[].class, notes = "")
 	@Produces(JSON_CONTENT_TYPE)
 	public TaxonomicStatus[] getControlledListTaxonomicStatus(@Context UriInfo uriInfo)
 	{
 		try {
 			return new NbaMetaDataDao().getControlledListTaxonomicStatus();
-		}
-		catch (Throwable t) {
+		} catch (Throwable t) {
 			throw handleError(uriInfo, t);
 		}
 	}
 
 	@GET
 	@Path("/getControlledList/SpecimenTypeStatus")
+	@ApiOperation(value = "Get allowed values for the field 'SpecimenTypeStatus' in a specimen document", response = SpecimenTypeStatus[].class, notes = "")
 	@Produces(JSON_CONTENT_TYPE)
 	public SpecimenTypeStatus[] getControlledListSpecimenTypeStatus(@Context UriInfo uriInfo)
 	{
 		try {
 			return new NbaMetaDataDao().getControlledListSpecimenTypeStatus();
-		}
-		catch (Throwable t) {
+		} catch (Throwable t) {
 			throw handleError(uriInfo, t);
 		}
 	}
 
 	@GET
 	@Path("/getAllowedDateFormats")
+	@ApiOperation(value = "Get allowed values for dates in queries", response = String[].class, notes = "Queries with other formatted dates will result in a query error")
 	@Produces(JSON_CONTENT_TYPE)
 	public String[] getAllowedDateFormats(@Context UriInfo uriInfo)
 	{
 		try {
 			return new NbaMetaDataDao().getAllowedDateFormats();
-		}
-		catch (Throwable t) {
+		} catch (Throwable t) {
 			throw handleError(uriInfo, t);
 		}
 	}
@@ -177,6 +184,7 @@ public class NbaMetaDataResource {
 
 	@GET
 	@Path("/getRestServices")
+	@ApiOperation(value = "List all available REST services and their parameters", response = RestService[].class, notes = "lists end point name, http method, response type, and URL")
 	@Produces(JSON_CONTENT_TYPE)
 	public RestService[] getRestServices(@Context UriInfo uriInfo)
 	{
@@ -184,8 +192,7 @@ public class NbaMetaDataResource {
 			if (restServices == null) {
 
 				List<Class<? extends Annotation>> httpMethodAnnotations;
-				httpMethodAnnotations = Arrays.asList(DELETE.class, GET.class, POST.class,
-						PUT.class);
+				httpMethodAnnotations = Arrays.asList(DELETE.class, GET.class, POST.class, PUT.class);
 
 				String baseUrl = StringUtil.rtrim(uriInfo.getBaseUri().toString(), '/');
 
@@ -212,12 +219,12 @@ public class NbaMetaDataResource {
 						}
 					}
 					if (method.getDeclaredAnnotation(Produces.class) != null) {
-						service.setProduces(
-								method.getDeclaredAnnotation(Produces.class).value()[0]);
+						service.setProduces(method.getDeclaredAnnotation(Produces.class)
+								.value()[0]);
 					}
 					if (method.getDeclaredAnnotation(Consumes.class) != null) {
-						service.setConsumes(
-								method.getDeclaredAnnotation(Consumes.class).value()[0]);
+						service.setConsumes(method.getDeclaredAnnotation(Consumes.class)
+								.value()[0]);
 					}
 				}
 				restServices = services.toArray(new RestService[services.size()]);
@@ -235,8 +242,7 @@ public class NbaMetaDataResource {
 				});
 			}
 			return restServices;
-		}
-		catch (Throwable t) {
+		} catch (Throwable t) {
 			throw handleError(uriInfo, t);
 		}
 	}

@@ -26,6 +26,6 @@ elasticsearch.index.2.types=MultiMediaObject
 elasticsearch.index.3.name=geoareas
 elasticsearch.index.3.types=GeoArea
 
-# Bucket size
+# Maximum number of buckets 
 nl.naturalis.nba.dao.specimenDao.maxNumBuckets=10000
 nl.naturalis.nba.dao.taxonDao.maxNumBuckets=10000

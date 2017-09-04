@@ -238,21 +238,21 @@ public class SpecimenDaoTest_Between {
 		SpecimenDao dao = new SpecimenDao();
 		QueryResult<Specimen> result = dao.query(qs);
 		// All but lFuscus2
-		assertEquals("01", 4, result.size());
+		assertEquals("01", 2, result.size());
 	}
 
 	@Test
 	public void testWithLowerBoundIsNull_02() throws InvalidQueryException
 	{
 		String field = "numberOfSpecimen";
-		Integer[] range = new Integer[] { null, 3 };
+		Integer[] range = new Integer[] { null, 2 };
 		QueryCondition condition = new QueryCondition(field, NOT_BETWEEN, range);
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
 		QueryResult<Specimen> result = dao.query(qs);
 		// lFuscus2
-		assertEquals("01", 1, result.size());
+		assertEquals("01", 3, result.size());
 		String expected = lFuscus2.getUnitID();
 		String actual = result.iterator().next().getItem().getUnitID();
 		assertEquals("02", expected, actual);
@@ -265,7 +265,7 @@ public class SpecimenDaoTest_Between {
 	public void testWithUpperBoundIsNull_01() throws InvalidQueryException
 	{
 		String field = "numberOfSpecimen";
-		Integer[] range = new Integer[] { 3, null };
+		Integer[] range = new Integer[] {2, null };
 		QueryCondition condition = new QueryCondition(field, BETWEEN, range);
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);

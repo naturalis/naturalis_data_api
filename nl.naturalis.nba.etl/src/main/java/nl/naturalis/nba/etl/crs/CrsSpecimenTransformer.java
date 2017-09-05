@@ -10,6 +10,7 @@ import static nl.naturalis.nba.etl.ETLUtil.getTestGenera;
 import static nl.naturalis.nba.etl.TransformUtil.sortIdentificationsPreferredFirst;
 import static nl.naturalis.nba.utils.StringUtil.rpad;
 
+import java.lang.reflect.Field;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -340,7 +341,13 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 		ge.setChronoStratigraphy(getChronoStratigraphyList());
 		ge.setBioStratigraphy(getBioStratigraphyList());
 		ge.setLithoStratigraphy(getLithoStratigraphyList());
-		return ge;
+
+		// If none of the fields is set, null has to be returned
+		for ( Field field : ge.getClass().getFields() ) {
+			if (field != null)
+				return ge;			
+		}
+		return null;
 	}
 
 	private List<ChronoStratigraphy> getChronoStratigraphyList()

@@ -62,7 +62,7 @@ public class HttpQuerySpecBuilderTest {
 		String param3 = "_fields";
 		String value3 = "Aves";
 
-		MultivaluedHashMap<String, String> parameterMap = new MultivaluedHashMap<String, String>();
+		MultivaluedHashMap<String, String> parameterMap = new MultivaluedHashMap<>();
 		parameterMap.put(param1, new ArrayList<>(Arrays.asList(value1)));
 		parameterMap.put(param2, new ArrayList<>(Arrays.asList(value2)));
 		parameterMap.put(param3, new ArrayList<>(Arrays.asList(value3)));
@@ -85,7 +85,7 @@ public class HttpQuerySpecBuilderTest {
 		String param3 = param2;
 		String value3 = "Mammalia";
 
-		MultivaluedHashMap<String, String> parameterMap = new MultivaluedHashMap<String, String>();
+		MultivaluedHashMap<String, String> parameterMap = new MultivaluedHashMap<>();
 		parameterMap.put(param1, new ArrayList<>(Arrays.asList(value1)));
 		parameterMap.put(param2, new ArrayList<>(Arrays.asList(value2)));
 		parameterMap.get(param3).add(value3);
@@ -106,7 +106,7 @@ public class HttpQuerySpecBuilderTest {
 		String param2 = "querySpec";
 		String value2 = "test";
 
-		MultivaluedHashMap<String, String> parameterMap = new MultivaluedHashMap<String, String>();
+		MultivaluedHashMap<String, String> parameterMap = new MultivaluedHashMap<>();
 		parameterMap.put(param1, new ArrayList<>(Arrays.asList(value1)));
 		parameterMap.put(param2, new ArrayList<>(Arrays.asList(value2)));
 
@@ -128,7 +128,7 @@ public class HttpQuerySpecBuilderTest {
 		String param3 = "_sortFields";
 		String value3 = "unitID:ASC,id:DESC,sourceSystemId:ASC,id:DESC";
 
-		MultivaluedHashMap<String, String> parameterMap = new MultivaluedHashMap<String, String>();
+		MultivaluedHashMap<String, String> parameterMap = new MultivaluedHashMap<>();
 		parameterMap.put(param1, new ArrayList<>(Arrays.asList(value1)));
 		parameterMap.put(param2, new ArrayList<>(Arrays.asList(value2)));
 		parameterMap.put(param3, new ArrayList<>(Arrays.asList(value3)));
@@ -167,7 +167,7 @@ public class HttpQuerySpecBuilderTest {
 		String param2 = "_test";
 		String value2 = "test";
 
-		MultivaluedHashMap<String, String> parameterMap = new MultivaluedHashMap<String, String>();
+		MultivaluedHashMap<String, String> parameterMap = new MultivaluedHashMap<>();
 		parameterMap.put(param1, new ArrayList<>(Arrays.asList(value1)));
 		parameterMap.put(param2, new ArrayList<>(Arrays.asList(value2)));
 
@@ -199,7 +199,7 @@ public class HttpQuerySpecBuilderTest {
 		String param2 = "collectionType";
 		String value2 = "@NULL@";
 
-		MultivaluedHashMap<String, String> parameterMap = new MultivaluedHashMap<String, String>();
+		MultivaluedHashMap<String, String> parameterMap = new MultivaluedHashMap<>();
 		parameterMap.put(param1, new ArrayList<>(Arrays.asList(value1)));
 		parameterMap.put(param2, new ArrayList<>(Arrays.asList(value2)));
 
@@ -233,7 +233,7 @@ public class HttpQuerySpecBuilderTest {
 		String param3 = "kindOfUnit";
 		String value3 = "@NULL@";
 
-		MultivaluedHashMap<String, String> parameterMap = new MultivaluedHashMap<String, String>();
+		MultivaluedHashMap<String, String> parameterMap = new MultivaluedHashMap<>();
 		parameterMap.put(param1, new ArrayList<>(Arrays.asList(value1)));
 		parameterMap.put(param2, new ArrayList<>(Arrays.asList(value2)));
 		parameterMap.put(param3, new ArrayList<>(Arrays.asList(value3)));
@@ -273,7 +273,7 @@ public class HttpQuerySpecBuilderTest {
 			fieldsExpected.add(new Path(chunk.trim()));
 		}
 
-		MultivaluedHashMap<String, String> parameterMap = new MultivaluedHashMap<String, String>();
+		MultivaluedHashMap<String, String> parameterMap = new MultivaluedHashMap<>();
 		parameterMap.put(param1, new ArrayList<>(Arrays.asList(value1)));
 		parameterMap.put(param2, new ArrayList<>(Arrays.asList(value2)));
 		parameterMap.put(param3, new ArrayList<>(Arrays.asList(value3)));
@@ -301,7 +301,7 @@ public class HttpQuerySpecBuilderTest {
 		String param4 = "_fields";
 		String value4 = "unitID,recordBasis,gatheringEvent.country";
 
-		MultivaluedHashMap<String, String> parameterMap = new MultivaluedHashMap<String, String>();
+		MultivaluedHashMap<String, String> parameterMap = new MultivaluedHashMap<>();
 		parameterMap.put(param1, new ArrayList<>(Arrays.asList(value1)));
 		parameterMap.put(param2, new ArrayList<>(Arrays.asList(value2)));
 		parameterMap.put(param3, new ArrayList<>(Arrays.asList(value3)));
@@ -362,7 +362,7 @@ public class HttpQuerySpecBuilderTest {
 		String param3 = "_from";
 		String value3 = "100";
 
-		MultivaluedHashMap<String, String> parameterMap = new MultivaluedHashMap<String, String>();
+		MultivaluedHashMap<String, String> parameterMap = new MultivaluedHashMap<>();
 		parameterMap.put(param1, new ArrayList<>(Arrays.asList(value1)));
 		parameterMap.put(param2, new ArrayList<>(Arrays.asList(value2)));
 		parameterMap.put(param3, new ArrayList<>(Arrays.asList(value3)));
@@ -392,7 +392,7 @@ public class HttpQuerySpecBuilderTest {
 		String param3 = "_logicalOperator";
 		String logicalOperator = "AND";
 
-		MultivaluedHashMap<String, String> parameterMap = new MultivaluedHashMap<String, String>();
+		MultivaluedHashMap<String, String> parameterMap = new MultivaluedHashMap<>();
 		parameterMap.put(param1, new ArrayList<>(Arrays.asList(value1)));
 		parameterMap.put(param2, new ArrayList<>(Arrays.asList(value2)));
 		parameterMap.put(param3, new ArrayList<>(Arrays.asList(logicalOperator)));
@@ -438,7 +438,7 @@ public class HttpQuerySpecBuilderTest {
 		String param2 = "_querySpec";
 		String value2 = "{\"conditions\":[{\"field\":\"collectionType\",\"operator\":\"=\",\"value\":\"Botany\"}]}";
 
-		MultivaluedHashMap<String, String> parameterMap = new MultivaluedHashMap<String, String>();
+		MultivaluedHashMap<String, String> parameterMap = new MultivaluedHashMap<>();
 		parameterMap.put(param1, new ArrayList<>(Arrays.asList(value1)));
 		parameterMap.put(param2, new ArrayList<>(Arrays.asList(value2)));
 
@@ -546,7 +546,7 @@ public class HttpQuerySpecBuilderTest {
 		}
 
 		// Build the Actual Query Spec
-		MultivaluedHashMap<String, String> parameterMap = new MultivaluedHashMap<String, String>();
+		MultivaluedHashMap<String, String> parameterMap = new MultivaluedHashMap<>();
 		parameterMap.put(param1, new ArrayList<>(Arrays.asList(value1)));
 		parameterMap.put(param2, new ArrayList<>(Arrays.asList(value2)));
 		parameterMap.put(param3, new ArrayList<>(Arrays.asList(value3)));

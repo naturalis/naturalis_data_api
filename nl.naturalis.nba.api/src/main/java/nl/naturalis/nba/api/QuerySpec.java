@@ -1,5 +1,7 @@
 package nl.naturalis.nba.api;
 
+import static nl.naturalis.nba.api.LogicalOperator.OR;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -135,7 +137,8 @@ import nl.naturalis.nba.api.model.Taxon;
  * <p>
  * 
  * <pre>
- * Condition condition1 = new Condition("gatheringEvent.gatheringPersons.fullName", CONTAINS, "burg");
+ * Condition condition1 = new Condition("gatheringEvent.gatheringPersons.fullName", CONTAINS,
+ * 		"burg");
  * condition1.and("unitID", "=", "ZMA.MAM.100");
  * Condition condition2 = new Condition("phaseOrStage", EQUALS_IC, "EGG");
  * QuerySpec query = new QuerySpec();
@@ -190,6 +193,38 @@ public class QuerySpec {
 	private List<SortField> sortFields;
 	private Integer from;
 	private Integer size;
+
+	public QuerySpec()
+	{
+	}
+
+	/**
+	 * Copy constructor
+	 * 
+	 * @param other
+	 */
+	public QuerySpec(QuerySpec other)
+	{
+		constantScore = other.constantScore;
+		if (other.fields != null) {
+			fields = new ArrayList<>(other.fields);
+		}
+		if (other.conditions != null) {
+			conditions = new ArrayList<>(other.conditions.size());
+			for (QueryCondition condition : other.conditions) {
+				conditions.add(new QueryCondition(condition));
+			}
+		}
+		logicalOperator = other.logicalOperator;
+		if (other.sortFields != null) {
+			sortFields = new ArrayList<>(other.sortFields);
+			for (SortField sortField : other.sortFields) {
+				sortFields.add(new SortField(sortField));
+			}
+		}
+		from = other.from;
+		size = other.size;
+	}
 
 	/**
 	 * Whether or not this is a non-scoring query.
@@ -412,6 +447,99 @@ public class QuerySpec {
 	public void setSize(Integer size)
 	{
 		this.size = size;
+	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || !(obj instanceof QuerySpec)) {
+			return false;
+		}
+		QuerySpec other = (QuerySpec) obj;
+		if (constantScore != other.constantScore) {
+			return false;
+		}
+		if (fields == null) {
+			if (other.fields != null) {
+				return false;
+			}
+		}
+		else if (other.fields == null) {
+			return false;
+		}
+		else if (!fields.equals(other.fields)) {
+			return false;
+		}
+		if (conditions == null || conditions.size() == 0) {
+			if (!(other.conditions == null || other.conditions.size() == 0)) {
+				return false;
+			}
+		}
+		else if (other.conditions == null || other.conditions.size() == 0) {
+			return false;
+		}
+		else if (!conditions.equals(other.conditions)) {
+			return false;
+		}
+		if (logicalOperator == OR && other.logicalOperator != OR) {
+			return false;
+		}
+		if (logicalOperator != OR && other.logicalOperator == OR) {
+			return false;
+		}
+		if (sortFields == null || sortFields.size() == 0) {
+			if (!(other.sortFields == null || other.sortFields.size() == 0)) {
+				return false;
+			}
+		}
+		else if (other.sortFields == null || other.sortFields.size() == 0) {
+			return false;
+		}
+		else if (!sortFields.equals(other.sortFields)) {
+			return false;
+		}
+		if (from == null || from == 0) {
+			if (!(other.from == null || other.from == 0)) {
+				return false;
+			}
+		}
+		else if (other.from == null || other.from == 0) {
+			return false;
+		}
+		else if (!from.equals(other.from)) {
+			return false;
+		}
+		if (size == null) {
+			if (other.size != null) {
+				return false;
+			}
+		}
+		else if (other.size == null) {
+			return false;
+		}
+		else if (!size.equals(other.size)) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public int hashCode()
+	{
+		int hash = 17;
+		hash = (hash * 31) + (constantScore ? 1 : 0);
+		hash = (hash * 31) + (fields == null ? 0 : fields.hashCode());
+		hash = (hash * 31)
+				+ ((conditions == null || conditions.size() == 0) ? 0 : conditions.hashCode());
+		hash = (hash * 31) + (logicalOperator == OR ? 1 : 0);
+		hash = (hash * 31)
+				+ ((sortFields == null || sortFields.size() == 0) ? 0 : sortFields.hashCode());
+		hash = (hash * 31) + ((from == null || from == 0) ? 0 : from.hashCode());
+		hash = (hash * 31) + (size == null ? Integer.MIN_VALUE : size.hashCode());
+		return hash;
 	}
 
 }

@@ -38,6 +38,16 @@ public class SortField {
 		this(new Path(path), sortOrder);
 	}
 
+	/*
+	 * Copy constructor. Currently only used within copy constructor for
+	 * QuerySpec, so package private.
+	 */
+	SortField(SortField other)
+	{
+		path = other.path;
+		sortOrder = other.sortOrder;
+	}
+
 	@JsonCreator
 	public SortField(@JsonProperty("path") Path path,
 			@JsonProperty("sortOrder") SortOrder sortOrder)
@@ -74,7 +84,38 @@ public class SortField {
 	{
 		return sortOrder != DESC;
 	}
-	
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || !(obj instanceof SortField)) {
+			return false;
+		}
+		SortField other = (SortField) obj;
+		if (!path.equals(other.path)) {
+			return false;
+		}
+		if (sortOrder == DESC && other.sortOrder != DESC) {
+			return false;
+		}
+		if (sortOrder != DESC && other.sortOrder == DESC) {
+			return false;
+		}
+		return true;
+	}
+
+	public int hashCode()
+	{
+		int hash = 17;
+		hash = (hash * 31) + path.hashCode();
+		hash = (hash * 31) + ((sortOrder == DESC) ? 1 : 0);
+		return hash;
+	}
+
+	@Override
 	public String toString()
 	{
 		return path + ":" + sortOrder;

@@ -491,4 +491,87 @@ public class QueryCondition {
 		this.boost = boost;
 	}
 
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || !(obj instanceof QueryCondition)) {
+			return false;
+		}
+		QueryCondition other = (QueryCondition) obj;
+		if (not != other.not) {
+			return false;
+		}
+		if (field == null) {
+			if (other.field != null) {
+				return false;
+			}
+		}
+		else if (other.field == null) {
+			return false;
+		}
+		else if (!field.equals(other.field)) {
+			return false;
+		}
+		if (operator != other.operator) {
+			return false;
+		}
+		if (value == null) {
+			if (other.value != null) {
+				return false;
+			}
+		}
+		else if (other.value == null) {
+			return false;
+		}
+		else if (!value.equals(other.value)) {
+			return false;
+		}
+		if (and == null || and.size() == 0) {
+			if (!(other.and == null || other.and.size() == 0)) {
+				return false;
+			}
+		}
+		else if (other.and == null || other.and.size() == 0) {
+			return false;
+		}
+		else if (!and.equals(other.and)) {
+			return false;
+		}
+		if (or == null || or.size() == 0) {
+			if (!(other.or == null || other.or.size() == 0)) {
+				return false;
+			}
+		}
+		else if (other.or == null || other.or.size() == 0) {
+			return false;
+		}
+		else if (!or.equals(other.or)) {
+			return false;
+		}
+		if (constantScore != other.constantScore) {
+			return false;
+		}
+		if (boost != other.boost) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public int hashCode()
+	{
+		int hash = 17;
+		hash = (hash * 31) + (not == null ? 0 : 1);
+		hash = (hash * 31) + (field == null ? 0 : field.hashCode());
+		hash = (hash * 31) + (operator == null ? -1 : operator.hashCode());
+		hash = (hash * 31) + (value == null ? 0 : value.hashCode());
+		hash = (hash * 31) + ((and == null || and.size() == 0) ? 0 : and.hashCode());
+		hash = (hash * 31) + ((or == null || or.size() == 0) ? 0 : or.hashCode());
+		hash = (hash * 31) + (constantScore ? 1 : 0);
+		hash = (hash * 31) + Float.hashCode(boost);
+		return hash;
+	}
 }

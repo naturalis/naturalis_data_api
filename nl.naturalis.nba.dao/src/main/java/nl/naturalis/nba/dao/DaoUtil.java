@@ -122,7 +122,7 @@ public class DaoUtil {
 	static final String ERR_BAD_FILTER = "Accept filter and Reject filter must "
 			+ "have the same type (regular expression or string array)";
 
-	static IncludeExclude translateFilter(Filter filter) throws InvalidQueryException
+	public static IncludeExclude translateFilter(Filter filter) throws InvalidQueryException
 	{
 		IncludeExclude ie = null;
 		if (filter.getAcceptRegexp() != null || filter.getRejectRegexp() != null) {

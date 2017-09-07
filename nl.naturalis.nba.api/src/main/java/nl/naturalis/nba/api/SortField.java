@@ -39,8 +39,8 @@ public class SortField {
 	}
 
 	/*
-	 * Copy constructor. Currently only used within copy constructor for
-	 * QuerySpec, so package private.
+	 * Copy constructor. Only used within copy constructor for QuerySpec, so
+	 * package private.
 	 */
 	SortField(SortField other)
 	{
@@ -95,23 +95,15 @@ public class SortField {
 			return false;
 		}
 		SortField other = (SortField) obj;
-		if (!path.equals(other.path)) {
-			return false;
-		}
-		if (sortOrder == DESC && other.sortOrder != DESC) {
-			return false;
-		}
-		if (sortOrder != DESC && other.sortOrder == DESC) {
-			return false;
-		}
-		return true;
+		return path.equals(other.path) && ApiUtil.equals(sortOrder, other.sortOrder, ASC);
 	}
 
+	@Override
 	public int hashCode()
 	{
 		int hash = 17;
 		hash = (hash * 31) + path.hashCode();
-		hash = (hash * 31) + ((sortOrder == DESC) ? 1 : 0);
+		hash = (hash * 31) + ApiUtil.hashCode(sortOrder, ASC);
 		return hash;
 	}
 

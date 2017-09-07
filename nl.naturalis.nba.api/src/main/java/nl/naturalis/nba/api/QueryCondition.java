@@ -4,6 +4,7 @@ import static nl.naturalis.nba.api.UnaryBooleanOperator.NOT;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * <p>
@@ -504,51 +505,19 @@ public class QueryCondition {
 		if (not != other.not) {
 			return false;
 		}
-		if (field == null) {
-			if (other.field != null) {
-				return false;
-			}
-		}
-		else if (other.field == null) {
+		if (!Objects.equals(field, other.field)) {
 			return false;
 		}
-		else if (!field.equals(other.field)) {
+		if (!Objects.equals(operator, other.operator)) {
 			return false;
 		}
-		if (operator != other.operator) {
+		if (!Objects.equals(value, other.value)) {
 			return false;
 		}
-		if (value == null) {
-			if (other.value != null) {
-				return false;
-			}
-		}
-		else if (other.value == null) {
+		if (!ApiUtil.equals(and, other.and)) {
 			return false;
 		}
-		else if (!value.equals(other.value)) {
-			return false;
-		}
-		if (and == null || and.size() == 0) {
-			if (!(other.and == null || other.and.size() == 0)) {
-				return false;
-			}
-		}
-		else if (other.and == null || other.and.size() == 0) {
-			return false;
-		}
-		else if (!and.equals(other.and)) {
-			return false;
-		}
-		if (or == null || or.size() == 0) {
-			if (!(other.or == null || other.or.size() == 0)) {
-				return false;
-			}
-		}
-		else if (other.or == null || other.or.size() == 0) {
-			return false;
-		}
-		else if (!or.equals(other.or)) {
+		if (!ApiUtil.equals(or, other.or)) {
 			return false;
 		}
 		if (constantScore != other.constantScore) {
@@ -564,12 +533,12 @@ public class QueryCondition {
 	public int hashCode()
 	{
 		int hash = 17;
-		hash = (hash * 31) + (not == null ? 0 : 1);
-		hash = (hash * 31) + (field == null ? 0 : field.hashCode());
-		hash = (hash * 31) + (operator == null ? -1 : operator.hashCode());
-		hash = (hash * 31) + (value == null ? 0 : value.hashCode());
-		hash = (hash * 31) + ((and == null || and.size() == 0) ? 0 : and.hashCode());
-		hash = (hash * 31) + ((or == null || or.size() == 0) ? 0 : or.hashCode());
+		hash = (hash * 31) + Objects.hashCode(not);
+		hash = (hash * 31) + Objects.hashCode(field);
+		hash = (hash * 31) + Objects.hashCode(operator);
+		hash = (hash * 31) + Objects.hashCode(value);
+		hash = (hash * 31) + ApiUtil.hashCode(and);
+		hash = (hash * 31) + ApiUtil.hashCode(or);
 		hash = (hash * 31) + (constantScore ? 1 : 0);
 		hash = (hash * 31) + Float.hashCode(boost);
 		return hash;

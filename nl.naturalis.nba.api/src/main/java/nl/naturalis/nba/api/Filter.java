@@ -1,6 +1,7 @@
 package nl.naturalis.nba.api;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * A generic filter definition. Used by {@link GroupByScientificNameQuerySpec}
@@ -21,15 +22,19 @@ public class Filter {
 	}
 
 	/*
-	 * Copy constructor. Currently only used within copy constructor for
+	 * Copy constructor. Only used within copy constructor for
 	 * GroupByScientificNameQuerySpec, so package private.
 	 */
 	Filter(Filter other)
 	{
 		acceptRegexp = other.acceptRegexp;
 		rejectRegexp = other.rejectRegexp;
-		acceptValues = Arrays.copyOf(other.acceptValues, other.acceptValues.length);
-		rejectValues = Arrays.copyOf(other.rejectValues, other.rejectValues.length);
+		if (other.acceptValues != null) {
+			acceptValues = Arrays.copyOf(other.acceptValues, other.acceptValues.length);
+		}
+		if (other.rejectValues != null) {
+			rejectValues = Arrays.copyOf(other.rejectValues, other.rejectValues.length);
+		}
 	}
 
 	/**
@@ -122,62 +127,16 @@ public class Filter {
 			return false;
 		}
 		Filter other = (Filter) obj;
-		if (acceptRegexp == null) {
-			if (other.acceptRegexp != null) {
-				return false;
-			}
-		}
-		else if (other.acceptRegexp == null) {
-			return false;
-		}
-		else if (!acceptRegexp.equals(other.acceptRegexp)) {
-			return false;
-		}
-		if (rejectRegexp == null) {
-			if (other.rejectRegexp != null) {
-				return false;
-			}
-		}
-		else if (other.rejectRegexp == null) {
-			return false;
-		}
-		else if (!rejectRegexp.equals(other.rejectRegexp)) {
-			return false;
-		}
-		if (acceptValues == null) {
-			if (other.acceptValues != null) {
-				return false;
-			}
-		}
-		else if (other.acceptValues == null) {
-			return false;
-		}
-		else if (!Arrays.deepEquals(acceptValues, other.acceptValues)) {
-			return false;
-		}
-		if (rejectValues == null) {
-			if (other.rejectValues != null) {
-				return false;
-			}
-		}
-		else if (other.rejectValues == null) {
-			return false;
-		}
-		else if (!Arrays.deepEquals(rejectValues, other.rejectValues)) {
-			return false;
-		}
-		return true;
+		return Objects.equals(acceptRegexp, other.acceptRegexp)
+				&& Objects.equals(rejectRegexp, other.rejectRegexp)
+				&& Objects.deepEquals(acceptValues, other.acceptValues)
+				&& Objects.deepEquals(rejectValues, other.rejectValues);
 	}
 
 	@Override
 	public int hashCode()
 	{
-		int hash = 17;
-		hash = (hash * 31) + (acceptRegexp == null ? 0 : acceptRegexp.hashCode());
-		hash = (hash * 31) + (rejectRegexp == null ? 0 : rejectRegexp.hashCode());
-		hash = (hash * 31) + (acceptValues == null ? 0 : Arrays.deepHashCode(acceptValues));
-		hash = (hash * 31) + (rejectValues == null ? 0 : Arrays.deepHashCode(rejectValues));
-		return hash;
+		return Objects.hash(acceptRegexp, rejectRegexp, acceptValues, rejectValues);
 	}
 
 }

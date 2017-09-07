@@ -1,9 +1,10 @@
 package nl.naturalis.nba.api;
 
-import static nl.naturalis.nba.api.LogicalOperator.OR;
+import static nl.naturalis.nba.api.LogicalOperator.AND;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.Taxon;
@@ -462,65 +463,31 @@ public class QuerySpec {
 		if (constantScore != other.constantScore) {
 			return false;
 		}
-		if (fields == null) {
-			if (other.fields != null) {
-				return false;
-			}
-		}
-		else if (other.fields == null) {
+		/*
+		 * An empty fields list means something different than a null field
+		 * list. An empty field list means: do not populate any fields except
+		 * for the id field; a null field list means: populate all fields.
+		 */
+		if (!Objects.equals(fields, other.fields)) {
 			return false;
 		}
-		else if (!fields.equals(other.fields)) {
+		/*
+		 * An empty conditions list DOES mean the same as a null conditions
+		 * list.
+		 */
+		if (!ApiUtil.equals(conditions, other.conditions)) {
 			return false;
 		}
-		if (conditions == null || conditions.size() == 0) {
-			if (!(other.conditions == null || other.conditions.size() == 0)) {
-				return false;
-			}
-		}
-		else if (other.conditions == null || other.conditions.size() == 0) {
+		if (!ApiUtil.equals(logicalOperator, other.logicalOperator, AND)) {
 			return false;
 		}
-		else if (!conditions.equals(other.conditions)) {
+		if (!ApiUtil.equals(sortFields, other.sortFields)) {
 			return false;
 		}
-		if (logicalOperator == OR && other.logicalOperator != OR) {
+		if (!ApiUtil.equals(from, other.from, 0)) {
 			return false;
 		}
-		if (logicalOperator != OR && other.logicalOperator == OR) {
-			return false;
-		}
-		if (sortFields == null || sortFields.size() == 0) {
-			if (!(other.sortFields == null || other.sortFields.size() == 0)) {
-				return false;
-			}
-		}
-		else if (other.sortFields == null || other.sortFields.size() == 0) {
-			return false;
-		}
-		else if (!sortFields.equals(other.sortFields)) {
-			return false;
-		}
-		if (from == null || from == 0) {
-			if (!(other.from == null || other.from == 0)) {
-				return false;
-			}
-		}
-		else if (other.from == null || other.from == 0) {
-			return false;
-		}
-		else if (!from.equals(other.from)) {
-			return false;
-		}
-		if (size == null) {
-			if (other.size != null) {
-				return false;
-			}
-		}
-		else if (other.size == null) {
-			return false;
-		}
-		else if (!size.equals(other.size)) {
+		if (!Objects.equals(size, other.size)) {
 			return false;
 		}
 		return true;
@@ -531,13 +498,11 @@ public class QuerySpec {
 	{
 		int hash = 17;
 		hash = (hash * 31) + (constantScore ? 1 : 0);
-		hash = (hash * 31) + (fields == null ? 0 : fields.hashCode());
-		hash = (hash * 31)
-				+ ((conditions == null || conditions.size() == 0) ? 0 : conditions.hashCode());
-		hash = (hash * 31) + (logicalOperator == OR ? 1 : 0);
-		hash = (hash * 31)
-				+ ((sortFields == null || sortFields.size() == 0) ? 0 : sortFields.hashCode());
-		hash = (hash * 31) + ((from == null || from == 0) ? 0 : from.hashCode());
+		hash = (hash * 31) + Objects.hashCode(fields);
+		hash = (hash * 31) + ApiUtil.hashCode(conditions);
+		hash = (hash * 31) + ApiUtil.hashCode(logicalOperator, AND);
+		hash = (hash * 31) + ApiUtil.hashCode(sortFields);
+		hash = (hash * 31) + ApiUtil.hashCode(from, 0);
 		hash = (hash * 31) + (size == null ? Integer.MIN_VALUE : size.hashCode());
 		return hash;
 	}

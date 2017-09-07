@@ -4,6 +4,7 @@ import static nl.naturalis.nba.api.GroupByScientificNameQuerySpec.GroupSort.TOP_
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import nl.naturalis.nba.api.model.ScientificNameGroup;
 
@@ -297,59 +298,19 @@ public class GroupByScientificNameQuerySpec extends QuerySpec {
 			return false;
 		}
 		GroupByScientificNameQuerySpec other = (GroupByScientificNameQuerySpec) obj;
-		if (groupSort == null || groupSort == TOP_HIT_SCORE) {
-			if (!(other.groupSort == null || other.groupSort == TOP_HIT_SCORE)) {
-				return false;
-			}
-		}
-		else if (other.groupSort == null || other.groupSort == TOP_HIT_SCORE) {
+		if (!ApiUtil.equals(groupSort, other.groupSort, TOP_HIT_SCORE)) {
 			return false;
 		}
-		else if (groupSort != other.groupSort) {
+		if (!Objects.equals(groupFilter, other.groupFilter)) {
 			return false;
 		}
-		if (groupFilter == null) {
-			if (other.groupFilter != null) {
-				return false;
-			}
-		}
-		else if (other.groupFilter == null) {
+		if (!ApiUtil.equals(specimensFrom, other.specimensFrom, 0)) {
 			return false;
 		}
-		else if (!groupFilter.equals(other.groupFilter)) {
+		if (!Objects.equals(specimensSize, other.specimensSize)) {
 			return false;
 		}
-		if (specimensFrom == null || specimensFrom == 0) {
-			if (!(other.specimensFrom == null || other.specimensFrom == 0)) {
-				return false;
-			}
-		}
-		else if (other.specimensFrom == null || other.specimensFrom == 0) {
-			return false;
-		}
-		else if (!specimensFrom.equals(other.specimensFrom)) {
-			return false;
-		}
-		if (specimensSize == null || specimensSize == 10) {
-			if (!(other.specimensSize == null || other.specimensSize == 10)) {
-				return false;
-			}
-		}
-		else if (other.specimensSize == null || other.specimensSize == 10) {
-			return false;
-		}
-		else if (!specimensSize.equals(other.specimensSize)) {
-			return false;
-		}
-		if (specimensSortFields == null) {
-			if (other.specimensSortFields != null) {
-				return false;
-			}
-		}
-		else if (other.specimensSortFields == null) {
-			return false;
-		}
-		else if (!specimensSortFields.equals(other.specimensSortFields)) {
+		if (!ApiUtil.equals(specimensSortFields, other.specimensSortFields)) {
 			return false;
 		}
 		if (noTaxa != other.noTaxa) {
@@ -362,11 +323,11 @@ public class GroupByScientificNameQuerySpec extends QuerySpec {
 	public int hashCode()
 	{
 		int hash = 17;
-		hash = (hash * 31) + (groupSort == null ? TOP_HIT_SCORE.hashCode() : groupSort.hashCode());
-		hash = (hash * 31) + (groupFilter == null ? 0 : groupFilter.hashCode());
-		hash = (hash * 31) + (specimensFrom == null ? 0 : specimensFrom.hashCode());
-		hash = (hash * 31) + (specimensSize == null ? 10 : specimensFrom.hashCode());
-		hash = (hash * 31) + (specimensSortFields == null ? 10 : specimensSortFields.hashCode());
+		hash = (hash * 31) + ApiUtil.hashCode(groupSort, TOP_HIT_SCORE);
+		hash = (hash * 31) + Objects.hashCode(groupFilter);
+		hash = (hash * 31) + ApiUtil.hashCode(specimensFrom, 0);
+		hash = (hash * 31) + Objects.hashCode(specimensSize);
+		hash = (hash * 31) + ApiUtil.hashCode(specimensSortFields);
 		hash = (hash * 31) + (noTaxa ? 1 : 0);
 		return hash;
 	}

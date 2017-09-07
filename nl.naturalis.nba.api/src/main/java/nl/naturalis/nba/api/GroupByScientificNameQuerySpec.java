@@ -1,5 +1,8 @@
 package nl.naturalis.nba.api;
 
+import static nl.naturalis.nba.api.GroupByScientificNameQuerySpec.GroupSort.TOP_HIT_SCORE;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import nl.naturalis.nba.api.model.ScientificNameGroup;
@@ -74,6 +77,33 @@ public class GroupByScientificNameQuerySpec extends QuerySpec {
 	private Integer specimensSize;
 	private List<SortField> specimensSortFields;
 	private boolean noTaxa;
+
+	public GroupByScientificNameQuerySpec()
+	{
+	}
+
+	/**
+	 * Copy constructor.
+	 * 
+	 * @param other
+	 */
+	public GroupByScientificNameQuerySpec(GroupByScientificNameQuerySpec other)
+	{
+		super(other);
+		groupSort = other.groupSort;
+		if (other.groupFilter != null) {
+			groupFilter = new Filter(other.groupFilter);
+		}
+		specimensFrom = other.specimensFrom;
+		specimensSize = other.specimensSize;
+		if (specimensSortFields != null) {
+			specimensSortFields = new ArrayList<>(other.specimensSortFields.size());
+			for (SortField sortField : other.specimensSortFields) {
+				specimensSortFields.add(new SortField(sortField));
+			}
+		}
+		noTaxa = other.noTaxa;
+	}
 
 	/**
 	 * Returns which way the {@link ScientificNameGroup} objects returned by
@@ -255,6 +285,90 @@ public class GroupByScientificNameQuerySpec extends QuerySpec {
 	public void setNoTaxa(boolean noTaxa)
 	{
 		this.noTaxa = noTaxa;
+	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (!super.equals(obj)) {
+			return false;
+		}
+		if (!(obj instanceof GroupByScientificNameQuerySpec)) {
+			return false;
+		}
+		GroupByScientificNameQuerySpec other = (GroupByScientificNameQuerySpec) obj;
+		if (groupSort == null || groupSort == TOP_HIT_SCORE) {
+			if (!(other.groupSort == null || other.groupSort == TOP_HIT_SCORE)) {
+				return false;
+			}
+		}
+		else if (other.groupSort == null || other.groupSort == TOP_HIT_SCORE) {
+			return false;
+		}
+		else if (groupSort != other.groupSort) {
+			return false;
+		}
+		if (groupFilter == null) {
+			if (other.groupFilter != null) {
+				return false;
+			}
+		}
+		else if (other.groupFilter == null) {
+			return false;
+		}
+		else if (!groupFilter.equals(other.groupFilter)) {
+			return false;
+		}
+		if (specimensFrom == null || specimensFrom == 0) {
+			if (!(other.specimensFrom == null || other.specimensFrom == 0)) {
+				return false;
+			}
+		}
+		else if (other.specimensFrom == null || other.specimensFrom == 0) {
+			return false;
+		}
+		else if (!specimensFrom.equals(other.specimensFrom)) {
+			return false;
+		}
+		if (specimensSize == null || specimensSize == 10) {
+			if (!(other.specimensSize == null || other.specimensSize == 10)) {
+				return false;
+			}
+		}
+		else if (other.specimensSize == null || other.specimensSize == 10) {
+			return false;
+		}
+		else if (!specimensSize.equals(other.specimensSize)) {
+			return false;
+		}
+		if (specimensSortFields == null) {
+			if (other.specimensSortFields != null) {
+				return false;
+			}
+		}
+		else if (other.specimensSortFields == null) {
+			return false;
+		}
+		else if (!specimensSortFields.equals(other.specimensSortFields)) {
+			return false;
+		}
+		if (noTaxa != other.noTaxa) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public int hashCode()
+	{
+		int hash = 17;
+		hash = (hash * 31) + (groupSort == null ? TOP_HIT_SCORE.hashCode() : groupSort.hashCode());
+		hash = (hash * 31) + (groupFilter == null ? 0 : groupFilter.hashCode());
+		hash = (hash * 31) + (specimensFrom == null ? 0 : specimensFrom.hashCode());
+		hash = (hash * 31) + (specimensSize == null ? 10 : specimensFrom.hashCode());
+		hash = (hash * 31) + (specimensSortFields == null ? 10 : specimensSortFields.hashCode());
+		hash = (hash * 31) + (noTaxa ? 1 : 0);
+		return hash;
 	}
 
 }

@@ -45,7 +45,8 @@ class ApiUtil {
 
 	/**
 	 * Null-safe comparison of two objects with slightly modified semantics: a
-	 * null value must be treated as being equals to the default value.
+	 * null value must be treated as being equal to the default value for the
+	 * type of objects being compared.
 	 * 
 	 * @param a
 	 * @param b
@@ -75,7 +76,7 @@ class ApiUtil {
 
 	static <T> int hashCode(T obj, T dfault)
 	{
-		return (obj == null || obj.equals(dfault)) ? dfault.hashCode() : obj.hashCode();
+		return (obj == null) ? dfault.hashCode() : obj.hashCode();
 	}
 
 	private ApiUtil()

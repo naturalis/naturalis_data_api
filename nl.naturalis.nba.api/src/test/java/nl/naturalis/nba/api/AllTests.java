@@ -8,6 +8,7 @@ import org.junit.runners.Suite.SuiteClasses;
 //@formatter:off
 @SuiteClasses({
 	PathTest.class,
+	ApiUtilTest.class
 })
 //@formatter:on
 public class AllTests {

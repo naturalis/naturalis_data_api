@@ -511,7 +511,7 @@ public class QueryCondition {
 		if (!Objects.equals(operator, other.operator)) {
 			return false;
 		}
-		if (!Objects.equals(value, other.value)) {
+		if (!Objects.deepEquals(value, other.value)) {
 			return false;
 		}
 		if (!ApiUtil.equals(and, other.and)) {
@@ -536,7 +536,7 @@ public class QueryCondition {
 		hash = (hash * 31) + Objects.hashCode(not);
 		hash = (hash * 31) + Objects.hashCode(field);
 		hash = (hash * 31) + Objects.hashCode(operator);
-		hash = (hash * 31) + Objects.hashCode(value);
+		hash = (hash * 31) + ApiUtil.deepHashCode(value);
 		hash = (hash * 31) + ApiUtil.hashCode(and);
 		hash = (hash * 31) + ApiUtil.hashCode(or);
 		hash = (hash * 31) + (constantScore ? 1 : 0);

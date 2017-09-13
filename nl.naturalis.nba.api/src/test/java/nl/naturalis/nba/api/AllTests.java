@@ -8,7 +8,8 @@ import org.junit.runners.Suite.SuiteClasses;
 //@formatter:off
 @SuiteClasses({
 	PathTest.class,
-	ApiUtilTest.class
+	ApiUtilTest.class,
+	QueryConditionTest.class
 })
 //@formatter:on
 public class AllTests {

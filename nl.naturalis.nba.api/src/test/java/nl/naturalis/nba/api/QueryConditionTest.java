@@ -354,7 +354,7 @@ public class QueryConditionTest {
 	 * Include OR conditions
 	 */
 	@Test
-	public void test_equals_12()
+	public void test_equals_11()
 	{
 		QueryCondition c0 = new QueryCondition("foo", "=", "bar");
 		c0.and("foo2", "CONTAINS", "bar");
@@ -375,7 +375,7 @@ public class QueryConditionTest {
 	 * Include OR conditions
 	 */
 	@Test
-	public void test_hashCode_12()
+	public void test_hashCode_11()
 	{
 		QueryCondition c0 = new QueryCondition("foo", "=", "bar");
 		c0.and("foo2", "CONTAINS", "bar");
@@ -396,7 +396,7 @@ public class QueryConditionTest {
 	 * Include OR conditions
 	 */
 	@Test
-	public void test_equals_14()
+	public void test_equals_12()
 	{
 		QueryCondition c0 = new QueryCondition("foo", "=", "bar");
 		c0.and("foo2", "CONTAINS", "bar");
@@ -421,7 +421,7 @@ public class QueryConditionTest {
 	 * Include OR conditions
 	 */
 	@Test
-	public void test_hashCode_14()
+	public void test_hashCode_12()
 	{
 		QueryCondition c0 = new QueryCondition("foo", "=", "bar");
 		c0.and("foo2", "CONTAINS", "bar");
@@ -446,7 +446,7 @@ public class QueryConditionTest {
 	 * Make sure empty lists are treated as {@code null}.
 	 */
 	@Test
-	public void test_equals_16()
+	public void test_equals_13()
 	{
 		QueryCondition c0 = new QueryCondition("foo.test", "BETWEEN", new short[] { 1, 100 });
 		c0.setAnd(null);
@@ -461,7 +461,7 @@ public class QueryConditionTest {
 	 * Make sure empty lists are treated as {@code null}.
 	 */
 	@Test
-	public void test_hashCode_16()
+	public void test_hashCode_13()
 	{
 		QueryCondition c0 = new QueryCondition("foo.test", "BETWEEN", new short[] { 1, 100 });
 		c0.setAnd(null);

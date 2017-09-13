@@ -108,9 +108,10 @@ class ApiUtil {
 	 * must be seen as the counterpart of the
 	 * {@link Objects#deepEquals(Object, Object) deepEquals} method in the
 	 * {@link Objects} class. Strangely, that class does not itself provide this
-	 * counterpart. If the argument is null, 0 is returned. If the argument is
-	 * an array of some primitive type, then {@code Arrays.hashCode} is called.
-	 * If the argument is an array of some non-primitive type, then
+	 * counterpart. If the argument passed to {@code deepHashCode} is
+	 * {@code null}, 0 is returned. If the argument is an array of some
+	 * primitive type, then {@code Arrays.hashCode} is called. If the argument
+	 * is an array of some non-primitive type, then
 	 * {@link Arrays#deepHashCode(Object[]) Arrays#deepHashCode} is called.
 	 * Otherwise the {@code hashCode()} method of the argument is called.
 	 * 

@@ -473,7 +473,7 @@ public class QueryConditionTest {
 	}
 
 	/*
-	 * Include copy constructor via equals method
+	 * Test copy constructor via equals method
 	 */
 	@Test
 	public void test_equals_14()
@@ -489,7 +489,7 @@ public class QueryConditionTest {
 	}
 
 	/*
-	 * Include copy constructor via hashCode method
+	 * Test copy constructor via hashCode method
 	 */
 	@Test
 	public void test_hashCode_14()

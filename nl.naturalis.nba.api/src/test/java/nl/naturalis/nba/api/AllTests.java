@@ -10,6 +10,7 @@ import org.junit.runners.Suite.SuiteClasses;
 	PathTest.class,
 	ApiUtilTest.class,
 	QueryConditionTest.class,
+	SortFieldTest.class,
 	QuerySpecTest.class
 })
 //@formatter:on

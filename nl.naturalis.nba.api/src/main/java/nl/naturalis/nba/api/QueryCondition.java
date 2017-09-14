@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * <p>
  * Class modeling a query condition. A condition consists of a field name, a
@@ -321,6 +323,7 @@ public class QueryCondition {
 	 * 
 	 * @return
 	 */
+	@JsonIgnore
 	public boolean isNegated()
 	{
 		return not != null;

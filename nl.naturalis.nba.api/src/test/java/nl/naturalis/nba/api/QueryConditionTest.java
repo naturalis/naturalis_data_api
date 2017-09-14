@@ -472,4 +472,36 @@ public class QueryConditionTest {
 		assertEquals("01", c0.hashCode(), c1.hashCode());
 	}
 
+	/*
+	 * Include copy constructor via equals method
+	 */
+	@Test
+	public void test_equals_14()
+	{
+		QueryCondition c0 = new QueryCondition("foo", "=", "bar");
+		c0.and(new QueryCondition("foo2", "=", "soap").and("foo3", "<", 5).and("foo4", ">=", 6));
+		c0.or(new QueryCondition("foo5", "=", "XYZ").and("foo6", "!=", null));
+		c0.setConstantScore(true);
+		c0.setNot(NOT);
+		c0.setBoost(2.3F);
+		QueryCondition c1 = new QueryCondition(c0);
+		assertTrue("01", c0.equals(c1));
+	}
+
+	/*
+	 * Include copy constructor via hashCode method
+	 */
+	@Test
+	public void test_hashCode_14()
+	{
+		QueryCondition c0 = new QueryCondition("foo", "=", "bar");
+		c0.and(new QueryCondition("foo2", "=", "soap").and("foo3", "<", 5).and("foo4", ">=", 6));
+		c0.or(new QueryCondition("foo5", "=", "XYZ").and("foo6", "!=", null));
+		c0.setConstantScore(true);
+		c0.setNot(NOT);
+		c0.setBoost(2.3F);
+		QueryCondition c1 = new QueryCondition(c0);
+		assertEquals("01", c0.hashCode(), c1.hashCode());
+	}
+
 }

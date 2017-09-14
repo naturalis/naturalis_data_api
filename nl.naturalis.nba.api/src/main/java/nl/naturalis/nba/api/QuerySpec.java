@@ -218,7 +218,7 @@ public class QuerySpec {
 		}
 		logicalOperator = other.logicalOperator;
 		if (other.sortFields != null) {
-			sortFields = new ArrayList<>(other.sortFields);
+			sortFields = new ArrayList<>(other.sortFields.size());
 			for (SortField sortField : other.sortFields) {
 				sortFields.add(new SortField(sortField));
 			}

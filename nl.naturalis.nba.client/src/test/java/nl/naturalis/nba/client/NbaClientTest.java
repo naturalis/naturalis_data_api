@@ -80,7 +80,7 @@ public class NbaClientTest {
 	@Test()
 	public void test_findByUnitID02()
 	{
-		assertEquals("01", 1, client.findByUnitID("RMNH.AVES.P.1036").length);
+		assertEquals("01", 1, client.findByUnitID("RMNH.INS.762482").length);
 	}
 
 	/*
@@ -113,7 +113,7 @@ public class NbaClientTest {
 	public void test_query03() throws InvalidQueryException
 	{
 		QuerySpec query = new QuerySpec();
-		query.addCondition(new QueryCondition("unitID", "=", "RMNH.AVES.P.1036"));
+		query.addCondition(new QueryCondition("unitID", "=", "RMNH.INS.762482"));
 		QueryResult<Specimen> result = client.query(query);
 		assertEquals("01", 1, result.getTotalSize());
 	}
@@ -147,7 +147,7 @@ public class NbaClientTest {
 	public void test_count03() throws InvalidQueryException
 	{
 		QuerySpec query = new QuerySpec();
-		query.addCondition(new QueryCondition("unitID", "=", "RMNH.AVES.P.1036"));
+		query.addCondition(new QueryCondition("unitID", "=", "RMNH.INS.762482"));
 		assertEquals("01", 1, client.count(query));
 	}
 
@@ -159,7 +159,6 @@ public class NbaClientTest {
 	{
 		Map<String, Long> map = client.getDistinctValues("collectionType", null);
 		assertTrue("01", map.containsKey("Botany"));
-		assertTrue("02", map.containsKey("Aves"));
 	}
 
 	/*
@@ -169,7 +168,7 @@ public class NbaClientTest {
 	public void test_getDistinctValues02() throws InvalidQueryException
 	{
 		QuerySpec query = new QuerySpec();
-		query.addCondition(new QueryCondition("unitID", "=", "RMNH.AVES.P.1036"));
+		query.addCondition(new QueryCondition("unitID", "=", "RMNH.INS.762482"));
 		assertEquals("01", 1, client.getDistinctValues("collectionType", query).size());
 	}
 }

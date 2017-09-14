@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import nl.naturalis.nba.utils.StringUtil;
 
+@SuppressWarnings("static-method")
 public class StringUtilTest {
 
 	@Test

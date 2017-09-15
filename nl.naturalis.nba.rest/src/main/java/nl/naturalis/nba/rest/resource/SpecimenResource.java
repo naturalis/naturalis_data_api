@@ -56,7 +56,12 @@ import nl.naturalis.nba.utils.StringUtil;
 @Api(value = "specimen")
 @Path("/specimen")
 @SuppressWarnings("static-method")
-public class SpecimenResource {
+public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
+	
+	SpecimenResource()
+	{
+		super(new SpecimenDao());
+	}
 
 	@SuppressWarnings("unused")
 	private static final Logger logger = LogManager.getLogger(SpecimenResource.class);
@@ -65,6 +70,21 @@ public class SpecimenResource {
 
 	@EJB
 	Registry registry;
+	
+	@GET
+	@Path("/find/{id}")
+	@ApiOperation(value = "Find a specimen by id", response = Specimen.class, notes = "If found, returns a single specimen")
+	@ApiResponses(value = { @ApiResponse(code = 404, message = "id not found") })
+	@Produces(JSON_CONTENT_TYPE)
+	public Specimen find(
+			@ApiParam(value = "id of specimen", required = true, defaultValue = "RMNH.MAM.17209.B@CRS") @PathParam("id") String id,
+			@Context UriInfo uriInfo)
+	{
+		return super.find(id, uriInfo);
+	}
+	
+	
+	/*
 
 	@GET
 	@Path("/find/{id}")
@@ -86,7 +106,10 @@ public class SpecimenResource {
 			throw handleError(uriInfo, t);
 		}
 	}
-
+ 
+	 */
+	
+	
 	@GET
 	@Path("/findByIds/{ids}")
 	@ApiOperation(value = "Find specimens by ids", response = Specimen[].class, notes = "Given multiple ids, returns a list of specimen")

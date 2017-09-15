@@ -48,7 +48,7 @@ import nl.naturalis.nba.dao.exception.DaoException;
 import nl.naturalis.nba.dao.translate.QuerySpecTranslator;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 
-abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
+public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 
 	private static final Logger logger = getLogger(NbaDao.class);
 

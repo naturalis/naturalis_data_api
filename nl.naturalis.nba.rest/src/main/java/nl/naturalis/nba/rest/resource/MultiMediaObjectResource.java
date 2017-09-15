@@ -68,16 +68,11 @@ public class MultiMediaObjectResource extends NbaResource<MultiMediaObject, Mult
 	@Path("/findByIds/{ids}")
 	@ApiOperation(value = "Find multimedia document by ids", response = MultiMediaObject[].class, notes = "Given multiple ids, returns a list of multimedia documents")
 	@Produces(JSON_CONTENT_TYPE)
-	public MultiMediaObject[] findByIds(@ApiParam(value = "ids of multiple multimedia documents, separated by comma", required = true, defaultValue = "U.1475914_2059926060@BRAHMS,L.2454256_0837498402@BRAHMS", allowMultiple = true) @PathParam("ids") String ids, @Context UriInfo uriInfo)
+	public MultiMediaObject[] findByIds(@ApiParam(value = "ids of multiple multimedia documents, separated by comma", required = true, defaultValue = "U.1475914_2059926060@BRAHMS,L.2454256_0837498402@BRAHMS", allowMultiple = true) 
+	@PathParam("ids") String ids, 
+	@Context UriInfo uriInfo)
 	{
-		try {
-			String[] idArray = StringUtil.split(ids, ",");
-			MultiMediaObjectDao dao = new MultiMediaObjectDao();
-			return dao.findByIds(idArray);
-		}
-		catch (Throwable t) {
-			throw handleError(uriInfo, t);
-		}
+		return super.findByIds(ids, uriInfo);
 	}
 
 	@GET

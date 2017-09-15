@@ -48,7 +48,6 @@ import nl.naturalis.nba.dao.TaxonDao;
 import nl.naturalis.nba.rest.exception.RESTException;
 import nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder;
 import nl.naturalis.nba.rest.util.HttpQuerySpecBuilder;
-import nl.naturalis.nba.utils.StringUtil;
 
 @SuppressWarnings("static-method")
 
@@ -84,47 +83,19 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
 	}
 
 	
-	/*
-	@GET
-	@Path("/find/{id}")
-	@ApiOperation(value = "Find a taxon by id", response = Taxon.class, notes = "If found, returns a single taxon")
-	@ApiResponses(value = { @ApiResponse(code = 404, message = "id not found") })
-	@Produces(JSON_CONTENT_TYPE)
-	public Taxon find(
-			@ApiParam(value = "id of taxon", required = true, defaultValue = "21941298@COL") @PathParam("id") String id,
-			@Context UriInfo uriInfo)
-	{
-		try {
-			TaxonDao dao = new TaxonDao();
-			Taxon result = dao.find(id);
-			if (result == null) {
-				throw new HTTP404Exception(uriInfo, DocumentType.TAXON, id);
-			}
-			return result;
-		} catch (Throwable t) {
-			throw handleError(uriInfo, t);
-		}
-	}
-	*/
-	
-
 	@GET
 	@Path("/findByIds/{ids}")
 	@ApiOperation(value = "Find taxa by ids", response = Taxon[].class, notes = "Given multiple ids, returns a list of taxa")
 	@Produces(JSON_CONTENT_TYPE)
 	public Taxon[] findByIds(
-			@ApiParam(value = "ids of multiple taxa, separated by comma", required = true, defaultValue = "21941298@COL,21941294@COL", allowMultiple = true) @PathParam("ids") String ids,
+			@ApiParam(value = "ids of multiple taxa, separated by comma", required = true, defaultValue = "21941298@COL,21941294@COL", allowMultiple = true) 
+			@PathParam("ids") String ids,
 			@Context UriInfo uriInfo)
 	{
-		try {
-			String[] idArray = StringUtil.split(ids, ",");
-			TaxonDao dao = new TaxonDao();
-			return dao.findByIds(idArray);
-		} catch (Throwable t) {
-			throw handleError(uriInfo, t);
-		}
+		return super.findByIds(ids, uriInfo);
 	}
 
+	
 	@GET
 	@Path("/query")
 	@ApiOperation(value = "Query for taxa", response = QueryResult.class, notes = "Search for taxa with a human-readable query")
@@ -137,7 +108,8 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
 			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
 			TaxonDao dao = new TaxonDao();
 			return dao.query(qs);
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			throw handleError(uriInfo, t);
 		}
 	}
@@ -155,7 +127,8 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
 			QuerySpec qs = new HttpQuerySpecBuilder(form, uriInfo).build();
 			TaxonDao dao = new TaxonDao();
 			return dao.query(qs);
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			throw handleError(uriInfo, t);
 		}
 	}
@@ -165,13 +138,14 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
 	@ApiOperation(value = "Query for taxa", response = QueryResult.class, notes = "Search for taxa with a querySpec JSON")
 	@Produces(JSON_CONTENT_TYPE)
 	@Consumes(JSON_CONTENT_TYPE)
-	public QueryResult<Taxon> query_POST_JSON(@ApiParam(value = "querySpec", required = false) QuerySpec qs,
-			@Context UriInfo uriInfo)
+	public QueryResult<Taxon> query_POST_JSON(
+			@ApiParam(value = "querySpec", required = false) QuerySpec qs, @Context UriInfo uriInfo)
 	{
 		try {
 			TaxonDao dao = new TaxonDao();
 			return dao.query(qs);
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			throw handleError(uriInfo, t);
 		}
 	}
@@ -189,7 +163,8 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
 			QuerySpec qs = new HttpQuerySpecBuilder(form, uriInfo).build();
 			TaxonDao dao = new TaxonDao();
 			return dao.count(qs);
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			throw handleError(uriInfo, t);
 		}
 	}
@@ -205,7 +180,8 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
 		try {
 			TaxonDao dao = new TaxonDao();
 			return dao.count(qs);
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			throw handleError(uriInfo, t);
 		}
 	}
@@ -222,7 +198,8 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
 			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
 			TaxonDao dao = new TaxonDao();
 			return dao.count(qs);
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			throw handleError(uriInfo, t);
 		}
 	}
@@ -239,7 +216,8 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
 			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
 			TaxonDao dao = new TaxonDao();
 			return dao.getDistinctValues(field, qs);
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			throw handleError(uriInfo, t);
 		}
 	}
@@ -261,7 +239,8 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
 					TaxonDao dao = new TaxonDao();
 					try {
 						dao.dwcaQuery(qs, out);
-					} catch (Throwable e) {
+					}
+					catch (Throwable e) {
 						throw new RESTException(uriInfo, e);
 					}
 				}
@@ -270,7 +249,8 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
 			response.type(ZIP_CONTENT_TYPE);
 			response.header("Content-Disposition", "attachment; filename=\"nba-taxa.dwca.zip\"");
 			return response.build();
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			throw handleError(uriInfo, t);
 		}
 	}
@@ -292,7 +272,8 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
 					TaxonDao dao = new TaxonDao();
 					try {
 						dao.dwcaGetDataSet(name, out);
-					} catch (Throwable e) {
+					}
+					catch (Throwable e) {
 						throw new RESTException(uriInfo, e);
 					}
 				}
@@ -304,7 +285,8 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
 			String hdr = String.format(fmt, name, sdf.format(new Date()));
 			response.header("Content-Disposition", hdr);
 			return response.build();
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			throw handleError(uriInfo, t);
 		}
 	}
@@ -318,7 +300,8 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
 		try {
 			TaxonDao dao = new TaxonDao();
 			return dao.dwcaGetDataSetNames();
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			throw handleError(uriInfo, t);
 		}
 	}
@@ -332,11 +315,12 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
 	public QueryResult<ScientificNameGroup> groupByScientificName_GET(@Context UriInfo uriInfo)
 	{
 		try {
-			GroupByScientificNameQuerySpec qs = new HttpGroupByScientificNameQuerySpecBuilder(uriInfo)
-					.build();
+			GroupByScientificNameQuerySpec qs = new HttpGroupByScientificNameQuerySpecBuilder(
+					uriInfo).build();
 			TaxonDao dao = new TaxonDao();
 			return dao.groupByScientificName(qs);
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			throw handleError(uriInfo, t);
 		}
 	}

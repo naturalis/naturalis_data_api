@@ -8,6 +8,7 @@ import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.NbaDao;
 import nl.naturalis.nba.rest.exception.HTTP404Exception;
+import nl.naturalis.nba.utils.StringUtil;
 
 public abstract class NbaResource<T extends IDocumentObject, U extends NbaDao<T>> {
 	
@@ -29,5 +30,16 @@ public abstract class NbaResource<T extends IDocumentObject, U extends NbaDao<T>
 			throw handleError(uriInfo, t);
 		}
 	}
+	
+	public T[] findByIds(String ids, UriInfo uriInfo)
+	{
+		try {
+			String[] idArray = StringUtil.split(ids, ",");
+			return dao.findByIds(idArray);
+		} catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
+
 
 }

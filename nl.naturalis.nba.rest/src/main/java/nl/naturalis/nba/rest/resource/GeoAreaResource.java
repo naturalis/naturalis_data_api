@@ -75,17 +75,11 @@ public class GeoAreaResource extends NbaResource<GeoArea, GeoAreaDao> {
 	@ApiOperation(value = "Find geo areas by ids", response = GeoArea[].class, notes = "Given multiple ids, returns a list of geo area objects")
 	@Produces(JSON_CONTENT_TYPE)
 	public GeoArea[] findByIds(
-			@ApiParam(value = "ids of multiple geo areas, separated by comma", required = true, defaultValue = "1003937@GEO,1004048@GEO", allowMultiple = true) @PathParam("ids") String ids,
+			@ApiParam(value = "ids of multiple geo areas, separated by comma", required = true, defaultValue = "1003937@GEO,1004048@GEO", allowMultiple = true) 
+			@PathParam("ids") String ids,
 			@Context UriInfo uriInfo)
 	{
-		try {
-			String[] idArray = StringUtil.split(ids, ",");
-			GeoAreaDao dao = new GeoAreaDao();
-			return dao.findByIds(idArray);
-		}
-		catch (Throwable t) {
-			throw handleError(uriInfo, t);
-		}
+		return super.findByIds(ids, uriInfo);
 	}
 
 	@GET

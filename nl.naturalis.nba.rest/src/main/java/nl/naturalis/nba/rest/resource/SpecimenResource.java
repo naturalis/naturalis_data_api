@@ -47,7 +47,6 @@ import nl.naturalis.nba.dao.SpecimenDao;
 import nl.naturalis.nba.rest.exception.RESTException;
 import nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder;
 import nl.naturalis.nba.rest.util.HttpQuerySpecBuilder;
-import nl.naturalis.nba.utils.StringUtil;
 
 @Stateless
 @LocalBean
@@ -82,33 +81,21 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
 		return super.find(id, uriInfo);
 	}
 	
-	
-	/*
-
 	@GET
-	@Path("/find/{id}")
-	@ApiOperation(value = "Find a specimen by id", response = Specimen.class, notes = "If found, returns a single specimen")
-	@ApiResponses(value = { @ApiResponse(code = 404, message = "id not found") })
+	@Path("/findByIds/{ids}")
+	@ApiOperation(value = "Find specimens by ids", response = Specimen[].class, notes = "Given multiple ids, returns a list of specimen")
 	@Produces(JSON_CONTENT_TYPE)
-	public Specimen find(
-			@ApiParam(value = "id of specimen", required = true, defaultValue = "RMNH.MAM.17209.B@CRS") @PathParam("id") String id,
+	public Specimen[] findByIds(
+			@ApiParam(value = "ids of multiple specimen, separated by comma", required = true, defaultValue = "RMNH.MOL.326483@CRS,ZMA.MAM.4211@CRS", allowMultiple = true) 
+			@PathParam("ids") String ids,
 			@Context UriInfo uriInfo)
 	{
-		try {
-			SpecimenDao dao = new SpecimenDao();
-			Specimen result = dao.find(id);
-			if (result == null) {
-				throw new HTTP404Exception(uriInfo, DocumentType.SPECIMEN, id);
-			}
-			return result;
-		} catch (Throwable t) {
-			throw handleError(uriInfo, t);
-		}
+
+		return super.findByIds(ids, uriInfo);
 	}
- 
-	 */
+
 	
-	
+	/*
 	@GET
 	@Path("/findByIds/{ids}")
 	@ApiOperation(value = "Find specimens by ids", response = Specimen[].class, notes = "Given multiple ids, returns a list of specimen")
@@ -125,6 +112,7 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
 			throw handleError(uriInfo, t);
 		}
 	}
+	*/
 
 	@GET
 	@Path("/findByUnitID/{unitID}")

@@ -1,6 +1,5 @@
 package nl.naturalis.nba.rest.resource;
 
-import static nl.naturalis.nba.dao.DocumentType.MULTI_MEDIA_OBJECT;
 import static nl.naturalis.nba.rest.util.ResourceUtil.JSON_CONTENT_TYPE;
 import static nl.naturalis.nba.rest.util.ResourceUtil.handleError;
 
@@ -32,7 +31,6 @@ import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.dao.MultiMediaObjectDao;
-import nl.naturalis.nba.rest.exception.HTTP404Exception;
 import nl.naturalis.nba.rest.util.HttpQuerySpecBuilder;
 import nl.naturalis.nba.utils.StringUtil;
 
@@ -41,7 +39,12 @@ import nl.naturalis.nba.utils.StringUtil;
 @Stateless
 @LocalBean
 @Api(value = "multimedia")
-public class MultiMediaObjectResource {
+public class MultiMediaObjectResource extends NbaResource<MultiMediaObject, MultiMediaObjectDao> {
+
+	MultiMediaObjectResource()
+	{
+		super(new MultiMediaObjectDao());
+	}
 
 	@SuppressWarnings("unused")
 	private static final Logger logger = LogManager.getLogger(MultiMediaObjectResource.class);
@@ -53,19 +56,12 @@ public class MultiMediaObjectResource {
 	@Path("/find/{id}")
 	@ApiOperation(value = "Find a multimedia document by id", response = MultiMediaObject.class, notes = "If found, returns a single multimedia document")
 	@Produces(JSON_CONTENT_TYPE)
-	public MultiMediaObject find(@ApiParam(value = "id of multimedia document", required = true, defaultValue = "L.4169766_1307658521@BRAHMS") @PathParam("id") String id, @Context UriInfo uriInfo)
+	public MultiMediaObject find(
+			@ApiParam(value = "id of multimedia document", required = true, defaultValue = "L.4169766_1307658521@BRAHMS") 
+			@PathParam("id") String id, 
+			@Context UriInfo uriInfo)
 	{
-		try {
-			MultiMediaObjectDao dao = new MultiMediaObjectDao();
-			MultiMediaObject result = dao.find(id);
-			if (result == null) {
-				throw new HTTP404Exception(uriInfo, MULTI_MEDIA_OBJECT, id);
-			}
-			return result;
-		}
-		catch (Throwable t) {
-			throw handleError(uriInfo, t);
-		}
+		return super.find(id, uriInfo);
 	}
 
 	@GET

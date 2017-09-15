@@ -43,9 +43,7 @@ import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.ScientificNameGroup;
 import nl.naturalis.nba.api.model.Specimen;
-import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.SpecimenDao;
-import nl.naturalis.nba.rest.exception.HTTP404Exception;
 import nl.naturalis.nba.rest.exception.RESTException;
 import nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder;
 import nl.naturalis.nba.rest.util.HttpQuerySpecBuilder;
@@ -77,7 +75,8 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
 	@ApiResponses(value = { @ApiResponse(code = 404, message = "id not found") })
 	@Produces(JSON_CONTENT_TYPE)
 	public Specimen find(
-			@ApiParam(value = "id of specimen", required = true, defaultValue = "RMNH.MAM.17209.B@CRS") @PathParam("id") String id,
+			@ApiParam(value = "id of specimen", required = true, defaultValue = "RMNH.MAM.17209.B@CRS") 
+			@PathParam("id") String id,
 			@Context UriInfo uriInfo)
 	{
 		return super.find(id, uriInfo);

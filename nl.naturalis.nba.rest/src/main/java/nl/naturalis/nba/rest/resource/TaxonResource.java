@@ -44,9 +44,7 @@ import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.ScientificNameGroup;
 import nl.naturalis.nba.api.model.Taxon;
-import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.TaxonDao;
-import nl.naturalis.nba.rest.exception.HTTP404Exception;
 import nl.naturalis.nba.rest.exception.RESTException;
 import nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder;
 import nl.naturalis.nba.rest.util.HttpQuerySpecBuilder;
@@ -59,7 +57,12 @@ import nl.naturalis.nba.utils.StringUtil;
 @Api(value = "taxon")
 @Path("/taxon")
 @Produces({ "application/json", "application/xml" })
-public class TaxonResource {
+public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
+
+	TaxonResource()
+	{
+		super(new TaxonDao());
+	}
 
 	@SuppressWarnings("unused")
 	private static final Logger logger = LogManager.getLogger(TaxonResource.class);
@@ -67,6 +70,21 @@ public class TaxonResource {
 	@EJB
 	Registry registry;
 
+	@GET
+	@Path("/find/{id}")
+	@ApiOperation(value = "Find a taxon by id", response = Taxon.class, notes = "If found, returns a single taxon")
+	@ApiResponses(value = { @ApiResponse(code = 404, message = "id not found") })
+	@Produces(JSON_CONTENT_TYPE)
+	public Taxon find(
+			@ApiParam(value = "id of taxon", required = true, defaultValue = "21941298@COL") 
+			@PathParam("id") String id,
+			@Context UriInfo uriInfo)
+	{
+		return super.find(id, uriInfo);
+	}
+
+	
+	/*
 	@GET
 	@Path("/find/{id}")
 	@ApiOperation(value = "Find a taxon by id", response = Taxon.class, notes = "If found, returns a single taxon")
@@ -87,6 +105,8 @@ public class TaxonResource {
 			throw handleError(uriInfo, t);
 		}
 	}
+	*/
+	
 
 	@GET
 	@Path("/findByIds/{ids}")

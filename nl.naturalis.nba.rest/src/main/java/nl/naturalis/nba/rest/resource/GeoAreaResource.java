@@ -2,7 +2,6 @@ package nl.naturalis.nba.rest.resource;
 
 import static nl.naturalis.nba.rest.util.ResourceUtil.JSON_CONTENT_TYPE;
 import static nl.naturalis.nba.rest.util.ResourceUtil.TEXT_CONTENT_TYPE;
-
 import static nl.naturalis.nba.rest.util.ResourceUtil.handleError;
 
 import java.util.Map;
@@ -35,7 +34,6 @@ import io.swagger.annotations.ApiResponses;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.GeoArea;
-import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.GeoAreaDao;
 import nl.naturalis.nba.rest.exception.HTTP404Exception;
 import nl.naturalis.nba.rest.util.HttpQuerySpecBuilder;
@@ -47,7 +45,12 @@ import nl.naturalis.nba.utils.StringUtil;
 @SuppressWarnings("static-method")
 @Api(value = "geo")
 
-public class GeoAreaResource {
+public class GeoAreaResource extends NbaResource<GeoArea, GeoAreaDao> {
+
+	GeoAreaResource()
+	{
+		super(new GeoAreaDao());
+	}
 
 	@SuppressWarnings("unused")
 	private static final Logger logger = LogManager.getLogger(GeoAreaResource.class);
@@ -64,16 +67,7 @@ public class GeoAreaResource {
 			@ApiParam(value = "id of geo area", required = true, defaultValue = "1003937@GEO") @PathParam("id") String id,
 			@Context UriInfo uriInfo)
 	{
-		try {
-			GeoAreaDao dao = new GeoAreaDao();
-			GeoArea result = dao.find(id);
-			if (result == null) {
-				throw new HTTP404Exception(uriInfo, DocumentType.GEO_AREA, id);
-			}
-			return result;
-		} catch (Throwable t) {
-			throw handleError(uriInfo, t);
-		}
+		return super.find(id, uriInfo);
 	}
 
 	@GET
@@ -88,7 +82,8 @@ public class GeoAreaResource {
 			String[] idArray = StringUtil.split(ids, ",");
 			GeoAreaDao dao = new GeoAreaDao();
 			return dao.findByIds(idArray);
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			throw handleError(uriInfo, t);
 		}
 	}
@@ -105,7 +100,8 @@ public class GeoAreaResource {
 			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
 			GeoAreaDao dao = new GeoAreaDao();
 			return dao.query(qs);
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			throw handleError(uriInfo, t);
 		}
 	}
@@ -123,7 +119,8 @@ public class GeoAreaResource {
 			QuerySpec qs = new HttpQuerySpecBuilder(form, uriInfo).build();
 			GeoAreaDao dao = new GeoAreaDao();
 			return dao.count(qs);
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			throw handleError(uriInfo, t);
 		}
 	}
@@ -139,7 +136,8 @@ public class GeoAreaResource {
 		try {
 			GeoAreaDao dao = new GeoAreaDao();
 			return dao.count(qs);
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			throw handleError(uriInfo, t);
 		}
 	}
@@ -156,7 +154,8 @@ public class GeoAreaResource {
 			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
 			GeoAreaDao dao = new GeoAreaDao();
 			return dao.count(qs);
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			throw handleError(uriInfo, t);
 		}
 	}
@@ -173,7 +172,8 @@ public class GeoAreaResource {
 			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
 			GeoAreaDao dao = new GeoAreaDao();
 			return dao.getDistinctValues(field, qs);
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			throw handleError(uriInfo, t);
 		}
 	}
@@ -183,7 +183,8 @@ public class GeoAreaResource {
 	@ApiOperation(value = "Retrieve a GeoJson object for a given locality", response = GeoArea.class, notes = "Returns a GeoJson polygon")
 	@ApiResponses(value = { @ApiResponse(code = 404, message = "locality not found") })
 	@Produces(JSON_CONTENT_TYPE)
-	public GeoJsonObject getGeoJsonForLocality(@PathParam("locality") String locality, @Context UriInfo uriInfo)
+	public GeoJsonObject getGeoJsonForLocality(@PathParam("locality") String locality,
+			@Context UriInfo uriInfo)
 	{
 		try {
 			GeoAreaDao dao = new GeoAreaDao();
@@ -193,7 +194,8 @@ public class GeoAreaResource {
 				throw new HTTP404Exception(uriInfo, msg);
 			}
 			return json;
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			throw handleError(uriInfo, t);
 		}
 	}

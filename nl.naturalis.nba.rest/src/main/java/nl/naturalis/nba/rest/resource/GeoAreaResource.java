@@ -137,14 +137,7 @@ public class GeoAreaResource extends NbaResource<GeoArea, GeoAreaDao> {
 			@ApiParam(value = "name of field in geo area object", required = true, defaultValue = "locality") @PathParam("field") String field,
 			@Context UriInfo uriInfo)
 	{
-		try {
-			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
-			GeoAreaDao dao = new GeoAreaDao();
-			return dao.getDistinctValues(field, qs);
-		}
-		catch (Throwable t) {
-			throw handleError(uriInfo, t);
-		}
+		return super.getDistinctValues(field, uriInfo);
 	}
 
 	@GET

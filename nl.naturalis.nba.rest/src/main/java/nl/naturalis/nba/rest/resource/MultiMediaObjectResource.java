@@ -163,13 +163,7 @@ public class MultiMediaObjectResource extends NbaResource<MultiMediaObject, Mult
 	public Map<String, Long> getDistinctValues(@ApiParam(value = "field", required = true, defaultValue = "gatheringEvents.worldRegion") @PathParam("field") String field,
 			@Context UriInfo uriInfo)
 	{
-		try {
-			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
-			MultiMediaObjectDao dao = new MultiMediaObjectDao();
-			return dao.getDistinctValues(field, qs);
-		} catch (Throwable t) {
-			throw handleError(uriInfo, t);
-		}
+		return super.getDistinctValues(field, uriInfo);
 	}
 
 }

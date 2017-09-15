@@ -2,6 +2,8 @@ package nl.naturalis.nba.rest.resource;
 
 import static nl.naturalis.nba.rest.util.ResourceUtil.handleError;
 
+import java.util.Map;
+
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 
@@ -87,5 +89,18 @@ public abstract class NbaResource<T extends IDocumentObject, U extends NbaDao<T>
 			throw handleError(uriInfo, t);
 		}
 	}
+	
+	public Map<String, Long> getDistinctValues(
+			String field,
+			UriInfo uriInfo)
+	{
+		try {
+			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
+			return dao.getDistinctValues(field, qs);
+		} catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
+
 
 }

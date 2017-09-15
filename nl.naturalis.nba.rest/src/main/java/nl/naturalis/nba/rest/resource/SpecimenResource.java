@@ -215,16 +215,11 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
 	@ApiOperation(value = "Get all different values that exist for a field", response = Map.class, notes = "A list of all fields for specimen documents can be retrieved with /metadata/getFieldInfo")
 	@Produces(JSON_CONTENT_TYPE)
 	public Map<String, Long> getDistinctValues(
-			@ApiParam(value = "name of field in specimen object", required = true, defaultValue = "identifications.defaultClassification.family") @PathParam("field") String field,
+			@ApiParam(value = "name of field in specimen object", required = true, defaultValue = "identifications.defaultClassification.family") 
+			@PathParam("field") String field,
 			@Context UriInfo uriInfo)
 	{
-		try {
-			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
-			SpecimenDao dao = new SpecimenDao();
-			return dao.getDistinctValues(field, qs);
-		} catch (Throwable t) {
-			throw handleError(uriInfo, t);
-		}
+		return super.getDistinctValues(field, uriInfo);
 	}
 
 	@GET

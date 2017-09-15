@@ -186,14 +186,7 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
 			@ApiParam(value = "name of field in taxon object", required = true, defaultValue = "defaultClassification.family") @PathParam("field") String field,
 			@Context UriInfo uriInfo)
 	{
-		try {
-			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
-			TaxonDao dao = new TaxonDao();
-			return dao.getDistinctValues(field, qs);
-		}
-		catch (Throwable t) {
-			throw handleError(uriInfo, t);
-		}
+		return super.getDistinctValues(field, uriInfo);
 	}
 
 	@GET

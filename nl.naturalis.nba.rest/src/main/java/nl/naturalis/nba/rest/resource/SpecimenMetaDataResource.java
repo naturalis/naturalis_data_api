@@ -46,7 +46,8 @@ public class SpecimenMetaDataResource {
 	@ApiOperation(value = "Get the value of an NBA setting", response = Object.class, notes = "All settings can be queried with /metadata/getSettings")
 	@Produces(JSON_CONTENT_TYPE)
 	public Object getSettings(
-			@ApiParam(value = "name of setting", required = true, defaultValue = "index.max_result_window") @PathParam("name") String name,
+			@ApiParam(value = "name of setting", required = true, defaultValue = "index.max_result_window") 
+			@PathParam("name") String name,
 			@Context UriInfo uriInfo)
 	{
 		try {
@@ -56,7 +57,7 @@ public class SpecimenMetaDataResource {
 			throw handleError(uriInfo, t);
 		}
 	}
-
+	
 	@GET
 	@Path("/getSettings")
 	@ApiOperation(value = "List all publicly available configuration settings for the NBA", response = Map.class, notes = "The value of a specific setting can be queried with metadata/getSetting/{name}")

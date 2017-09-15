@@ -81,7 +81,6 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
 	{
 		return super.find(id, uriInfo);
 	}
-
 	
 	@GET
 	@Path("/findByIds/{ids}")
@@ -95,7 +94,6 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
 		return super.findByIds(ids, uriInfo);
 	}
 
-	
 	@GET
 	@Path("/query")
 	@ApiOperation(value = "Query for taxa", response = QueryResult.class, notes = "Search for taxa with a human-readable query")
@@ -104,14 +102,7 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
 			@ApiImplicitParam(name = "defaultClassification.genus", value = "Example query param", dataType = "string", paramType = "query", defaultValue = "Epinicium", required = false) })
 	public QueryResult<Taxon> query_GET(@Context UriInfo uriInfo)
 	{
-		try {
-			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
-			TaxonDao dao = new TaxonDao();
-			return dao.query(qs);
-		}
-		catch (Throwable t) {
-			throw handleError(uriInfo, t);
-		}
+		return super.query_GET(uriInfo);
 	}
 
 	@POST

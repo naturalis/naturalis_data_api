@@ -83,14 +83,7 @@ public class MultiMediaObjectResource extends NbaResource<MultiMediaObject, Mult
 		@ApiImplicitParam(name = "license", value = "Example query param", dataType = "string", paramType = "query", defaultValue = "CC0", required = false) })	
 	public QueryResult<MultiMediaObject> query_GET(@Context UriInfo uriInfo)
 	{
-		try {
-			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
-			MultiMediaObjectDao dao = new MultiMediaObjectDao();
-			return dao.query(qs);
-		}
-		catch (Throwable t) {
-			throw handleError(uriInfo, t);
-		}
+		return super.query_GET(uriInfo);
 	}
 
 	@POST

@@ -94,26 +94,6 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
 		return super.findByIds(ids, uriInfo);
 	}
 
-	
-	/*
-	@GET
-	@Path("/findByIds/{ids}")
-	@ApiOperation(value = "Find specimens by ids", response = Specimen[].class, notes = "Given multiple ids, returns a list of specimen")
-	@Produces(JSON_CONTENT_TYPE)
-	public Specimen[] findByIds(
-			@ApiParam(value = "ids of multiple specimen, separated by comma", required = true, defaultValue = "RMNH.MOL.326483@CRS,ZMA.MAM.4211@CRS", allowMultiple = true) @PathParam("ids") String ids,
-			@Context UriInfo uriInfo)
-	{
-		try {
-			String[] idArray = StringUtil.split(ids, ",");
-			SpecimenDao dao = new SpecimenDao();
-			return dao.findByIds(idArray);
-		} catch (Throwable t) {
-			throw handleError(uriInfo, t);
-		}
-	}
-	*/
-
 	@GET
 	@Path("/findByUnitID/{unitID}")
 	@ApiOperation(value = "Find a specimen by unitID", response = Specimen[].class, notes = "Get a specimen by its unitID. Returns a list of specimens since unitIDs are not strictly unique")
@@ -146,6 +126,7 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
 		}
 	}
 
+	
 	@GET
 	@Path("/query")
 	@ApiOperation(value = "Query for specimens", response = QueryResult.class, notes = "Search for specimen with a human-readable query")
@@ -154,13 +135,7 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
 			@ApiImplicitParam(name = "collectionType", value = "Example query param", dataType = "string", paramType = "query", defaultValue = "Crustacea", required = false) })
 	public QueryResult<Specimen> query_GET(@Context UriInfo uriInfo)
 	{
-		try {
-			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
-			SpecimenDao dao = new SpecimenDao();
-			return dao.query(qs);
-		} catch (Throwable t) {
-			throw handleError(uriInfo, t);
-		}
+		return super.query_GET(uriInfo);
 	}
 
 	@POST

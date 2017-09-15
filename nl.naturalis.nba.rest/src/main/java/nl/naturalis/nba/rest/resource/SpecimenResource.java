@@ -190,15 +190,12 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
 	@ApiOperation(value = "Get the number of specimens matching a condition", response = long.class, notes = "Conditions given as querySpec JSON")
 	@Produces(TEXT_CONTENT_TYPE)
 	@Consumes(JSON_CONTENT_TYPE)
-	public long count_POST_JSON(@ApiParam(value = "querySpec JSON", required = false) QuerySpec qs,
+	public long count_POST_JSON(
+			@ApiParam(value = "querySpec JSON", required = false) 
+			QuerySpec qs,
 			@Context UriInfo uriInfo)
 	{
-		try {
-			SpecimenDao dao = new SpecimenDao();
-			return dao.count(qs);
-		} catch (Throwable t) {
-			throw handleError(uriInfo, t);
-		}
+		return super.count_POST_JSON(qs, uriInfo);
 	}
 
 	@GET

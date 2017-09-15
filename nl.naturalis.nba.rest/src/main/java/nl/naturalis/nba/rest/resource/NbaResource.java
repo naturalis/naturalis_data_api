@@ -2,17 +2,14 @@ package nl.naturalis.nba.rest.resource;
 
 import static nl.naturalis.nba.rest.util.ResourceUtil.handleError;
 
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 
-import io.swagger.annotations.ApiParam;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.NbaDao;
-import nl.naturalis.nba.dao.SpecimenDao;
 import nl.naturalis.nba.rest.exception.HTTP404Exception;
 import nl.naturalis.nba.rest.util.HttpQuerySpecBuilder;
 import nl.naturalis.nba.utils.StringUtil;
@@ -69,8 +66,16 @@ public abstract class NbaResource<T extends IDocumentObject, U extends NbaDao<T>
 			throw handleError(uriInfo, t);
 		}
 	}
-
-
-
+	
+	public long count_POST_JSON( 
+			QuerySpec qs,
+			UriInfo uriInfo)
+	{
+		try {
+			return dao.count(qs);
+		} catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
 
 }

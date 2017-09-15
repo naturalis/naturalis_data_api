@@ -178,16 +178,11 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
 	@Produces(TEXT_CONTENT_TYPE)
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public long count_POST_FORM(
-			@ApiParam(value = "query object in POST form", required = false) MultivaluedMap<String, String> form,
+			@ApiParam(value = "query object in POST form", required = false) 
+			MultivaluedMap<String, String> form,
 			@Context UriInfo uriInfo)
 	{
-		try {
-			QuerySpec qs = new HttpQuerySpecBuilder(form, uriInfo).build();
-			SpecimenDao dao = new SpecimenDao();
-			return dao.count(qs);
-		} catch (Throwable t) {
-			throw handleError(uriInfo, t);
-		}
+		return super.count_POST_FORM(form, uriInfo);
 	}
 
 	@POST

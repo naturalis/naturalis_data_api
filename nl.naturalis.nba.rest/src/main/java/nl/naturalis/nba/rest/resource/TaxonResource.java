@@ -147,17 +147,11 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
 	@Produces(TEXT_CONTENT_TYPE)
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public long count_POST_FORM(
-			@ApiParam(value = "POST payload", required = false) MultivaluedMap<String, String> form,
+			@ApiParam(value = "POST payload", required = false) 
+			MultivaluedMap<String, String> form,
 			@Context UriInfo uriInfo)
 	{
-		try {
-			QuerySpec qs = new HttpQuerySpecBuilder(form, uriInfo).build();
-			TaxonDao dao = new TaxonDao();
-			return dao.count(qs);
-		}
-		catch (Throwable t) {
-			throw handleError(uriInfo, t);
-		}
+		return super.count_POST_FORM(form, uriInfo);
 	}
 
 	@POST

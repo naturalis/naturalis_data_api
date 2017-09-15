@@ -125,17 +125,12 @@ public class MultiMediaObjectResource extends NbaResource<MultiMediaObject, Mult
 	@ApiOperation(hidden = true, value = "Get the number of multimedia documents matching a condition", response = long.class, notes = "Conditions given in POST body")
 	@Produces(JSON_CONTENT_TYPE)
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public long count_POST_FORM(@ApiParam(value = "POST payload", required = false) MultivaluedMap<String, String> form,
+	public long count_POST_FORM(
+			@ApiParam(value = "POST payload", required = false) 
+			MultivaluedMap<String, String> form,
 			@Context UriInfo uriInfo)
 	{
-		try {
-			QuerySpec qs = new HttpQuerySpecBuilder(form, uriInfo).build();
-			MultiMediaObjectDao dao = new MultiMediaObjectDao();
-			return dao.count(qs);
-		}
-		catch (Throwable t) {
-			throw handleError(uriInfo, t);
-		}
+		return super.count_POST_FORM(form, uriInfo);
 	}
 	
 	@POST

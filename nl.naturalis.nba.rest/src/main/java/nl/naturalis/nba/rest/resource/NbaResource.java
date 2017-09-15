@@ -78,4 +78,14 @@ public abstract class NbaResource<T extends IDocumentObject, U extends NbaDao<T>
 		}
 	}
 
+	public long count_GET(UriInfo uriInfo)
+	{
+		try {
+			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
+			return dao.count(qs);
+		} catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
+
 }

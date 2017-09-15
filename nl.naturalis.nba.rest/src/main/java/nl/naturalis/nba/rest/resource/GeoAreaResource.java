@@ -126,14 +126,7 @@ public class GeoAreaResource extends NbaResource<GeoArea, GeoAreaDao> {
 			@ApiImplicitParam(name = "areaType", value = "Example query param", dataType = "string", paramType = "query", defaultValue = "Country", required = false) })
 	public long count_GET(@Context UriInfo uriInfo)
 	{
-		try {
-			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
-			GeoAreaDao dao = new GeoAreaDao();
-			return dao.count(qs);
-		}
-		catch (Throwable t) {
-			throw handleError(uriInfo, t);
-		}
+		return super.count_GET(uriInfo);
 	}
 
 	@GET

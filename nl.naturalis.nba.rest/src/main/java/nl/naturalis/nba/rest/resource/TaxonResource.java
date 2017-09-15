@@ -175,14 +175,7 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
 			@ApiImplicitParam(name = "sourceSystem.code", value = "Example query param", dataType = "string", paramType = "query", defaultValue = "COL", required = false) })
 	public long count_GET(@Context UriInfo uriInfo)
 	{
-		try {
-			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
-			TaxonDao dao = new TaxonDao();
-			return dao.count(qs);
-		}
-		catch (Throwable t) {
-			throw handleError(uriInfo, t);
-		}
+		return super.count_GET(uriInfo);
 	}
 
 	@GET

@@ -207,13 +207,7 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
 			@ApiImplicitParam(name = "collectionType", value = "Example query param", dataType = "string", paramType = "query", defaultValue = "Crustacea", required = false) })
 	public long count_GET(@Context UriInfo uriInfo)
 	{
-		try {
-			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
-			SpecimenDao dao = new SpecimenDao();
-			return dao.count(qs);
-		} catch (Throwable t) {
-			throw handleError(uriInfo, t);
-		}
+		return super.count_GET(uriInfo);
 	}
 
 	@GET

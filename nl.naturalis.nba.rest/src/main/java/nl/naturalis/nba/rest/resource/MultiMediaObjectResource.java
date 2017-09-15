@@ -153,14 +153,7 @@ public class MultiMediaObjectResource extends NbaResource<MultiMediaObject, Mult
 		@ApiImplicitParam(name = "sourceSystem.code", value = "Example query param", dataType = "string", paramType = "query", defaultValue = "BRAHMS", required = false) })
 	public long count_GET(@Context UriInfo uriInfo)
 	{
-		try {
-			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
-			MultiMediaObjectDao dao = new MultiMediaObjectDao();
-			return dao.count(qs);
-		}
-		catch (Throwable t) {
-			throw handleError(uriInfo, t);
-		}
+		return super.count_GET(uriInfo);
 	}
 
 	@GET

@@ -10,7 +10,6 @@ import org.junit.runners.Suite.SuiteClasses;
 	StringUtilTest.class,
 	ArrayUtilTest.class,
 	ConfigObjectTest.class
-	
 })
 //@formatter:on
 public class AllTests {

@@ -62,8 +62,6 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
 
 	@SuppressWarnings("unused")
 	private static final Logger logger = LogManager.getLogger(SpecimenResource.class);
-	@SuppressWarnings("unused")
-	private static final int Specimen = 0;
 
 	@EJB
 	Registry registry;
@@ -78,6 +76,7 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
 			@PathParam("id") String id,
 			@Context UriInfo uriInfo)
 	{
+
 		return super.find(id, uriInfo);
 	}
 	
@@ -90,7 +89,6 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
 			@PathParam("ids") String ids,
 			@Context UriInfo uriInfo)
 	{
-
 		return super.findByIds(ids, uriInfo);
 	}
 
@@ -105,7 +103,8 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
 		try {
 			SpecimenDao dao = new SpecimenDao();
 			return dao.findByUnitID(unitID);
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			throw handleError(uriInfo, t);
 		}
 	}
@@ -121,7 +120,8 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
 		try {
 			SpecimenDao dao = new SpecimenDao();
 			return dao.exists(unitID);
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			throw handleError(uriInfo, t);
 		}
 	}
@@ -151,7 +151,8 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
 			QuerySpec qs = new HttpQuerySpecBuilder(form, uriInfo).build();
 			SpecimenDao dao = new SpecimenDao();
 			return dao.query(qs);
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			throw handleError(uriInfo, t);
 		}
 	}
@@ -161,13 +162,14 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
 	@ApiOperation(value = "Query for specimens", response = QueryResult.class, notes = "Search for specimen with a querySpec JSON")
 	@Produces(JSON_CONTENT_TYPE)
 	@Consumes(JSON_CONTENT_TYPE)
-	public QueryResult<Specimen> query_POST_JSON(@ApiParam(value = "querySpec", required = false) QuerySpec qs,
-			@Context UriInfo uriInfo)
+	public QueryResult<Specimen> query_POST_JSON(
+			@ApiParam(value = "querySpec", required = false) QuerySpec qs, @Context UriInfo uriInfo)
 	{
 		try {
 			SpecimenDao dao = new SpecimenDao();
 			return dao.query(qs);
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			throw handleError(uriInfo, t);
 		}
 	}
@@ -202,7 +204,6 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
 	@Path("/count")
 	@ApiOperation(value = "Get the number of specimens matching a condition", response = long.class, notes = "Conditions given as query string")
 	@Produces(TEXT_CONTENT_TYPE)
-	@Consumes(JSON_CONTENT_TYPE)
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "collectionType", value = "Example query param", dataType = "string", paramType = "query", defaultValue = "Crustacea", required = false) })
 	public long count_GET(@Context UriInfo uriInfo)
@@ -228,7 +229,8 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
 	@Produces(ZIP_CONTENT_TYPE)
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "collectionType", value = "Example query param", dataType = "string", paramType = "query", defaultValue = "Crustacea", required = false) })
-	public Response dwcaQuery(@ApiParam(value = "query string", required = true) @Context UriInfo uriInfo)
+	public Response dwcaQuery(
+			@ApiParam(value = "query string", required = true) @Context UriInfo uriInfo)
 	{
 		try {
 			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
@@ -239,16 +241,19 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
 					SpecimenDao dao = new SpecimenDao();
 					try {
 						dao.dwcaQuery(qs, out);
-					} catch (Throwable e) {
+					}
+					catch (Throwable e) {
 						throw new RESTException(uriInfo, e);
 					}
 				}
 			};
 			ResponseBuilder response = Response.ok(stream);
 			response.type(ZIP_CONTENT_TYPE);
-			response.header("Content-Disposition", "attachment; filename=\"nba-specimens.dwca.zip\"");
+			response.header("Content-Disposition",
+					"attachment; filename=\"nba-specimens.dwca.zip\"");
 			return response.build();
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			throw handleError(uriInfo, t);
 		}
 	}
@@ -270,7 +275,8 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
 					SpecimenDao dao = new SpecimenDao();
 					try {
 						dao.dwcaGetDataSet(name, out);
-					} catch (Throwable e) {
+					}
+					catch (Throwable e) {
 						throw new RESTException(uriInfo, e);
 					}
 				}
@@ -282,7 +288,8 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
 			String hdr = String.format(fmt, name, sdf.format(new Date()));
 			response.header("Content-Disposition", hdr);
 			return response.build();
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			throw handleError(uriInfo, t);
 		}
 	}
@@ -296,7 +303,8 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
 		try {
 			SpecimenDao dao = new SpecimenDao();
 			return dao.dwcaGetDataSetNames();
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			throw handleError(uriInfo, t);
 		}
 	}
@@ -310,7 +318,8 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
 		try {
 			SpecimenDao dao = new SpecimenDao();
 			return dao.getNamedCollections();
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			throw handleError(uriInfo, t);
 		}
 	}
@@ -326,7 +335,8 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
 		try {
 			SpecimenDao dao = new SpecimenDao();
 			return dao.getIdsInCollection(name);
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			throw handleError(uriInfo, t);
 		}
 	}
@@ -340,11 +350,12 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
 	public QueryResult<ScientificNameGroup> groupByScientificName_GET(@Context UriInfo uriInfo)
 	{
 		try {
-			GroupByScientificNameQuerySpec qs = new HttpGroupByScientificNameQuerySpecBuilder(uriInfo)
-					.build();
+			GroupByScientificNameQuerySpec qs = new HttpGroupByScientificNameQuerySpecBuilder(
+					uriInfo).build();
 			SpecimenDao dao = new SpecimenDao();
 			return dao.groupByScientificName(qs);
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			throw handleError(uriInfo, t);
 		}
 	}

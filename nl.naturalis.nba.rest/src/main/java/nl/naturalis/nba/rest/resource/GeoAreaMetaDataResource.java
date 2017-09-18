@@ -1,7 +1,6 @@
 package nl.naturalis.nba.rest.resource;
 
 import static nl.naturalis.nba.rest.util.ResourceUtil.JSON_CONTENT_TYPE;
-import static nl.naturalis.nba.rest.util.ResourceUtil.handleError;
 
 import java.util.Map;
 
@@ -21,18 +20,15 @@ import org.apache.logging.log4j.Logger;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import nl.naturalis.nba.api.ComparisonOperator;
 import nl.naturalis.nba.api.model.metadata.FieldInfo;
 import nl.naturalis.nba.api.model.metadata.NbaSetting;
 import nl.naturalis.nba.dao.GeoAreaMetaDataDao;
-import nl.naturalis.nba.utils.ConfigObject;
 
-@SuppressWarnings("static-method")
+
 @Path("/geo/metadata")
 @Stateless
 @LocalBean
 @Api(value = "geo")
-
 public class GeoAreaMetaDataResource extends NbaDocumentMetaDataResource<GeoAreaMetaDataDao> {
 
 	GeoAreaMetaDataResource()
@@ -63,11 +59,7 @@ public class GeoAreaMetaDataResource extends NbaDocumentMetaDataResource<GeoArea
 	@Produces(JSON_CONTENT_TYPE)
 	public Map<NbaSetting, Object> getSettings(@Context UriInfo uriInfo)
 	{
-		try {
-			return new GeoAreaMetaDataDao().getSettings();
-		} catch (Throwable t) {
-			throw handleError(uriInfo, t);
-		}
+		return super.getSettings(uriInfo);
 	}
 
 	@GET
@@ -76,14 +68,7 @@ public class GeoAreaMetaDataResource extends NbaDocumentMetaDataResource<GeoArea
 	@Produces(JSON_CONTENT_TYPE)
 	public String[] getPaths(@Context UriInfo uriInfo)
 	{
-		try {
-			GeoAreaMetaDataDao dao = new GeoAreaMetaDataDao();
-			String s = uriInfo.getQueryParameters().getFirst("sorted");
-			boolean sorted = ConfigObject.isTrueValue(s);
-			return dao.getPaths(sorted);
-		} catch (Throwable t) {
-			throw handleError(uriInfo, t);
-		}
+		return super.getPaths(uriInfo);
 	}
 
 	@GET
@@ -92,17 +77,7 @@ public class GeoAreaMetaDataResource extends NbaDocumentMetaDataResource<GeoArea
 	@Produces(JSON_CONTENT_TYPE)
 	public Map<String, FieldInfo> getFieldInfo(@Context UriInfo uriInfo)
 	{
-		try {
-			GeoAreaMetaDataDao dao = new GeoAreaMetaDataDao();
-			String param = uriInfo.getQueryParameters().getFirst("fields");
-			String[] fields = null;
-			if (param != null) {
-				fields = param.split(",");
-			}
-			return dao.getFieldInfo(fields);
-		} catch (Throwable t) {
-			throw handleError(uriInfo, t);
-		}
+		return super.getFieldInfo(uriInfo);
 	}
 
 	@GET
@@ -114,12 +89,6 @@ public class GeoAreaMetaDataResource extends NbaDocumentMetaDataResource<GeoArea
 			@ApiParam(value = "operator", required = true, defaultValue = "EQUALS") @PathParam("operator") String operator,
 			@Context UriInfo uriInfo)
 	{
-		try {
-			ComparisonOperator op = ComparisonOperator.parse(operator);
-			GeoAreaMetaDataDao dao = new GeoAreaMetaDataDao();
-			return dao.isOperatorAllowed(field, op);
-		} catch (Throwable t) {
-			throw handleError(uriInfo, t);
-		}
+		return super.isOperatorAllowed(field, operator, uriInfo);
 	}
 }

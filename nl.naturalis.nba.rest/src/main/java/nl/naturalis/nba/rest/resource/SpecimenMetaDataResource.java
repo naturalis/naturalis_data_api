@@ -21,18 +21,14 @@ import org.apache.logging.log4j.Logger;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import nl.naturalis.nba.api.ComparisonOperator;
 import nl.naturalis.nba.api.model.metadata.FieldInfo;
 import nl.naturalis.nba.api.model.metadata.NbaSetting;
 import nl.naturalis.nba.dao.SpecimenMetaDataDao;
-import nl.naturalis.nba.utils.ConfigObject;
 
-@SuppressWarnings("static-method")
 @Path("/specimen/metadata")
 @Stateless
 @LocalBean
 @Api(value = "specimen")
-
 public class SpecimenMetaDataResource extends NbaDocumentMetaDataResource<SpecimenMetaDataDao> {
 
 	SpecimenMetaDataResource() {
@@ -61,26 +57,6 @@ public class SpecimenMetaDataResource extends NbaDocumentMetaDataResource<Specim
 			throw handleError(uriInfo, t);
 		}
 	}
-
-	/*
-	@GET
-	@Path("/getSetting/{name}")
-	@ApiOperation(value = "Get the value of an NBA setting", response = Object.class, notes = "All settings can be queried with /metadata/getSettings")
-	@Produces(JSON_CONTENT_TYPE)
-	public Object getSettings(
-			@ApiParam(value = "name of setting", required = true, defaultValue = "index.max_result_window") 
-			@PathParam("name") String name,
-			@Context UriInfo uriInfo)
-	{
-		try {
-			NbaSetting setting = NbaSetting.parse(name);
-			return new SpecimenMetaDataDao().getSetting(setting);
-		} catch (Throwable t) {
-			throw handleError(uriInfo, t);
-		}
-	}
-
-	 */
 	
 	@GET
 	@Path("/getSettings")
@@ -88,11 +64,7 @@ public class SpecimenMetaDataResource extends NbaDocumentMetaDataResource<Specim
 	@Produces(JSON_CONTENT_TYPE)
 	public Map<NbaSetting, Object> getSettings(@Context UriInfo uriInfo)
 	{
-		try {
-			return new SpecimenMetaDataDao().getSettings();
-		} catch (Throwable t) {
-			throw handleError(uriInfo, t);
-		}
+		return super.getSettings(uriInfo);
 	}
 
 	@GET
@@ -101,14 +73,7 @@ public class SpecimenMetaDataResource extends NbaDocumentMetaDataResource<Specim
 	@Produces(JSON_CONTENT_TYPE)
 	public String[] getPaths(@Context UriInfo uriInfo)
 	{
-		try {
-			SpecimenMetaDataDao dao = new SpecimenMetaDataDao();
-			String s = uriInfo.getQueryParameters().getFirst("sorted");
-			boolean sorted = ConfigObject.isTrueValue(s);
-			return dao.getPaths(sorted);
-		} catch (Throwable t) {
-			throw handleError(uriInfo, t);
-		}
+		return super.getPaths(uriInfo);
 	}
 
 	@GET
@@ -117,17 +82,7 @@ public class SpecimenMetaDataResource extends NbaDocumentMetaDataResource<Specim
 	@Produces(JSON_CONTENT_TYPE)
 	public Map<String, FieldInfo> getFieldInfo(@Context UriInfo uriInfo)
 	{
-		try {
-			SpecimenMetaDataDao dao = new SpecimenMetaDataDao();
-			String param = uriInfo.getQueryParameters().getFirst("fields");
-			String[] fields = null;
-			if (param != null) {
-				fields = param.split(",");
-			}
-			return dao.getFieldInfo(fields);
-		} catch (Throwable t) {
-			throw handleError(uriInfo, t);
-		}
+		return super.getFieldInfo(uriInfo);
 	}
 
 	@GET
@@ -139,13 +94,7 @@ public class SpecimenMetaDataResource extends NbaDocumentMetaDataResource<Specim
 			@ApiParam(value = "operator", required = true, defaultValue = "EQUALS") @PathParam("operator") String operator,
 			@Context UriInfo uriInfo)
 	{
-		try {
-			ComparisonOperator op = ComparisonOperator.parse(operator);
-			SpecimenMetaDataDao dao = new SpecimenMetaDataDao();
-			return dao.isOperatorAllowed(field, op);
-		} catch (Throwable t) {
-			throw handleError(uriInfo, t);
-		}
+		return super.isOperatorAllowed(field, operator, uriInfo);
 	}
 
 }

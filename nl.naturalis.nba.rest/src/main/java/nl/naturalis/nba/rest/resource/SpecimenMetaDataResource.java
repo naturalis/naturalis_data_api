@@ -1,11 +1,9 @@
 package nl.naturalis.nba.rest.resource;
 
 import static nl.naturalis.nba.rest.util.ResourceUtil.JSON_CONTENT_TYPE;
-import static nl.naturalis.nba.rest.util.ResourceUtil.handleError;
 
 import java.util.Map;
 
-import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ws.rs.GET;
@@ -31,15 +29,12 @@ import nl.naturalis.nba.dao.SpecimenMetaDataDao;
 @Api(value = "specimen")
 public class SpecimenMetaDataResource extends NbaDocumentMetaDataResource<SpecimenMetaDataDao> {
 
-	SpecimenMetaDataResource() {
-		super(new SpecimenMetaDataDao());
-	}
-
 	@SuppressWarnings("unused")
 	private static final Logger logger = LogManager.getLogger(SpecimenMetaDataResource.class);
 
-	@EJB
-	Registry registry;
+	SpecimenMetaDataResource() {
+		super(new SpecimenMetaDataDao());
+	}
 
 	@GET
 	@Path("/getSetting/{name}")
@@ -50,12 +45,7 @@ public class SpecimenMetaDataResource extends NbaDocumentMetaDataResource<Specim
 			@PathParam("name") String name,
 			@Context UriInfo uriInfo)
 	{
-		try {
-			NbaSetting setting = NbaSetting.parse(name);
-			return new SpecimenMetaDataDao().getSetting(setting);
-		} catch (Throwable t) {
-			throw handleError(uriInfo, t);
-		}
+		return super.getSettings(name, uriInfo);
 	}
 	
 	@GET

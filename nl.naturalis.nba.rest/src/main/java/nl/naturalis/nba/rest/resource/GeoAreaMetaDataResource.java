@@ -4,7 +4,6 @@ import static nl.naturalis.nba.rest.util.ResourceUtil.JSON_CONTENT_TYPE;
 
 import java.util.Map;
 
-import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ws.rs.GET;
@@ -31,16 +30,13 @@ import nl.naturalis.nba.dao.GeoAreaMetaDataDao;
 @Api(value = "geo")
 public class GeoAreaMetaDataResource extends NbaDocumentMetaDataResource<GeoAreaMetaDataDao> {
 
+	@SuppressWarnings("unused")
+	private static final Logger logger = LogManager.getLogger(GeoAreaMetaDataResource.class);
+
 	GeoAreaMetaDataResource()
 	{
 		super(new GeoAreaMetaDataDao());
 	}
-
-	@SuppressWarnings("unused")
-	private static final Logger logger = LogManager.getLogger(GeoAreaMetaDataResource.class);
-
-	@EJB
-	Registry registry;
 
 	@GET
 	@Path("/getSetting/{name}")

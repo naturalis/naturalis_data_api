@@ -4,6 +4,7 @@ import static nl.naturalis.nba.rest.util.ResourceUtil.handleError;
 
 import java.util.Map;
 
+import javax.ejb.EJB;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 
@@ -19,6 +20,9 @@ import nl.naturalis.nba.utils.StringUtil;
 public abstract class NbaResource<T extends IDocumentObject, U extends NbaDao<T>> {
 	
 	U dao; // NbaResource, e.g. SpecimenResource, TaxonResource ...
+	
+	@EJB
+	Registry registry;
 	
 	NbaResource(U dao) {
 		this.dao = dao;
@@ -47,7 +51,7 @@ public abstract class NbaResource<T extends IDocumentObject, U extends NbaDao<T>
 		}
 	}
 	
-	public QueryResult<T> query_GET(UriInfo uriInfo)
+	public QueryResult<T> queryHttpGet(UriInfo uriInfo)
 	{
 		try {
 			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
@@ -57,7 +61,7 @@ public abstract class NbaResource<T extends IDocumentObject, U extends NbaDao<T>
 		}
 	}
 	
-	public long count_POST_FORM(
+	public long countHttpPostForm(
 			MultivaluedMap<String, String> form,
 			UriInfo uriInfo)
 	{
@@ -69,7 +73,7 @@ public abstract class NbaResource<T extends IDocumentObject, U extends NbaDao<T>
 		}
 	}
 	
-	public long count_POST_JSON( 
+	public long countHttpPostJson( 
 			QuerySpec qs,
 			UriInfo uriInfo)
 	{
@@ -80,7 +84,7 @@ public abstract class NbaResource<T extends IDocumentObject, U extends NbaDao<T>
 		}
 	}
 
-	public long count_GET(UriInfo uriInfo)
+	public long countHttpGet(UriInfo uriInfo)
 	{
 		try {
 			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();

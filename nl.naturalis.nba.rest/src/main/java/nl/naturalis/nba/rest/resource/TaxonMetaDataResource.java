@@ -4,7 +4,6 @@ import static nl.naturalis.nba.rest.util.ResourceUtil.JSON_CONTENT_TYPE;
 
 import java.util.Map;
 
-import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ws.rs.GET;
@@ -30,16 +29,13 @@ import nl.naturalis.nba.dao.TaxonMetaDataDao;
 @Path("/taxon/metadata")
 public class TaxonMetaDataResource extends NbaDocumentMetaDataResource<TaxonMetaDataDao> {
 
+	@SuppressWarnings("unused")
+	private static final Logger logger = LogManager.getLogger(TaxonMetaDataResource.class);
+
 	TaxonMetaDataResource()
 	{
 		super(new TaxonMetaDataDao());
 	}
-
-	@SuppressWarnings("unused")
-	private static final Logger logger = LogManager.getLogger(TaxonMetaDataResource.class);
-
-	@EJB
-	Registry registry;
 
 	@GET
 	@Path("/getSetting/{name}")

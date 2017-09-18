@@ -5,7 +5,6 @@ import static nl.naturalis.nba.rest.util.ResourceUtil.TEXT_CONTENT_TYPE;
 
 import java.util.Map;
 
-import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ws.rs.GET;
@@ -32,16 +31,13 @@ import nl.naturalis.nba.dao.MultiMediaObjectMetaDataDao;
 @Api(value = "multimedia")
 public class MultiMediaObjectMetaDataResource extends NbaDocumentMetaDataResource<MultiMediaObjectMetaDataDao>{
 
+	@SuppressWarnings("unused")
+	private static final Logger logger = LogManager.getLogger(MultiMediaObjectMetaDataResource.class);
+
 	MultiMediaObjectMetaDataResource()
 	{
 		super(new MultiMediaObjectMetaDataDao());
 	}
-
-	@SuppressWarnings("unused")
-	private static final Logger logger = LogManager.getLogger(MultiMediaObjectMetaDataResource.class);
-
-	@EJB
-	Registry registry;
 
 	@GET
 	@Path("/getSetting/{name}")

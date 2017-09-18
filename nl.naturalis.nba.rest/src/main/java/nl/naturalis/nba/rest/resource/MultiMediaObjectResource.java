@@ -5,7 +5,6 @@ import static nl.naturalis.nba.rest.util.ResourceUtil.handleError;
 
 import java.util.Map;
 
-import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ws.rs.Consumes;
@@ -40,16 +39,13 @@ import nl.naturalis.nba.rest.util.HttpQuerySpecBuilder;
 @Api(value = "multimedia")
 public class MultiMediaObjectResource extends NbaResource<MultiMediaObject, MultiMediaObjectDao> {
 
+	@SuppressWarnings("unused")
+	private static final Logger logger = LogManager.getLogger(MultiMediaObjectResource.class);
+
 	MultiMediaObjectResource()
 	{
 		super(new MultiMediaObjectDao());
 	}
-
-	@SuppressWarnings("unused")
-	private static final Logger logger = LogManager.getLogger(MultiMediaObjectResource.class);
-
-	@EJB
-	Registry registry;
 
 	@GET
 	@Path("/find/{id}")
@@ -80,9 +76,9 @@ public class MultiMediaObjectResource extends NbaResource<MultiMediaObject, Mult
 	@Produces(JSON_CONTENT_TYPE)
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "license", value = "Example query param", dataType = "string", paramType = "query", defaultValue = "CC0", required = false) })	
-	public QueryResult<MultiMediaObject> query_GET(@Context UriInfo uriInfo)
+	public QueryResult<MultiMediaObject> queryHttpGet(@Context UriInfo uriInfo)
 	{
-		return super.query_GET(uriInfo);
+		return super.queryHttpGet(uriInfo);
 	}
 
 	@POST
@@ -90,7 +86,7 @@ public class MultiMediaObjectResource extends NbaResource<MultiMediaObject, Mult
 	@ApiOperation(hidden = true, value = "Query for multimedia documents", response = QueryResult.class, notes = "Search for multimedia documents (POST)")	
 	@Produces(JSON_CONTENT_TYPE)
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public QueryResult<MultiMediaObject> query_POST_FORM(@ApiParam(value = "POST payload", required = false) MultivaluedMap<String, String> form,
+	public QueryResult<MultiMediaObject> queryHttpPostForm(@ApiParam(value = "POST payload", required = false) MultivaluedMap<String, String> form,
 			@Context UriInfo uriInfo)
 	{
 		try {
@@ -108,7 +104,7 @@ public class MultiMediaObjectResource extends NbaResource<MultiMediaObject, Mult
 	@ApiOperation(value = "Query for taxa", response = QueryResult.class, notes = "Search for multimedia documents with a querySpec JSON")	
 	@Produces(JSON_CONTENT_TYPE)
 	@Consumes(JSON_CONTENT_TYPE)
-	public QueryResult<MultiMediaObject> query_POST_JSON(@ApiParam(value = "querySpec", required = false) QuerySpec qs, @Context UriInfo uriInfo)
+	public QueryResult<MultiMediaObject> queryHttpPostJson(@ApiParam(value = "querySpec", required = false) QuerySpec qs, @Context UriInfo uriInfo)
 	{
 		try {
 			MultiMediaObjectDao dao = new MultiMediaObjectDao();
@@ -124,12 +120,12 @@ public class MultiMediaObjectResource extends NbaResource<MultiMediaObject, Mult
 	@ApiOperation(hidden = true, value = "Get the number of multimedia documents matching a condition", response = long.class, notes = "Conditions given in POST body")
 	@Produces(JSON_CONTENT_TYPE)
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public long count_POST_FORM(
+	public long countHttpPostForm(
 			@ApiParam(value = "POST payload", required = false) 
 			MultivaluedMap<String, String> form,
 			@Context UriInfo uriInfo)
 	{
-		return super.count_POST_FORM(form, uriInfo);
+		return super.countHttpPostForm(form, uriInfo);
 	}
 	
 	@POST
@@ -137,12 +133,12 @@ public class MultiMediaObjectResource extends NbaResource<MultiMediaObject, Mult
 	@ApiOperation(value = "Get the number of multimedia documents matching a condition", response = long.class, notes = "Conditions given as querySpec JSON")	
 	@Produces(JSON_CONTENT_TYPE)
 	@Consumes(JSON_CONTENT_TYPE)
-	public long count_POST_JSON(
+	public long countHttpPostJson(
 			@ApiParam(value = "querySpec JSON", required = false) 
 			QuerySpec qs, 
 			@Context UriInfo uriInfo)
 	{
-		return super.count_POST_JSON(qs, uriInfo);
+		return super.countHttpPostJson(qs, uriInfo);
 	}
 	
 	@GET
@@ -151,9 +147,9 @@ public class MultiMediaObjectResource extends NbaResource<MultiMediaObject, Mult
 	@Produces(JSON_CONTENT_TYPE)
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "sourceSystem.code", value = "Example query param", dataType = "string", paramType = "query", defaultValue = "BRAHMS", required = false) })
-	public long count_GET(@Context UriInfo uriInfo)
+	public long countHttpGet(@Context UriInfo uriInfo)
 	{
-		return super.count_GET(uriInfo);
+		return super.countHttpGet(uriInfo);
 	}
 
 	@GET

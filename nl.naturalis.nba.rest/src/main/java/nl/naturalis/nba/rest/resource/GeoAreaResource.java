@@ -6,7 +6,6 @@ import static nl.naturalis.nba.rest.util.ResourceUtil.handleError;
 
 import java.util.Map;
 
-import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ws.rs.Consumes;
@@ -45,16 +44,13 @@ import nl.naturalis.nba.rest.exception.HTTP404Exception;
 
 public class GeoAreaResource extends NbaResource<GeoArea, GeoAreaDao> {
 
+	@SuppressWarnings("unused")
+	private static final Logger logger = LogManager.getLogger(GeoAreaResource.class);
+
 	GeoAreaResource()
 	{
 		super(new GeoAreaDao());
 	}
-
-	@SuppressWarnings("unused")
-	private static final Logger logger = LogManager.getLogger(GeoAreaResource.class);
-
-	@EJB
-	Registry registry;
 
 	@GET
 	@Path("/find/{id}")
@@ -86,9 +82,9 @@ public class GeoAreaResource extends NbaResource<GeoArea, GeoAreaDao> {
 	@Produces(JSON_CONTENT_TYPE)
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "locality", value = "Example query param", dataType = "string", paramType = "query", defaultValue = "Belgium", required = false) })
-	public QueryResult<GeoArea> query_GET(@Context UriInfo uriInfo)
+	public QueryResult<GeoArea> queryHttpGet(@Context UriInfo uriInfo)
 	{
-		return super.query_GET(uriInfo);
+		return super.queryHttpGet(uriInfo);
 	}
 
 	@POST
@@ -96,12 +92,12 @@ public class GeoAreaResource extends NbaResource<GeoArea, GeoAreaDao> {
 	@ApiOperation(hidden = true, value = "Get the number of geo areas matching a condition", response = long.class, notes = "Conditions given in POST body")
 	@Produces(TEXT_CONTENT_TYPE)
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public long count_POST_FORM(
+	public long countHttpPostForm(
 			@ApiParam(value = "query object in POST form", required = false) 
 			MultivaluedMap<String, String> form,
 			@Context UriInfo uriInfo)
 	{
-		return super.count_POST_FORM(form, uriInfo);
+		return super.countHttpPostForm(form, uriInfo);
 	}
 
 	@POST
@@ -109,12 +105,12 @@ public class GeoAreaResource extends NbaResource<GeoArea, GeoAreaDao> {
 	@ApiOperation(value = "Get the number of geo areas matching a condition", response = long.class, notes = "Conditions given as querySpec JSON")
 	@Produces(TEXT_CONTENT_TYPE)
 	@Consumes(JSON_CONTENT_TYPE)
-	public long count_POST_JSON(
+	public long countHttpPostJson(
 			@ApiParam(value = "querySpec JSON", required = false) 
 			QuerySpec qs,
 			@Context UriInfo uriInfo)
 	{
-		return super.count_POST_JSON(qs, uriInfo);
+		return super.countHttpPostJson(qs, uriInfo);
 	}
 
 	@GET
@@ -123,9 +119,9 @@ public class GeoAreaResource extends NbaResource<GeoArea, GeoAreaDao> {
 	@Produces(TEXT_CONTENT_TYPE)
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "areaType", value = "Example query param", dataType = "string", paramType = "query", defaultValue = "Country", required = false) })
-	public long count_GET(@Context UriInfo uriInfo)
+	public long countHttpGet(@Context UriInfo uriInfo)
 	{
-		return super.count_GET(uriInfo);
+		return super.countHttpGet(uriInfo);
 	}
 
 	@GET

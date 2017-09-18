@@ -4,6 +4,7 @@ import static nl.naturalis.nba.rest.util.ResourceUtil.handleError;
 
 import java.util.Map;
 
+import javax.ejb.EJB;
 import javax.ws.rs.core.UriInfo;
 
 import nl.naturalis.nba.api.ComparisonOperator;
@@ -16,7 +17,10 @@ import nl.naturalis.nba.utils.ConfigObject;
 public abstract class NbaDocumentMetaDataResource<T extends NbaDocumentMetaDataDao<? extends IDocumentObject>> {
 
 	private T dao;
-
+	
+	@EJB
+	Registry registry;
+	
 	NbaDocumentMetaDataResource(T dao)
 	{
 		this.dao = dao;

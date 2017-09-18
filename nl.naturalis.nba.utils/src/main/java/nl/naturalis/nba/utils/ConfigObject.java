@@ -18,7 +18,6 @@ import java.util.Set;
  * @author Ayco Holleman
  *
  */
-@SuppressWarnings({ "synthetic-access", "serial" })
 public class ConfigObject {
 
 	public static class ConfigObjectException extends RuntimeException {
@@ -56,7 +55,6 @@ public class ConfigObject {
 	 * Exception thrown when a property's value is invalid, illegal, unexpected,
 	 * etc.
 	 */
-	@SuppressWarnings("serial")
 	public static class InvalidValueException extends RuntimeException {
 
 		private InvalidValueException(String property, String value)

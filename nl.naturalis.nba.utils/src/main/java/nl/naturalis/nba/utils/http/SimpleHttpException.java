@@ -1,6 +1,5 @@
 package nl.naturalis.nba.utils.http;
 
-@SuppressWarnings("serial")
 public class SimpleHttpException extends RuntimeException {
 
 	public SimpleHttpException(String message)

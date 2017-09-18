@@ -26,7 +26,7 @@ import nl.naturalis.nba.common.es.map.SimpleField;
 import nl.naturalis.nba.dao.exception.DaoException;
 import nl.naturalis.nba.dao.translate.OperatorValidator;
 
-abstract class NbaDocumentMetaDataDao<T extends IDocumentObject> implements INbaDocumentMetaData<T> {
+public abstract class NbaDocumentMetaDataDao<T extends IDocumentObject> implements INbaDocumentMetaData<T> {
 
 	private static final Logger logger = getLogger(NbaDocumentMetaDataDao.class);
 

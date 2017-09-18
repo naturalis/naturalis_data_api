@@ -33,7 +33,12 @@ import nl.naturalis.nba.utils.ConfigObject;
 @LocalBean
 @Api(value = "geo")
 
-public class GeoAreaMetaDataResource {
+public class GeoAreaMetaDataResource extends NbaDocumentMetaDataResource<GeoAreaMetaDataDao> {
+
+	GeoAreaMetaDataResource()
+	{
+		super(new GeoAreaMetaDataDao());
+	}
 
 	@SuppressWarnings("unused")
 	private static final Logger logger = LogManager.getLogger(GeoAreaMetaDataResource.class);
@@ -49,12 +54,7 @@ public class GeoAreaMetaDataResource {
 			@ApiParam(value = "name of setting", required = true, defaultValue = "index.max_result_window") @PathParam("name") String name,
 			@Context UriInfo uriInfo)
 	{
-		try {
-			NbaSetting setting = NbaSetting.parse(name);
-			return new GeoAreaMetaDataDao().getSetting(setting);
-		} catch (Throwable t) {
-			throw handleError(uriInfo, t);
-		}
+		return super.getSettings(name, uriInfo);
 	}
 
 	@GET

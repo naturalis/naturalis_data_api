@@ -36,7 +36,6 @@ import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.GeoArea;
 import nl.naturalis.nba.dao.GeoAreaDao;
 import nl.naturalis.nba.rest.exception.HTTP404Exception;
-import nl.naturalis.nba.rest.util.HttpQuerySpecBuilder;
 
 @Path("/geo")
 @Stateless

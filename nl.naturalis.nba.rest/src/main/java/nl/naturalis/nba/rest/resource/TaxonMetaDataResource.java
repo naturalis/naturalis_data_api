@@ -33,7 +33,12 @@ import nl.naturalis.nba.utils.ConfigObject;
 @Api(value = "taxon")
 @Path("/taxon/metadata")
 
-public class TaxonMetaDataResource {
+public class TaxonMetaDataResource extends NbaDocumentMetaDataResource<TaxonMetaDataDao> {
+
+	TaxonMetaDataResource()
+	{
+		super(new TaxonMetaDataDao());
+	}
 
 	@SuppressWarnings("unused")
 	private static final Logger logger = LogManager.getLogger(TaxonMetaDataResource.class);
@@ -49,12 +54,7 @@ public class TaxonMetaDataResource {
 			@ApiParam(value = "name of setting", required = true, defaultValue = "index.max_result_window") @PathParam("name") String name,
 			@Context UriInfo uriInfo)
 	{
-		try {
-			NbaSetting setting = NbaSetting.parse(name);
-			return new TaxonMetaDataDao().getSetting(setting);
-		} catch (Throwable t) {
-			throw handleError(uriInfo, t);
-		}
+		return super.getSettings(name, uriInfo);
 	}
 
 	@GET

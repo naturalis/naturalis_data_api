@@ -33,7 +33,11 @@ import nl.naturalis.nba.utils.ConfigObject;
 @LocalBean
 @Api(value = "specimen")
 
-public class SpecimenMetaDataResource {
+public class SpecimenMetaDataResource extends NbaDocumentMetaDataResource<SpecimenMetaDataDao> {
+
+	SpecimenMetaDataResource() {
+		super(new SpecimenMetaDataDao());
+	}
 
 	@SuppressWarnings("unused")
 	private static final Logger logger = LogManager.getLogger(SpecimenMetaDataResource.class);
@@ -57,6 +61,26 @@ public class SpecimenMetaDataResource {
 			throw handleError(uriInfo, t);
 		}
 	}
+
+	/*
+	@GET
+	@Path("/getSetting/{name}")
+	@ApiOperation(value = "Get the value of an NBA setting", response = Object.class, notes = "All settings can be queried with /metadata/getSettings")
+	@Produces(JSON_CONTENT_TYPE)
+	public Object getSettings(
+			@ApiParam(value = "name of setting", required = true, defaultValue = "index.max_result_window") 
+			@PathParam("name") String name,
+			@Context UriInfo uriInfo)
+	{
+		try {
+			NbaSetting setting = NbaSetting.parse(name);
+			return new SpecimenMetaDataDao().getSetting(setting);
+		} catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
+
+	 */
 	
 	@GET
 	@Path("/getSettings")

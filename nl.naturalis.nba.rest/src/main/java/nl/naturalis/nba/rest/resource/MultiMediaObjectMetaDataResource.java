@@ -34,7 +34,12 @@ import nl.naturalis.nba.utils.ConfigObject;
 @LocalBean
 @Api(value = "multimedia")
 
-public class MultiMediaObjectMetaDataResource {
+public class MultiMediaObjectMetaDataResource extends NbaDocumentMetaDataResource<MultiMediaObjectMetaDataDao>{
+
+	MultiMediaObjectMetaDataResource()
+	{
+		super(new MultiMediaObjectMetaDataDao());
+	}
 
 	@SuppressWarnings("unused")
 	private static final Logger logger = LogManager.getLogger(MultiMediaObjectMetaDataResource.class);
@@ -50,12 +55,7 @@ public class MultiMediaObjectMetaDataResource {
 			@ApiParam(value = "name of setting", required = true, defaultValue = "index.max_result_window") @PathParam("name") String name,
 			@Context UriInfo uriInfo)
 	{
-		try {
-			NbaSetting setting = NbaSetting.parse(name);
-			return new MultiMediaObjectMetaDataDao().getSetting(setting);
-		} catch (Throwable t) {
-			throw handleError(uriInfo, t);
-		}
+		return super.getSettings(name, uriInfo);
 	}
 
 	@GET

@@ -19,7 +19,7 @@ public abstract class NbaDocumentMetaDataResource<T extends NbaDocumentMetaDataD
 	private T dao;
 	
 	@EJB
-	Registry registry;
+	private Registry registry;
 	
 	NbaDocumentMetaDataResource(T dao)
 	{

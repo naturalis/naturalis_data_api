@@ -11,7 +11,11 @@ import org.junit.runners.Suite.SuiteClasses;
 	ApiUtilTest.class,
 	QueryConditionTest.class,
 	SortFieldTest.class,
-	QuerySpecTest.class
+	QuerySpecTest.class,
+	ComparisonOperatorTest.class,
+	LogicalOperatorTest.class,
+	UnaryBooleanOperatorTest.class,
+	SortOrderTest.class
 })
 //@formatter:on
 public class AllTests {

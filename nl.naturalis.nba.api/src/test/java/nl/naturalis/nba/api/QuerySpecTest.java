@@ -475,7 +475,7 @@ public class QuerySpecTest {
 	}
 
 	/*
-	 * Include copy constructor via equals method
+	 * Check copy constructor via equals method
 	 */
 	@Test
 	public void test_equals_09()
@@ -494,7 +494,7 @@ public class QuerySpecTest {
 	}
 
 	/*
-	 * Include copy constructor via hashCode method
+	 * Check copy constructor via hashCode method
 	 */
 	@Test
 	public void test_hashCode_09()

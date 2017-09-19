@@ -26,12 +26,22 @@ public class ComparisonOperatorTest {
 		assertEquals("01", ComparisonOperator.EQUALS, ComparisonOperator.parse("equals"));
 		assertEquals("02", ComparisonOperator.NOT_STARTS_WITH_IC, ComparisonOperator.parse("not_starts_with_ic"));
 	}
+	
+	@Test
+	public void testParse_04()
+	{
+		assertEquals("01", ComparisonOperator.EQUALS, ComparisonOperator.parse("="));
+		assertEquals("02", ComparisonOperator.NOT_EQUALS, ComparisonOperator.parse("!="));
+		assertEquals("03", ComparisonOperator.LT, ComparisonOperator.parse("<"));
+		assertEquals("04", ComparisonOperator.LTE, ComparisonOperator.parse("<="));
+		assertEquals("05", ComparisonOperator.GT, ComparisonOperator.parse(">"));
+		assertEquals("06", ComparisonOperator.GTE, ComparisonOperator.parse(">="));
+	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void testParse_04()
+	public void testParse_05()
 	{
 		ComparisonOperator.parse("NOT_EXISTING_OPERATOR");
 	}
 
-	
 }

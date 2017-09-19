@@ -69,7 +69,7 @@ public class PathTest {
 		Path path0 = new Path("identifications.defaultClassification.kingdom");
 		Path path1 = new Path("identifications.defaultClassification.kingdom");
 		Path path2 = new Path("identifications.defaultClassification.phylum");
-		assertTrue("01", path0.compareTo(path1) == 0);
+		assertEquals("01", 0, path0.compareTo(path1));
 		assertFalse("02", path0.compareTo(path2) == 0);
 	}
 	

@@ -107,6 +107,10 @@ public class ApiUtilTest {
 	public void test_equals_20()
 	{
 		assertTrue("01", ApiUtil.equals("John", null, "John"));
+		assertTrue("02", ApiUtil.equals("John", "John", "John"));
+		assertTrue("02", ApiUtil.equals("John", "John", "Mark"));
+		assertTrue("03", ApiUtil.equals(null, "John", "John"));
+		assertTrue("04", ApiUtil.equals(null, null, "John"));
 	}
 
 	/*
@@ -258,6 +262,64 @@ public class ApiUtilTest {
 	public void test_hashCode_22()
 	{
 		assertEquals("01", ApiUtil.hashCode("Jim", "John"), "Jim".hashCode());
+	}
+
+	/*
+	 * Ensure if object is not an array or list, deepHashCode simply returns the
+	 * hash code of the object.
+	 */
+	@Test
+	public void test_deepHashCode_01()
+	{
+		QueryCondition c0 = new QueryCondition("foo", "=", "bar");
+		assertEquals("01", c0.hashCode(), ApiUtil.deepHashCode(c0));
+		String helloWorld = "Hello World";
+		assertEquals("02", helloWorld.hashCode(), ApiUtil.deepHashCode(helloWorld));
+	}
+
+	/*
+	 * Ensure if object is an array of primitives, deepHashCode returns the same
+	 * as Arrays.hashCode
+	 */
+	@Test
+	public void test_deepHashCode_02()
+	{
+		int[] ints = new int[] { 92, 0, 13, 4, 1045 };
+		assertEquals("01", Arrays.hashCode(ints), ApiUtil.deepHashCode(ints));
+		short[] shorts = new short[] { 92, 0, 13, 4, 1045 };
+		assertEquals("02", Arrays.hashCode(shorts), ApiUtil.deepHashCode(shorts));
+		long[] longs = new long[] { 92, 0, 13, 4, 1045 };
+		assertEquals("03", Arrays.hashCode(longs), ApiUtil.deepHashCode(longs));
+		byte[] bytes = new byte[] { 92, 0, 13, 4 };
+		assertEquals("04", Arrays.hashCode(bytes), ApiUtil.deepHashCode(bytes));
+		char[] chars = new char[] { 92, 0, 13, 4 };
+		assertEquals("05", Arrays.hashCode(chars), ApiUtil.deepHashCode(chars));
+		boolean[] booleans = new boolean[] { true, true, false, false, true };
+		assertEquals("06", Arrays.hashCode(booleans), ApiUtil.deepHashCode(booleans));
+		float[] floats = new float[] { 92, 0, 13, 4, 1045 };
+		assertEquals("07", Arrays.hashCode(floats), ApiUtil.deepHashCode(floats));
+		double[] doubles = new double[] { 92, 0, 13, 4, 1045 };
+		assertEquals("08", Arrays.hashCode(doubles), ApiUtil.deepHashCode(doubles));
+	}
+
+	/*
+	 * Test null logic
+	 */
+	@Test
+	public void test_deepHashCode_03()
+	{
+		assertEquals("01", 0, ApiUtil.deepHashCode(null));
+	}
+
+	/*
+	 * Ensure if object is an array of non-primitives, the result is the same as
+	 * Arrays.deepHashCode
+	 */
+	@Test
+	public void test_deepHashCode_04()
+	{
+		String[] strings = new String[] { "Hello", ", ", "World", "!" };
+		assertEquals("01", Arrays.deepHashCode(strings), ApiUtil.deepHashCode(strings));
 	}
 
 }

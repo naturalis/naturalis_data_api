@@ -14,7 +14,7 @@ public class StringUtil {
 	 */
 	public static final String EMPTY = "";
 
-	public static final Charset CHARSET_UTF8 = Charset.forName("UTF-8");
+	private static final Charset CHARSET_UTF8 = Charset.forName("UTF-8");
 
 	/**
 	 * Extract a slice from {@code string}. If {@code from} is negative, count
@@ -51,7 +51,7 @@ public class StringUtil {
 	 * returns {@code "ell"}. If {@code string} is {@code null} this method
 	 * returns {@code null}. If {@code from} is greater than the string's
 	 * length, this method returns {@link #EMPTY}. If {@code length} is less
-	 * then 1, this method returns {@link #EMPTY}.
+	 * than 1, this method returns {@link #EMPTY}.
 	 * 
 	 * @param string
 	 *            The {@code String} to extract a slice from

@@ -10,7 +10,26 @@ import nl.naturalis.nba.utils.StringUtil;
 public class StringUtilTest {
 
 	@Test
-	public void testLtrim()
+	public void test_substr_01()
+	{
+		assertEquals("01", null, StringUtil.substr(null, 0, 5));
+		assertEquals("02", "", StringUtil.substr("", 0, -1));
+		assertEquals("03", "", StringUtil.substr("whatever", 0, -1));
+		assertEquals("04", "", StringUtil.substr("whatever", 1, 0));
+		assertEquals("05", "", StringUtil.substr("whatever", 250, 3));
+		assertEquals("06", "what", StringUtil.substr("whatever", 0, 4));
+		assertEquals("07", "ever", StringUtil.substr("whatever", -4, 4));
+		assertEquals("08", "ever", StringUtil.substr("whatever", -4, 250));
+		assertEquals("09", "", StringUtil.substr("whatever", 200, 250));
+		assertEquals("10", "eve", StringUtil.substr("whatever", -4, 3));
+		assertEquals("11", "e", StringUtil.substr("whatever", -4, 1));
+		assertEquals("12", "e", StringUtil.substr("whatever", 4, 1));
+		assertEquals("13", "what", StringUtil.substr("whatever", -250, 4));
+		assertEquals("14", "whatever", StringUtil.substr("whatever", -250, 1000));
+	}
+
+	@Test
+	public void test_ltrim_01()
 	{
 		assertEquals("01 Should be empty.", "", StringUtil.ltrim(null, 'a'));
 		assertEquals("02 Should be empty.", "", StringUtil.ltrim("", 'a'));
@@ -26,7 +45,7 @@ public class StringUtilTest {
 	}
 
 	@Test
-	public void testLtrimWord()
+	public void test_lchop_01()
 	{
 		assertEquals("01", null, StringUtil.lchop(null, null));
 		assertEquals("02", "whatever", StringUtil.lchop("whatever", null));
@@ -40,7 +59,7 @@ public class StringUtilTest {
 	}
 
 	@Test
-	public void testRtrim()
+	public void test_rtrim_01()
 	{
 		assertEquals("01 Should be empty.", "", StringUtil.ltrim(null, 'a'));
 		assertEquals("02 Should be empty.", "", StringUtil.rtrim("", 'a'));
@@ -56,7 +75,7 @@ public class StringUtilTest {
 	}
 
 	@Test
-	public void testSplit()
+	public void test_split_01()
 	{
 		String delim = "[^]";
 		String s = null;
@@ -103,7 +122,6 @@ public class StringUtilTest {
 		assertEquals("18", "", chunks[0]);
 		assertEquals("19", "", chunks[1]);
 		assertEquals("20", "", chunks[2]);
-
 	}
 
 }

@@ -9,8 +9,11 @@ import nl.naturalis.nba.utils.StringUtil;
 @SuppressWarnings("static-method")
 public class StringUtilTest {
 
+	/*
+	 * Tests 3-arg version of substr
+	 */
 	@Test
-	public void test_substr_01()
+	public void testSubstr_01()
 	{
 		assertEquals("01", null, StringUtil.substr(null, 0, 5));
 		assertEquals("02", "", StringUtil.substr("", 0, -1));
@@ -28,8 +31,24 @@ public class StringUtilTest {
 		assertEquals("14", "whatever", StringUtil.substr("whatever", -250, 1000));
 	}
 
+	/*
+	 * Tests 2-arg version of substr
+	 */
 	@Test
-	public void test_ltrim_01()
+	public void testSubstr_02()
+	{
+		assertEquals("01", null, StringUtil.substr(null, 0));
+		assertEquals("02", null, StringUtil.substr(null, -3));
+		assertEquals("03", null, StringUtil.substr(null, 500));
+		assertEquals("04", "", StringUtil.substr("", -1));
+		assertEquals("05", "ever", StringUtil.substr("whatever", -4));
+		assertEquals("05", "ever", StringUtil.substr("whatever", 4));
+		assertEquals("06", "tever", StringUtil.substr("whatever", -5));
+		assertEquals("07", "ver", StringUtil.substr("whatever", 5));
+	}
+
+	@Test
+	public void testLtrim_01()
 	{
 		assertEquals("01 Should be empty.", "", StringUtil.ltrim(null, 'a'));
 		assertEquals("02 Should be empty.", "", StringUtil.ltrim("", 'a'));
@@ -45,7 +64,7 @@ public class StringUtilTest {
 	}
 
 	@Test
-	public void test_lchop_01()
+	public void testLchop_01()
 	{
 		assertEquals("01", null, StringUtil.lchop(null, null));
 		assertEquals("02", "whatever", StringUtil.lchop("whatever", null));
@@ -59,7 +78,7 @@ public class StringUtilTest {
 	}
 
 	@Test
-	public void test_rtrim_01()
+	public void testRtrim_01()
 	{
 		assertEquals("01 Should be empty.", "", StringUtil.ltrim(null, 'a'));
 		assertEquals("02 Should be empty.", "", StringUtil.rtrim("", 'a'));
@@ -75,7 +94,7 @@ public class StringUtilTest {
 	}
 
 	@Test
-	public void test_split_01()
+	public void testSplit_01()
 	{
 		String delim = "[^]";
 		String s = null;

@@ -47,6 +47,38 @@ public class StringUtilTest {
 		assertEquals("07", "ver", StringUtil.substr("whatever", 5));
 	}
 
+	/*
+	 * Tests 3-arg version of substr
+	 */
+	@Test
+	public void testZpad_01()
+	{
+		assertEquals("01", "00whatever|", StringUtil.zpad("whatever", 10, "|"));
+		assertEquals("02", "00whatever|||", StringUtil.zpad("whatever", 10, "|||"));
+		assertEquals("03", "0whatever|", StringUtil.zpad("whatever", 9, "|"));
+		assertEquals("04", "whatever|", StringUtil.zpad("whatever", 8, "|"));
+		assertEquals("05", "whatever", StringUtil.zpad("whatever", 7));
+		assertEquals("06", "whatever", StringUtil.zpad("whatever", 6));
+		String hour = StringUtil.zpad(7, 2, ":");
+		String minute = StringUtil.zpad(38, 2, ":");
+		String sec = StringUtil.zpad(6, 2);
+		String time = hour + minute + sec;
+		assertEquals("07", "07:38:06", time);		
+	}
+
+	/*
+	 * Tests 2-arg version of zpad
+	 */
+	@Test
+	public void testZpad_02()
+	{
+		assertEquals("01", "00whatever", StringUtil.zpad("whatever", 10));
+		assertEquals("02", "0whatever", StringUtil.zpad("whatever", 9));
+		assertEquals("03", "whatever", StringUtil.zpad("whatever", 8));
+		assertEquals("04", "whatever", StringUtil.zpad("whatever", 7));
+		assertEquals("05", "whatever", StringUtil.zpad("whatever", 6));
+	}
+
 	@Test
 	public void testLtrim_01()
 	{

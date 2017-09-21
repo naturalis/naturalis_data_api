@@ -31,6 +31,7 @@ import org.elasticsearch.search.aggregations.metrics.max.MaxAggregationBuilder;
 import org.elasticsearch.search.aggregations.metrics.tophits.TopHitsAggregationBuilder;
 
 import nl.naturalis.nba.api.Filter;
+import nl.naturalis.nba.api.GroupByScientificNameQueryResult;
 import nl.naturalis.nba.api.GroupByScientificNameQuerySpec;
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.QueryCondition;
@@ -54,13 +55,13 @@ public class GroupSpecimensByScientificNameHelper {
 
 	private static Logger logger = getLogger(GroupSpecimensByScientificNameHelper.class);
 
-	private static final QueryCache<QueryResult<ScientificNameGroup>> queryCache = new QueryCache<>(
+	private static final QueryCache<GroupByScientificNameQueryResult> queryCache = new QueryCache<>(
 			getCacheSize());
 
-	public static QueryResult<ScientificNameGroup> groupByScientificName(
+	public static GroupByScientificNameQueryResult groupByScientificName(
 			GroupByScientificNameQuerySpec query) throws InvalidQueryException
 	{
-		QueryResult<ScientificNameGroup> result = queryCache.get(query);
+		GroupByScientificNameQueryResult result = queryCache.get(query);
 		if (result != null) {
 			return result;
 		}
@@ -70,7 +71,7 @@ public class GroupSpecimensByScientificNameHelper {
 		 * a copy of the incoming query and work on the copy from now on:
 		 */
 		GroupByScientificNameQuerySpec queryCopy = new GroupByScientificNameQuerySpec(query);
-		result = new QueryResult<>();
+		result = new GroupByScientificNameQueryResult();
 		/*
 		 * First, ONLY retrieve the unique scientific names (the buckets), given
 		 * the query conditions. We don't want any documents to come back so in
@@ -93,6 +94,7 @@ public class GroupSpecimensByScientificNameHelper {
 		SearchResponse response = executeSearchRequest(request);
 		Nested nested = response.getAggregations().get("NESTED");
 		Terms terms = nested.getAggregations().get("TERMS");
+		result.setSumOfOtherDocCounts(terms.getSumOfOtherDocCounts());
 		List<Bucket> buckets = terms.getBuckets();
 		result.setTotalSize(buckets.size());
 		// Morph the query into a regular Specimen query:

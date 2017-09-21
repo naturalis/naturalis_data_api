@@ -16,13 +16,13 @@ import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
+import nl.naturalis.nba.api.GroupByScientificNameQueryResult;
 import nl.naturalis.nba.api.GroupByScientificNameQuerySpec;
 import nl.naturalis.nba.api.ISpecimenAccess;
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.NoSuchDataSetException;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QuerySpec;
-import nl.naturalis.nba.api.model.ScientificNameGroup;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.utils.IOUtil;
 import nl.naturalis.nba.utils.http.SimpleHttpRequest;
@@ -154,7 +154,7 @@ public class SpecimenClient extends NbaClient<Specimen> implements ISpecimenAcce
 	}
 
 	@Override
-	public QueryResult<ScientificNameGroup> groupByScientificName(
+	public GroupByScientificNameQueryResult groupByScientificName(
 			GroupByScientificNameQuerySpec querySpec) throws InvalidQueryException
 	{
 		SimpleHttpRequest request = newQuerySpecRequest("groupByScientificName", querySpec);
@@ -168,9 +168,7 @@ public class SpecimenClient extends NbaClient<Specimen> implements ISpecimenAcce
 			}
 			throw exception;
 		}
-		TypeReference<QueryResult<ScientificNameGroup>> typeRef;
-		typeRef = new TypeReference<QueryResult<ScientificNameGroup>>() {};
-		return getObject(request.getResponseBody(), typeRef);
+		return getObject(request.getResponseBody(), GroupByScientificNameQueryResult.class);
 	}
 
 	@Override

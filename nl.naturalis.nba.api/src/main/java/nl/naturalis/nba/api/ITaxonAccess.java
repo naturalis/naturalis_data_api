@@ -2,7 +2,6 @@ package nl.naturalis.nba.api;
 
 import java.io.OutputStream;
 
-import nl.naturalis.nba.api.model.ScientificNameGroup;
 import nl.naturalis.nba.api.model.Taxon;
 
 /**
@@ -112,7 +111,7 @@ public interface ITaxonAccess extends INbaAccess<Taxon> {
 	 * @return
 	 * @throws InvalidQueryException
 	 */
-	QueryResult<ScientificNameGroup> groupByScientificName(GroupByScientificNameQuerySpec querySpec)
+	GroupByScientificNameQueryResult groupByScientificName(GroupByScientificNameQuerySpec querySpec)
 			throws InvalidQueryException;
 
 }

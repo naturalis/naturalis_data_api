@@ -11,13 +11,12 @@ import java.util.Arrays;
 
 import org.apache.logging.log4j.Logger;
 
+import nl.naturalis.nba.api.GroupByScientificNameQueryResult;
 import nl.naturalis.nba.api.GroupByScientificNameQuerySpec;
 import nl.naturalis.nba.api.ITaxonAccess;
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.NoSuchDataSetException;
-import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QuerySpec;
-import nl.naturalis.nba.api.model.ScientificNameGroup;
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.dao.exception.DaoException;
 import nl.naturalis.nba.dao.format.DataSetConfigurationException;
@@ -100,7 +99,7 @@ public class TaxonDao extends NbaDao<Taxon> implements ITaxonAccess {
 	}
 
 	@Override
-	public QueryResult<ScientificNameGroup> groupByScientificName(
+	public GroupByScientificNameQueryResult groupByScientificName(
 			GroupByScientificNameQuerySpec sngQuery) throws InvalidQueryException
 	{
 		if (logger.isDebugEnabled()) {

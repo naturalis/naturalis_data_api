@@ -22,6 +22,7 @@ import nl.naturalis.nba.api.QuerySpec;
  */
 public class DaoUtil {
 
+	@SuppressWarnings("unused")
 	private static Logger logger = getLogger(DaoUtil.class);
 
 	private DaoUtil()
@@ -74,8 +75,8 @@ public class DaoUtil {
 	 * only contain reasonably-sized {@link QueryCondition#getValue() search
 	 * terms}. Some type of search terms (especially GeoJSON strings for
 	 * complicated shapes) can easily become so large that even printing them as
-	 * part of a DEBUG message is too expensive. This method is meant for debug
-	 * purposes only, notably when passing a {@code QuerySpec} object to
+	 * part of a DEBUG message is expensive. This method is meant for debug
+	 * purposes only, when passing a {@code QuerySpec} object to
 	 * {@code logger.debug()}.
 	 * 
 	 * @param qs
@@ -165,26 +166,8 @@ public class DaoUtil {
 
 	private static QueryCondition createCopy(QueryCondition original, String newValue)
 	{
-		logger.debug("Value of field {} truncated or nullified for log file!", original.getField());
-		QueryCondition copy = new QueryCondition();
-		copy.setNot(original.getNot());
-		copy.setField(original.getField());
-		copy.setOperator(original.getOperator());
+		QueryCondition copy = new QueryCondition(original);
 		copy.setValue(newValue);
-		if (original.getAnd() != null) {
-			List<QueryCondition> andCopy = new ArrayList<>(original.getAnd().size());
-			copy.setAnd(andCopy);
-			for (QueryCondition c : original.getAnd()) {
-				prune(c, andCopy);
-			}
-		}
-		if (original.getOr() != null) {
-			List<QueryCondition> orCopy = new ArrayList<>(original.getOr().size());
-			copy.setOr(orCopy);
-			for (QueryCondition c : original.getOr()) {
-				prune(c, orCopy);
-			}
-		}
 		return copy;
 	}
 

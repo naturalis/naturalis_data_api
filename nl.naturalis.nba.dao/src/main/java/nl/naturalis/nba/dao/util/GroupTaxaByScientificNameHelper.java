@@ -26,6 +26,7 @@ import org.elasticsearch.search.aggregations.metrics.max.MaxAggregationBuilder;
 import org.elasticsearch.search.aggregations.metrics.tophits.TopHitsAggregationBuilder;
 
 import nl.naturalis.nba.api.Filter;
+import nl.naturalis.nba.api.GroupByScientificNameQueryResult;
 import nl.naturalis.nba.api.GroupByScientificNameQuerySpec;
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.QueryCondition;
@@ -48,17 +49,17 @@ public class GroupTaxaByScientificNameHelper {
 
 	private static Logger logger = getLogger(GroupTaxaByScientificNameHelper.class);
 
-	private static final QueryCache<QueryResult<ScientificNameGroup>> queryCache = new QueryCache<>(
+	private static final QueryCache<GroupByScientificNameQueryResult> queryCache = new QueryCache<>(
 			getCacheSize());
 
-	public static QueryResult<ScientificNameGroup> groupByScientificName(
+	public static GroupByScientificNameQueryResult groupByScientificName(
 			GroupByScientificNameQuerySpec query) throws InvalidQueryException
 	{
-		QueryResult<ScientificNameGroup> result = queryCache.get(query);
+		GroupByScientificNameQueryResult result = queryCache.get(query);
 		if (result != null) {
 			return result;
 		}
-		result = new QueryResult<>();
+		result = new GroupByScientificNameQueryResult();
 		/*
 		 * We are going to manipulate the original query quite heavily further
 		 * down, but we still want to cache only the original query, so we make
@@ -86,6 +87,7 @@ public class GroupTaxaByScientificNameHelper {
 		request.addAggregation(createAggregation(queryCopy));
 		SearchResponse response = executeSearchRequest(request);
 		Terms terms = response.getAggregations().get("TERMS");
+		result.setSumOfOtherDocCounts(terms.getSumOfOtherDocCounts());
 		List<Bucket> buckets = terms.getBuckets();
 		result.setTotalSize(buckets.size());
 		/*

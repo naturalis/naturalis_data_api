@@ -38,10 +38,10 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import nl.naturalis.nba.api.GroupByScientificNameQueryResult;
 import nl.naturalis.nba.api.GroupByScientificNameQuerySpec;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QuerySpec;
-import nl.naturalis.nba.api.model.ScientificNameGroup;
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.dao.TaxonDao;
 import nl.naturalis.nba.rest.exception.RESTException;
@@ -275,7 +275,7 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
 	@Produces(JSON_CONTENT_TYPE)
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "defaultClassification.family", value = "Example query param", dataType = "string", paramType = "query", defaultValue = "Fabaceae", required = false) })
-	public QueryResult<ScientificNameGroup> groupByScientificName_GET(@Context UriInfo uriInfo)
+	public GroupByScientificNameQueryResult groupByScientificName_GET(@Context UriInfo uriInfo)
 	{
 		try {
 			GroupByScientificNameQuerySpec qs = new HttpGroupByScientificNameQuerySpecBuilder(

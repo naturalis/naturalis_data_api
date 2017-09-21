@@ -2,7 +2,6 @@ package nl.naturalis.nba.api;
 
 import java.io.OutputStream;
 
-import nl.naturalis.nba.api.model.ScientificNameGroup;
 import nl.naturalis.nba.api.model.Specimen;
 
 /**
@@ -224,7 +223,7 @@ public interface ISpecimenAccess extends INbaAccess<Specimen> {
 	 * @return
 	 * @throws InvalidQueryException
 	 */
-	QueryResult<ScientificNameGroup> groupByScientificName(GroupByScientificNameQuerySpec querySpec)
+	GroupByScientificNameQueryResult groupByScientificName(GroupByScientificNameQuerySpec querySpec)
 			throws InvalidQueryException;
 
 }

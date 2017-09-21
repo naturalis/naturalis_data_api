@@ -16,17 +16,17 @@ import nl.naturalis.nba.api.QuerySpec;
 public enum NbaSetting
 {
 	/**
-	 * &#34;operator.CONTAINS.min.term.length&#34;. The minimum length of a search
-	 * term when using operator {@link ComparisonOperator#CONTAINS} or
+	 * &#34;operator.CONTAINS.min.term.length&#34;. The minimum length of a
+	 * search term when using operator {@link ComparisonOperator#CONTAINS} or
 	 * {@link ComparisonOperator#NOT_CONTAINS}.
 	 */
-	OPERATOR_CONTAINS_MIN_TERM_LENGTH("operator.CONTAINS.min_term_length"),
+	OPERATOR_CONTAINS_MIN_TERM_LENGTH("operator.contains.min_term_length"),
 	/**
-	 * &#34;operator.CONTAINS.max.term.length&#34;. The maximum length of a search
-	 * term when using operator {@link ComparisonOperator#CONTAINS} or
+	 * &#34;operator.CONTAINS.max.term.length&#34;. The maximum length of a
+	 * search term when using operator {@link ComparisonOperator#CONTAINS} or
 	 * {@link ComparisonOperator#NOT_CONTAINS}.
 	 */
-	OPERATOR_CONTAINS_MAX_TERM_LENGTH("operator.CONTAINS.max_term_length"),
+	OPERATOR_CONTAINS_MAX_TERM_LENGTH("operator.contains.max_term_length"),
 
 	/**
 	 * &#34;index.max_result_window&#34;. The size of the result window. When
@@ -34,7 +34,21 @@ public enum NbaSetting
 	 * {@link QuerySpec#getFrom() from} plus {@link QuerySpec#getSize()} must
 	 * never exceed this number.
 	 */
-	INDEX_MAX_RESULT_WINDOW("index.max_result_window");
+	INDEX_MAX_RESULT_WINDOW("index.max_result_window"),
+
+	/**
+	 * &#34;taxon.group_by_scientific_name.max_num_buckets&#34;. The maximum
+	 * number of unique scientific names returned by the groupByScientificName
+	 * service for taxa.
+	 */
+	TAXON_GROUP_BY_SCIENTIFIC_NAME_MAX_NUM_BUCKETS("taxon.group_by_scientific_name.max_num_buckets"),
+
+	/**
+	 * &#34;specimen.group_by_scientific_name.max_num_buckets&#34;. The maximum
+	 * number of unique scientific names returned by the groupByScientificName
+	 * service for specimens.
+	 */
+	SPECIMEN_GROUP_BY_SCIENTIFIC_NAME_MAX_NUM_BUCKETS("specimen.group_by_scientific_name.max_num_buckets");
 
 	@JsonCreator
 	public static NbaSetting parse(@JsonProperty("name") String name)

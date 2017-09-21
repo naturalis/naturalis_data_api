@@ -25,8 +25,10 @@ import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.common.es.map.SimpleField;
 import nl.naturalis.nba.dao.exception.DaoException;
 import nl.naturalis.nba.dao.translate.OperatorValidator;
+import nl.naturalis.nba.utils.IOUtil;
 
-public abstract class NbaDocumentMetaDataDao<T extends IDocumentObject> implements INbaDocumentMetaData<T> {
+public abstract class NbaDocumentMetaDataDao<T extends IDocumentObject>
+		implements INbaDocumentMetaData<T> {
 
 	private static final Logger logger = getLogger(NbaDocumentMetaDataDao.class);
 
@@ -37,8 +39,6 @@ public abstract class NbaDocumentMetaDataDao<T extends IDocumentObject> implemen
 		this.dt = dt;
 	}
 
-	private static EnumMap<NbaSetting, Object> settings;
-
 	@Override
 	public Object getSetting(NbaSetting setting)
 	{
@@ -48,13 +48,17 @@ public abstract class NbaDocumentMetaDataDao<T extends IDocumentObject> implemen
 	@Override
 	public Map<NbaSetting, Object> getSettings()
 	{
-		if (settings == null) {
-			settings = new EnumMap<>(NbaSetting.class);
-			InputStream is = getClass().getResourceAsStream("/es-settings.json");
+		EnumMap<NbaSetting, Object> settings = new EnumMap<>(NbaSetting.class);
+		InputStream is = null;
+		try {
+			is = getClass().getResourceAsStream("/es-settings.json");
 			Map<String, Object> esSettings = deserialize(is);
 			String path = "index.max_result_window";
 			Object val = readField(esSettings, path);
 			settings.put(NbaSetting.INDEX_MAX_RESULT_WINDOW, val);
+		}
+		finally {
+			IOUtil.close(is);
 		}
 		return settings;
 	}

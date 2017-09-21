@@ -5,7 +5,7 @@ import static nl.naturalis.nba.client.ClientUtil.invalidQueryException;
 import static nl.naturalis.nba.client.ClientUtil.noSuchDataSetException;
 import static nl.naturalis.nba.client.ClientUtil.sendRequest;
 import static nl.naturalis.nba.client.ServerException.newServerException;
-import static nl.naturalis.nba.utils.http.SimpleHttpRequest.*;
+import static nl.naturalis.nba.utils.http.SimpleHttpRequest.HTTP_OK;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -15,13 +15,13 @@ import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
+import nl.naturalis.nba.api.GroupByScientificNameQueryResult;
 import nl.naturalis.nba.api.GroupByScientificNameQuerySpec;
 import nl.naturalis.nba.api.ITaxonAccess;
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.NoSuchDataSetException;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QuerySpec;
-import nl.naturalis.nba.api.model.ScientificNameGroup;
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.utils.IOUtil;
 import nl.naturalis.nba.utils.http.SimpleHttpRequest;
@@ -108,7 +108,7 @@ public class TaxonClient extends NbaClient<Taxon> implements ITaxonAccess {
 	}
 
 	@Override
-	public QueryResult<ScientificNameGroup> groupByScientificName(
+	public GroupByScientificNameQueryResult groupByScientificName(
 			GroupByScientificNameQuerySpec querySpec) throws InvalidQueryException
 	{
 		SimpleHttpRequest request = newQuerySpecRequest("groupByScientificName", querySpec);
@@ -122,9 +122,7 @@ public class TaxonClient extends NbaClient<Taxon> implements ITaxonAccess {
 			}
 			throw exception;
 		}
-		TypeReference<QueryResult<ScientificNameGroup>> typeRef;
-		typeRef = new TypeReference<QueryResult<ScientificNameGroup>>() {};
-		return getObject(request.getResponseBody(), typeRef);
+		return getObject(request.getResponseBody(), GroupByScientificNameQueryResult.class);
 	}
 
 	@Override

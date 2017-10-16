@@ -18,6 +18,9 @@ before_install:
 
 before_script:
   - sleep 10
+  - docker logs es
+  - echo $PRODUCT
+  - echo $BUILD_CMD
 
 script:
   - cp docker/builder/build.v2.properties nl.naturalis.nba.build/build.v2.properties

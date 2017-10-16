@@ -30,7 +30,7 @@ script:
     -v $(pwd):/source
     --env BUILD_CMD=$BUILD_CMD
     --link es:es
-    builder sh -c 'cd source/nl.naturalis.nba.build ; $BUILD_CMD'
+    builder sh -c 'cd source/nl.naturalis.nba.build ; ant $BUILD_CMD'
   - mv payload/* docker/$PRODUCT/
   - cd docker/$PRODUCT
   - REV=$(git rev-parse --short HEAD)

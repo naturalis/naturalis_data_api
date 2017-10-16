@@ -23,7 +23,8 @@ script:
   - cp docker/builder/build.v2.properties nl.naturalis.nba.build/build.v2.properties
   - >
     docker run --rm
-    -v $(pwd)/payload:/payload $(pwd):/source
+    -v $(pwd)/payload:/payload 
+    -v $(pwd):/source
     --env BUILD_CMD=$BUILD_CMD
     --link es:es
     builder sh -c 'cd source/nl.naturalis.nba.build ; $BUILD_CMD'

@@ -31,7 +31,7 @@ script:
     --env BUILD_CMD=$BUILD_CMD
     --link es:es
     builder sh -c 'cd source/nl.naturalis.nba.build ; ant $BUILD_CMD'
-  - mv payload/* docker/$PRODUCT/
+  - sudo mv payload/* docker/$PRODUCT/
   - cd docker/$PRODUCT
   - REV=$(git rev-parse --short HEAD)
   - docker build -t naturalis/nba-$PRODUCT:$TRAVIS_BRANCH-$REV .

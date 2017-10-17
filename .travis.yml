@@ -36,5 +36,7 @@ script:
   - REV=$(git rev-parse --short HEAD)
   - docker build -t naturalis/nba-$PRODUCT:$TRAVIS_BRANCH-$REV .
 
-
-
+after_success:
+  - docker login -u atzedevries -p $DOCKER_PASS
+  - docker push naturalis/nba-$PRODUCT:$TRAVIS_BRANCH-$REV
+  - docker logout

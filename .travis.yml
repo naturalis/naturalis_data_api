@@ -5,7 +5,7 @@ notifications:
 
 env:
   - PRODUCT=api BUILD_CMD=install-service
-  - PRODUCT=etl BUILD_CMD=install-etl
+  - PRODUCT=etl BUILD_CMD=install-etl-module
 
 services:
   - docker

@@ -34,7 +34,7 @@ script:
   - mv payload/* docker/$PRODUCT/
   - cd docker/$PRODUCT
   - REV=$(git rev-parse --short HEAD)
-  - docker build -t naturalis/nba-$PRODUCT:$TRAVIS_BRANCH-$REV
+  - docker build -t naturalis/nba-$PRODUCT:$TRAVIS_BRANCH-$REV .
 
 
 

@@ -3,7 +3,6 @@ RELEASE NOTES v 2.11
 * NBAVTWO-478 The groupByScientificName services now
   use a query cache to increase response times of
   oft-used queries
-
  
 
 RELEASE NOTES v 2.10

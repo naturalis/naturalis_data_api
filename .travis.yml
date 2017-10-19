@@ -1,0 +1,42 @@
+language: shell
+
+notifications:
+  slack: naturalis:ezcm1O2U6hlcJ5tWsWrBAqRF
+
+env:
+  - PRODUCT=api BUILD_CMD=install-service
+  - PRODUCT=etl BUILD_CMD=install-etl-module
+
+services:
+  - docker
+
+before_install:
+  - sudo /sbin/sysctl -w vm.max_map_count=262144
+  - docker build -t builder docker/builder
+  - docker run --name es -d -e ES_JAVA_OPTS="-Xms512m -Xmx512m" elasticsearch:5.1.2 elasticsearch -Ecluster.name="nba-cluster" -Enetwork.host="_site_"
+  - mkdir payload
+
+before_script:
+  - sleep 10
+  - docker logs es
+  - echo $PRODUCT
+  - echo $BUILD_CMD
+
+script:
+  - cp docker/builder/build.v2.properties nl.naturalis.nba.build/build.v2.properties
+  - >
+    docker run --rm
+    -v $(pwd)/payload:/payload
+    -v $(pwd):/source
+    --env BUILD_CMD=$BUILD_CMD
+    --link es:es
+    builder sh -c 'cd source/nl.naturalis.nba.build ; ant $BUILD_CMD'
+  - sudo mv payload/* docker/$PRODUCT/
+  - cd docker/$PRODUCT
+  - REV=$(git rev-parse --short HEAD)
+  - docker build -t naturalis/nba-$PRODUCT:$TRAVIS_BRANCH-$REV .
+
+after_success:
+  - docker login -u atzedevries -p $DOCKER_PASS
+  - docker push naturalis/nba-$PRODUCT:$TRAVIS_BRANCH-$REV
+  - docker logout

@@ -1,3 +1,27 @@
+RELEASE NOTES v 2.11
+
+* NBAVTWO-478 The groupByScientificName services now
+  use a query cache to increase response times of
+  oft-used queries
+
+ 
+
+RELEASE NOTES v 2.10
+
+* NBAVTWO-456 Missing type status no longer causes
+  warning during import of specimen data sources
+  
+* NBAVTWO-462 Fixed awkward feature where you could
+  not query date fields in the format in which they
+  are presented
+  
+* NBAVTWO-465 Values for field scientificNameGroup
+  now always lower case
+  
+* NBAVTWO-472 Values for field numberOfSpecimen will
+  now be null in case of missing data (not 0)
+
+
 RELEASE NOTES v 2.9
 
 * NBAVTWO-121 Date strings in queir condition now

@@ -71,20 +71,18 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
 	@ApiResponses(value = { @ApiResponse(code = 404, message = "id not found") })
 	@Produces(JSON_CONTENT_TYPE)
 	public Taxon find(
-			@ApiParam(value = "id of taxon", required = true, defaultValue = "21941298@COL") 
-			@PathParam("id") String id,
+			@ApiParam(value = "id of taxon", required = true, defaultValue = "21941298@COL") @PathParam("id") String id,
 			@Context UriInfo uriInfo)
 	{
 		return super.find(id, uriInfo);
 	}
-	
+
 	@GET
 	@Path("/findByIds/{ids}")
 	@ApiOperation(value = "Find taxa by ids", response = Taxon[].class, notes = "Given multiple ids, returns a list of taxa")
 	@Produces(JSON_CONTENT_TYPE)
 	public Taxon[] findByIds(
-			@ApiParam(value = "ids of multiple taxa, separated by comma", required = true, defaultValue = "21941298@COL,21941294@COL", allowMultiple = true) 
-			@PathParam("ids") String ids,
+			@ApiParam(value = "ids of multiple taxa, separated by comma", required = true, defaultValue = "21941298@COL,21941294@COL", allowMultiple = true) @PathParam("ids") String ids,
 			@Context UriInfo uriInfo)
 	{
 		return super.findByIds(ids, uriInfo);
@@ -137,14 +135,24 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
 		}
 	}
 
+	@GET
+	@Path("/count")
+	@ApiOperation(value = "Get the number of taxa matching a condition", response = long.class, notes = "Conditions given as query string")
+	@Produces(TEXT_CONTENT_TYPE)
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "sourceSystem.code", value = "Example query param", dataType = "string", paramType = "query", defaultValue = "COL", required = false) })
+	public long countHttpGet(@Context UriInfo uriInfo)
+	{
+		return super.countHttpGet(uriInfo);
+	}
+
 	@POST
 	@Path("/count")
 	@ApiOperation(hidden = true, value = "Get the number of taxa matching a condition", response = long.class, notes = "Conditions given in POST body")
 	@Produces(TEXT_CONTENT_TYPE)
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public long countHttpPostForm(
-			@ApiParam(value = "POST payload", required = false) 
-			MultivaluedMap<String, String> form,
+			@ApiParam(value = "POST payload", required = false) MultivaluedMap<String, String> form,
 			@Context UriInfo uriInfo)
 	{
 		return super.countHttpPostForm(form, uriInfo);
@@ -156,22 +164,10 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
 	@Produces(TEXT_CONTENT_TYPE)
 	@Consumes(JSON_CONTENT_TYPE)
 	public long countHttpPostJson(
-			@ApiParam(value = "querySpec JSON", required = false) 
-			QuerySpec qs,
+			@ApiParam(value = "querySpec JSON", required = false) QuerySpec qs,
 			@Context UriInfo uriInfo)
 	{
 		return super.countHttpPostJson(qs, uriInfo);
-	}
-
-	@GET
-	@Path("/count")
-	@ApiOperation(value = "Get the number of taxa matching a condition", response = long.class, notes = "Conditions given as query string")
-	@Produces(TEXT_CONTENT_TYPE)
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "sourceSystem.code", value = "Example query param", dataType = "string", paramType = "query", defaultValue = "COL", required = false) })
-	public long countHttpGet(@Context UriInfo uriInfo)
-	{
-		return super.countHttpGet(uriInfo);
 	}
 
 	@GET
@@ -191,10 +187,45 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
 	@Produces(ZIP_CONTENT_TYPE)
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "sourceSystem.code", value = "Example query param", dataType = "string", paramType = "query", defaultValue = "COL", required = false) })
-	public Response dwcaQuery(@Context UriInfo uriInfo)
+	public Response dwcaQueryHttpGet(@Context UriInfo uriInfo)
 	{
 		try {
 			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
+			StreamingOutput stream = new StreamingOutput() {
+
+				public void write(OutputStream out) throws IOException
+				{
+					TaxonDao dao = new TaxonDao();
+					try {
+						dao.dwcaQuery(qs, out);
+					}
+					catch (Throwable e) {
+						throw new RESTException(uriInfo, e);
+					}
+				}
+			};
+			ResponseBuilder response = Response.ok(stream);
+			response.type(ZIP_CONTENT_TYPE);
+			response.header("Content-Disposition", "attachment; filename=\"nba-taxa.dwca.zip\"");
+			return response.build();
+		}
+		catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
+
+	@POST
+	@Path("/dwca/query")
+	@ApiOperation(value = "Dynamic download service: Query for taxa and return result as Darwin Core Archive File", response = Response.class, notes = "Query can be human-readable or querySpec JSON. Response saved to nba-taxa.dwca.zip")
+	@Produces(ZIP_CONTENT_TYPE)
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "sourceSystem.code", value = "Example query param", dataType = "string", paramType = "query", defaultValue = "COL", required = false) })
+	public Response dwcaQueryHttpPostForm(
+			@ApiParam(value = "POST payload", required = false) MultivaluedMap<String, String> form,
+			@Context UriInfo uriInfo)
+	{
+		try {
+			QuerySpec qs = new HttpQuerySpecBuilder(form, uriInfo).build();
 			StreamingOutput stream = new StreamingOutput() {
 
 				public void write(OutputStream out) throws IOException

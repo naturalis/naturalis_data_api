@@ -37,7 +37,6 @@ import nl.naturalis.nba.api.SortField;
 import nl.naturalis.nba.api.model.ScientificNameGroup;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.Taxon;
-import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.DaoRegistry;
 import nl.naturalis.nba.dao.DaoUtil;
 import nl.naturalis.nba.dao.SpecimenDao;
@@ -47,6 +46,7 @@ import nl.naturalis.nba.utils.ConfigObject;
 
 public class GroupTaxaByScientificNameHelper {
 
+	@SuppressWarnings("unused")
 	private static Logger logger = getLogger(GroupTaxaByScientificNameHelper.class);
 
 	private static final QueryCache<GroupByScientificNameQueryResult> queryCache = new QueryCache<>(
@@ -128,10 +128,7 @@ public class GroupTaxaByScientificNameHelper {
 			}
 		}
 		result.setResultSet(resultSet);
-		if (getCacheSize() > 0 && response.getHits().totalHits() > getCacheTreshold()) {
-			if (logger.isDebugEnabled()) {
-				logger.debug("Caching query: {}", JsonUtil.toJson(query));
-			}
+		if (getCacheSize() > 0 && response.getTookInMillis() > getCacheTreshold()) {
 			queryCache.put(query, result);
 		}
 		return result;

@@ -1,9 +1,14 @@
 package nl.naturalis.nba.dao.util;
 
+import static nl.naturalis.nba.dao.DaoUtil.getLogger;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.apache.logging.log4j.Logger;
+
 import nl.naturalis.nba.api.QuerySpec;
+import nl.naturalis.nba.common.json.JsonUtil;
 
 /**
  * A LRU cache for NBA queries.
@@ -14,6 +19,8 @@ import nl.naturalis.nba.api.QuerySpec;
  */
 public class QueryCache<V> extends LinkedHashMap<QuerySpec, V> {
 
+	private static Logger logger = getLogger(QueryCache.class);
+
 	private final int maxSize;
 
 	public QueryCache(int maxSize)
@@ -23,9 +30,24 @@ public class QueryCache<V> extends LinkedHashMap<QuerySpec, V> {
 	}
 
 	@Override
+	public V put(QuerySpec key, V value)
+	{
+		if (logger.isDebugEnabled()) {
+			logger.debug("Caching query: {}", JsonUtil.toJson(key));
+		}
+		return super.put(key, value);
+	}
+
+	@Override
 	protected boolean removeEldestEntry(Map.Entry<QuerySpec, V> eldest)
 	{
-		return size() > maxSize;
+		if (size() > maxSize) {
+			if (logger.isDebugEnabled()) {
+				logger.debug("Evicting query: {}", JsonUtil.toJson(eldest.getKey()));
+			}
+			return true;
+		}
+		return false;
 	}
 
 }

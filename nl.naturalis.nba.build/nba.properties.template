@@ -32,13 +32,9 @@ elasticsearch.index.3.types=GeoArea
 nl.naturalis.nba.specimen.groupByScientificName.maxNumBuckets=10000
 # The size of the query cache, which maps queries to their results.
 nl.naturalis.nba.specimen.groupByScientificName.queryCacheSize=1000
-# A treshold for when to cache a query. If the number of documents
-# to aggregate over exceeds this treshold, the query is cached. So
-# it's not the number of buckets that counts here but the number of
-# documents that need to be aggregated (which is what makes it heavy
-# or not)
-nl.naturalis.nba.specimen.groupByScientificName.cacheTreshold=10000
+# The number of milliseconds a query must at least take to be cached.
+nl.naturalis.nba.specimen.groupByScientificName.cacheTreshold=3000
 
 nl.naturalis.nba.taxon.groupByScientificName.maxNumBuckets=10000
 nl.naturalis.nba.taxon.groupByScientificName.queryCacheSize=1000
-nl.naturalis.nba.taxon.groupByScientificName.cacheTreshold=10000
+nl.naturalis.nba.taxon.groupByScientificName.cacheTreshold=3000

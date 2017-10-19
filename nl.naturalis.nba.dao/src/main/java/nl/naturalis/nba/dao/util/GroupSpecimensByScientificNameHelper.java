@@ -84,6 +84,12 @@ public class GroupSpecimensByScientificNameHelper {
 		 */
 		int from = queryCopy.getFrom() == null ? 0 : queryCopy.getFrom();
 		int size = queryCopy.getSize() == null ? 10 : queryCopy.getSize();
+		if ((from + size) > getMaxNumBuckets()) {
+			String fmt = "Too many groups requested. from + size must not exceed "
+					+ "%s (was %s)";
+			String msg = String.format(fmt, getMaxNumBuckets(), (from + size));
+			throw new InvalidQueryException(msg);
+		}
 		List<SortField> sortFields = queryCopy.getSortFields();
 		queryCopy.setFrom(null);
 		queryCopy.setSize(0);

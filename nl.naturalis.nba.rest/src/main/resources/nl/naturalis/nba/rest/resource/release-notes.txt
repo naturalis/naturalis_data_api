@@ -17,6 +17,11 @@ RELEASE NOTES v 2.10
 * NBAVTWO-465 Values for field scientificNameGroup
   now always lower case
   
+* NBAVTWO-470 Reuqesting more than the maximum
+  number of buckets a.k.a. groups in the
+  groupByScientificName services now results in
+  error message
+  
 * NBAVTWO-472 Values for field numberOfSpecimen will
   now be null in case of missing data (not 0)
 

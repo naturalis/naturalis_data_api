@@ -25,6 +25,7 @@ public class NbaBootstrap {
 		}
 		catch (Throwable t) {
 			logger.error(t.getMessage(), t);
+			System.exit(1);
 		}
 		finally {
 			ESClientManager.getInstance().closeClient();

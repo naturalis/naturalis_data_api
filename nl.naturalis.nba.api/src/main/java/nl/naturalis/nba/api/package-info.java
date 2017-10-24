@@ -1,5 +1,5 @@
 /**
- * Interfaces and classes that define how to interact with the NBA (<b>start here</b>)
+ * Interfaces and classes that define how to interact with the NBA (<b>start here</b>).
  * 
  * @author Ayco Holleman
  *

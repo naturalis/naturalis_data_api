@@ -6,14 +6,37 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.Taxon;
 
 /**
  * <p>
- * A {@code QuerySpec} models an NBA query. All information required by the
- * various {@code query} methods in the API take a {@link QuerySpec} object to
- * drive the query process.
+ * A {@code QuerySpec} object enables you to specify a query for the NBA. It
+ * contains the following properties, each covering a different aspect of the
+ * query:
+ * <ul>
+ * <li><i>conditions</i>: The search criteria a.k.a. query conditions. Only
+ * documents that satisfy all search criteria or at least one (depending on the
+ * <i>logicalOperator</i>) are returned.</li>
+ * <li><i>logicalOperator</i>: (AND/OR) Specifies whether a document must
+ * satisfy all search criteria or just one in order to be returned.
+ * <li><i>constantScore</i>: If true, no relevance scores will be calculated for
+ * the returned documents. By default Elasticsearch not only determines whether
+ * a document matches your search criteria, but also <i>how well</i> it matches
+ * them, expressed as a so-called relevance score. If you are not interested in
+ * relevance scores, set <i>constantScore</i> to {@code true}, as there is some
+ * performance overhead associated with calculating relevance scores.
+ * <li><i>fields</i>: The fields to be returned. {@link Specimen},
+ * {@link Taxon} and {@link MultiMediaObject} documents are large documents
+ * containing lots of fields. If you are only interested in a few fields, use
+ * the {@code fields} property to specify them.</li>
+ * <li><i>size</i>: The number of documents to return. This is similar to the
+ * LIMIT parameter in SQL queries.</li>
+ * <li><i>from</i>: The offset in the result set from which to return the
+ * documents.
+ * <li><i>sortFields</i>: Specifies the field(s) on which to sort the documents.
+ * </ul>
  * </p>
  * <h3>Providing query specifications through the REST API</h3>
  * <p>

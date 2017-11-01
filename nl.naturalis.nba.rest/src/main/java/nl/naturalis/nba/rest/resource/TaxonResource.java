@@ -271,6 +271,41 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
     }
   }
 
+  @POST
+  @Path("/dwca/query")
+  @ApiOperation(
+      value = "Dynamic download service: Query for taxa and return result as Darwin Core Archive File",
+      response = Response.class,
+      notes = "Query can be human-readable or querySpec JSON. Response saved to nba-taxa.dwca.zip")
+  @Consumes(JSON_CONTENT_TYPE)
+  @Produces(ZIP_CONTENT_TYPE)
+  @ApiImplicitParams({@ApiImplicitParam(name = "sourceSystem.code", value = "Example query param",
+      dataType = "string", paramType = "query", defaultValue = "COL", required = false)})
+  public Response dwcaQueryHttpPostJson(
+      @ApiParam(value = "querySpec", required = false) QuerySpec qs, 
+      @Context UriInfo uriInfo) {
+    try {
+      StreamingOutput stream = new StreamingOutput() {
+        
+        public void write(OutputStream out) throws IOException {
+          TaxonDao dao = new TaxonDao();
+          try {
+            dao.dwcaQuery(qs, out);
+          } catch (Throwable e) {
+            throw new RESTException(uriInfo, e);
+          }
+        }
+      };
+      ResponseBuilder response = Response.ok(stream);
+      response.type(ZIP_CONTENT_TYPE);
+      response.header("Content-Disposition", "attachment; filename=\"nba-taxa.dwca.zip\"");
+      return response.build();
+    } catch (Throwable t) {
+      throw handleError(uriInfo, t);
+    }
+  }
+
+  
   @GET
   @Path("/dwca/getDataSet/{dataset}")
   @ApiOperation(value = "Download dataset as Darwin Core Archive File", response = Response.class,

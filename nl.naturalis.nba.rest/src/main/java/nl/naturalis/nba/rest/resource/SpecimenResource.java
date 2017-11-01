@@ -198,10 +198,9 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
   @ApiOperation(value = "Get all different values that exist for a field", response = Map.class,
       notes = "A list of all fields for specimen documents can be retrieved with /metadata/getFieldInfo")
   @Produces(JSON_CONTENT_TYPE)
-  public Map<String, Long> getDistinctValuesHttpGet(
-      @ApiParam(value = "name of field in specimen object", required = true,
-      defaultValue = "identifications.defaultClassification.family") 
-      @PathParam("field") String field,
+  public Map<String, Long> getDistinctValuesHttpGet(@ApiParam(
+      value = "name of field in specimen object", required = true,
+      defaultValue = "identifications.defaultClassification.family") @PathParam("field") String field,
       @Context UriInfo uriInfo) {
     return super.getDistinctValuesHttpGet(field, uriInfo);
   }
@@ -212,10 +211,9 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
       notes = "A list of all fields for specimen documents can be retrieved with /metadata/getFieldInfo")
   @Produces(JSON_CONTENT_TYPE)
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-  public Map<String, Long> getDistinctValuesHttpPostForm(
-      @ApiParam(value = "name of field in specimen object", required = true,
-      defaultValue = "identifications.defaultClassification.family")
-      @PathParam("field") String field,
+  public Map<String, Long> getDistinctValuesHttpPostForm(@ApiParam(
+      value = "name of field in specimen object", required = true,
+      defaultValue = "identifications.defaultClassification.family") @PathParam("field") String field,
       @ApiParam(value = "POST payload", required = false) MultivaluedMap<String, String> form,
       @Context UriInfo uriInfo) {
     return super.getDistinctValuesHttpPostForm(field, form, uriInfo);
@@ -227,10 +225,9 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
       notes = "A list of all fields for specimen documents can be retrieved with /metadata/getFieldInfo")
   @Produces(JSON_CONTENT_TYPE)
   @Consumes(JSON_CONTENT_TYPE)
-  public Map<String, Long> getDistinctValuesHttpPostJson(
-      @ApiParam(value = "name of field in specimen object", required = true,
-      defaultValue = "identifications.defaultClassification.family")
-      @PathParam("field") String field,
+  public Map<String, Long> getDistinctValuesHttpPostJson(@ApiParam(
+      value = "name of field in specimen object", required = true,
+      defaultValue = "identifications.defaultClassification.family") @PathParam("field") String field,
       @ApiParam(value = "querySpec JSON", required = false) QuerySpec qs,
       @Context UriInfo uriInfo) {
     return super.getDistinctValuesHttpPostJson(field, qs, uriInfo);
@@ -245,10 +242,74 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
   @Produces(ZIP_CONTENT_TYPE)
   @ApiImplicitParams({@ApiImplicitParam(name = "collectionType", value = "Example query param",
       dataType = "string", paramType = "query", defaultValue = "Crustacea", required = false)})
-  public Response dwcaQuery(
+  public Response dwcaQueryHttpGet(
       @ApiParam(value = "query string", required = true) @Context UriInfo uriInfo) {
     try {
       QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
+      StreamingOutput stream = new StreamingOutput() {
+
+        public void write(OutputStream out) throws IOException {
+          SpecimenDao dao = new SpecimenDao();
+          try {
+            dao.dwcaQuery(qs, out);
+          } catch (Throwable e) {
+            throw new RESTException(uriInfo, e);
+          }
+        }
+      };
+      ResponseBuilder response = Response.ok(stream);
+      response.type(ZIP_CONTENT_TYPE);
+      response.header("Content-Disposition", "attachment; filename=\"nba-specimens.dwca.zip\"");
+      return response.build();
+    } catch (Throwable t) {
+      throw handleError(uriInfo, t);
+    }
+  }
+
+  @POST
+  @Path("/dwca/query")
+  @ApiOperation(
+      value = "Dynamic download service: Query for specimens and return result as Darwin Core Archive File",
+      response = Response.class,
+      notes = "Query can be human-readable or querySpec JSON. Response saved to nba-specimens.dwca.zip")
+  @Produces(ZIP_CONTENT_TYPE)
+  @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+  public Response dwcaQueryHttpPostForm(
+      @ApiParam(value = "POST payload", required = false) MultivaluedMap<String, String> form,
+      @Context UriInfo uriInfo) {
+    try {
+      QuerySpec qs = new HttpQuerySpecBuilder(form, uriInfo).build();
+      StreamingOutput stream = new StreamingOutput() {
+
+        public void write(OutputStream out) throws IOException {
+          SpecimenDao dao = new SpecimenDao();
+          try {
+            dao.dwcaQuery(qs, out);
+          } catch (Throwable e) {
+            throw new RESTException(uriInfo, e);
+          }
+        }
+      };
+      ResponseBuilder response = Response.ok(stream);
+      response.type(ZIP_CONTENT_TYPE);
+      response.header("Content-Disposition", "attachment; filename=\"nba-specimens.dwca.zip\"");
+      return response.build();
+    } catch (Throwable t) {
+      throw handleError(uriInfo, t);
+    }
+  }
+
+  @POST
+  @Path("/dwca/query")
+  @ApiOperation(
+      value = "Dynamic download service: Query for specimens and return result as Darwin Core Archive File",
+      response = Response.class,
+      notes = "Query can be human-readable or querySpec JSON. Response saved to nba-specimens.dwca.zip")
+  @Produces(ZIP_CONTENT_TYPE)
+  @Consumes(JSON_CONTENT_TYPE)
+  public Response dwcaQueryHttpPostJson(
+      @ApiParam(value = "querySpec", required = false) QuerySpec qs, @Context UriInfo uriInfo) {
+    try {
       StreamingOutput stream = new StreamingOutput() {
 
         public void write(OutputStream out) throws IOException {

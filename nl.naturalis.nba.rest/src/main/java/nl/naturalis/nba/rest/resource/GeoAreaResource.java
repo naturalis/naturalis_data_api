@@ -87,6 +87,17 @@ public class GeoAreaResource extends NbaResource<GeoArea, GeoAreaDao> {
 		return super.queryHttpGet(uriInfo);
 	}
 
+	@GET
+	@Path("/count")
+	@ApiOperation(value = "Get the number of geo areas matching a condition", response = long.class, notes = "Conditions given as query string")
+	@Produces(TEXT_CONTENT_TYPE)
+	@ApiImplicitParams({
+	  @ApiImplicitParam(name = "areaType", value = "Example query param", dataType = "string", paramType = "query", defaultValue = "Country", required = false) })
+	public long countHttpGet(@Context UriInfo uriInfo)
+	{
+	  return super.countHttpGet(uriInfo);
+	}
+	
 	@POST
 	@Path("/count")
 	@ApiOperation(hidden = true, value = "Get the number of geo areas matching a condition", response = long.class, notes = "Conditions given in POST body")
@@ -111,17 +122,6 @@ public class GeoAreaResource extends NbaResource<GeoArea, GeoAreaDao> {
 			@Context UriInfo uriInfo)
 	{
 		return super.countHttpPostJson(qs, uriInfo);
-	}
-
-	@GET
-	@Path("/count")
-	@ApiOperation(value = "Get the number of geo areas matching a condition", response = long.class, notes = "Conditions given as query string")
-	@Produces(TEXT_CONTENT_TYPE)
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "areaType", value = "Example query param", dataType = "string", paramType = "query", defaultValue = "Country", required = false) })
-	public long countHttpGet(@Context UriInfo uriInfo)
-	{
-		return super.countHttpGet(uriInfo);
 	}
 
 	@GET

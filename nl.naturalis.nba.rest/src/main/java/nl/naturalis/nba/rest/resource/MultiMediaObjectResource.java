@@ -114,6 +114,17 @@ public class MultiMediaObjectResource extends NbaResource<MultiMediaObject, Mult
 			throw handleError(uriInfo, t);
 		}
 	}
+	
+	@GET
+	@Path("/count")
+	@ApiOperation(value = "Get the number of multimedia documents matching a condition", response = long.class, notes = "Conditions given as query string")	
+	@Produces(JSON_CONTENT_TYPE)
+	@ApiImplicitParams({
+	  @ApiImplicitParam(name = "sourceSystem.code", value = "Example query param", dataType = "string", paramType = "query", defaultValue = "BRAHMS", required = false) })
+	public long countHttpGet(@Context UriInfo uriInfo)
+	{
+	  return super.countHttpGet(uriInfo);
+	}
 
 	@POST
 	@Path("/count")
@@ -139,17 +150,6 @@ public class MultiMediaObjectResource extends NbaResource<MultiMediaObject, Mult
 			@Context UriInfo uriInfo)
 	{
 		return super.countHttpPostJson(qs, uriInfo);
-	}
-	
-	@GET
-	@Path("/count")
-	@ApiOperation(value = "Get the number of multimedia documents matching a condition", response = long.class, notes = "Conditions given as query string")	
-	@Produces(JSON_CONTENT_TYPE)
-	@ApiImplicitParams({
-		@ApiImplicitParam(name = "sourceSystem.code", value = "Example query param", dataType = "string", paramType = "query", defaultValue = "BRAHMS", required = false) })
-	public long countHttpGet(@Context UriInfo uriInfo)
-	{
-		return super.countHttpGet(uriInfo);
 	}
 
 	@GET

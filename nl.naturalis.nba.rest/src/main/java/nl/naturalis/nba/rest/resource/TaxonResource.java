@@ -168,11 +168,41 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
       response = Map.class,
       notes = "A list of all fields for taxon documents can be retrieved with /metadata/getFieldInfo")
   @Produces(JSON_CONTENT_TYPE)
-  public Map<String, Long> getDistinctValues(
-      @ApiParam(value = "name of field in taxon object", required = true,
+  public Map<String, Long> getDistinctValuesHttpGet(
+      @ApiParam(value = "name of field in a taxon object", required = true,
           defaultValue = "defaultClassification.family") @PathParam("field") String field,
       @Context UriInfo uriInfo) {
-    return super.getDistinctValues(field, uriInfo);
+    return super.getDistinctValuesHttpGet(field, uriInfo);
+  }
+
+  @POST
+  @Path("/getDistinctValues/{field}")
+  @ApiOperation(value = "Get all different values that exist for a field", response = Map.class,
+      notes = "A list of all fields for taxon documents can be retrieved with /metadata/getFieldInfo")
+  @Produces(JSON_CONTENT_TYPE)
+  @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+  public Map<String, Long> getDistinctValuesHttpPostForm(
+      @ApiParam(value = "name of field in a taxon object", required = true,
+      defaultValue = "defaultClassification.family")
+      @PathParam("field") String field,
+      @ApiParam(value = "POST payload", required = false) MultivaluedMap<String, String> form,
+      @Context UriInfo uriInfo) {
+    return super.getDistinctValuesHttpPostForm(field, form, uriInfo);
+  }
+
+  @POST
+  @Path("/getDistinctValues/{field}")
+  @ApiOperation(value = "Get all different values that exist for a field", response = Map.class,
+      notes = "A list of all fields for taxon documents can be retrieved with /metadata/getFieldInfo")
+  @Produces(JSON_CONTENT_TYPE)
+  @Consumes(JSON_CONTENT_TYPE)
+  public Map<String, Long> getDistinctValuesHttpPostJson(
+      @ApiParam(value = "name of field in a taxon object", required = true,
+      defaultValue = "defaultClassification.family")
+      @PathParam("field") String field,
+      @ApiParam(value = "querySpec JSON", required = false) QuerySpec qs,
+      @Context UriInfo uriInfo) {
+    return super.getDistinctValuesHttpPostJson(field, qs, uriInfo);
   }
 
   @GET

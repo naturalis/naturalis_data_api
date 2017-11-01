@@ -67,7 +67,6 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
       @ApiParam(value = "id of specimen", required = true,
           defaultValue = "RMNH.MAM.17209.B@CRS") @PathParam("id") String id,
       @Context UriInfo uriInfo) {
-
     return super.find(id, uriInfo);
   }
 
@@ -164,10 +163,10 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
   @GET
   @Path("/count")
   @ApiOperation(value = "Get the number of specimens matching a condition", response = long.class,
-  notes = "Conditions given as query string")
+      notes = "Conditions given as query string")
   @Produces(TEXT_CONTENT_TYPE)
   @ApiImplicitParams({@ApiImplicitParam(name = "collectionType", value = "Example query param",
-  dataType = "string", paramType = "query", defaultValue = "Crustacea", required = false)})
+      dataType = "string", paramType = "query", defaultValue = "Crustacea", required = false)})
   public long countHttpGet(@Context UriInfo uriInfo) {
     return super.countHttpGet(uriInfo);
   }
@@ -199,11 +198,42 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
   @ApiOperation(value = "Get all different values that exist for a field", response = Map.class,
       notes = "A list of all fields for specimen documents can be retrieved with /metadata/getFieldInfo")
   @Produces(JSON_CONTENT_TYPE)
-  public Map<String, Long> getDistinctValues(@ApiParam(value = "name of field in specimen object",
-      required = true,
-      defaultValue = "identifications.defaultClassification.family") @PathParam("field") String field,
+  public Map<String, Long> getDistinctValuesHttpGet(
+      @ApiParam(value = "name of field in specimen object", required = true,
+      defaultValue = "identifications.defaultClassification.family") 
+      @PathParam("field") String field,
       @Context UriInfo uriInfo) {
-    return super.getDistinctValues(field, uriInfo);
+    return super.getDistinctValuesHttpGet(field, uriInfo);
+  }
+
+  @POST
+  @Path("/getDistinctValues/{field}")
+  @ApiOperation(value = "Get all different values that exist for a field", response = Map.class,
+      notes = "A list of all fields for specimen documents can be retrieved with /metadata/getFieldInfo")
+  @Produces(JSON_CONTENT_TYPE)
+  @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+  public Map<String, Long> getDistinctValuesHttpPostForm(
+      @ApiParam(value = "name of field in specimen object", required = true,
+      defaultValue = "identifications.defaultClassification.family")
+      @PathParam("field") String field,
+      @ApiParam(value = "POST payload", required = false) MultivaluedMap<String, String> form,
+      @Context UriInfo uriInfo) {
+    return super.getDistinctValuesHttpPostForm(field, form, uriInfo);
+  }
+
+  @POST
+  @Path("/getDistinctValues/{field}")
+  @ApiOperation(value = "Get all different values that exist for a field", response = Map.class,
+      notes = "A list of all fields for specimen documents can be retrieved with /metadata/getFieldInfo")
+  @Produces(JSON_CONTENT_TYPE)
+  @Consumes(JSON_CONTENT_TYPE)
+  public Map<String, Long> getDistinctValuesHttpPostJson(
+      @ApiParam(value = "name of field in specimen object", required = true,
+      defaultValue = "identifications.defaultClassification.family")
+      @PathParam("field") String field,
+      @ApiParam(value = "querySpec JSON", required = false) QuerySpec qs,
+      @Context UriInfo uriInfo) {
+    return super.getDistinctValuesHttpPostJson(field, qs, uriInfo);
   }
 
   @GET

@@ -156,10 +156,40 @@ public class MultiMediaObjectResource extends NbaResource<MultiMediaObject, Mult
 	@Path("/getDistinctValues/{field}")
 	@ApiOperation(value = "Get all different values that can be found for one field", response = Map.class, notes = "A list of all fields for multimedia documents can be retrieved with /metadata/getFieldInfo")
 	@Produces(JSON_CONTENT_TYPE)
-	public Map<String, Long> getDistinctValues(@ApiParam(value = "field", required = true, defaultValue = "gatheringEvents.worldRegion") @PathParam("field") String field,
+	public Map<String, Long> getDistinctValuesHttpGet(@ApiParam(value = "field", required = true, defaultValue = "gatheringEvents.worldRegion") @PathParam("field") String field,
 			@Context UriInfo uriInfo)
 	{
-		return super.getDistinctValues(field, uriInfo);
+		return super.getDistinctValuesHttpGet(field, uriInfo);
 	}
+	
+  @POST
+  @Path("/getDistinctValues/{field}")
+  @ApiOperation(value = "Get all different values that exist for a field", response = Map.class,
+      notes = "A list of all fields for multimedia documents can be retrieved with /metadata/getFieldInfo")
+  @Produces(JSON_CONTENT_TYPE)
+  @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+  public Map<String, Long> getDistinctValuesHttpPostForm(
+      @ApiParam(value = "name of field in a multimedia object", required = true,
+      defaultValue = "gatheringEvents.worldRegion")
+      @PathParam("field") String field,
+      @ApiParam(value = "POST payload", required = false) MultivaluedMap<String, String> form,
+      @Context UriInfo uriInfo) {
+    return super.getDistinctValuesHttpPostForm(field, form, uriInfo);
+  }
+
+  @POST
+  @Path("/getDistinctValues/{field}")
+  @ApiOperation(value = "Get all different values that exist for a field", response = Map.class,
+      notes = "A list of all fields for multimedia documents can be retrieved with /metadata/getFieldInfo")
+  @Produces(JSON_CONTENT_TYPE)
+  @Consumes(JSON_CONTENT_TYPE)
+  public Map<String, Long> getDistinctValuesHttpPostJson(
+      @ApiParam(value = "name of field in a multimedia object", required = true,
+      defaultValue = "gatheringEvents.worldRegion")
+      @PathParam("field") String field,
+      @ApiParam(value = "querySpec JSON", required = false) QuerySpec qs,
+      @Context UriInfo uriInfo) {
+    return super.getDistinctValuesHttpPostJson(field, qs, uriInfo);
+  }
 
 }

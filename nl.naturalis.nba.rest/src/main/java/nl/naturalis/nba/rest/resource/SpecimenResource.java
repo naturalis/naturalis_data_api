@@ -448,10 +448,9 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
   @Produces(JSON_CONTENT_TYPE)
   @Consumes(JSON_CONTENT_TYPE)
   public GroupByScientificNameQueryResult groupByScientificNameHttpPostJson(
+      @ApiParam(value = "querySpec JSON", required = false) GroupByScientificNameQuerySpec qs,
       @Context UriInfo uriInfo) {
     try {
-      GroupByScientificNameQuerySpec qs =
-          new HttpGroupByScientificNameQuerySpecBuilder(uriInfo).build();
       SpecimenDao dao = new SpecimenDao();
       return dao.groupByScientificName(qs);
     } catch (Throwable t) {

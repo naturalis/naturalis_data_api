@@ -387,10 +387,9 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
   @Produces(JSON_CONTENT_TYPE)
   @Consumes(JSON_CONTENT_TYPE)
   public GroupByScientificNameQueryResult groupByScientificNameHttpPostJson(
+      @ApiParam(value = "querySpec JSON", required = false) GroupByScientificNameQuerySpec qs,
       @Context UriInfo uriInfo) {
     try {
-      GroupByScientificNameQuerySpec qs =
-          new HttpGroupByScientificNameQuerySpecBuilder(uriInfo).build();
       TaxonDao dao = new TaxonDao();
       return dao.groupByScientificName(qs);
     } catch (Throwable t) {

@@ -47,6 +47,7 @@ import nl.naturalis.nba.rest.util.HttpQuerySpecBuilder;
 @LocalBean
 @Api(value = "specimen")
 @Path("/specimen")
+@Produces({"application/json", "application/xml"})
 @SuppressWarnings("static-method")
 public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
 
@@ -135,13 +136,7 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
   public QueryResult<Specimen> queryHttpPostForm(
       @ApiParam(value = "POST payload", required = false) MultivaluedMap<String, String> form,
       @Context UriInfo uriInfo) {
-    try {
-      QuerySpec qs = new HttpQuerySpecBuilder(form, uriInfo).build();
-      SpecimenDao dao = new SpecimenDao();
-      return dao.query(qs);
-    } catch (Throwable t) {
-      throw handleError(uriInfo, t);
-    }
+    return super.queryHttpPostForm(form, uriInfo);
   }
 
   @POST
@@ -152,12 +147,7 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
   @Consumes(JSON_CONTENT_TYPE)
   public QueryResult<Specimen> queryHttpPostJson(
       @ApiParam(value = "querySpec", required = false) QuerySpec qs, @Context UriInfo uriInfo) {
-    try {
-      SpecimenDao dao = new SpecimenDao();
-      return dao.query(qs);
-    } catch (Throwable t) {
-      throw handleError(uriInfo, t);
-    }
+    return super.queryHttpPostJson(qs, uriInfo);
   }
 
   @GET

@@ -44,13 +44,12 @@ import nl.naturalis.nba.rest.exception.RESTException;
 import nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder;
 import nl.naturalis.nba.rest.util.HttpQuerySpecBuilder;
 
-@SuppressWarnings("static-method")
-
 @Stateless
 @LocalBean
 @Api(value = "taxon")
 @Path("/taxon")
 @Produces({"application/json", "application/xml"})
+@SuppressWarnings("static-method")
 public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
 
   @SuppressWarnings("unused")
@@ -103,13 +102,7 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
   public QueryResult<Taxon> queryHttpPostForm(
       @ApiParam(value = "POST payload", required = false) MultivaluedMap<String, String> form,
       @Context UriInfo uriInfo) {
-    try {
-      QuerySpec qs = new HttpQuerySpecBuilder(form, uriInfo).build();
-      TaxonDao dao = new TaxonDao();
-      return dao.query(qs);
-    } catch (Throwable t) {
-      throw handleError(uriInfo, t);
-    }
+    return super.queryHttpPostForm(form, uriInfo);
   }
 
   @POST
@@ -120,12 +113,7 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
   @Consumes(JSON_CONTENT_TYPE)
   public QueryResult<Taxon> queryHttpPostJson(
       @ApiParam(value = "querySpec", required = false) QuerySpec qs, @Context UriInfo uriInfo) {
-    try {
-      TaxonDao dao = new TaxonDao();
-      return dao.query(qs);
-    } catch (Throwable t) {
-      throw handleError(uriInfo, t);
-    }
+    return super.queryHttpPostJson(qs, uriInfo);
   }
 
   @GET
@@ -183,8 +171,7 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
   public Map<String, Long> getDistinctValuesHttpPostForm(
       @ApiParam(value = "name of field in a taxon object", required = true,
-      defaultValue = "defaultClassification.family")
-      @PathParam("field") String field,
+          defaultValue = "defaultClassification.family") @PathParam("field") String field,
       @ApiParam(value = "POST payload", required = false) MultivaluedMap<String, String> form,
       @Context UriInfo uriInfo) {
     return super.getDistinctValuesHttpPostForm(field, form, uriInfo);
@@ -198,8 +185,7 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
   @Consumes(JSON_CONTENT_TYPE)
   public Map<String, Long> getDistinctValuesHttpPostJson(
       @ApiParam(value = "name of field in a taxon object", required = true,
-      defaultValue = "defaultClassification.family")
-      @PathParam("field") String field,
+          defaultValue = "defaultClassification.family") @PathParam("field") String field,
       @ApiParam(value = "querySpec JSON", required = false) QuerySpec qs,
       @Context UriInfo uriInfo) {
     return super.getDistinctValuesHttpPostJson(field, qs, uriInfo);
@@ -282,11 +268,10 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
   @ApiImplicitParams({@ApiImplicitParam(name = "sourceSystem.code", value = "Example query param",
       dataType = "string", paramType = "query", defaultValue = "COL", required = false)})
   public Response dwcaQueryHttpPostJson(
-      @ApiParam(value = "querySpec", required = false) QuerySpec qs, 
-      @Context UriInfo uriInfo) {
+      @ApiParam(value = "querySpec", required = false) QuerySpec qs, @Context UriInfo uriInfo) {
     try {
       StreamingOutput stream = new StreamingOutput() {
-        
+
         public void write(OutputStream out) throws IOException {
           TaxonDao dao = new TaxonDao();
           try {
@@ -305,7 +290,6 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
     }
   }
 
-  
   @GET
   @Path("/dwca/getDataSet/{dataset}")
   @ApiOperation(value = "Download dataset as Darwin Core Archive File", response = Response.class,

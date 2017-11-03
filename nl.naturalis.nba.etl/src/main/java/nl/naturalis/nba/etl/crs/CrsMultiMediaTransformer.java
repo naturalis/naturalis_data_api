@@ -177,7 +177,7 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 					unitID = info.medialibId;
 				}
 				mmo.setUnitID(unitID);
-				mmo.setId(getElasticsearchId(CRS, objectID));
+				mmo.setId(getElasticsearchId(CRS, unitID));
 				mmo.setSourceSystemId(unitID);
 				String title = getTitle(frmDigitaleBestandenElem, unitID);
 				mmo.setTitle(title);

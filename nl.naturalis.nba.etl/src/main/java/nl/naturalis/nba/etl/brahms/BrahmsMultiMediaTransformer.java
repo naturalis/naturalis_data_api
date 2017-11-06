@@ -71,8 +71,9 @@ class BrahmsMultiMediaTransformer extends BrahmsTransformer<MultiMediaObject> {
 			URI uri = getUri(url);
 			MultiMediaObject mmo = newMultiMediaObject();
 			String uriHash = String.valueOf(uri.toString().hashCode()).replace('-', '0');
-			mmo.setId(getElasticsearchId(BRAHMS, objectID));
+			// mmo.setId(getElasticsearchId(BRAHMS, objectID));
 			mmo.setUnitID(objectID + '_' + uriHash);
+			mmo.setId(getElasticsearchId(BRAHMS, mmo.getUnitID()));
 			mmo.setSourceSystemId(mmo.getUnitID());
 			String specimenID = getElasticsearchId(BRAHMS, objectID);
 			mmo.setAssociatedSpecimenReference(specimenID);

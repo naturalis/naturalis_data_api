@@ -114,7 +114,7 @@ class NsrMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 			MultiMediaObject mmo = newMediaObject();
 			String uriHash = String.valueOf(uri.hashCode()).replace('-', '0');
 			mmo.setSourceSystemId(objectID + '_' + uriHash);
-		// mmo.setId(getElasticsearchId(NSR, objectID));
+		  // mmo.setId(getElasticsearchId(NSR, objectID));
 			mmo.setUnitID(mmo.getSourceSystemId());
 			mmo.setId(getElasticsearchId(NSR, mmo.getUnitID())); 
 			String format = getValue(e, "mime_type");

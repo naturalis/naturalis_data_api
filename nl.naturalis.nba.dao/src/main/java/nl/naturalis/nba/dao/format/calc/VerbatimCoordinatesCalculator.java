@@ -31,6 +31,9 @@ public class VerbatimCoordinatesCalculator implements ICalculator {
 	public Object calculateValue(EntityObject entity) throws CalculationException
 	{
 		Specimen specimen = (Specimen) entity.getDocument();
+		if (specimen.getGatheringEvent() == null) {
+		  return EMPTY_STRING;
+		}
 		List<GatheringSiteCoordinates> coords = specimen.getGatheringEvent().getSiteCoordinates();
 		if (coords == null || coords.size() == 1) {
 			return EMPTY_STRING;

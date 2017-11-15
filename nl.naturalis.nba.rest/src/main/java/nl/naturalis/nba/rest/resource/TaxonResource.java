@@ -84,7 +84,7 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
   @GET
   @Path("/query")
   @ApiOperation(value = "Query for taxa", response = QueryResult.class,
-      notes = "Search for taxa with a human-readable query")
+      notes = "Search for taxa (GET) using query parameters or a querySpec JSON")
   @Produces(JSON_CONTENT_TYPE)
   @ApiImplicitParams({
       @ApiImplicitParam(name = "defaultClassification.genus", value = "Example query param",
@@ -96,7 +96,7 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
   @POST
   @Path("/query")
   @ApiOperation(hidden = true, value = "Query for taxa", response = QueryResult.class,
-      notes = "Search for taxa (POST)")
+      notes = "Search for taxa (POST) using query parameters or a querySpec JSON")
   @Produces(JSON_CONTENT_TYPE)
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
   public QueryResult<Taxon> queryHttpPostForm(
@@ -108,7 +108,7 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
   @POST
   @Path("/query")
   @ApiOperation(value = "Query for taxa", response = QueryResult.class,
-      notes = "Search for taxa with a querySpec JSON")
+      notes = "Search for taxa (POST) using query parameters or a querySpec JSON")
   @Produces(JSON_CONTENT_TYPE)
   @Consumes(JSON_CONTENT_TYPE)
   public QueryResult<Taxon> queryHttpPostJson(
@@ -119,7 +119,7 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
   @GET
   @Path("/count")
   @ApiOperation(value = "Get the number of taxa matching a condition", response = long.class,
-      notes = "Conditions given as query string")
+      notes = "Conditions given as query parameters or a querySpec JSON")
   @Produces(TEXT_CONTENT_TYPE)
   @ApiImplicitParams({@ApiImplicitParam(name = "sourceSystem.code", value = "Example query param",
       dataType = "string", paramType = "query", defaultValue = "COL", required = false)})
@@ -130,7 +130,7 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
   @POST
   @Path("/count")
   @ApiOperation(hidden = true, value = "Get the number of taxa matching a condition",
-      response = long.class, notes = "Conditions given in POST body")
+      response = long.class, notes = "Conditions given as query parameters or a querySpec JSON")
   @Produces(TEXT_CONTENT_TYPE)
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
   public long countHttpPostForm(
@@ -142,7 +142,7 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
   @POST
   @Path("/count")
   @ApiOperation(value = "Get the number of taxa matching a condition", response = long.class,
-      notes = "Conditions given as querySpec JSON")
+      notes = "Conditions given as query parameters or a querySpec JSON")
   @Produces(TEXT_CONTENT_TYPE)
   @Consumes(JSON_CONTENT_TYPE)
   public long countHttpPostJson(@ApiParam(value = "querySpec JSON", required = false) QuerySpec qs,
@@ -196,7 +196,7 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
   @ApiOperation(
       value = "Dynamic download service: Query for taxa and return result as Darwin Core Archive File",
       response = Response.class,
-      notes = "Query can be human-readable or querySpec JSON. Response saved to nba-taxa.dwca.zip")
+      notes = "Query with query parameters or querySpec JSON. Response saved to nba-taxa.dwca.zip")
   @Produces(ZIP_CONTENT_TYPE)
   @ApiImplicitParams({@ApiImplicitParam(name = "sourceSystem.code", value = "Example query param",
       dataType = "string", paramType = "query", defaultValue = "COL", required = false)})
@@ -228,7 +228,7 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
   @ApiOperation(
       value = "Dynamic download service: Query for taxa and return result as Darwin Core Archive File",
       response = Response.class,
-      notes = "Query can be human-readable or querySpec JSON. Response saved to nba-taxa.dwca.zip")
+      notes = "Query with query parameters or querySpec JSON. Response saved to nba-taxa.dwca.zip")
   @Produces(ZIP_CONTENT_TYPE)
   @ApiImplicitParams({@ApiImplicitParam(name = "sourceSystem.code", value = "Example query param",
       dataType = "string", paramType = "query", defaultValue = "COL", required = false)})
@@ -262,7 +262,7 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
   @ApiOperation(
       value = "Dynamic download service: Query for taxa and return result as Darwin Core Archive File",
       response = Response.class,
-      notes = "Query can be human-readable or querySpec JSON. Response saved to nba-taxa.dwca.zip")
+      notes = "Query with query parameters or querySpec JSON. Response saved to nba-taxa.dwca.zip")
   @Consumes(JSON_CONTENT_TYPE)
   @Produces(ZIP_CONTENT_TYPE)
   @ApiImplicitParams({@ApiImplicitParam(name = "sourceSystem.code", value = "Example query param",

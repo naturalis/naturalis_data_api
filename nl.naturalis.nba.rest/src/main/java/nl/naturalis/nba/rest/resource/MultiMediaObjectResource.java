@@ -68,7 +68,7 @@ public class MultiMediaObjectResource extends NbaResource<MultiMediaObject, Mult
   @GET
   @Path("/query")
   @ApiOperation(value = "Query for multimedia documents", response = QueryResult.class,
-      notes = "Search for multimedia documents with a human-readable query")
+      notes = "Search for multimedia documents with query parameters or QuerySpec JSON string")
   @Produces(JSON_CONTENT_TYPE)
   @ApiImplicitParams({@ApiImplicitParam(name = "license", value = "Example query param",
       dataType = "string", paramType = "query", defaultValue = "CC0", required = false)})
@@ -79,7 +79,7 @@ public class MultiMediaObjectResource extends NbaResource<MultiMediaObject, Mult
   @POST
   @Path("/query")
   @ApiOperation(hidden = true, value = "Query for multimedia documents",
-      response = QueryResult.class, notes = "Search for multimedia documents (POST)")
+      response = QueryResult.class, notes = "Search for multimedia documents with query parameters or QuerySpec JSON string")
   @Produces(JSON_CONTENT_TYPE)
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
   public QueryResult<MultiMediaObject> queryHttpPostForm(
@@ -90,8 +90,8 @@ public class MultiMediaObjectResource extends NbaResource<MultiMediaObject, Mult
 
   @POST
   @Path("/query")
-  @ApiOperation(value = "Query for taxa", response = QueryResult.class,
-      notes = "Search for multimedia documents with a querySpec JSON")
+  @ApiOperation(value = "Query for multimedia documents", response = QueryResult.class,
+      notes = "Search for multimedia documents with query parameters or QuerySpec JSON string")
   @Produces(JSON_CONTENT_TYPE)
   @Consumes(JSON_CONTENT_TYPE)
   public QueryResult<MultiMediaObject> queryHttpPostJson(
@@ -102,7 +102,7 @@ public class MultiMediaObjectResource extends NbaResource<MultiMediaObject, Mult
   @GET
   @Path("/count")
   @ApiOperation(value = "Get the number of multimedia documents matching a condition",
-      response = long.class, notes = "Conditions given as query string")
+      response = long.class, notes = "Conditions given as query parameters or QuerySpec JSON")
   @Produces(JSON_CONTENT_TYPE)
   @ApiImplicitParams({@ApiImplicitParam(name = "sourceSystem.code", value = "Example query param",
       dataType = "string", paramType = "query", defaultValue = "BRAHMS", required = false)})
@@ -114,7 +114,7 @@ public class MultiMediaObjectResource extends NbaResource<MultiMediaObject, Mult
   @Path("/count")
   @ApiOperation(hidden = true,
       value = "Get the number of multimedia documents matching a condition", response = long.class,
-      notes = "Conditions given in POST body")
+      notes = "Conditions given as query parameters or QuerySpec JSON")
   @Produces(JSON_CONTENT_TYPE)
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
   public long countHttpPostForm(
@@ -126,7 +126,7 @@ public class MultiMediaObjectResource extends NbaResource<MultiMediaObject, Mult
   @POST
   @Path("/count")
   @ApiOperation(value = "Get the number of multimedia documents matching a condition",
-      response = long.class, notes = "Conditions given as querySpec JSON")
+      response = long.class, notes = "Conditions given as query parameters or QuerySpec JSON")
   @Produces(JSON_CONTENT_TYPE)
   @Consumes(JSON_CONTENT_TYPE)
   public long countHttpPostJson(@ApiParam(value = "querySpec JSON", required = false) QuerySpec qs,

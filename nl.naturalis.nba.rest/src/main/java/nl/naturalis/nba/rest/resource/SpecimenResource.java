@@ -119,7 +119,7 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
   @GET
   @Path("/query")
   @ApiOperation(value = "Query for specimens", response = QueryResult.class,
-      notes = "Search for specimen with a human-readable query")
+      notes = "Search for specimens (GET) using query parameters or a querySpec JSON")
   @Produces(JSON_CONTENT_TYPE)
   @ApiImplicitParams({@ApiImplicitParam(name = "collectionType", value = "Example query param",
       dataType = "string", paramType = "query", defaultValue = "Crustacea", required = false)})
@@ -130,7 +130,7 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
   @POST
   @Path("/query")
   @ApiOperation(hidden = true, value = "Query for specimens", response = QueryResult.class,
-      notes = "Search for specimen (POST)")
+      notes = "Search for specimens (POST) using query parameters or a querySpec JSON")
   @Produces(JSON_CONTENT_TYPE)
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
   public QueryResult<Specimen> queryHttpPostForm(
@@ -142,7 +142,7 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
   @POST
   @Path("/query")
   @ApiOperation(value = "Query for specimens", response = QueryResult.class,
-      notes = "Search for specimen with a querySpec JSON")
+      notes = "Search for specimens (GET) using query parameters or a querySpec JSON")
   @Produces(JSON_CONTENT_TYPE)
   @Consumes(JSON_CONTENT_TYPE)
   public QueryResult<Specimen> queryHttpPostJson(
@@ -153,7 +153,7 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
   @GET
   @Path("/count")
   @ApiOperation(value = "Get the number of specimens matching a condition", response = long.class,
-      notes = "Conditions given as query string")
+      notes = "Conditions given as query parameters or a querySpec JSON")
   @Produces(TEXT_CONTENT_TYPE)
   @ApiImplicitParams({@ApiImplicitParam(name = "collectionType", value = "Example query param",
       dataType = "string", paramType = "query", defaultValue = "Crustacea", required = false)})
@@ -164,7 +164,7 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
   @POST
   @Path("/count")
   @ApiOperation(hidden = true, value = "Get the number of specimens matching a condition",
-      response = long.class, notes = "Conditions given in POST body")
+      response = long.class, notes = "Conditions given as query parameters or a querySpec JSON")
   @Produces(TEXT_CONTENT_TYPE)
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
   public long countHttpPostForm(@ApiParam(value = "query object in POST form",
@@ -175,7 +175,7 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
   @POST
   @Path("/count")
   @ApiOperation(value = "Get the number of specimens matching a condition", response = long.class,
-      notes = "Conditions given as querySpec JSON")
+      notes = "Conditions given as query parameters or a querySpec JSON")
   @Produces(TEXT_CONTENT_TYPE)
   @Consumes(JSON_CONTENT_TYPE)
   public long countHttpPostJson(@ApiParam(value = "querySpec JSON", required = false) QuerySpec qs,
@@ -228,7 +228,7 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
   @ApiOperation(
       value = "Dynamic download service: Query for specimens and return result as Darwin Core Archive File",
       response = Response.class,
-      notes = "Query can be human-readable or querySpec JSON. Response saved to nba-specimens.dwca.zip")
+      notes = "Query with query parameters or querySpec JSON. Response saved to nba-specimens.dwca.zip")
   @Produces(ZIP_CONTENT_TYPE)
   @ApiImplicitParams({@ApiImplicitParam(name = "collectionType", value = "Example query param",
       dataType = "string", paramType = "query", defaultValue = "Crustacea", required = false)})
@@ -261,7 +261,7 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
   @ApiOperation(
       value = "Dynamic download service: Query for specimens and return result as Darwin Core Archive File",
       response = Response.class,
-      notes = "Query can be human-readable or querySpec JSON. Response saved to nba-specimens.dwca.zip")
+      notes = "Query with query parameters or querySpec JSON. Response saved to nba-specimens.dwca.zip")
   @Produces(ZIP_CONTENT_TYPE)
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
   public Response dwcaQueryHttpPostForm(
@@ -294,7 +294,7 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
   @ApiOperation(
       value = "Dynamic download service: Query for specimens and return result as Darwin Core Archive File",
       response = Response.class,
-      notes = "Query can be human-readable or querySpec JSON. Response saved to nba-specimens.dwca.zip")
+      notes = "Query with query parameters or querySpec JSON. Response saved to nba-specimens.dwca.zip")
   @Produces(ZIP_CONTENT_TYPE)
   @Consumes(JSON_CONTENT_TYPE)
   public Response dwcaQueryHttpPostJson(

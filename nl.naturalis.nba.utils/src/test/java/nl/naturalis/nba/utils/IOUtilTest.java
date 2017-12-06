@@ -43,8 +43,6 @@ public class IOUtilTest {
      * 
      * Test to verify the byte read from a specified {@ InputStream}.
      * 
-     * @throws IOException
-     * @throws FileNotFoundException
      */
     public void testReadAllBytes() {
 

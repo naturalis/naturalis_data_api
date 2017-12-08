@@ -44,6 +44,7 @@ public class IOUtilTest {
      * Test to verify the byte read from a specified {@ InputStream}.
      * 
      */
+    @Test
     public void testReadAllBytes() {
 
         URL url = getClass().getResource("TestFile.txt");

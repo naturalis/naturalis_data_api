@@ -31,7 +31,7 @@ public final class ETLUtil {
     purlSpecimenPath = purlBuilder.getPath() + "/naturalis/specimen/";
   }
 
-  private ETLUtil() {}
+   public ETLUtil() {}
 
   /**
    * Get root cause of the specified {@code Throwable}. Returns the {@code Throwable} itself if it
@@ -125,7 +125,16 @@ public final class ETLUtil {
     }
     return testGenera;
   }
-
+  
+  //Added for Unit Test.
+  public static URIBuilder getPurl() {
+      return getPurlBuilder();
+  }
+  
+  public static URIBuilder callGetPurlBuilder() {
+      return getPurlBuilder();
+  }
+  
   private static URIBuilder getPurlBuilder() {
     String value = null;
     try {

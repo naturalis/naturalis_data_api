@@ -191,7 +191,7 @@ public class ETLUtilTest {
         URIBuilder purlBuilder = new URIBuilder(url);
         PowerMockito.doReturn(purlBuilder).when(etlUtilSpy, methodName);
         URIBuilder actualBuilder = etlUtilSpy.callGetPurlBuilder();
-        assertEquals("data.biodiversitydata.nl", actualBuilder.getHost());
+        assertEquals(purlBuilder.getHost(), actualBuilder.getHost());
 
     }
 

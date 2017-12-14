@@ -21,6 +21,7 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+
 /**
  * Test class for ETLUtil.java
  */
@@ -161,7 +162,7 @@ public class ETLUtilTest {
      * 
      * @throws Exception
      * 
-     * Test to verify the array of genera that is returned by getTestGeneral
+     *         Test to verify the array of genera that is returned by getTestGeneral
      */
     @Test
     public void testGetTestGenera() throws Exception {
@@ -178,7 +179,7 @@ public class ETLUtilTest {
      * 
      * @throws Exception
      * 
-     * Test to verify private getUrlBuilder method returns the correct url
+     *         Test to verify private getUrlBuilder method returns the correct url
      */
     @SuppressWarnings("static-access")
     @Test
@@ -189,9 +190,9 @@ public class ETLUtilTest {
         String url = "http://data.biodiversitydata.nl";
         URIBuilder purlBuilder = new URIBuilder(url);
         PowerMockito.doReturn(purlBuilder).when(etlUtilSpy, methodName);
-        URIBuilder actualBuilder  = etlUtilSpy.callGetPurlBuilder();        
+        URIBuilder actualBuilder = etlUtilSpy.callGetPurlBuilder();
         assertEquals("data.biodiversitydata.nl", actualBuilder.getHost());
-  
+
     }
 
 }

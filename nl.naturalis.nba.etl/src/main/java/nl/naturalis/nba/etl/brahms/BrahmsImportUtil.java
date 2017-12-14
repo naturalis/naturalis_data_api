@@ -39,23 +39,25 @@ import nl.naturalis.nba.etl.TransformUtil;
  * @author Ayco Holleman
  *
  */
-class BrahmsImportUtil {
+public class BrahmsImportUtil {//Class made public for test purpose
 
 	private static final Logger logger = ETLRegistry.getInstance()
 			.getLogger(BrahmsImportUtil.class);
 	private static final SimpleDateFormat fileNameDateFormatter = new SimpleDateFormat("yyyyMMdd");
 
-	private BrahmsImportUtil()
+	public BrahmsImportUtil()
 	{
 	}
 
+	
 	/**
 	 * Provides a list of CSV files to process. Only files whose name end with
 	 * {@code .csv} (case-insensitive) will be processed.
 	 * 
 	 * @return
 	 */
-	static File[] getCsvFiles()
+	
+	public static File[] getCsvFiles()
 	{
 		File[] files = getDataDir().listFiles(new FilenameFilter() {
 
@@ -67,12 +69,12 @@ class BrahmsImportUtil {
 		});
 		return files;
 	}
-
+	
 	/**
 	 * Creates a backup of successfully processed CSV files by appending a
 	 * datetime stamp and a {@code .imported} file extension to their name.
 	 */
-	static void backup()
+	public static void backup()
 	{
 		String ext = "." + fileNameDateFormatter.format(new Date()) + ".imported";
 		for (File f : getCsvFiles()) {
@@ -84,7 +86,7 @@ class BrahmsImportUtil {
 	 * Removes the {@code .imported} file extension from files that have it,
 	 * causing them to be re-processed the next time an import is started.
 	 */
-	static void removeBackupExtension()
+	public static void removeBackupExtension()
 	{
 		File dir = getDataDir();
 		File[] files = dir.listFiles(new FilenameFilter() {
@@ -110,7 +112,7 @@ class BrahmsImportUtil {
 	 * @param record
 	 * @return
 	 */
-	static ScientificName getScientificName(CSVRecordInfo<BrahmsCsvField> record)
+	public static ScientificName getScientificName(CSVRecordInfo<BrahmsCsvField> record)
 	{
 		ScientificName sn = new ScientificName();
 		sn.setFullScientificName(record.get(SPECIES));
@@ -163,7 +165,7 @@ class BrahmsImportUtil {
 	 * @param sn
 	 * @return
 	 */
-	static DefaultClassification getDefaultClassification(CSVRecordInfo<BrahmsCsvField> record,
+	public static DefaultClassification getDefaultClassification(CSVRecordInfo<BrahmsCsvField> record,
 			ScientificName sn)
 	{
 		DefaultClassification dc = TransformUtil.extractClassificiationFromName(sn);
@@ -210,7 +212,7 @@ class BrahmsImportUtil {
 	 * @param dc
 	 * @return
 	 */
-	static List<Monomial> getSystemClassification(DefaultClassification dc)
+	public static List<Monomial> getSystemClassification(DefaultClassification dc)
 	{
 		List<Monomial> sc = new ArrayList<>(8);
 		if (dc.getKingdom() != null) {
@@ -244,20 +246,21 @@ class BrahmsImportUtil {
 		}
 		return record.get(AUTHOR3);
 	}
+    
 
 	private static String getInfraspecificMarker(CSVRecordInfo<BrahmsCsvField> record)
 	{
 		String s = record.get(RANK2);
 		return s == null ? record.get(RANK1) : s;
 	}
-
+	
 	private static String getInfraspecificEpithet(CSVRecordInfo<BrahmsCsvField> record)
 	{
 		String s = record.get(SP3);
 		return s == null ? record.get(SP2) : s;
 	}
 
-	static String getTaxonRank(CSVRecordInfo<BrahmsCsvField> record)
+	public static String getTaxonRank(CSVRecordInfo<BrahmsCsvField> record)
 	{
 		if (record.get(SP3) == null) {
 			if (record.get(SP2) == null) {
@@ -272,7 +275,7 @@ class BrahmsImportUtil {
 		return record.get(RANK2);
 	}
 
-	static File getDataDir()
+	public static File getDataDir()
 	{
 		return DaoRegistry.getInstance().getConfiguration().getDirectory("brahms.data.dir");
 	}

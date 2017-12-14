@@ -296,7 +296,7 @@ public class BrahmsImportUtilTest {
 
         CSVRecordInfo<BrahmsCsvField> record = PowerMockito.mock(CSVRecordInfo.class);
         ScientificName expected = new ScientificName();
-        
+
         when(record.get(SPECIES)).thenReturn("Rhododendron ferrugineum L.");
         when(record.get(AUTHOR2)).thenReturn("L.");
         when(record.get(GENUS)).thenReturn("Rhododendron");
@@ -308,7 +308,7 @@ public class BrahmsImportUtilTest {
         PowerMockito.when(brahmsImportUtilSpy, "getAuthor", record).thenReturn("L.");
         expected = BrahmsImportUtil.getScientificName(record);
         expected.getAuthorshipVerbatim();
-        
+
         assertNotNull(expected);
         assertEquals("L.", expected.getAuthorshipVerbatim());
 
@@ -330,7 +330,7 @@ public class BrahmsImportUtilTest {
 
         CSVRecordInfo<BrahmsCsvField> record = PowerMockito.mock(CSVRecordInfo.class);
         ScientificName expected = new ScientificName();
-        
+
         when(record.get(SPECIES)).thenReturn("Rhododendron ferrugineum L.");
         when(record.get(AUTHOR2)).thenReturn("L.");
         when(record.get(GENUS)).thenReturn("Rhododendron");
@@ -361,7 +361,7 @@ public class BrahmsImportUtilTest {
 
         CSVRecordInfo<BrahmsCsvField> record = PowerMockito.mock(CSVRecordInfo.class);
         ScientificName expected = new ScientificName();
-        
+
         when(record.get(SPECIES)).thenReturn("Rhododendron ferrugineum L.");
         when(record.get(AUTHOR2)).thenReturn("L.");
         when(record.get(GENUS)).thenReturn("Rhododendron");

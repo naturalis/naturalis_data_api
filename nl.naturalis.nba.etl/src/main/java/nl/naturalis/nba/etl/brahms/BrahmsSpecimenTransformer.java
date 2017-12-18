@@ -51,7 +51,7 @@ import nl.naturalis.nba.etl.ThemeCache;
  * @author Tom Gilissen
  *
  */
-public class BrahmsSpecimenTransformer extends BrahmsTransformer<Specimen> {
+class BrahmsSpecimenTransformer extends BrahmsTransformer<Specimen> {
 
   private static final ThemeCache themeCache;
 
@@ -59,7 +59,7 @@ public class BrahmsSpecimenTransformer extends BrahmsTransformer<Specimen> {
     themeCache = ThemeCache.getInstance();
   }
 
-  public BrahmsSpecimenTransformer(ETLStatistics stats) //constructor made public for test.
+  BrahmsSpecimenTransformer(ETLStatistics stats) //constructor made public for test.
   {
     super(stats);
   }

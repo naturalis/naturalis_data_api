@@ -30,7 +30,7 @@ import nl.naturalis.nba.etl.brahms.BrahmsSpecimenTransformer;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(CSVRecordInfo.class)
 @PowerMockIgnore("javax.management.*")
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"static-method", "unchecked"})
 public class BrahmsSpecimenTransformerTest {
 
     ETLStatistics etlStatistics;

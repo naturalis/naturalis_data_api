@@ -159,7 +159,7 @@ public class BrahmsSpecimenTransformerTest {
 
         assertNotNull(list);
         assertTrue(list.size() == 1);
-        assertEquals(expectedId, (list.stream().map(i -> i.getId()).findFirst().get()));
+        assertEquals(expectedId, list.stream().map(i -> i.getId()).findFirst().get());
         assertEquals(expectedGUID, list.stream().map(i -> i.getUnitGUID()).findFirst().get());
 
 

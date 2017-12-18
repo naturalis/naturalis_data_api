@@ -39,13 +39,13 @@ import nl.naturalis.nba.etl.TransformUtil;
  * @author Ayco Holleman
  *
  */
-public class BrahmsImportUtil {//Class made public for test purpose
+class BrahmsImportUtil {//Class made public for test purpose
 
 	private static final Logger logger = ETLRegistry.getInstance()
 			.getLogger(BrahmsImportUtil.class);
 	private static final SimpleDateFormat fileNameDateFormatter = new SimpleDateFormat("yyyyMMdd");
 
-	public BrahmsImportUtil()
+	BrahmsImportUtil()
 	{
 	}
 

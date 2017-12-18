@@ -1,4 +1,3 @@
-
 package nl.naturalis.nba.etl;
 
 import static org.junit.Assert.assertArrayEquals;
@@ -21,6 +20,8 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import nl.naturalis.nba.etl.ETLUtil;
+import nl.naturalis.nba.etl.Loader;
 
 /**
  * Test class for ETLUtil.java
@@ -28,7 +29,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(ETLUtil.class)
 @PowerMockIgnore("javax.management.*")
-@SuppressWarnings({"static-method"})
+@SuppressWarnings({"static-method","static-access"})
 public class ETLUtilTest {
 
 
@@ -89,7 +90,6 @@ public class ETLUtilTest {
      * @throws Exception
      * 
      */
-    @SuppressWarnings("static-access")
     @Test
     public void testLogDuration() throws Exception {
 
@@ -182,7 +182,6 @@ public class ETLUtilTest {
      * 
      *         Test to verify private getUrlBuilder method returns the correct url
      */
-    @SuppressWarnings("static-access")
     @Test
     public void testGetPurlBuilder() throws Exception {
 

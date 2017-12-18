@@ -401,20 +401,5 @@ public class BrahmsImportUtilTest {
 
     }
 
-    /**
-     * Test method for {@link nl.naturalis.nba.etl.brahms.BrahmsImportUtil#getDataDir()}.
-     * 
-     * Test to get the check
-     */
-    @Test
-    public void testGetDataDir() {
-
-        String userHome = System.getProperty("user.home");
-        String expected = userHome + "/nba/data/brahms";
-        File actualDir = BrahmsImportUtil.getDataDir();
-        assertNotNull(actualDir);
-        assertEquals(expected, actualDir.getAbsolutePath());
-
-    }
 
 }

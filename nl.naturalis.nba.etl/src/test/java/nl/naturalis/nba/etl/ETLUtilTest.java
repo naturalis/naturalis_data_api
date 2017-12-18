@@ -28,6 +28,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(ETLUtil.class)
 @PowerMockIgnore("javax.management.*")
+@SuppressWarnings({"static-method"})
 public class ETLUtilTest {
 
 

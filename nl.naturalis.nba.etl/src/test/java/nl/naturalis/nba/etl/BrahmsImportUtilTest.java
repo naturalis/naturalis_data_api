@@ -40,7 +40,7 @@ import nl.naturalis.nba.etl.brahms.BrahmsImportUtil;;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(BrahmsImportUtil.class)
 @PowerMockIgnore("javax.management.*")
-@SuppressWarnings({"static-method", "unchecked"})
+@SuppressWarnings({"static-method","static-access", "unchecked"})
 public class BrahmsImportUtilTest {
 
 
@@ -93,6 +93,7 @@ public class BrahmsImportUtilTest {
      *         Test to verify backup() method is called.
      */
 
+    @SuppressWarnings("static-access")
     @Test
     public void testBackup() throws Exception {
 

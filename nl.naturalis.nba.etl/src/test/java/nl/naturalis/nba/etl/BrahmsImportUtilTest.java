@@ -40,7 +40,7 @@ import nl.naturalis.nba.etl.brahms.BrahmsImportUtil;;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(BrahmsImportUtil.class)
 @PowerMockIgnore("javax.management.*")
-@SuppressWarnings({"static-access", "unchecked"})
+@SuppressWarnings({"static-method", "unchecked"})
 public class BrahmsImportUtilTest {
 
 

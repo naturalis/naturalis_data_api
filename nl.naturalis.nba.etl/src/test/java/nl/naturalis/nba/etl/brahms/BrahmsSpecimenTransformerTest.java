@@ -35,7 +35,10 @@ import nl.naturalis.nba.etl.utils.CommonReflectionUtil;
 @SuppressWarnings({"static-method", "unchecked"})
 public class BrahmsSpecimenTransformerTest {
 
-
+    /**
+     * 
+     * @throws java.lang.Exception
+     */
     @Before
     public void setUp() throws Exception {
 
@@ -50,6 +53,7 @@ public class BrahmsSpecimenTransformerTest {
     }
 
     /**
+     * 
      * @throws java.lang.Exception
      */
     @After
@@ -66,8 +70,7 @@ public class BrahmsSpecimenTransformerTest {
     @Test
     public void testDoTransform() throws Exception {
 
-        CSVRecordInfo<BrahmsCsvField> record;
-        record = PowerMockito.mock(CSVRecordInfo.class);
+        CSVRecordInfo<BrahmsCsvField> record = PowerMockito.mock(CSVRecordInfo.class);
         ETLStatistics etlStatistics = new ETLStatistics();
 
         when(record.get(BrahmsCsvField.SPECIES)).thenReturn("Rhododendron ferrugineum L.");
@@ -103,10 +106,10 @@ public class BrahmsSpecimenTransformerTest {
 
         BrahmsSpecimenTransformer brahmsSpecimenTransformer = new BrahmsSpecimenTransformer(etlStatistics);
 
-        CommonReflectionUtil.setPrivateField(AbstractTransformer.class, brahmsSpecimenTransformer, "objectID", "L.3355550");
-        CommonReflectionUtil.setPrivateField(AbstractTransformer.class, brahmsSpecimenTransformer, "input", record);
+        CommonReflectionUtil.setField(AbstractTransformer.class, brahmsSpecimenTransformer, "objectID", "L.3355550");
+        CommonReflectionUtil.setField(AbstractTransformer.class, brahmsSpecimenTransformer, "input", record);
 
-        Object returned = CommonReflectionUtil.genericReflectionMethod(null, CSVRecordInfo.class, brahmsSpecimenTransformer, "doTransform");
+        Object returned = CommonReflectionUtil.callMethod(null, CSVRecordInfo.class, brahmsSpecimenTransformer, "doTransform");
 
         List<Specimen> list = (List<Specimen>) returned;
 
@@ -132,8 +135,7 @@ public class BrahmsSpecimenTransformerTest {
     @Test
     public void testGatheringEvent() throws Exception {
 
-        CSVRecordInfo<BrahmsCsvField> record;
-        record = PowerMockito.mock(CSVRecordInfo.class);
+        CSVRecordInfo<BrahmsCsvField> record = PowerMockito.mock(CSVRecordInfo.class);
         ETLStatistics etlStatistics = new ETLStatistics();
 
         when(record.get(BrahmsCsvField.SPECIES)).thenReturn("Rhododendron ferrugineum L.");
@@ -169,10 +171,10 @@ public class BrahmsSpecimenTransformerTest {
 
         BrahmsSpecimenTransformer brahmsSpecimenTransformer = new BrahmsSpecimenTransformer(etlStatistics);
 
-        CommonReflectionUtil.setPrivateField(AbstractTransformer.class, brahmsSpecimenTransformer, "objectID", "L.3355550");
-        CommonReflectionUtil.setPrivateField(AbstractTransformer.class, brahmsSpecimenTransformer, "input", record);
+        CommonReflectionUtil.setField(AbstractTransformer.class, brahmsSpecimenTransformer, "objectID", "L.3355550");
+        CommonReflectionUtil.setField(AbstractTransformer.class, brahmsSpecimenTransformer, "input", record);
 
-        Object obj = CommonReflectionUtil.genericReflectionMethod(record, CSVRecordInfo.class, brahmsSpecimenTransformer, "getGatheringEvent");
+        Object obj = CommonReflectionUtil.callMethod(record, CSVRecordInfo.class, brahmsSpecimenTransformer, "getGatheringEvent");
         GatheringEvent ge = (GatheringEvent) obj;
 
         String expectedContinent = "Europe";
@@ -197,8 +199,7 @@ public class BrahmsSpecimenTransformerTest {
     @Test
     public void testGetSpecimenIdentification() throws Exception {
 
-        CSVRecordInfo<BrahmsCsvField> record;
-        record = PowerMockito.mock(CSVRecordInfo.class);
+        CSVRecordInfo<BrahmsCsvField> record = PowerMockito.mock(CSVRecordInfo.class);
         ETLStatistics etlStatistics = new ETLStatistics();
 
         when(record.get(BrahmsCsvField.SPECIES)).thenReturn("Rhododendron ferrugineum L.");
@@ -234,10 +235,9 @@ public class BrahmsSpecimenTransformerTest {
 
         BrahmsSpecimenTransformer brahmsSpecimenTransformer = new BrahmsSpecimenTransformer(etlStatistics);
 
-        CommonReflectionUtil.setPrivateField(AbstractTransformer.class, brahmsSpecimenTransformer, "objectID", "L.3355550");
-        CommonReflectionUtil.setPrivateField(AbstractTransformer.class, brahmsSpecimenTransformer, "input", record);
-        Object obj =
-                CommonReflectionUtil.genericReflectionMethod(record, CSVRecordInfo.class, brahmsSpecimenTransformer, "getSpecimenIdentification");
+        CommonReflectionUtil.setField(AbstractTransformer.class, brahmsSpecimenTransformer, "objectID", "L.3355550");
+        CommonReflectionUtil.setField(AbstractTransformer.class, brahmsSpecimenTransformer, "input", record);
+        Object obj = CommonReflectionUtil.callMethod(record, CSVRecordInfo.class, brahmsSpecimenTransformer, "getSpecimenIdentification");
         SpecimenIdentification identification = (SpecimenIdentification) obj;
 
         String expectedGenus = "Rhododendron";
@@ -262,18 +262,17 @@ public class BrahmsSpecimenTransformerTest {
     @Test
     public void testGetAssemblageID() throws Exception {
 
-        CSVRecordInfo<BrahmsCsvField> record;
-        record = PowerMockito.mock(CSVRecordInfo.class);
+        CSVRecordInfo<BrahmsCsvField> record = PowerMockito.mock(CSVRecordInfo.class);
         ETLStatistics etlStatistics = new ETLStatistics();
 
         when(record.get(BrahmsCsvField.BRAHMS)).thenReturn("1993139.000000");
 
         BrahmsSpecimenTransformer brahmsSpecimenTransformer = new BrahmsSpecimenTransformer(etlStatistics);
 
-        CommonReflectionUtil.setPrivateField(AbstractTransformer.class, brahmsSpecimenTransformer, "objectID", "L.3355550");
-        CommonReflectionUtil.setPrivateField(AbstractTransformer.class, brahmsSpecimenTransformer, "input", record);
+        CommonReflectionUtil.setField(AbstractTransformer.class, brahmsSpecimenTransformer, "objectID", "L.3355550");
+        CommonReflectionUtil.setField(AbstractTransformer.class, brahmsSpecimenTransformer, "input", record);
 
-        Object obj = CommonReflectionUtil.genericReflectionMethod(null, CSVRecordInfo.class, brahmsSpecimenTransformer, "getAssemblageID");
+        Object obj = CommonReflectionUtil.callMethod(null, CSVRecordInfo.class, brahmsSpecimenTransformer, "getAssemblageID");
         String assembleId = (String) obj;
 
         String expectedAssembleID = "1993139@BRAHMS";
@@ -296,8 +295,7 @@ public class BrahmsSpecimenTransformerTest {
     @Test
     public void testGetCollectorsFieldNumber() throws Exception {
 
-        CSVRecordInfo<BrahmsCsvField> record;
-        record = PowerMockito.mock(CSVRecordInfo.class);
+        CSVRecordInfo<BrahmsCsvField> record = PowerMockito.mock(CSVRecordInfo.class);
         ETLStatistics etlStatistics = new ETLStatistics();
 
         when(record.get(BrahmsCsvField.COLLECTOR, false)).thenReturn("Unknown ");
@@ -306,10 +304,10 @@ public class BrahmsSpecimenTransformerTest {
         when(record.get(BrahmsCsvField.SUFFIX, false)).thenReturn(" ");
 
         BrahmsSpecimenTransformer brahmsSpecimenTransformer = new BrahmsSpecimenTransformer(etlStatistics);
-        CommonReflectionUtil.setPrivateField(AbstractTransformer.class, brahmsSpecimenTransformer, "objectID", "L.3355550");
-        CommonReflectionUtil.setPrivateField(AbstractTransformer.class, brahmsSpecimenTransformer, "input", record);
+        CommonReflectionUtil.setField(AbstractTransformer.class, brahmsSpecimenTransformer, "objectID", "L.3355550");
+        CommonReflectionUtil.setField(AbstractTransformer.class, brahmsSpecimenTransformer, "input", record);
 
-        Object obj = CommonReflectionUtil.genericReflectionMethod(null, CSVRecordInfo.class, brahmsSpecimenTransformer, "getCollectorsFieldNumber");
+        Object obj = CommonReflectionUtil.callMethod(null, CSVRecordInfo.class, brahmsSpecimenTransformer, "getCollectorsFieldNumber");
         String actualCollectorsNumber = (String) obj;
 
         String expectedCollectionNumber = "Unknown  s.n. ";
@@ -331,18 +329,17 @@ public class BrahmsSpecimenTransformerTest {
     public void testGetServiceAccessPoints() throws Exception {
 
 
-        CSVRecordInfo<BrahmsCsvField> record;
-        record = PowerMockito.mock(CSVRecordInfo.class);
+        CSVRecordInfo<BrahmsCsvField> record = PowerMockito.mock(CSVRecordInfo.class);
         ETLStatistics etlStatistics = new ETLStatistics();
 
         when(record.get(BrahmsCsvField.IMAGELIST)).thenReturn("http://medialib.naturalis.nl/file/id/L.3355550/format/large");
 
         BrahmsSpecimenTransformer brahmsSpecimenTransformer = new BrahmsSpecimenTransformer(etlStatistics);
-        CommonReflectionUtil.setPrivateField(AbstractTransformer.class, brahmsSpecimenTransformer, "objectID", "L.3355550");
-        CommonReflectionUtil.setPrivateField(AbstractTransformer.class, brahmsSpecimenTransformer, "input", record);
+        CommonReflectionUtil.setField(AbstractTransformer.class, brahmsSpecimenTransformer, "objectID", "L.3355550");
+        CommonReflectionUtil.setField(AbstractTransformer.class, brahmsSpecimenTransformer, "input", record);
 
 
-        Object obj = CommonReflectionUtil.genericReflectionMethod(null, CSVRecordInfo.class, brahmsSpecimenTransformer, "getServiceAccessPoints");
+        Object obj = CommonReflectionUtil.callMethod(null, CSVRecordInfo.class, brahmsSpecimenTransformer, "getServiceAccessPoints");
 
         List<ServiceAccessPoint> actualList = (List<ServiceAccessPoint>) obj;
 

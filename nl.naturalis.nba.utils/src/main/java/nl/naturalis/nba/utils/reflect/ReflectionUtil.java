@@ -3,16 +3,23 @@ package nl.naturalis.nba.utils.reflect;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import nl.naturalis.nba.utils.debug.BeanPrinter;
 
 public class ReflectionUtil {
 
   private ReflectionUtil() {}
 
-  public static <T> T instantiate(Class<T> cls, Object... constructorArgs) {
-    Class<?>[] paramTypes = new Class[constructorArgs.length];
-    for (int i = 0; i < constructorArgs.length; ++i) {
-      paramTypes[i] = constructorArgs[i].getClass();
-    }
+  /**
+   * Creates a new instance of the specified class invoking the constructor taking the specified
+   * arguments.
+   * 
+   * @param cls
+   * @param constructorArgs
+   * @return
+   */
+  public static <T> T newInstance(Class<T> cls, Object... constructorArgs) {
+    Class<?>[] paramTypes = getParamTypes(constructorArgs);
     try {
       Constructor<T> c = cls.getDeclaredConstructor(paramTypes);
       if (!c.isAccessible()) {
@@ -24,6 +31,13 @@ public class ReflectionUtil {
     }
   }
 
+  /**
+   * Sets the specified instance field on the specified object to the specified value.
+   * 
+   * @param obj
+   * @param field
+   * @param value
+   */
   public static void set(Object obj, String field, Object value) {
     Field f = getField(field, obj.getClass());
     if (f == null) {
@@ -39,11 +53,48 @@ public class ReflectionUtil {
     }
   }
 
+  /**
+   * Sets the specified instance field on the specified object to the specified value.
+   * 
+   * @param obj
+   * @param field
+   * @param value
+   */
+  public static void setStatic(Class<?> cls, String field, Object value) {
+    Field f = getField(field, cls);
+    if (f == null) {
+      throw new RuntimeException("No such field: " + field);
+    }
+    if (!Modifier.isStatic(f.getModifiers())) {
+      throw new RuntimeException("Not a static field: " + field);
+    }
+    if (!f.isAccessible()) {
+      f.setAccessible(true);
+    }
+    try {
+      f.set(null, value);
+    } catch (IllegalArgumentException | IllegalAccessException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  /**
+   * Returns the value of the specified instance field in the specified object, casting it to the
+   * specified return type.
+   * 
+   * @param obj
+   * @param field
+   * @param returnType
+   * @return
+   */
   public static <T> T get(Object obj, String field, Class<T> returnType) {
     Class<?> c = obj.getClass();
     Field f = getField(field, c);
-    if (c == null) {
+    if (f == null) {
       throw new RuntimeException("No such field: " + field);
+    }
+    if (Modifier.isStatic(f.getModifiers())) {
+      throw new RuntimeException("Not an instance field: " + field);
     }
     if (!f.isAccessible()) {
       f.setAccessible(true);
@@ -55,12 +106,97 @@ public class ReflectionUtil {
     }
   }
 
+  /**
+   * Returns the value of the specified static field in the specified object, casting it to the
+   * specified return type.
+   * 
+   * @param obj
+   * @param field
+   * @param returnType
+   * @return
+   */
+  public static <T> T getStatic(Class<?> cls, String field, Class<T> returnType) {
+    Field f = getField(field, cls);
+    if (f == null) {
+      throw new RuntimeException("No such field: " + field);
+    }
+    if (!Modifier.isStatic(f.getModifiers())) {
+      throw new RuntimeException("Not a static field: " + field);
+    }
+    if (!f.isAccessible()) {
+      f.setAccessible(true);
+    }
+    try {
+      return returnType.cast(f.get(null));
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  /**
+   * Calls the specified instance method on the specified object, casting the return value (if any)
+   * to the specified type.
+   * 
+   * @param obj
+   * @param method
+   * @param returnType
+   * @param args
+   * @return
+   */
   public static <T> T call(Object obj, String method, Class<T> returnType, Object... args) {
-    Method m = getMethod(method, obj.getClass());
+    Class<?>[] paramTypes = getParamTypes(args);
+    Method m = getMethod(method, obj.getClass(), int.class, boolean.class);
     if (m == null) {
       throw new RuntimeException("No such method: " + method);
     }
-    return null;
+    if (Modifier.isStatic(m.getModifiers())) {
+      throw new RuntimeException("Not an instance method: " + method);
+    }
+    if (!m.isAccessible()) {
+      m.setAccessible(true);
+    }
+    try {
+      Object result = m.invoke(obj, args);
+      if (result == null || returnType == null || returnType == void.class) {
+        return null;
+      }
+      return returnType.cast(result);
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  /**
+   * Calls the specified static method on the specified object, casting the return value (if any) to
+   * the specified type.
+   * 
+   * @param obj
+   * @param method
+   * @param returnType
+   * @param args
+   * @return
+   */
+  public static <T> T callStatic(Class<?> cls, String method, Class<T> returnType, Object... args) {
+    Class<?>[] paramTypes = getParamTypes(args);
+    Method m = getMethod(method, cls, paramTypes);
+    if (m == null) {
+      throw new RuntimeException("No such method: " + method);
+    }
+    if (!Modifier.isStatic(m.getModifiers())) {
+      throw new RuntimeException("Not a static method: " + method);
+    }
+    if (!m.isAccessible()) {
+      m.setAccessible(true);
+    }
+    try {
+      Object result = m.invoke(null, args);
+      if (result == null || returnType == null || returnType == void.class) {
+        return null;
+      }
+      return returnType.cast(result);
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 
   /**
@@ -92,28 +228,25 @@ public class ReflectionUtil {
    * @param cls
    * @return
    */
-  public static Method getMethod(String name, Class<?> cls) {
+  public static Method getMethod(String name, Class<?> cls, Class<?>... parameterTypes) {
     while (cls != null) {
-      for (Method m : cls.getDeclaredMethods()) {
-        if (m.getName().equals(name))
-          return m;
+      try {
+        
+        return cls.getDeclaredMethod(name, parameterTypes);
+      } catch (NoSuchMethodException e) {
+        // move to super class
       }
       cls = cls.getSuperclass();
     }
     return null;
   }
 
-  public static Method getMethod(String name, Class<?> cls, Class<?>... parameterTypes) {
-    while (cls != null) {
-      try {
-        return cls.getDeclaredMethod(name, parameterTypes);
-      } catch (SecurityException e) {
-        throw new RuntimeException(e);
-      } catch (NoSuchMethodException e) {
-        //
-      }
-      cls = cls.getSuperclass();
+  private static Class<?>[] getParamTypes(Object... args) {
+    Class<?>[] paramTypes = new Class[args.length];
+    for (int i = 0; i < args.length; ++i) {
+      paramTypes[i] = args[i].getClass();
     }
-    return null;
+    return paramTypes;
   }
+
 }

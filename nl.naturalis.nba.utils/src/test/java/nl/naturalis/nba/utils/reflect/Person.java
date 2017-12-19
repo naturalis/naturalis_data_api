@@ -2,6 +2,10 @@ package nl.naturalis.nba.utils.reflect;
 
 public class Person {
 
+  public static int getAverageAge() {
+    return 40;
+  }
+
   private String name;
   private int age;
 
@@ -28,8 +32,8 @@ public class Person {
     this.age = age;
   }
 
-  public double calculateMinimumWage(int multiplier, boolean withBonus) {
-    return (age * multiplier) + (withBonus ? 5000 : 0);
+  private double calculateMinimumWage(int multiplier, boolean withBonus) {
+    return (age * multiplier) + (withBonus ? 1000 : 0);
   }
 
 }

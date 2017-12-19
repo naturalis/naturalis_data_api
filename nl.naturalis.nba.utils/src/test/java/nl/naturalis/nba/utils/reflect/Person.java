@@ -16,6 +16,12 @@ public class Person {
     this.name = name;
   }
 
+  @SuppressWarnings("unused")
+  private Person(String name, int age) {
+    this.name = name;
+    this.age = age;
+  }
+
   public String getName() {
     return name;
   }
@@ -32,7 +38,8 @@ public class Person {
     this.age = age;
   }
 
-  private double calculateMinimumWage(int multiplier, boolean withBonus) {
+  @SuppressWarnings("unused")
+  public double calculateMinimumWage(int multiplier, boolean withBonus) {
     return (age * multiplier) + (withBonus ? 1000 : 0);
   }
 

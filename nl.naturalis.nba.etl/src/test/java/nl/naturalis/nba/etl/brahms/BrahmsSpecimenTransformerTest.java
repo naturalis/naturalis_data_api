@@ -26,6 +26,7 @@ import nl.naturalis.nba.etl.AbstractTransformer;
 import nl.naturalis.nba.etl.AllTests;
 import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.ETLStatistics;
+import nl.naturalis.nba.etl.utils.CommonReflectionUtil;
 
 /**
  * Test class for BrahmsSpecimenTransformer.java
@@ -56,55 +57,7 @@ public class BrahmsSpecimenTransformerTest {
     @After
     public void tearDown() throws Exception {}
 
-    /**
-     * Generic Reflection method to access private methods.
-     * 
-     * @param Object
-     * @param Object
-     * @param Object
-     * 
-     * @return <T>
-     * @throws Exception
-     */
-
-    private <T> T genericReflectionMethod(Object param, Class<T> paramClass, Object objectType, Object methodname) throws Exception {
-        T obj = null;
-        Method method = null;
-        if (param != null) {
-            method = Class.forName(objectType.getClass().getName()).getDeclaredMethod(methodname.toString(), paramClass);
-            method.setAccessible(true);
-            obj = (T) method.invoke(objectType, param);
-        } else {
-            method = Class.forName(objectType.getClass().getName()).getDeclaredMethod(methodname.toString());
-            method.setAccessible(true);
-            obj = (T) method.invoke(objectType);
-        }
-        return obj;
-    }
-
-
-    /**
-     * Generic Reflection method to access private filed.
-     * 
-     * @param <T>
-     * 
-     * @param CSVRecordInfo
-     * @param brahmsSpecimenTransformer
-     * @param methodName
-     * 
-     * @return Object
-     * @throws Exception
-     */
-
-    private <T> void setPrivateField(Class<T> className, Object obj, String fieldName, Object filedValue) throws Exception {
-
-        Field field = className.getDeclaredField(fieldName);
-        field.setAccessible(true);
-        field.set(obj, filedValue);
-    }
-
-
-    /**
+     /**
      * Test method for {@link nl.naturalis.nba.etl.brahms.BrahmsSpecimenTransformer#doTransform()}.
      * 
      * @throws Exception
@@ -152,10 +105,10 @@ public class BrahmsSpecimenTransformerTest {
 
         BrahmsSpecimenTransformer brahmsSpecimenTransformer = new BrahmsSpecimenTransformer(etlStatistics);
 
-        setPrivateField(AbstractTransformer.class, brahmsSpecimenTransformer, "objectID", "L.3355550");
-        setPrivateField(AbstractTransformer.class, brahmsSpecimenTransformer, "input", record);
+        CommonReflectionUtil.setPrivateField(AbstractTransformer.class, brahmsSpecimenTransformer, "objectID", "L.3355550");
+        CommonReflectionUtil.setPrivateField(AbstractTransformer.class, brahmsSpecimenTransformer, "input", record);
 
-        Object returned = genericReflectionMethod(null, CSVRecordInfo.class, brahmsSpecimenTransformer, "doTransform");
+        Object returned = CommonReflectionUtil.genericReflectionMethod(null, CSVRecordInfo.class, brahmsSpecimenTransformer, "doTransform");
 
         List<Specimen> list = (List<Specimen>) returned;
 
@@ -218,10 +171,10 @@ public class BrahmsSpecimenTransformerTest {
 
         BrahmsSpecimenTransformer brahmsSpecimenTransformer = new BrahmsSpecimenTransformer(etlStatistics);
 
-        setPrivateField(AbstractTransformer.class, brahmsSpecimenTransformer, "objectID", "L.3355550");
-        setPrivateField(AbstractTransformer.class, brahmsSpecimenTransformer, "input", record);
+        CommonReflectionUtil.setPrivateField(AbstractTransformer.class, brahmsSpecimenTransformer, "objectID", "L.3355550");
+        CommonReflectionUtil.setPrivateField(AbstractTransformer.class, brahmsSpecimenTransformer, "input", record);
 
-        Object obj = genericReflectionMethod(record, CSVRecordInfo.class, brahmsSpecimenTransformer, "getGatheringEvent");
+        Object obj = CommonReflectionUtil.genericReflectionMethod(record, CSVRecordInfo.class, brahmsSpecimenTransformer, "getGatheringEvent");
         GatheringEvent ge = (GatheringEvent) obj;
 
         String expectedContinent = "Europe";
@@ -283,9 +236,9 @@ public class BrahmsSpecimenTransformerTest {
 
         BrahmsSpecimenTransformer brahmsSpecimenTransformer = new BrahmsSpecimenTransformer(etlStatistics);
 
-        setPrivateField(AbstractTransformer.class, brahmsSpecimenTransformer, "objectID", "L.3355550");
-        setPrivateField(AbstractTransformer.class, brahmsSpecimenTransformer, "input", record);
-        Object obj = genericReflectionMethod(record, CSVRecordInfo.class, brahmsSpecimenTransformer, "getSpecimenIdentification");
+        CommonReflectionUtil.setPrivateField(AbstractTransformer.class, brahmsSpecimenTransformer, "objectID", "L.3355550");
+        CommonReflectionUtil.setPrivateField(AbstractTransformer.class, brahmsSpecimenTransformer, "input", record);
+        Object obj = CommonReflectionUtil.genericReflectionMethod(record, CSVRecordInfo.class, brahmsSpecimenTransformer, "getSpecimenIdentification");
         SpecimenIdentification identification = (SpecimenIdentification) obj;
 
         String expectedGenus = "Rhododendron";
@@ -318,10 +271,10 @@ public class BrahmsSpecimenTransformerTest {
 
         BrahmsSpecimenTransformer brahmsSpecimenTransformer = new BrahmsSpecimenTransformer(etlStatistics);
 
-        setPrivateField(AbstractTransformer.class, brahmsSpecimenTransformer, "objectID", "L.3355550");
-        setPrivateField(AbstractTransformer.class, brahmsSpecimenTransformer, "input", record);
+        CommonReflectionUtil.setPrivateField(AbstractTransformer.class, brahmsSpecimenTransformer, "objectID", "L.3355550");
+        CommonReflectionUtil.setPrivateField(AbstractTransformer.class, brahmsSpecimenTransformer, "input", record);
 
-        Object obj = genericReflectionMethod(null, CSVRecordInfo.class, brahmsSpecimenTransformer, "getAssemblageID");
+        Object obj = CommonReflectionUtil.genericReflectionMethod(null, CSVRecordInfo.class, brahmsSpecimenTransformer, "getAssemblageID");
         String assembleId = (String) obj;
 
         String expectedAssembleID = "1993139@BRAHMS";
@@ -354,10 +307,10 @@ public class BrahmsSpecimenTransformerTest {
         when(record.get(BrahmsCsvField.SUFFIX, false)).thenReturn(" ");
 
         BrahmsSpecimenTransformer brahmsSpecimenTransformer = new BrahmsSpecimenTransformer(etlStatistics);
-        setPrivateField(AbstractTransformer.class, brahmsSpecimenTransformer, "objectID", "L.3355550");
-        setPrivateField(AbstractTransformer.class, brahmsSpecimenTransformer, "input", record);
+        CommonReflectionUtil.setPrivateField(AbstractTransformer.class, brahmsSpecimenTransformer, "objectID", "L.3355550");
+        CommonReflectionUtil.setPrivateField(AbstractTransformer.class, brahmsSpecimenTransformer, "input", record);
 
-        Object obj = genericReflectionMethod(null, CSVRecordInfo.class, brahmsSpecimenTransformer, "getCollectorsFieldNumber");
+        Object obj = CommonReflectionUtil.genericReflectionMethod(null, CSVRecordInfo.class, brahmsSpecimenTransformer, "getCollectorsFieldNumber");
         String actualCollectorsNumber = (String) obj;
 
         String expectedCollectionNumber = "Unknown  s.n. ";
@@ -386,11 +339,11 @@ public class BrahmsSpecimenTransformerTest {
         when(record.get(BrahmsCsvField.IMAGELIST)).thenReturn("http://medialib.naturalis.nl/file/id/L.3355550/format/large");
 
         BrahmsSpecimenTransformer brahmsSpecimenTransformer = new BrahmsSpecimenTransformer(etlStatistics);
-        setPrivateField(AbstractTransformer.class, brahmsSpecimenTransformer, "objectID", "L.3355550");
-        setPrivateField(AbstractTransformer.class, brahmsSpecimenTransformer, "input", record);
+        CommonReflectionUtil.setPrivateField(AbstractTransformer.class, brahmsSpecimenTransformer, "objectID", "L.3355550");
+        CommonReflectionUtil.setPrivateField(AbstractTransformer.class, brahmsSpecimenTransformer, "input", record);
 
 
-        Object obj = genericReflectionMethod(null, CSVRecordInfo.class, brahmsSpecimenTransformer, "getServiceAccessPoints");
+        Object obj = CommonReflectionUtil.genericReflectionMethod(null, CSVRecordInfo.class, brahmsSpecimenTransformer, "getServiceAccessPoints");
 
         List<ServiceAccessPoint> actualList = (List<ServiceAccessPoint>) obj;
 

@@ -7,7 +7,7 @@ import java.lang.reflect.Method;
 public class CommonReflectionUtil {
 
     /**
-     * Generic Reflection method
+     * Generic Reflection method for methods
      * 
      * @param CSVRecordInfo
      * @param brahmsMultiMediaTransformer
@@ -18,7 +18,7 @@ public class CommonReflectionUtil {
      */
 
 
-    public static <T> T genericReflectionMethod(Object param, Class<T> paramClass, Object objectType, Object methodname) throws Exception {
+    public static <T> T callMethod(Object param, Class<T> paramClass, Object objectType, Object methodname) throws Exception {
         T obj = null;
         Method method = null;
         if (param != null) {
@@ -34,7 +34,7 @@ public class CommonReflectionUtil {
     }
 
     /**
-     * Generic Reflection method to access private filed.
+     * Generic Reflection method to access private field.
      * 
      * @param <T>
      * 
@@ -46,7 +46,7 @@ public class CommonReflectionUtil {
      * @throws Exception
      */
 
-    public static <T> void setPrivateField(Class<T> className, Object obj, String fieldName, Object filedValue) throws Exception {
+    public static <T> void setField(Class<T> className, Object obj, String fieldName, Object filedValue) throws Exception {
 
         Field field = className.getDeclaredField(fieldName);
         field.setAccessible(true);

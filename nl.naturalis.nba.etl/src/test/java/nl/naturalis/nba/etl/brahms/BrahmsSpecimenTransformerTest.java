@@ -6,8 +6,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.List;
 import org.junit.After;
@@ -57,7 +55,7 @@ public class BrahmsSpecimenTransformerTest {
     @After
     public void tearDown() throws Exception {}
 
-     /**
+    /**
      * Test method for {@link nl.naturalis.nba.etl.brahms.BrahmsSpecimenTransformer#doTransform()}.
      * 
      * @throws Exception
@@ -238,7 +236,8 @@ public class BrahmsSpecimenTransformerTest {
 
         CommonReflectionUtil.setPrivateField(AbstractTransformer.class, brahmsSpecimenTransformer, "objectID", "L.3355550");
         CommonReflectionUtil.setPrivateField(AbstractTransformer.class, brahmsSpecimenTransformer, "input", record);
-        Object obj = CommonReflectionUtil.genericReflectionMethod(record, CSVRecordInfo.class, brahmsSpecimenTransformer, "getSpecimenIdentification");
+        Object obj =
+                CommonReflectionUtil.genericReflectionMethod(record, CSVRecordInfo.class, brahmsSpecimenTransformer, "getSpecimenIdentification");
         SpecimenIdentification identification = (SpecimenIdentification) obj;
 
         String expectedGenus = "Rhododendron";

@@ -6,6 +6,17 @@ import java.lang.reflect.Method;
 @SuppressWarnings("unchecked")
 public class CommonReflectionUtil {
 
+    /**
+     * Generic Reflection method
+     * 
+     * @param CSVRecordInfo
+     * @param brahmsMultiMediaTransformer
+     * @param methodName
+     * 
+     * @return Object
+     * @throws Exception
+     */
+
 
     public static <T> T genericReflectionMethod(Object param, Class<T> paramClass, Object objectType, Object methodname) throws Exception {
         T obj = null;

@@ -6,7 +6,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 /**
- * Small Java reflection utility class, useful and convenient for unit testing.
+ * Small Java reflection utility class, useful and convenient for unit testing. Especially targeted
+ * at manipulating private class members. May not be optimized enough for production code.
  */
 public class ReflectionUtil {
 

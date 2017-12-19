@@ -23,6 +23,7 @@ import nl.naturalis.nba.api.model.ServiceAccessPoint;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.etl.AbstractTransformer;
+import nl.naturalis.nba.etl.AllTests;
 import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.ETLStatistics;
 
@@ -40,7 +41,7 @@ public class BrahmsSpecimenTransformerTest {
     public void setUp() throws Exception {
 
         String logFile = "log4j2.xml";
-        URL logFileUrl = getClass().getResource(logFile);
+        URL logFileUrl = AllTests.class.getResource(logFile);
         String logFilePath = logFileUrl.getFile().toString();
         String dirPath = logFilePath.substring(0, logFilePath.lastIndexOf("/"));
         System.setProperty("nba.v2.conf.dir", dirPath);

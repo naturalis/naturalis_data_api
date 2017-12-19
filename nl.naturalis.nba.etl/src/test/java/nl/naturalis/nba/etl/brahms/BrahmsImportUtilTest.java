@@ -31,9 +31,8 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import nl.naturalis.nba.api.model.DefaultClassification;
 import nl.naturalis.nba.api.model.Monomial;
 import nl.naturalis.nba.api.model.ScientificName;
-import nl.naturalis.nba.etl.CSVRecordInfo;
-import nl.naturalis.nba.etl.brahms.BrahmsCsvField;
-import nl.naturalis.nba.etl.brahms.BrahmsImportUtil;;
+import nl.naturalis.nba.etl.AllTests;
+import nl.naturalis.nba.etl.CSVRecordInfo;;
 
 /**
  * Test class for BrahmsImportUtil.java
@@ -52,7 +51,7 @@ public class BrahmsImportUtilTest {
     public void setUp() throws Exception {
 
         String logFile = "log4j2.xml";
-        URL logFileUrl = getClass().getResource(logFile);
+        URL logFileUrl = AllTests.class.getResource(logFile);
         String logFilePath = logFileUrl.getFile().toString();
         String dirPath = logFilePath.substring(0, logFilePath.lastIndexOf("/"));
         System.setProperty("nba.v2.conf.dir", dirPath);

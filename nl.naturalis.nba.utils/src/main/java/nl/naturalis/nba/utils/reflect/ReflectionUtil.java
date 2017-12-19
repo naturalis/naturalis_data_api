@@ -5,15 +5,18 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+/**
+ * Small Java reflection utility class, useful and convenient for unit testing.
+ */
 public class ReflectionUtil {
 
   private ReflectionUtil() {}
 
   /**
    * Creates a new instance of the specified class invoking the constructor that takes the specified
-   * arguments. If any of the constructor arguments is a primitive type you <i>cannot</i> use this
-   * method. You will get a {@link NoSuchMethodException}. You must use
-   * {@link #newInstance(Class, Class[], Object...)} instead.
+   * arguments. The constructor may be private. If any of the constructor arguments is a primitive
+   * type you <i>cannot</i> use this method. You will get a {@link NoSuchMethodException}. You must
+   * use {@link #newInstance(Class, Class[], Object...)} instead.
    * 
    * @param cls The class of which to create a new instance
    * @param args The arguments to be passed to the constructor
@@ -34,8 +37,8 @@ public class ReflectionUtil {
 
   /**
    * Creates a new instance of the specified class invoking that constructor taking the specified
-   * arguments. The types of the constructor arguments are specified explicitly through the
-   * <code>paramTypes</code> parameter.
+   * arguments. The constructor may be private. The types of the constructor arguments are specified
+   * explicitly through the <code>paramTypes</code> parameter.
    * 
    * @param cls The class of which to create a new instance
    * @param paramTypes The types of the constructor arguments

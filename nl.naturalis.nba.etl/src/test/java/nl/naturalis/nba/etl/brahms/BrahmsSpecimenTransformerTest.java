@@ -93,10 +93,6 @@ public class BrahmsSpecimenTransformerTest {
      * @param methodName
      * 
      * @return Object
-     * @throws IllegalAccessException
-     * @throws IllegalArgumentException
-     * @throws SecurityException
-     * @throws NoSuchFieldException
      * @throws Exception
      */
 

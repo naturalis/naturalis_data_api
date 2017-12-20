@@ -20,6 +20,7 @@ import nl.naturalis.nba.utils.convert.Stringifier;
 /**
  * Test class for CollectionUtil.java
  */
+@SuppressWarnings({"static-method","cast"})
 public class CollectionUtilTest {
 
 
@@ -28,6 +29,7 @@ public class CollectionUtilTest {
      * 
      * Test to check if a collection is empty.
      */
+
     @Test
     public void testIsEmpty() {
 
@@ -76,7 +78,6 @@ public class CollectionUtilTest {
      * {@link Stringifier}.
      */
     @Test
-    @SuppressWarnings("unchecked")
     public void testStringifyCollectionWithOptionObjects() {
 
         List<Integer> ints = Arrays.asList(1, 2, 3, 4, 5);
@@ -164,7 +165,6 @@ public class CollectionUtilTest {
      * 
      */
     @Test
-    @SuppressWarnings("unchecked")
     public void testImplodeCollectionStingifierOptionalObjects() {
 
 

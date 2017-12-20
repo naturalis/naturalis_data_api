@@ -19,6 +19,7 @@ import org.mockito.Mockito;
 /**
  * Test class for IOUtil.java
  */
+@SuppressWarnings("static-method")
 public class IOUtilTest {
 
     /**

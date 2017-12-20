@@ -13,6 +13,7 @@ import static org.hamcrest.Matchers.lessThan;
 /**
  * Test class for ObjectUtilTest.java
  */
+@SuppressWarnings("static-method")
 public class ObjectUtilTest {
     /**
      * Test method for

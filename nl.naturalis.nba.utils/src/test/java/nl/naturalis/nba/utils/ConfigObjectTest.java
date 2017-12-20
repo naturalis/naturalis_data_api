@@ -24,7 +24,7 @@ import nl.naturalis.nba.utils.ConfigObject.PropertyNotSetException;
 /**
  * Test class for ConfigObject.java
  */
-
+@SuppressWarnings({"static-method","cast"})
 public class ConfigObjectTest {
 
     ConfigObject configObject;

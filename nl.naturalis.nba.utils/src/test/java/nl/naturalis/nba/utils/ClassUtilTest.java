@@ -12,7 +12,7 @@ import org.junit.Test;
 /**
  * Test class for ClassUtil.java
  */
-
+@SuppressWarnings("static-method")
 public class ClassUtilTest {
 
     /**
@@ -20,6 +20,7 @@ public class ClassUtilTest {
      * 
      * Test to check of whether or not the 1st class is, or extends, or implements of the 2nd class.
      */
+
     @Test
     public void testIsAClassOrInterface() {
 

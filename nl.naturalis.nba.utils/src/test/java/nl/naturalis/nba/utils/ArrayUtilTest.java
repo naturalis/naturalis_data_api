@@ -21,7 +21,7 @@ import nl.naturalis.nba.utils.convert.Translator;
 /**
  * Test class for ArryUtil.java
  */
-
+@SuppressWarnings({"static-method","cast"})
 public class ArrayUtilTest {
 
     /**
@@ -31,6 +31,7 @@ public class ArrayUtilTest {
      * Test to check conversion of primitive int array to Integer array.
      * 
      */
+
     @Test
     public void testBox_01() {
         int[] inputArray = {1, 2, 3, 4, 5, 6, 7};
@@ -100,7 +101,6 @@ public class ArrayUtilTest {
      * Stringifier , an optional Object[]
      */
     @Test
-    @SuppressWarnings("unchecked")
     public void testStringifyTArrayStringifierOptionalObjs() {
 
         Integer int1 = new Integer(1);
@@ -155,7 +155,6 @@ public class ArrayUtilTest {
      * Test to check the conversion of a collection object to an String array with using the specified {@link Stringifier}.
      */
     @Test
-    @SuppressWarnings("unchecked")
     public void testStringifyCollectionOfTStringifierOptionalObjs() {
 
         Integer int1 = new Integer(1);
@@ -390,7 +389,6 @@ public class ArrayUtilTest {
      * 
      */
     @Test
-    @SuppressWarnings("unchecked")
     public void testImplodeTArrayStringStringifierOfTObjectArray() {
 
         Integer[] testInput = {1, 2, 3, 4, 5};

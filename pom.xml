@@ -9,7 +9,7 @@
     <version>2.11-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>NBA</name>
+    <name>NBA Mother POM</name>
     <url>http://github.org/naturalis/naturalis_data_api</url>
 
     <scm>
@@ -31,12 +31,35 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-		<!-- Library dependencies Check for available updates: mvn versions:display-dependency-updates -->
+		<!-- Library dependencies -->
+        <!-- Check for updates: mvn versions:display-dependency-updates -->
         <jackson.version>2.8.5</jackson.version>
         <geojson.version>1.8</geojson.version>
         <apache-http-client.version>4.5.2</apache-http-client.version>
         <apache-commons-io.version>1.3.2</apache-commons-io.version>
         <apache-commons-text.version>1.1</apache-commons-text.version>
+        <apache-commons-csv.version>1.4</apache-commons-csv.version>
+        <apache-logging.version>2.7</apache-logging.version>
+        <apache-commons-compress.version>1.12</apache-commons-compress.version>
+        <osgi.version>4.3.1</osgi.version>
+        <com.lmax.disruptor.version>3.3.5</com.lmax.disruptor.version>
+        <com.conversantmedia.disruptor.version>1.2.8-JDK7</com.conversantmedia.disruptor.version>
+        <slf4j.version>1.7.21</slf4j.version>
+        <jctools.version>1.2.1</jctools.version>
+        <snakeyaml.version>1.15</snakeyaml.version>
+        <stax2.version>3.1.4</stax2.version>
+        <woodstox.version>5.0.2</woodstox.version>
+        <fusesource.version>1.13</fusesource.version>
+        <javax-mail.version>1.5.5</javax-mail.version>
+        <javax-activation.version>1.1</javax-activation.version>
+        <javax-persistence.version>2.1.0-RC2</javax-persistence.version>
+        <javax-jms.version>1.0.1.Final</javax-jms.version>
+        <kafka-clients.version>0.10.0.1</kafka-clients.version>
+        <lz4.version>1.3.0</lz4.version>
+        <snappy-java.version>1.1.2.6</snappy-java.version>
+        <jeromq.version>0.3.5</jeromq.version>
+        <com.beust.version>1.48</com.beust.version>
+
 
         <junit.version>4.12</junit.version>
         <hamcrest.version>1.3</hamcrest.version>
@@ -72,15 +95,13 @@
         <url>http://www.naturalis.nl</url>
     </organization>
 
-	<!-- issueManagement> <system></system> <url></url> </issueManagement -->
-
     <modules>
-        <module>nba-api</module>
-        <module>nba-utils</module>
-        <module>nba-common</module>
-        <module>nba-dao</module>
-        <module>nba-etl</module>
-        <module>nba-client</module>
+        <module>nl.naturalis.nba.api</module>
+        <module>nl.naturalis.nba.utils</module>
+        <module>nl.naturalis.nba.common</module>
+        <module>nl.naturalis.nba.dao</module>
+        <module>nl.naturalis.nba.etl</module>
+        <module>nl.naturalis.nba.client</module>
     </modules>
 
     <distributionManagement>
@@ -96,6 +117,8 @@
 
     <dependencyManagement>
         <dependencies>
+
+            <!-- JACKSON -->
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
@@ -112,10 +135,28 @@
                 <version>${jackson.version}</version>
             </dependency>
             <dependency>
+                <groupId>com.fasterxml.jackson.dataformat</groupId>
+                <artifactId>jackson-dataformat-yaml</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.dataformat</groupId>
+                <artifactId>jackson-dataformat-xml</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.module</groupId>
+                <artifactId>jackson-module-jaxb-annotations</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+
+            <dependency>
                 <groupId>de.grundid.opendatalab</groupId>
                 <artifactId>geojson-jackson</artifactId>
                 <version>${geojson.version}</version>
             </dependency>
+            
+            <!-- APACHE -->
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>httpclient</artifactId>
@@ -130,8 +171,119 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-text</artifactId>
                 <version>${apache-commons-text.version}</version>
-            </dependency>                      
-            
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-compress</artifactId>
+                <version>${apache-commons-compress.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-csv</artifactId>
+                <version>${apache-commons-csv.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-api</artifactId>
+                <version>${apache-logging.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-core</artifactId>
+                <version>${apache-logging.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jctools</groupId>
+                <artifactId>jctools-core</artifactId>
+                <version>${jctools.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.yaml</groupId>
+                <artifactId>snakeyaml</artifactId>
+                <version>${snakeyaml.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.codehaus.woodstox</groupId>
+                <artifactId>stax2-api</artifactId>
+                <version>${stax2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.woodstox</groupId>
+                <artifactId>woodstox-core</artifactId>
+                <version>${woodstox.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.lmax</groupId>
+                <artifactId>disruptor</artifactId>
+                <version>${com.lmax.disruptor.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.conversantmedia</groupId>
+                <artifactId>disruptor</artifactId>
+                <version>${com.conversantmedia.disruptor.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.osgi</groupId>
+                <artifactId>org.osgi.core</artifactId>
+                <version>${osgi.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.fusesource.jansi</groupId>
+                <artifactId>jansi</artifactId>
+                <version>${fusesource.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.mail</groupId>
+                <artifactId>javax.mail</artifactId>
+                <version>${javax-mail.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.activation</groupId>
+                <artifactId>activation</artifactId>
+                <version>${javax-activation.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>javax.persistence</artifactId>
+                <version>${javax-persistence.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.spec.javax.jms</groupId>
+                <artifactId>jboss-jms-api_1.1_spec</artifactId>
+                <version>${javax-jms.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.kafka</groupId>
+                <artifactId>kafka-clients</artifactId>
+                <version>${kafka-clients.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.jpountz.lz4</groupId>
+                <artifactId>lz4</artifactId>
+                <version>${lz4.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.xerial.snappy</groupId>
+                <artifactId>snappy-java</artifactId>
+                <version>${snappy-java.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.zeromq</groupId>
+                <artifactId>jeromq</artifactId>
+                <version>${jeromq.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.beust</groupId>
+                <artifactId>jcommander</artifactId>
+                <version>${com.beust.version}</version>
+            </dependency>
+                       
 
 			<!-- TEST -->
             <dependency>
@@ -285,7 +437,7 @@
                         <forkCount>1</forkCount>
                         <reuseForks>false</reuseForks>
                         <redirectTestOutputToFile>true</redirectTestOutputToFile>
-                        <argLine>-Xmx256m</argLine>
+                        <argLine>-Xmx256m -Dnba.v2.conf.dir=${nba-test.conf.dir} -Dlog4jConfigurationFile=${nba-test.conf.dir}/log4j2-test.xml </argLine>                      
                         <runOrder>random</runOrder>
 
                         <includes>
@@ -295,9 +447,8 @@
                             <include>**/*TestSuite.java</include>
                         </includes>
                         <excludes>
-							<!-- exlude all mapper tests which are jointly executed by the MapperTestSuite 
-								instead -->
-							<!-- DISABLE FOR NOW <exclude>**/*MapperTest.java</exclude> -->
+                            <!-- Still no solid way to run test classes of Java client -->
+                            <exclude>**/nl.naturalis.nba.client.*.java</exclude>
                         </excludes>
                     </configuration>
                 </plugin>
@@ -334,11 +485,9 @@
             </plugin>
             <plugin>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>${maven-jar-plugin.version}</version>
             </plugin>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>${maven-compiler-plugin.version}</version>
                 <configuration>
                     <source>${jdkLevel}</source>
                     <target>${jdkLevel}</target>
@@ -346,7 +495,6 @@
             </plugin>
             <plugin>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>${maven-source-plugin.version}</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
@@ -360,12 +508,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
-                <version>${maven-surefire-plugin.version}</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>${maven-surefire-plugin.version}</version>
             </plugin>
         </plugins>
     </build>

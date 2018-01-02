@@ -9,7 +9,7 @@
         <version>2.11-SNAPSHOT</version>
     </parent>
 
-    <artifactId>nba-utils</artifactId>
+    <artifactId>nl.naturalis.nba.utils</artifactId>
     <name>NBA utils</name>
 
     <dependencies>

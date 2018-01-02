@@ -9,3 +9,6 @@ nl.naturalis.nda.domain/build
 nl.naturalis.nda.elasticsearch.load/data
 nl.naturalis.nda.elasticsearch.load/resumption-token
 nl.naturalis.nda.elasticsearch.load/build
+/target/
+/.project
+/.settings/

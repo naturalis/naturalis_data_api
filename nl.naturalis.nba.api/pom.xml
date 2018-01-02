@@ -9,7 +9,7 @@
         <version>2.11-SNAPSHOT</version>
     </parent>
     
-    <artifactId>nba-api</artifactId>
+    <artifactId>nl.naturalis.nba.api</artifactId>
     <name>NBA API</name>
 
     <dependencies>

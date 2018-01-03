@@ -59,7 +59,6 @@ public class FileUtilTest {
 
         File actual = FileUtil.newFile(fileDir, "TestFile.txt");
         assertNotNull(actual);
-        assertTrue(actual instanceof File);
         assertEquals(filePath, actual.getAbsolutePath());
         assertEquals("TestFile.txt", actual.getName());
 

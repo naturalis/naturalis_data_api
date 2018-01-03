@@ -126,7 +126,7 @@ public class FileUtilTest {
 
         String expectedDir = "/xml";
         File[] subDirectories_01 = FileUtil.getSubdirectories(fileDir);
-        String actual = subDirectories_01[0].toString().substring(subDirectories_01[0].toString().lastIndexOf("/"));
+        String actual = subDirectories_01[1].toString().substring(subDirectories_01[0].toString().lastIndexOf("/"));
         assertNotNull(subDirectories_01);
         assertEquals(expectedDir, actual);
 

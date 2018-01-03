@@ -40,7 +40,7 @@ import nl.naturalis.nba.etl.CSVRecordInfo;;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(BrahmsImportUtil.class)
 @PowerMockIgnore("javax.management.*")
-@SuppressWarnings({"static-method","static-access", "unchecked"})
+@SuppressWarnings({"static-method","static-access"})
 public class BrahmsImportUtilTest {
 
 

@@ -31,7 +31,6 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import nl.naturalis.nba.api.model.DefaultClassification;
 import nl.naturalis.nba.api.model.Monomial;
 import nl.naturalis.nba.api.model.ScientificName;
-import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.etl.AllTests;
 import nl.naturalis.nba.etl.CSVRecordInfo;;
 
@@ -41,368 +40,371 @@ import nl.naturalis.nba.etl.CSVRecordInfo;;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(BrahmsImportUtil.class)
 @PowerMockIgnore("javax.management.*")
-@SuppressWarnings({"static-method","static-access"})
+@SuppressWarnings({"static-method", "static-access"})
 public class BrahmsImportUtilTest {
 
+  /**
+   * @throws java.lang.Exception
+   */
+  @Before
+  public void setUp() throws Exception {
 
-    /**
-     * @throws java.lang.Exception
-     */
-    @Before
-    public void setUp() throws Exception {
+    String logFile = "log4j2.xml";
+    URL logFileUrl = AllTests.class.getResource(logFile);
+    String logFilePath = logFileUrl.getFile().toString();
+    String dirPath = logFilePath.substring(0, logFilePath.lastIndexOf("/"));
+    System.setProperty("nba.v2.conf.dir", dirPath);
+    System.setProperty("brahms.data.dir", dirPath);
+    System.setProperty("log4j.configurationFile", logFilePath);
+  }
 
-        String logFile = "log4j2.xml";
-        URL logFileUrl = AllTests.class.getResource(logFile);
-        String logFilePath = logFileUrl.getFile().toString();
-        String dirPath = logFilePath.substring(0, logFilePath.lastIndexOf("/"));
-        System.setProperty("nba.v2.conf.dir", dirPath);
-        System.setProperty("brahms.data.dir", dirPath);
-        System.setProperty("log4j.configurationFile", logFilePath);
-    }
+  /**
+   * @throws java.lang.Exception
+   */
+  @After
+  public void tearDown() throws Exception {
 
-    /**
-     * @throws java.lang.Exception
-     */
-    @After
-    public void tearDown() throws Exception {
+    BrahmsImportUtil.removeBackupExtension();// clears the backup extension after each run
+  }
 
-        BrahmsImportUtil.removeBackupExtension();// clears the backup extension after each run
-    }
+  /**
+   * Test method for {@link nl.naturalis.nba.etl.brahms.BrahmsImportUtil#getCsvFiles()}.
+   * 
+   * Test for the method getCSV files to verify CSV files are read from the local system
+   * 
+   * @throws Exception
+   */
+  @Test
+  public void testGetCsvFiles() throws Exception {
 
-    /**
-     * Test method for {@link nl.naturalis.nba.etl.brahms.BrahmsImportUtil#getCsvFiles()}.
-     * 
-     * Test for the method getCSV files to verify CSV files are read from the local system
-     * 
-     * @throws Exception
-     */
-    @Test
-    public void testGetCsvFiles() throws Exception {
+    BrahmsImportUtil brahmsImportUtil = new BrahmsImportUtil();
+    File[] actualFiles = brahmsImportUtil.getCsvFiles();
+    String file = Arrays.asList(actualFiles).stream().findFirst().get().getName();
+    assertNotNull(file);
+    assertEquals(".CSV", (file.substring(file.indexOf("."))));
+  }
 
-        BrahmsImportUtil brahmsImportUtil = new BrahmsImportUtil();
-        File[] actualFiles = brahmsImportUtil.getCsvFiles();
-        String file = Arrays.asList(actualFiles).stream().findFirst().get().getName();
-        assertNotNull(file);
-        assertEquals(".CSV", (file.substring(file.indexOf("."))));
-    }
+  /**
+   * Test method for {@link nl.naturalis.nba.etl.brahms.BrahmsImportUtil#backup()}.
+   * 
+   * @throws Exception
+   * 
+   *         Test to verify backup() method is called.
+   */
 
-    /**
-     * Test method for {@link nl.naturalis.nba.etl.brahms.BrahmsImportUtil#backup()}.
-     * 
-     * @throws Exception
-     * 
-     *         Test to verify backup() method is called.
-     */
+  @Test
+  public void testBackup() throws Exception {
 
-    @Test
-    public void testBackup() throws Exception {
+    BrahmsImportUtil brahmsImportUtilSpy = PowerMockito.spy(new BrahmsImportUtil());
+    brahmsImportUtilSpy.backup();
+    Mockito.verify(brahmsImportUtilSpy, Mockito.times(1)).backup();
 
-        BrahmsImportUtil brahmsImportUtilSpy = PowerMockito.spy(new BrahmsImportUtil());
-        brahmsImportUtilSpy.backup();
-        Mockito.verify(brahmsImportUtilSpy, Mockito.times(1)).backup();
+  }
 
-    }
+  /**
+   * Test method for {@link nl.naturalis.nba.etl.brahms.BrahmsImportUtil#removeBackupExtension()}.
+   * 
+   * @throws Exception
+   * 
+   *         Test to verify removeExtension() method is called.
+   */
+  @Test
+  public void testRemoveBackupExtension() throws Exception {
+    PowerMockito.mockStatic(BrahmsImportUtil.class);
+    BrahmsImportUtil.removeBackupExtension();
+    Mockito.verify(BrahmsImportUtil.class, times(1));
+    BrahmsImportUtil.removeBackupExtension();
+  }
 
-    /**
-     * Test method for {@link nl.naturalis.nba.etl.brahms.BrahmsImportUtil#removeBackupExtension()}.
-     * 
-     * @throws Exception
-     * 
-     *         Test to verify removeExtension() method is called.
-     */
-    @Test
-    public void testRemoveBackupExtension() throws Exception {
-        PowerMockito.mockStatic(BrahmsImportUtil.class);
-        BrahmsImportUtil.removeBackupExtension();
-        Mockito.verify(BrahmsImportUtil.class, times(1));
-        BrahmsImportUtil.removeBackupExtension();
-    }
+  /**
+   * Test method for
+   * {@link nl.naturalis.nba.etl.brahms.BrahmsImportUtil#getScientificName(nl.naturalis.nba.etl.CSVRecordInfo)}.
+   * 
+   * Test to verify getScientificName method returns the expected {@link ScientificName} object
+   */
+  @PrepareForTest(CSVRecordInfo.class)
+  @Test
+  public void testGetScientificName_01() {
 
+    CSVRecordInfo<BrahmsCsvField> record = PowerMockito.mock(CSVRecordInfo.class);
 
-    /**
-     * Test method for
-     * {@link nl.naturalis.nba.etl.brahms.BrahmsImportUtil#getScientificName(nl.naturalis.nba.etl.CSVRecordInfo)}.
-     * 
-     *  Test to verify getScientificName method returns the expected {@link ScientificName} object
-     */
-    @PrepareForTest(CSVRecordInfo.class)
-    @Test
-    public void testGetScientificName_01() {
+    when(record.get(SPECIES)).thenReturn("Rhododendron ferrugineum L.");
+    when(record.get(AUTHOR2)).thenReturn("L.");
+    when(record.get(GENUS)).thenReturn("Rhododendron");
+    when(record.get(SP1)).thenReturn("ferrugineum");
+    when(record.get(RANK2)).thenReturn("");
+    when(record.get(SP2)).thenReturn("");
 
-        CSVRecordInfo<BrahmsCsvField> record = PowerMockito.mock(CSVRecordInfo.class);
+    ScientificName expected = new ScientificName();
+    expected.setFullScientificName("Rhododendron ferrugineum L.");
+    expected.setAuthorshipVerbatim("L.");
+    expected.setGenusOrMonomial("Rhododendron");
+    expected.setSpecificEpithet("ferrugineum");
+    expected.setInfraspecificMarker("");
+    expected.setInfraspecificEpithet("");
 
-        when(record.get(SPECIES)).thenReturn("Rhododendron ferrugineum L.");
-        when(record.get(AUTHOR2)).thenReturn("L.");
-        when(record.get(GENUS)).thenReturn("Rhododendron");
-        when(record.get(SP1)).thenReturn("ferrugineum");
-        when(record.get(RANK2)).thenReturn("");
-        when(record.get(SP2)).thenReturn("");
+    ScientificName actual = BrahmsImportUtil.getScientificName(record);
+    assertNotNull(actual);
+    assertEquals(expected.getFullScientificName(), actual.getFullScientificName());
 
-        ScientificName expected = new ScientificName();
-        expected.setFullScientificName("Rhododendron ferrugineum L.");
-        expected.setAuthorshipVerbatim("L.");
-        expected.setGenusOrMonomial("Rhododendron");
-        expected.setSpecificEpithet("ferrugineum");
-        expected.setInfraspecificMarker("");
-        expected.setInfraspecificEpithet("");
+  }
 
-        ScientificName actual = BrahmsImportUtil.getScientificName(record);
-        assertNotNull(actual);
-        assertEquals(expected.getFullScientificName(), actual.getFullScientificName());
+  /**
+   * Test method for
+   * {@link nl.naturalis.nba.etl.brahms.BrahmsImportUtil#getScientificName(nl.naturalis.nba.etl.CSVRecordInfo)}.
+   * 
+   * Unit test to get the verify the {@link ScientificName} object when SPECIES field is null
+   */
+  @PrepareForTest(CSVRecordInfo.class)
+  @Test
+  public void testGetScientificName_02() {
 
-    }
+    CSVRecordInfo<BrahmsCsvField> record = PowerMockito.mock(CSVRecordInfo.class);
 
-    /**
-     * Test method for
-     * {@link nl.naturalis.nba.etl.brahms.BrahmsImportUtil#getScientificName(nl.naturalis.nba.etl.CSVRecordInfo)}.
-     * 
-     * Unit test to get the verify the {@link ScientificName} object when SPECIES field is null
-     */
-    @PrepareForTest(CSVRecordInfo.class)
-    @Test
-    public void testGetScientificName_02() {
+    when(record.get(SPECIES)).thenReturn(null);
+    when(record.get(AUTHOR2)).thenReturn("L.");
+    when(record.get(GENUS)).thenReturn("Rhododendron");
+    when(record.get(SP1)).thenReturn("ferrugineum");
+    when(record.get(RANK2)).thenReturn("");
+    when(record.get(SP2)).thenReturn("");
 
-        CSVRecordInfo<BrahmsCsvField> record = PowerMockito.mock(CSVRecordInfo.class);
+    ScientificName expected = new ScientificName();
+    expected.setFullScientificName("Rhododendron ferrugineum   (L.)");
+    expected.setAuthorshipVerbatim("L.");
+    expected.setGenusOrMonomial("Rhododendron");
+    expected.setSpecificEpithet("ferrugineum");
+    expected.setScientificNameGroup("rhododendron ferrugineum ");
+    expected.setInfraspecificMarker("");
+    expected.setInfraspecificEpithet("");
 
-        when(record.get(SPECIES)).thenReturn(null);
-        when(record.get(AUTHOR2)).thenReturn("L.");
-        when(record.get(GENUS)).thenReturn("Rhododendron");
-        when(record.get(SP1)).thenReturn("ferrugineum");
-        when(record.get(RANK2)).thenReturn("");
-        when(record.get(SP2)).thenReturn("");
+    ScientificName actual = BrahmsImportUtil.getScientificName(record);
+    assertNotNull(actual);
+    assertEquals(expected.getFullScientificName(), actual.getFullScientificName());
 
-        ScientificName expected = new ScientificName();
-        expected.setFullScientificName("Rhododendron ferrugineum   (L.)");
-        expected.setAuthorshipVerbatim("L.");
-        expected.setGenusOrMonomial("Rhododendron");
-        expected.setSpecificEpithet("ferrugineum");
-        expected.setScientificNameGroup("rhododendron ferrugineum ");
-        expected.setInfraspecificMarker("");
-        expected.setInfraspecificEpithet("");
+  }
 
-        ScientificName actual = BrahmsImportUtil.getScientificName(record);
-        assertNotNull(actual);
-        assertEquals(expected.getFullScientificName(), actual.getFullScientificName());
+  /**
+   * Test method for
+   * {@link nl.naturalis.nba.etl.brahms.BrahmsImportUtil#getDefaultClassification(nl.naturalis.nba.etl.CSVRecordInfo, nl.naturalis.nba.api.model.ScientificName)}.
+   * 
+   * Test to verify the getDefault Classification to see if the expcted
+   * {@link DefaultClassification} object is returned
+   * 
+   */
+  @PrepareForTest(CSVRecordInfo.class)
+  @Test
+  public void testGetDefaultClassification() {
 
-    }
+    String expectedGenus = "Rhododendron";
+    String expectedFamilyname = "Plantae";
 
-    /**
-     * Test method for
-     * {@link nl.naturalis.nba.etl.brahms.BrahmsImportUtil#getDefaultClassification(nl.naturalis.nba.etl.CSVRecordInfo, nl.naturalis.nba.api.model.ScientificName)}.
-     * 
-     * Test to verify the getDefault Classification to see if the expcted {@link DefaultClassification} object is returned 
-     * 
-     */
-    @PrepareForTest(CSVRecordInfo.class)
-    @Test
-    public void testGetDefaultClassification() {
+    CSVRecordInfo<BrahmsCsvField> record = PowerMockito.mock(CSVRecordInfo.class);
 
-        String expectedGenus = "Rhododendron";
-        String expectedFamilyname = "Plantae";
+    when(record.get(SPECIES)).thenReturn(null);
+    when(record.get(AUTHOR2)).thenReturn("L.");
+    when(record.get(GENUS)).thenReturn("Rhododendron");
+    when(record.get(SP1)).thenReturn("ferrugineum");
+    when(record.get(RANK2)).thenReturn("");
+    when(record.get(SP2)).thenReturn("");
 
-        CSVRecordInfo<BrahmsCsvField> record = PowerMockito.mock(CSVRecordInfo.class);
+    ScientificName scientificName = new ScientificName();
+    scientificName.setFullScientificName("Rhododendron ferrugineum   (L.)");
+    scientificName.setAuthorshipVerbatim("L.");
+    scientificName.setGenusOrMonomial("Rhododendron");
+    scientificName.setSpecificEpithet("ferrugineum");
+    scientificName.setScientificNameGroup("rhododendron ferrugineum ");
+    scientificName.setInfraspecificMarker("");
+    scientificName.setInfraspecificEpithet("");
 
-        when(record.get(SPECIES)).thenReturn(null);
-        when(record.get(AUTHOR2)).thenReturn("L.");
-        when(record.get(GENUS)).thenReturn("Rhododendron");
-        when(record.get(SP1)).thenReturn("ferrugineum");
-        when(record.get(RANK2)).thenReturn("");
-        when(record.get(SP2)).thenReturn("");
+    DefaultClassification classification =
+        BrahmsImportUtil.getDefaultClassification(record, scientificName);
+    assertNotNull(classification);
+    assertEquals(expectedGenus, classification.getGenus());
+    assertEquals(expectedFamilyname, classification.getKingdom());
 
-        ScientificName scientificName = new ScientificName();
-        scientificName.setFullScientificName("Rhododendron ferrugineum   (L.)");
-        scientificName.setAuthorshipVerbatim("L.");
-        scientificName.setGenusOrMonomial("Rhododendron");
-        scientificName.setSpecificEpithet("ferrugineum");
-        scientificName.setScientificNameGroup("rhododendron ferrugineum ");
-        scientificName.setInfraspecificMarker("");
-        scientificName.setInfraspecificEpithet("");
+  }
 
-        DefaultClassification classification = BrahmsImportUtil.getDefaultClassification(record, scientificName);
-        assertNotNull(classification);
-        assertEquals(expectedGenus, classification.getGenus());
-        assertEquals(expectedFamilyname, classification.getKingdom());
+  /**
+   * Test method for
+   * {@link nl.naturalis.nba.etl.brahms.BrahmsImportUtil#getSystemClassification(nl.naturalis.nba.api.model.DefaultClassification)}.
+   * 
+   * Test to verify the testGetSystemClassification() returns the expected List<@link Monomial}>
+   */
+  @PrepareForTest(CSVRecordInfo.class)
+  @Test
+  public void testGetSystemClassification() {
 
-    }
+    List<Monomial> expectedList = new ArrayList<>();
+    Monomial monomial_1 = new Monomial();
+    monomial_1.setName("Plantae");
+    monomial_1.setRank("kingdom");
+    expectedList.add(monomial_1);
+    Monomial monomial_2 = new Monomial();
+    monomial_2.setName("Rhododendron");
+    monomial_2.setRank("genus");
+    expectedList.add(monomial_2);
+    Monomial monomial_3 = new Monomial();
+    monomial_3.setName("ferrugineum");
+    monomial_3.setRank("species");
+    expectedList.add(monomial_3);
+    Monomial monomial_4 = new Monomial();
+    monomial_4.setName("");
+    monomial_4.setRank("subspecies");
+    expectedList.add(monomial_4);
 
-    /**
-     * Test method for
-     * {@link nl.naturalis.nba.etl.brahms.BrahmsImportUtil#getSystemClassification(nl.naturalis.nba.api.model.DefaultClassification)}.
-     * 
-     * Test to verify the testGetSystemClassification() returns the expected List<@link Monomial}> 
-     */
-    @PrepareForTest(CSVRecordInfo.class)
-    @Test
-    public void testGetSystemClassification() {
+    CSVRecordInfo<BrahmsCsvField> record = PowerMockito.mock(CSVRecordInfo.class);
 
-        List<Monomial> expectedList = new ArrayList<>();
-        Monomial monomial_1 = new Monomial();
-        monomial_1.setName("Plantae");
-        monomial_1.setRank("kingdom");
-        expectedList.add(monomial_1);
-        Monomial monomial_2 = new Monomial();
-        monomial_2.setName("Rhododendron");
-        monomial_2.setRank("genus");
-        expectedList.add(monomial_2);
-        Monomial monomial_3 = new Monomial();
-        monomial_3.setName("ferrugineum");
-        monomial_3.setRank("species");
-        expectedList.add(monomial_3);
-        Monomial monomial_4 = new Monomial();
-        monomial_4.setName("");
-        monomial_4.setRank("subspecies");
-        expectedList.add(monomial_4);
+    when(record.get(SPECIES)).thenReturn("Rhododendron ferrugineum L.");
+    when(record.get(AUTHOR2)).thenReturn("L.");
+    when(record.get(GENUS)).thenReturn("Rhododendron");
+    when(record.get(SP1)).thenReturn("ferrugineum");
+    when(record.get(RANK2)).thenReturn("");
+    when(record.get(SP2)).thenReturn("");
 
-        CSVRecordInfo<BrahmsCsvField> record = PowerMockito.mock(CSVRecordInfo.class);
+    ScientificName scientificName = new ScientificName();
+    scientificName.setFullScientificName("Rhododendron ferrugineum   (L.)");
+    scientificName.setAuthorshipVerbatim("L.");
+    scientificName.setGenusOrMonomial("Rhododendron");
+    scientificName.setSpecificEpithet("ferrugineum");
+    scientificName.setScientificNameGroup("rhododendron ferrugineum ");
+    scientificName.setInfraspecificMarker("");
+    scientificName.setInfraspecificEpithet("");
 
-        when(record.get(SPECIES)).thenReturn("Rhododendron ferrugineum L.");
-        when(record.get(AUTHOR2)).thenReturn("L.");
-        when(record.get(GENUS)).thenReturn("Rhododendron");
-        when(record.get(SP1)).thenReturn("ferrugineum");
-        when(record.get(RANK2)).thenReturn("");
-        when(record.get(SP2)).thenReturn("");
+    DefaultClassification classification =
+        BrahmsImportUtil.getDefaultClassification(record, scientificName);
+    List<Monomial> list = BrahmsImportUtil.getSystemClassification(classification);
+    Map<String, String> actualResult =
+        list.stream().collect(Collectors.toMap(Monomial::getName, Monomial::getRank));
+    Map<String, String> expectedResult =
+        expectedList.stream().collect(Collectors.toMap(Monomial::getName, Monomial::getRank));
 
-        ScientificName scientificName = new ScientificName();
-        scientificName.setFullScientificName("Rhododendron ferrugineum   (L.)");
-        scientificName.setAuthorshipVerbatim("L.");
-        scientificName.setGenusOrMonomial("Rhododendron");
-        scientificName.setSpecificEpithet("ferrugineum");
-        scientificName.setScientificNameGroup("rhododendron ferrugineum ");
-        scientificName.setInfraspecificMarker("");
-        scientificName.setInfraspecificEpithet("");
+    assertNotNull(list);
+    assertEquals(4, list.size());
+    assertEquals(expectedResult, actualResult);
+    assertArrayEquals(actualResult.keySet().toArray(), expectedResult.keySet().toArray());
+    assertArrayEquals(actualResult.values().toArray(), expectedResult.values().toArray());
 
-        DefaultClassification classification = BrahmsImportUtil.getDefaultClassification(record, scientificName);
-        List<Monomial> list = BrahmsImportUtil.getSystemClassification(classification);
-        Map<String, String> actualResult = list.stream().collect(Collectors.toMap(Monomial::getName, Monomial::getRank));
-        Map<String, String> expectedResult = expectedList.stream().collect(Collectors.toMap(Monomial::getName, Monomial::getRank));
+  }
 
-        assertNotNull(list);
-        assertEquals(4, list.size());
-        assertEquals(expectedResult, actualResult);
-        assertArrayEquals(actualResult.keySet().toArray(), expectedResult.keySet().toArray());
-        assertArrayEquals(actualResult.values().toArray(), expectedResult.values().toArray());
+  /**
+   * Test method for
+   * {@link nl.naturalis.nba.etl.brahms.BrahmsImportUtil#getAuthor(nl.naturalis.nba.etl.CSVRecordInfo)}.
+   * 
+   * @throws Exception
+   * 
+   *         Test to check the private getAuthor() returns the correct author name
+   */
+  @PrepareForTest(CSVRecordInfo.class)
+  @Test
+  public void testGetAuthor() throws Exception {
 
-    }
+    CSVRecordInfo<BrahmsCsvField> record = PowerMockito.mock(CSVRecordInfo.class);
+    ScientificName expected = new ScientificName();
 
-    /**
-     * Test method for
-     * {@link nl.naturalis.nba.etl.brahms.BrahmsImportUtil#getAuthor(nl.naturalis.nba.etl.CSVRecordInfo)}.
-     * 
-     * @throws Exception
-     * 
-     *         Test to check the private getAuthor() returns the correct author name
-     */
-    @PrepareForTest(CSVRecordInfo.class)
-    @Test
-    public void testGetAuthor() throws Exception {
+    when(record.get(SPECIES)).thenReturn("Rhododendron ferrugineum L.");
+    when(record.get(AUTHOR2)).thenReturn("L.");
+    when(record.get(GENUS)).thenReturn("Rhododendron");
+    when(record.get(SP1)).thenReturn("ferrugineum");
+    when(record.get(RANK2)).thenReturn("");
+    when(record.get(SP2)).thenReturn("");
 
-        CSVRecordInfo<BrahmsCsvField> record = PowerMockito.mock(CSVRecordInfo.class);
-        ScientificName expected = new ScientificName();
+    BrahmsImportUtil brahmsImportUtilSpy = PowerMockito.spy(new BrahmsImportUtil());
+    PowerMockito.when(brahmsImportUtilSpy, "getAuthor", record).thenReturn("L.");
+    expected = BrahmsImportUtil.getScientificName(record);
+    expected.getAuthorshipVerbatim();
 
-        when(record.get(SPECIES)).thenReturn("Rhododendron ferrugineum L.");
-        when(record.get(AUTHOR2)).thenReturn("L.");
-        when(record.get(GENUS)).thenReturn("Rhododendron");
-        when(record.get(SP1)).thenReturn("ferrugineum");
-        when(record.get(RANK2)).thenReturn("");
-        when(record.get(SP2)).thenReturn("");
+    assertNotNull(expected);
+    assertEquals("L.", expected.getAuthorshipVerbatim());
 
-        BrahmsImportUtil brahmsImportUtilSpy = PowerMockito.spy(new BrahmsImportUtil());
-        PowerMockito.when(brahmsImportUtilSpy, "getAuthor", record).thenReturn("L.");
-        expected = BrahmsImportUtil.getScientificName(record);
-        expected.getAuthorshipVerbatim();
+  }
 
-        assertNotNull(expected);
-        assertEquals("L.", expected.getAuthorshipVerbatim());
+  /**
+   * Test method for
+   * {@link nl.naturalis.nba.etl.brahms.BrahmsImportUtil#getAuthor(nl.naturalis.nba.etl.CSVRecordInfo)}.
+   * 
+   * @throws Exception
+   * 
+   *         Test to check the private getInfraspecificMarker() returns the correct
+   *         InfraspecificMarker.
+   */
+  @PrepareForTest(CSVRecordInfo.class)
+  @Test
+  public void testGetInfraspecificMarker() throws Exception {
 
-    }
+    CSVRecordInfo<BrahmsCsvField> record = PowerMockito.mock(CSVRecordInfo.class);
+    ScientificName expected = new ScientificName();
 
+    when(record.get(SPECIES)).thenReturn("Rhododendron ferrugineum L.");
+    when(record.get(AUTHOR2)).thenReturn("L.");
+    when(record.get(GENUS)).thenReturn("Rhododendron");
+    when(record.get(SP1)).thenReturn("ferrugineum");
+    when(record.get(RANK2)).thenReturn("testInfraSpecifc");
+    when(record.get(SP2)).thenReturn("");
 
-    /**
-     * Test method for
-     * {@link nl.naturalis.nba.etl.brahms.BrahmsImportUtil#getAuthor(nl.naturalis.nba.etl.CSVRecordInfo)}.
-     * 
-     * @throws Exception
-     * 
-     *         Test to check the private getInfraspecificMarker() returns the correct
-     *         InfraspecificMarker.
-     */
-    @PrepareForTest(CSVRecordInfo.class)
-    @Test
-    public void testGetInfraspecificMarker() throws Exception {
+    BrahmsImportUtil brahmsImportUtilSpy = PowerMockito.spy(new BrahmsImportUtil());
+    PowerMockito.when(brahmsImportUtilSpy, "getInfraspecificMarker", record)
+        .thenReturn("testInfraSpecifc");
+    expected = BrahmsImportUtil.getScientificName(record);
+    assertNotNull(expected);
+    assertEquals("testInfraSpecifc", expected.getInfraspecificMarker());
 
-        CSVRecordInfo<BrahmsCsvField> record = PowerMockito.mock(CSVRecordInfo.class);
-        ScientificName expected = new ScientificName();
+  }
 
-        when(record.get(SPECIES)).thenReturn("Rhododendron ferrugineum L.");
-        when(record.get(AUTHOR2)).thenReturn("L.");
-        when(record.get(GENUS)).thenReturn("Rhododendron");
-        when(record.get(SP1)).thenReturn("ferrugineum");
-        when(record.get(RANK2)).thenReturn("testInfraSpecifc");
-        when(record.get(SP2)).thenReturn("");
+  /**
+   * Test method for
+   * {@link nl.naturalis.nba.etl.brahms.BrahmsImportUtil#getAuthor(nl.naturalis.nba.etl.CSVRecordInfo)}.
+   * 
+   * @throws Exception
+   * 
+   *         Test to check the private getInfraspecificMarker() returns the correct
+   *         InfraspecificMarker.
+   */
+  @PrepareForTest(CSVRecordInfo.class)
+  @Test
+  public void testGetInfraspecificEpithet() throws Exception {
 
-        BrahmsImportUtil brahmsImportUtilSpy = PowerMockito.spy(new BrahmsImportUtil());
-        PowerMockito.when(brahmsImportUtilSpy, "getInfraspecificMarker", record).thenReturn("testInfraSpecifc");
-        expected = BrahmsImportUtil.getScientificName(record);
-        assertNotNull(expected);
-        assertEquals("testInfraSpecifc", expected.getInfraspecificMarker());
+    CSVRecordInfo<BrahmsCsvField> record = PowerMockito.mock(CSVRecordInfo.class);
+    ScientificName expected = new ScientificName();
 
-    }
+    when(record.get(SPECIES)).thenReturn("Rhododendron ferrugineum L.");
+    when(record.get(AUTHOR2)).thenReturn("L.");
+    when(record.get(GENUS)).thenReturn("Rhododendron");
+    when(record.get(SP1)).thenReturn("ferrugineum");
+    when(record.get(RANK2)).thenReturn("");
+    when(record.get(SP2)).thenReturn("testInfraEpithat");
 
-    /**
-     * Test method for
-     * {@link nl.naturalis.nba.etl.brahms.BrahmsImportUtil#getAuthor(nl.naturalis.nba.etl.CSVRecordInfo)}.
-     * 
-     * @throws Exception
-     * 
-     *         Test to check the private getInfraspecificMarker() returns the correct
-     *         InfraspecificMarker.
-     */
-    @PrepareForTest(CSVRecordInfo.class)
-    @Test
-    public void testGetInfraspecificEpithet() throws Exception {
+    BrahmsImportUtil brahmsImportUtilSpy = PowerMockito.spy(new BrahmsImportUtil());
+    PowerMockito.when(brahmsImportUtilSpy, "getInfraspecificEpithet", record)
+        .thenReturn("testInfraEpithat");
+    expected = BrahmsImportUtil.getScientificName(record);
+    assertNotNull(expected);
+    assertEquals("testInfraEpithat", expected.getInfraspecificEpithet());
 
-        CSVRecordInfo<BrahmsCsvField> record = PowerMockito.mock(CSVRecordInfo.class);
-        ScientificName expected = new ScientificName();
+  }
 
-        when(record.get(SPECIES)).thenReturn("Rhododendron ferrugineum L.");
-        when(record.get(AUTHOR2)).thenReturn("L.");
-        when(record.get(GENUS)).thenReturn("Rhododendron");
-        when(record.get(SP1)).thenReturn("ferrugineum");
-        when(record.get(RANK2)).thenReturn("");
-        when(record.get(SP2)).thenReturn("testInfraEpithat");
+  /**
+   * Test method for
+   * {@link nl.naturalis.nba.etl.brahms.BrahmsImportUtil#getTaxonRank(nl.naturalis.nba.etl.CSVRecordInfo)}.
+   * 
+   * Test to verify if getTaxonRank returns an expected Taxon Rank
+   */
+  @PrepareForTest(CSVRecordInfo.class)
+  @Test
+  public void testGetTaxonRank() {
 
-        BrahmsImportUtil brahmsImportUtilSpy = PowerMockito.spy(new BrahmsImportUtil());
-        PowerMockito.when(brahmsImportUtilSpy, "getInfraspecificEpithet", record).thenReturn("testInfraEpithat");
-        expected = BrahmsImportUtil.getScientificName(record);
-        assertNotNull(expected);
-        assertEquals("testInfraEpithat", expected.getInfraspecificEpithet());
+    CSVRecordInfo<BrahmsCsvField> record = PowerMockito.mock(CSVRecordInfo.class);
 
-    }
+    when(record.get(SPECIES)).thenReturn("Rhododendron ferrugineum L.");
+    when(record.get(AUTHOR2)).thenReturn("L.");
+    when(record.get(GENUS)).thenReturn("Rhododendron");
+    when(record.get(SP1)).thenReturn("ferrugineum");
+    when(record.get(RANK2)).thenReturn("testInfraSpecifc");
+    when(record.get(RANK1)).thenReturn("testTaxonRank");
+    when(record.get(SP2)).thenReturn("testInfraEpithat");
 
-    /**
-     * Test method for
-     * {@link nl.naturalis.nba.etl.brahms.BrahmsImportUtil#getTaxonRank(nl.naturalis.nba.etl.CSVRecordInfo)}.
-     * 
-     * Test to verify if getTaxonRank returns an expected Taxon Rank
-     */
-    @PrepareForTest(CSVRecordInfo.class)
-    @Test
-    public void testGetTaxonRank() {
+    String actual = BrahmsImportUtil.getTaxonRank(record);
+    assertEquals("testTaxonRank", actual);
 
-        CSVRecordInfo<BrahmsCsvField> record = PowerMockito.mock(CSVRecordInfo.class);
-
-        when(record.get(SPECIES)).thenReturn("Rhododendron ferrugineum L.");
-        when(record.get(AUTHOR2)).thenReturn("L.");
-        when(record.get(GENUS)).thenReturn("Rhododendron");
-        when(record.get(SP1)).thenReturn("ferrugineum");
-        when(record.get(RANK2)).thenReturn("testInfraSpecifc");
-        when(record.get(RANK1)).thenReturn("testTaxonRank");
-        when(record.get(SP2)).thenReturn("testInfraEpithat");
-
-        String actual = BrahmsImportUtil.getTaxonRank(record);
-        assertEquals("testTaxonRank", actual);
-
-    }
-
+  }
 
 }

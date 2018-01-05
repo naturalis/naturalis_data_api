@@ -31,6 +31,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import nl.naturalis.nba.api.model.DefaultClassification;
 import nl.naturalis.nba.api.model.Monomial;
 import nl.naturalis.nba.api.model.ScientificName;
+import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.etl.AllTests;
 import nl.naturalis.nba.etl.CSVRecordInfo;;
 
@@ -71,7 +72,7 @@ public class BrahmsImportUtilTest {
     /**
      * Test method for {@link nl.naturalis.nba.etl.brahms.BrahmsImportUtil#getCsvFiles()}.
      * 
-     * Test for the method getCSV file to very if CSV files are read from the local system
+     * Test for the method getCSV files to verify CSV files are read from the local system
      * 
      * @throws Exception
      */
@@ -111,9 +112,10 @@ public class BrahmsImportUtilTest {
      */
     @Test
     public void testRemoveBackupExtension() throws Exception {
-        BrahmsImportUtil brahmsImportUtilSpy = PowerMockito.spy(new BrahmsImportUtil());
-        brahmsImportUtilSpy.removeBackupExtension();
-        Mockito.verify(brahmsImportUtilSpy, times(1)).removeBackupExtension();
+        PowerMockito.mockStatic(BrahmsImportUtil.class);
+        BrahmsImportUtil.removeBackupExtension();
+        Mockito.verify(BrahmsImportUtil.class, times(1));
+        BrahmsImportUtil.removeBackupExtension();
     }
 
 
@@ -121,7 +123,7 @@ public class BrahmsImportUtilTest {
      * Test method for
      * {@link nl.naturalis.nba.etl.brahms.BrahmsImportUtil#getScientificName(nl.naturalis.nba.etl.CSVRecordInfo)}.
      * 
-     * Unit test to get the verify the scientific name when getFullScientificName is not null
+     *  Test to verify getScientificName method returns the expected {@link ScientificName} object
      */
     @PrepareForTest(CSVRecordInfo.class)
     @Test
@@ -154,7 +156,7 @@ public class BrahmsImportUtilTest {
      * Test method for
      * {@link nl.naturalis.nba.etl.brahms.BrahmsImportUtil#getScientificName(nl.naturalis.nba.etl.CSVRecordInfo)}.
      * 
-     * Unit test to get the verify the scientific name when getFullScientificName is null
+     * Unit test to get the verify the {@link ScientificName} object when SPECIES field is null
      */
     @PrepareForTest(CSVRecordInfo.class)
     @Test
@@ -188,7 +190,7 @@ public class BrahmsImportUtilTest {
      * Test method for
      * {@link nl.naturalis.nba.etl.brahms.BrahmsImportUtil#getDefaultClassification(nl.naturalis.nba.etl.CSVRecordInfo, nl.naturalis.nba.api.model.ScientificName)}.
      * 
-     * Test to verify the getDefault Classification
+     * Test to verify the getDefault Classification to see if the expcted {@link DefaultClassification} object is returned 
      * 
      */
     @PrepareForTest(CSVRecordInfo.class)
@@ -227,7 +229,7 @@ public class BrahmsImportUtilTest {
      * Test method for
      * {@link nl.naturalis.nba.etl.brahms.BrahmsImportUtil#getSystemClassification(nl.naturalis.nba.api.model.DefaultClassification)}.
      * 
-     * Test to verify the testGetSystemClassification() returns the correct system classifications.
+     * Test to verify the testGetSystemClassification() returns the expected List<@link Monomial}> 
      */
     @PrepareForTest(CSVRecordInfo.class)
     @Test
@@ -288,7 +290,7 @@ public class BrahmsImportUtilTest {
      * 
      * @throws Exception
      * 
-     *         Test to check the private getAuthor() returns the correct author.
+     *         Test to check the private getAuthor() returns the correct author name
      */
     @PrepareForTest(CSVRecordInfo.class)
     @Test
@@ -380,6 +382,8 @@ public class BrahmsImportUtilTest {
     /**
      * Test method for
      * {@link nl.naturalis.nba.etl.brahms.BrahmsImportUtil#getTaxonRank(nl.naturalis.nba.etl.CSVRecordInfo)}.
+     * 
+     * Test to verify if getTaxonRank returns an expected Taxon Rank
      */
     @PrepareForTest(CSVRecordInfo.class)
     @Test

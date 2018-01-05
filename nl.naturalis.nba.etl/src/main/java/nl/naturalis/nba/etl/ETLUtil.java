@@ -126,14 +126,6 @@ public final class ETLUtil {
     return testGenera;
   }
   
-  //Added for Unit Test.
-  public static URIBuilder getPurl() {
-      return getPurlBuilder();
-  }
-  
-  public static URIBuilder callGetPurlBuilder() {
-      return getPurlBuilder();
-  }
   
   private static URIBuilder getPurlBuilder() {
     String value = null;

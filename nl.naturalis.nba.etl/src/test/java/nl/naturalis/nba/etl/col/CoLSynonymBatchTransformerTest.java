@@ -194,7 +194,6 @@ public class CoLSynonymBatchTransformerTest {
 
     String expectedKey = "6931870";
     Taxon actual = actualResults.get(expectedKey);
-    // Collection<Taxon> updates = (Collection<Taxon>)returned;
     String expectedId = "6931870@COL";
     String expectedRecordURI =
         "http://www.catalogueoflife.org/annual-checklist/2016/details/species/id/39ed89a52a61ef3a59eef66b9ce8ad7e";

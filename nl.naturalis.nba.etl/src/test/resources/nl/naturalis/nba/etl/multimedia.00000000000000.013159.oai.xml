@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<OAI-PMH xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/ http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd" xmlns="http://www.openarchives.org/OAI/2.0/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:atlantis="urn:atlantis" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <responseDate>2017-10-17T06:21:51Z</responseDate>
+  <request verb="ListRecords" resumptionToken="______oai_crs__1315900">https://crs.naturalis.nl/atlantispubliek/oai.axd</request>
+  <ListRecords>
+  <record>
+      <header>
+        <identifier>110164524</identifier>
+        <datestamp>2015-09-15T18:48:07Z</datestamp>
+        <setSpec>Object</setSpec>
+        <setSpec>Media</setSpec>
+      </header>
+      <metadata>
+        <oai_dc:dc xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd" xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:ac="http://rs.tdwg.org/ac/terms/" xmlns:dwc="http://rs.tdwg.org/dwc/terms/" xmlns:xmp="http://ns.adobe.com/xap/1.0/" xmlns:xmpRights="http://ns.adobe.com/xap/1.0/rights/" xmlns:photoshop="http://ns.adobe.com/photoshop/1.0/" xmlns:Iptc4xmpExt="http://iptc.org/std/Iptc4xmpExt/2008-02-29/" xmlns:abcd="http://rs.tdwg.org/abcd/2.06/b/">
+          <ncrsSpecimen>
+            <ac:associatedSpecimenReference>RMNH.INS.867435</ac:associatedSpecimenReference>
+            <abcd:RecordBasis>PreservedSpecimen</abcd:RecordBasis>
+            <abcd:SourceInstitutionID />
+            <abcd:CollectionType>Diptera</abcd:CollectionType>
+          </ncrsSpecimen>
+          <ncrsdatagroup>
+            <dwc:sex>male</dwc:sex>
+            <dwc:lifeStage>embryo</dwc:lifeStage>
+            <abcd:AccessionSpecimenNumbers />
+            <abcd:Altitude />
+            <abcd:AltitudeUnit />
+            <abcd:Depth />
+            <abcd:DepthUnit />
+            <abcd:DateTimeStart>19370510</abcd:DateTimeStart>
+            <abcd:DateTimeEnd>19370512</abcd:DateTimeEnd>
+          </ncrsdatagroup>
+          <ncrsDetermination>
+            <abcd:PreferredFlag>1</abcd:PreferredFlag>
+            <dwc:scientificName>Aedes kabaenensis</dwc:scientificName>
+            <dwc:nameAccordingTo />
+            <dwc:vernacularName>TestVernacularName</dwc:vernacularName>
+            <dwc:identifiedBy />
+            <abcd:GenusOrMonomial>Aedes</abcd:GenusOrMonomial>
+            <abcd:SpeciesEpithet>kabaenensis</abcd:SpeciesEpithet>
+            <abcd:InfrasubspecificRank />
+            <abcd:subspeciesepithet />
+            <abcd:InfrasubspecificName />
+            <abcd:NameAddendum />
+            <abcd:IdentificationQualifier1>TestQualifier1</abcd:IdentificationQualifier1>
+            <abcd:IdentificationQualifier2>TestQualifier2</abcd:IdentificationQualifier2>
+            <abcd:IdentificationQualifier3 />
+            <abcd:TypeStatus>isotype</abcd:TypeStatus>
+            <ncrsHighername>
+              <ac:taxonCoverage>Culicidae</ac:taxonCoverage>
+              <abcd:HigherTaxonRank>family</abcd:HigherTaxonRank>
+            </ncrsHighername>
+            <ncrsHighername>
+              <ac:taxonCoverage>Diptera</ac:taxonCoverage>
+              <abcd:HigherTaxonRank>order</abcd:HigherTaxonRank>
+            </ncrsHighername>
+          </ncrsDetermination>
+          <ncrsGatheringSites>
+            <Iptc4xmpExt:WorldRegion>Asia</Iptc4xmpExt:WorldRegion>
+            <Iptc4xmpExt:CountryName>Indonesia</Iptc4xmpExt:CountryName>
+            <Iptc4xmpExt:ProvinceState>Southeast Sulawesi</Iptc4xmpExt:ProvinceState>
+            <Iptc4xmpExt:Sublocation>Kabaena, Pulau</Iptc4xmpExt:Sublocation>
+            <ncrsGatheringCoordinates>
+              <dwc:decimalLatitude>35.9241667</dwc:decimalLatitude>
+              <dwc:decimalLongitude>14.3405556</dwc:decimalLongitude>
+              <dwc:geodeticDatum />
+            </ncrsGatheringCoordinates>
+          </ncrsGatheringSites>
+          <frmDigitalebestanden>
+            <dc:title />
+            <photoshop:Credit />
+            <dc:creator />
+            <abcd:MultiMediaPublic>1</abcd:MultiMediaPublic>
+            <abcd:fileuri>http://medialib.naturalis.nl/file/id/RMNH.INS.867435/format/small</abcd:fileuri>
+          </frmDigitalebestanden>
+          <abcd:ObjectPublic>1</abcd:ObjectPublic>
+        </oai_dc:dc>
+      </metadata>
+    </record>
+  </ListRecords>
+</OAI-PMH>

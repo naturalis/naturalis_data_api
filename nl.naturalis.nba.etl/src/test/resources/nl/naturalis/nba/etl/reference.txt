@@ -1,0 +1,2 @@
+taxonID creator date    title   description     identifier      type
+6931870	Pfeiffer, L.	1846	Diagnosen einiger neuer Heliceen.	Malakozoologische Blätter		taxon

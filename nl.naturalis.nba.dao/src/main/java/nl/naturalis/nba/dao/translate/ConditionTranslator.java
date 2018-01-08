@@ -1,26 +1,28 @@
 package nl.naturalis.nba.dao.translate;
 
 import static nl.naturalis.nba.api.ComparisonOperator.NOT_BETWEEN;
-import static nl.naturalis.nba.api.ComparisonOperator.NOT_IN;
 import static nl.naturalis.nba.api.ComparisonOperator.NOT_CONTAINS;
+import static nl.naturalis.nba.api.ComparisonOperator.NOT_IN;
 import static nl.naturalis.nba.api.ComparisonOperator.NOT_MATCHES;
 import static nl.naturalis.nba.api.ComparisonOperator.NOT_STARTS_WITH;
 import static nl.naturalis.nba.api.ComparisonOperator.NOT_STARTS_WITH_IC;
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static nl.naturalis.nba.dao.translate.TranslatorUtil.getNestedPath;
-import static nl.naturalis.nba.dao.translate.TranslatorUtil.*;
+import static nl.naturalis.nba.dao.translate.TranslatorUtil.isFalseCondition;
+import static nl.naturalis.nba.dao.translate.TranslatorUtil.isTrueCondition;
 import static nl.naturalis.nba.utils.CollectionUtil.hasElements;
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.constantScoreQuery;
 import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
-
+import java.util.ArrayList;
 import java.util.EnumSet;
-
+import java.util.HashMap;
+import java.util.Map.Entry;
 import org.apache.logging.log4j.Logger;
 import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.NestedQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
-
 import nl.naturalis.nba.api.ComparisonOperator;
 import nl.naturalis.nba.api.InvalidConditionException;
 import nl.naturalis.nba.api.QueryCondition;
@@ -97,6 +99,7 @@ abstract class ConditionTranslator {
 			query = postprocessForSortField(query);
 		else
 			query = postprocess(query);
+		
 		if (hasElements(condition.getAnd())) {
 			query = generateAndSiblings(query);
 			if (hasElements(condition.getOr())) {
@@ -106,6 +109,13 @@ abstract class ConditionTranslator {
 		else if (hasElements(condition.getOr())) {
 			query = generateOrSiblings(query);
 		}
+//		else {
+//		  String nestedPath = getNestedPath(condition.getField(), mappingInfo);
+//		  if (nestedPath != null ) {
+//		    query = nestedQuery(nestedPath, query, ScoreMode.Avg);
+//		  }
+//		}
+
 		if (condition.isNegated()) {
 			query = not(query);
 		}
@@ -138,10 +148,6 @@ abstract class ConditionTranslator {
 	QueryBuilder postprocess(QueryBuilder query)
 	{
 		if (!isTrueCondition(condition) && !isFalseCondition(condition)) {
-			String nestedPath = getNestedPath(condition.getField(), mappingInfo);
-			if (nestedPath != null) {
-				query = nestedQuery(nestedPath, query, ScoreMode.Avg);
-			}
 			if (hasNegativeOperator()) {
 				query = not(query);
 			}
@@ -160,26 +166,116 @@ abstract class ConditionTranslator {
 		return query;
 	}
 
-	private BoolQueryBuilder generateAndSiblings(QueryBuilder firstSibling)
-			throws InvalidConditionException
-	{
-		BoolQueryBuilder query = boolQuery();
-		query.must(firstSibling);
-		for (QueryCondition c : condition.getAnd()) {
-			query.must(getTranslator(c, mappingInfo).translate());
-		}
-		return query;
-	}
+  private BoolQueryBuilder generateAndSiblings(QueryBuilder firstSibling)
+      throws InvalidConditionException {
+
+    // Collect all conditions that use a nested path
+    HashMap<String, ArrayList<QueryCondition>> mapNestedPaths = new HashMap<>();
+
+    // First condition
+    String nestedPathFirst = getNestedPath(condition.getField(), mappingInfo);
+    mapNestedPaths.putIfAbsent(nestedPathFirst, new ArrayList<QueryCondition>());
+    mapNestedPaths.get(nestedPathFirst).add(condition);
+
+    // Next condition(s)
+    for (QueryCondition c : condition.getAnd()) {
+      if (hasElements(c.getAnd()) || hasElements(c.getOr())) {
+        mapNestedPaths.putIfAbsent(null, new ArrayList<QueryCondition>());
+        mapNestedPaths.get(null).add(c);
+
+      } else {
+        String nestedPathNext = getNestedPath(c.getField(), mappingInfo);
+        mapNestedPaths.putIfAbsent(nestedPathNext, new ArrayList<QueryCondition>());
+        mapNestedPaths.get(nestedPathNext).add(c);
+      }
+    }
+
+    // Build the query from the conditions stored in the map
+    BoolQueryBuilder bq = boolQuery();
+
+    for (Entry<String, ArrayList<QueryCondition>> entry : mapNestedPaths.entrySet()) {
+      String nestedPath = entry.getKey();
+      if (nestedPath == null) {
+        for (QueryCondition qc : entry.getValue()) {
+          if (qc == condition) {
+            bq.must(firstSibling);
+          } 
+          else {
+            bq.must(getTranslator(qc, mappingInfo).translate());
+          }
+        }
+      }
+      else {
+        BoolQueryBuilder innerBool = boolQuery();
+        for (QueryCondition qc : entry.getValue()) {
+          if (qc == condition) {
+            innerBool.must(firstSibling);
+          }
+          else {
+            innerBool.must(getTranslator(qc, mappingInfo).translate());
+          }
+        }
+        NestedQueryBuilder nestedQuery = nestedQuery(nestedPath, innerBool, ScoreMode.Avg);
+        bq.must(nestedQuery);        
+      }
+    }
+    return bq;
+  }
 
 	private BoolQueryBuilder generateOrSiblings(QueryBuilder firstSibling)
 			throws InvalidConditionException
 	{
-		BoolQueryBuilder query = boolQuery();
-		query.should(firstSibling);
-		for (QueryCondition c : condition.getOr()) {
-			query.should(getTranslator(c, mappingInfo).translate());
-		}
-		return query;
+    // Collect all conditions that use a nested path
+    HashMap<String, ArrayList<QueryCondition>> mapNestedPaths = new HashMap<>();
+
+    // First condition
+    String nestedPathFirst = getNestedPath(condition.getField(), mappingInfo);
+    mapNestedPaths.putIfAbsent(nestedPathFirst, new ArrayList<QueryCondition>());
+    mapNestedPaths.get(nestedPathFirst).add(condition);
+
+    // Next condition(s)
+    for (QueryCondition c : condition.getOr()) {
+      if (hasElements(c.getAnd()) || hasElements(c.getOr())) {
+        mapNestedPaths.putIfAbsent(null, new ArrayList<QueryCondition>());
+        mapNestedPaths.get(null).add(c);
+
+      } else {
+        String nestedPathNext = getNestedPath(c.getField(), mappingInfo);
+        mapNestedPaths.putIfAbsent(nestedPathNext, new ArrayList<QueryCondition>());
+        mapNestedPaths.get(nestedPathNext).add(c);
+      }
+    }
+
+    // Build the query from the conditions stored in the map
+    BoolQueryBuilder bq = boolQuery();
+
+    for (Entry<String, ArrayList<QueryCondition>> entry : mapNestedPaths.entrySet()) {
+      String nestedPath = entry.getKey();
+      if (nestedPath == null) {
+        for (QueryCondition qc : entry.getValue()) {
+          if (qc == condition) {
+            bq.should(firstSibling);
+          } 
+          else {
+            bq.should(getTranslator(qc, mappingInfo).translate());
+          }
+        }
+      }
+      else {
+        BoolQueryBuilder innerBool = boolQuery();
+        for (QueryCondition qc : entry.getValue()) {
+          if (qc == condition) {
+            innerBool.should(firstSibling);
+          }
+          else {
+            innerBool.should(getTranslator(qc, mappingInfo).translate());
+          }
+        }
+        NestedQueryBuilder nestedQuery = nestedQuery(nestedPath, innerBool, ScoreMode.Avg);
+        bq.should(nestedQuery);        
+      }
+    }
+    return bq;
 	}
 
 	/*

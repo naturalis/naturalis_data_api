@@ -262,17 +262,17 @@ abstract class ConditionTranslator {
         }
       }
       else {
-        BoolQueryBuilder innerBool = boolQuery();
         for (QueryCondition qc : entry.getValue()) {
           if (qc == condition) {
-            innerBool.should(firstSibling);
+            bq.should(firstSibling);
           }
           else {
+            BoolQueryBuilder innerBool = boolQuery();
             innerBool.should(getTranslator(qc, mappingInfo).translate());
+            NestedQueryBuilder nestedQuery = nestedQuery(nestedPath, innerBool, ScoreMode.Avg);
+            bq.should(nestedQuery);        
           }
         }
-        NestedQueryBuilder nestedQuery = nestedQuery(nestedPath, innerBool, ScoreMode.Avg);
-        bq.should(nestedQuery);        
       }
     }
     return bq;

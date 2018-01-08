@@ -274,8 +274,6 @@ public class BrahmsMultiMediaTransformerTest {
         CommonReflectionUtil.setField(AbstractTransformer.class, brahmsMultiMediaTransformer, "objectID", "L.3355550");
         CommonReflectionUtil.setField(AbstractTransformer.class, brahmsMultiMediaTransformer, "input", record);
 
-        // Object returned = callTransformerMethod(record, brahmsMultiMediaTransformer,
-        // "getMultiMediaGatheringEvent");
         Object obj = CommonReflectionUtil.callMethod(record, CSVRecordInfo.class, brahmsMultiMediaTransformer, "getMultiMediaGatheringEvent");
         MultiMediaGatheringEvent multiMediaGatheringEvent = (MultiMediaGatheringEvent) obj;
 
@@ -311,7 +309,7 @@ public class BrahmsMultiMediaTransformerTest {
         Object obj = CommonReflectionUtil.callMethod(url, String.class, brahmsMultiMediaTransformer, "getUri");
 
         URI uri = (URI) obj;
-        assertNotNull(obj);
+        assertNotNull(uri);
         assertEquals(expectedPath, uri.getPath());
         assertEquals(expectedHost, uri.getHost());
 

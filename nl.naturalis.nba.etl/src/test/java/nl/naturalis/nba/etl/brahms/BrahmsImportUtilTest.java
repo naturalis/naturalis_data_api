@@ -95,9 +95,10 @@ public class BrahmsImportUtilTest {
   @Test
   public void testBackup() throws Exception {
 
-    BrahmsImportUtil brahmsImportUtilSpy = PowerMockito.spy(new BrahmsImportUtil());
-    brahmsImportUtilSpy.backup();
-    Mockito.verify(brahmsImportUtilSpy, Mockito.times(1)).backup();
+    PowerMockito.mockStatic(BrahmsImportUtil.class);
+    BrahmsImportUtil.backup();
+    Mockito.verify(BrahmsImportUtil.class, Mockito.times(1));
+    BrahmsImportUtil.backup();
 
   }
 

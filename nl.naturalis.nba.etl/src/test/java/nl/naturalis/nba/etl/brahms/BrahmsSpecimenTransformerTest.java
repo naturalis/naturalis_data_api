@@ -115,13 +115,18 @@ public class BrahmsSpecimenTransformerTest {
 
         String expectedId = "L.3355550@BRAHMS";
         String expectedGUID = "http://data.biodiversitydata.nl/naturalis/specimen/L.3355550";
-
+        String expectedFullScientificName = "Rhododendron ferrugineum L.";
+        String expectedScientificNameGroup = "rhododendron ferrugineum ";
+        String expectedGenusMonomial = "Rhododendron";
+               
         assertNotNull(list);
         assertTrue(list.size() == 1);
         assertEquals(expectedId, list.stream().map(i -> i.getId()).findFirst().get());
-        assertEquals(expectedGUID, list.stream().map(i -> i.getUnitGUID()).findFirst().get());
-
-
+        assertEquals(expectedGUID, list.stream().map(i -> i.getUnitGUID()).findFirst().get());        
+        assertEquals(expectedFullScientificName,list.stream().map(i -> i.getIdentifications().get(0).getScientificName().getFullScientificName()).findFirst().get());       
+        assertEquals(expectedScientificNameGroup,list.stream().map(i -> i.getIdentifications().get(0).getScientificName().getScientificNameGroup()).findFirst().get());
+        assertEquals(expectedGenusMonomial, list.stream().map(i -> i.getIdentifications().get(0).getScientificName().getGenusOrMonomial()).findFirst().get());
+        
     }
 
 

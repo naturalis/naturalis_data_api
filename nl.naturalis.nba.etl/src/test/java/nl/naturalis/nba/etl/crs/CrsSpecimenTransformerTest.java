@@ -159,7 +159,6 @@ public class CrsSpecimenTransformerTest {
     expectedSid.setAssociatedFossilAssemblage("Test_Assemblage");
     expectedSid.setRockMineralUsage("Test_Minerals");
 
-    assertNotNull(identification);
     assertTrue(identification.isPreferred());
 
     assertEquals(expectedSid.getRockType(), identification.getRockType());
@@ -203,7 +202,6 @@ public class CrsSpecimenTransformerTest {
     expectedGa.setProvinceState("Noord Holland");
     expectedGa.setLocality("Amsterdam");
 
-    assertNotNull(event);
     assertEquals(expectedGa.getCountry(), event.getCountry());
     assertEquals(expectedGa.getProvinceState(), event.getProvinceState());
     assertEquals(expectedGa.getLocality(), event.getLocality());
@@ -243,7 +241,6 @@ public class CrsSpecimenTransformerTest {
     expectedSn.setSpecificEpithet("japonica");
     expectedSn.setScientificNameGroup("cleyera japonica");
 
-    assertNotNull(scientificName);
     assertEquals(expectedSn.getFullScientificName(), scientificName.getFullScientificName());
     assertEquals(expectedSn.getGenusOrMonomial(), scientificName.getGenusOrMonomial());
     assertEquals(expectedSn.getSpecificEpithet(), scientificName.getSpecificEpithet());
@@ -293,7 +290,6 @@ public class CrsSpecimenTransformerTest {
     expectedMono.setName("Cleyera");
     expectedMono.setRank("genus");
 
-    assertNotNull(classification);
     assertEquals(2, listSize);
     assertEquals(expectedMono.getName(), classification.get(0).getName());
     assertEquals(expectedMono.getRank(), classification.get(0).getRank());
@@ -336,7 +332,6 @@ public class CrsSpecimenTransformerTest {
     expectedCsg.setYoungRegionalStage("Test Regional Stage");
     expectedCsg.setYoungChronoName("CRETACEOUS");
 
-    assertNotNull(actualList);
     assertEquals(1, listSize);
     assertEquals(expectedCsg.getYoungRegionalSubstage(),
         actualList.get(0).getYoungRegionalSubstage());
@@ -382,7 +377,6 @@ public class CrsSpecimenTransformerTest {
     expectedBs.setYoungFossilZone("Test Young Fossil Zone");
     expectedBs.setOldBioName("Hiatella arctica Acme Zone");
 
-    assertNotNull(actualList);
     assertEquals(2, listSize);
     assertEquals(expectedBs.getYoungBioName(), actualList.get(0).getYoungBioName());
     assertEquals(expectedBs.getYoungFossilZone(), actualList.get(0).getYoungFossilZone());
@@ -427,7 +421,6 @@ public class CrsSpecimenTransformerTest {
     expectedLs.setBed("Test Bed");
     expectedLs.setInformalName("Test InfoName");
 
-    assertNotNull(actualList);
     assertEquals(2, listSize);
     assertEquals(expectedLs.getQualifier(), actualList.get(1).getQualifier());
     assertEquals(expectedLs.getBed(), actualList.get(1).getBed());

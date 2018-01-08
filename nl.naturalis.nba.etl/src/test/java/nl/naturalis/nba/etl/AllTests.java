@@ -14,9 +14,6 @@ import nl.naturalis.nba.etl.crs.CrsImportUtilTest;
 import nl.naturalis.nba.etl.crs.CrsMultiMediaTransformerTest;
 import nl.naturalis.nba.etl.crs.CrsSpecimenTransformerTest;
 import nl.naturalis.nba.etl.geo.GeoTransformerTest;
-import nl.naturalis.nba.etl.nsr.NsrImportUtilTest;
-import nl.naturalis.nba.etl.nsr.NsrMultiMediaTransformerTest;
-import nl.naturalis.nba.etl.nsr.NsrTaxonTransformerTest;
 
 
 @RunWith(Suite.class)
@@ -34,9 +31,6 @@ import nl.naturalis.nba.etl.nsr.NsrTaxonTransformerTest;
     CoLSynonymBatchTransformerTest.class,
     CoLVernacularNameBatchTransformerTest.class,
     CoLReferenceBatchTransformerTest.class,
-    NsrTaxonTransformerTest.class,
-    NsrImportUtilTest.class,
-    NsrMultiMediaTransformerTest.class,
     GeoTransformerTest.class,
     TransformUtilTest.class
 })

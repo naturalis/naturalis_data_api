@@ -264,7 +264,13 @@ abstract class ConditionTranslator {
       else {
         for (QueryCondition qc : entry.getValue()) {
           if (qc == condition) {
-            bq.should(firstSibling);
+            if (hasElements(condition.getAnd())) {
+              bq.should(firstSibling);              
+            }
+            else {
+              NestedQueryBuilder nestedQuery = nestedQuery(nestedPath, firstSibling, ScoreMode.Avg);
+              bq.should(nestedQuery);
+            }
           }
           else {
             BoolQueryBuilder innerBool = boolQuery();

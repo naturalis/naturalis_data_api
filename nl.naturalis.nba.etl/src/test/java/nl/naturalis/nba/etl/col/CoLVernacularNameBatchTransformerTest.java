@@ -3,7 +3,6 @@ package nl.naturalis.nba.etl.col;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -37,22 +36,10 @@ public class CoLVernacularNameBatchTransformerTest {
    */
   @Before
   public void setUp() throws Exception {
-
-    String logFile = "log4j2.xml";
-    URL logFileUrl = AllTests.class.getResource(logFile);
-    String logFilePath = logFileUrl.getFile().toString();
-    String dirPath = logFilePath.substring(0, logFilePath.lastIndexOf("/"));
-    System.setProperty("nba.v2.conf.dir", dirPath);
-    System.setProperty("brahms.data.dir", dirPath);
-    System.setProperty("log4j.configurationFile", logFilePath);
-
     // First import a test data row into the ES store .
     CoLTaxonImporter cti = new CoLTaxonImporter();
-    cti.importCsv(dirPath + "/taxa.txt");
-
-    System.setProperty("nl.naturalis.nba.etl.testGenera",
-        "malus,parus,larus,bombus,rhododendron,felix,tulipa,rosa,canis,passer,trientalis");
-
+    String path = AllTests.class.getResource("taxa.txt").getPath();
+    cti.importCsv(path);
   }
 
   /**

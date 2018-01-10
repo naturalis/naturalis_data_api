@@ -22,3 +22,67 @@ nl.naturalis.nba.specimen.groupByScientificName.cacheTreshold=3000
 nl.naturalis.nba.taxon.groupByScientificName.maxNumBuckets=10000
 nl.naturalis.nba.taxon.groupByScientificName.queryCacheSize=1000
 nl.naturalis.nba.taxon.groupByScientificName.cacheTreshold=3000
+
+# ************************************************ #
+# ********************* CRS ********************** #
+# ************************************************ #
+crs.specimens.url.initial=http\://crs.naturalis.nl/atlantispubliek/oai.axd?verb\=ListRecords&metadataprefix\=oai_crs_object
+crs.specimens.url.resume=http\://crs.naturalis.nl/atlantispubliek/oai.axd?verb\=ListRecords&resumptionToken\=%s
+crs.multimedia.url.initial=http\://crs.naturalis.nl/atlantispubliek/oai.axd?verb\=ListRecords&metadataprefix\=oai_crs
+crs.multimedia.url.resume=http\://crs.naturalis.nl/atlantispubliek/oai.axd?verb\=ListRecords&resumptionToken\=%s
+# Whether or not to use the pre-harvested, locally
+# stored XML files in stead of calling live calls to
+# the CRS OAIPMH service
+crs.offline=true
+# The maximum age in hours of the records to harvest.
+# Zero (0) means no maximum (full harvest). Only
+# applicable when using OAI service.
+crs.harvest.max.age=0
+# Directory into which to save the XML output from
+# the OAI service
+crs.data.dir=@etl.crs.data.dir@
+
+
+# ************************************************ #
+# ******************** Brahms ******************** #
+# ************************************************ #
+brahms.data.dir=@etl.brahms.data.dir@
+
+
+# ************************************************ #
+# ********************* NSR ********************** #
+# ************************************************ #
+nsr.data.dir=@etl.nsr.data.dir@
+
+
+# ************************************************ #
+# ********************* COL ********************** #
+# ************************************************ #
+col.data.dir=@etl.col.data.dir@
+col.year=@etl.col.year@
+
+
+# ************************************************ #
+# ********************* GEO ********************** #
+# ************************************************ #
+geo.data.dir=@etl.geo.data.dir@
+
+
+# ************************************************ #
+# ****************** MEDIALIB ******************** #
+# ************************************************ #
+medialib.data.dir=@etl.medialib.data.dir@
+
+
+# ************************************************ #
+# ******************** NDFF ********************** #
+# ************************************************ #
+ndff.data.dir=@etl.ndff.data.dir@
+
+# ************************************************ #
+# ******************** PURL ********************** #
+# ************************************************ #
+purl.baseurl=@etl.purl.baseurl@
+
+
+

@@ -11,6 +11,8 @@
 		<filelist dir="${common.module.location}/build" files="${common.module.artifact}" />
 		<filelist dir="${dao.module.location}/build" files="${dao.module.artifact}" />
 	</path>
+	
+	<property name="junit.suite.classname" value="nl.naturalis.nba.etl.AllTests" />
 
 	<target name="build" depends="build-dao-module,clean,package" />
 

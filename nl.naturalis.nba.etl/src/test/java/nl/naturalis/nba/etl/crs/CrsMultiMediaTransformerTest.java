@@ -729,7 +729,6 @@ public class CrsMultiMediaTransformerTest {
 
       Object obj = ReflectionUtil.call(crsMultiMediaTransformer, "skipRecord", new Class[] {}, new Object[] {});
       bval = (boolean) obj;
-      System.out.println(bval);
     }
     assertFalse(bval);
 

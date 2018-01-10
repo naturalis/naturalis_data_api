@@ -29,7 +29,7 @@ import nl.naturalis.nba.etl.utils.CommonReflectionUtil;
  * Test class for BrahmsMultiMediaTransformer.java
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({CSVRecordInfo.class, BrahmsMultiMediaTransformer.class})
+@PrepareForTest({CSVRecordInfo.class})
 @PowerMockIgnore("javax.management.*")
 @SuppressWarnings({"static-method", "unchecked"})
 public class BrahmsMultiMediaTransformerTest {

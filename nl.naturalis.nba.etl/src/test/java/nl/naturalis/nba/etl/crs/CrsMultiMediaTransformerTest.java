@@ -30,7 +30,7 @@ import nl.naturalis.nba.utils.reflect.ReflectionUtil;
 /**
  * Test class for CrsSpecimenTransformer.java
  */
-@SuppressWarnings({"unchecked"})
+@SuppressWarnings("unchecked")
 public class CrsMultiMediaTransformerTest {
 
   URL multimediaUrl;
@@ -85,7 +85,6 @@ public class CrsMultiMediaTransformerTest {
       Object returned =
           CommonReflectionUtil.callMethod(null, null, crsMultiMediaTransformer, "doTransform");
       transformed = (List<MultiMediaObject>) returned;
-      // if (list != null) break;
       MultiMediaObject sp = transformed.get(0);
 
       MultiMediaObject expectedMmo = new MultiMediaObject();
@@ -128,7 +127,6 @@ public class CrsMultiMediaTransformerTest {
   public void testDoTransfor() throws Exception {
 
     ETLStatistics etlStatistics = new ETLStatistics();
-    // List<MultiMediaObject> transformed = null;
     CrsMultiMediaTransformer crsMultiMediaTransformer = new CrsMultiMediaTransformer(etlStatistics);
     CrsExtractor extractor = new CrsExtractor(multimediaFile, etlStatistics);
     MultiMediaObject mmo = null;
@@ -184,7 +182,6 @@ public class CrsMultiMediaTransformerTest {
   public void testGetIdentifications() throws Exception {
 
     ETLStatistics etlStatistics = new ETLStatistics();
-    // List<MultiMediaObject> transformed = null;
     CrsMultiMediaTransformer crsMultiMediaTransformer = new CrsMultiMediaTransformer(etlStatistics);
     CrsExtractor extractor = new CrsExtractor(multimediaFile, etlStatistics);
     ArrayList<MultiMediaContentIdentification> ids = null;
@@ -230,7 +227,6 @@ public class CrsMultiMediaTransformerTest {
   public void testGetGatheringEvent() throws Exception {
 
     ETLStatistics etlStatistics = new ETLStatistics();
-    // List<MultiMediaObject> transformed = null;
     CrsMultiMediaTransformer crsMultiMediaTransformer = new CrsMultiMediaTransformer(etlStatistics);
     CrsExtractor extractor = new CrsExtractor(multimediaFile, etlStatistics);
     GatheringEvent ge = null;
@@ -274,7 +270,6 @@ public class CrsMultiMediaTransformerTest {
   public void testGetScientificName() throws Exception {
 
     ETLStatistics etlStatistics = new ETLStatistics();
-    // List<MultiMediaObject> transformed = null;
     CrsMultiMediaTransformer crsMultiMediaTransformer = new CrsMultiMediaTransformer(etlStatistics);
     CrsExtractor extractor = new CrsExtractor(multimediaFile, etlStatistics);
     ScientificName sn = null;
@@ -328,8 +323,6 @@ public class CrsMultiMediaTransformerTest {
       List<Element> frmDigitaleBestandenElems = getDescendants(oaiDcElem, "frmDigitalebestanden");
 
       Element frmDigitaleBestandenElem = frmDigitaleBestandenElems.get(0);
-
-      // getTitle(frmDigitaleBestandenElem, unitID);
 
       Object obj = ReflectionUtil.call(crsMultiMediaTransformer, "getTitle",
           new Class[] {Element.class, String.class},

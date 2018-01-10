@@ -707,4 +707,34 @@ public class CrsMultiMediaTransformerTest {
 
   }
 
+  /**
+   * Test method for
+   * {@link nl.naturalis.nba.etl.crs.CrsMultiMediaTransformer#skipRecord()}.
+   * 
+   * @throws Exception
+   * 
+   *         Test to verify if the skipRecord method returns the expected expected boolean value 
+   */
+  @Test
+  public void testSkipRecord() throws Exception {
+
+    ETLStatistics etlStatistics = new ETLStatistics();
+    boolean bval = true;
+    CrsMultiMediaTransformer crsMultiMediaTransformer = new CrsMultiMediaTransformer(etlStatistics);
+    CrsExtractor extractor = new CrsExtractor(multimediaFile, etlStatistics);
+    for (XMLRecordInfo extracted : extractor) {
+
+      CommonReflectionUtil.setField(AbstractTransformer.class, crsMultiMediaTransformer, "objectID","RMNH.INS.867435");
+      CommonReflectionUtil.setField(AbstractTransformer.class, crsMultiMediaTransformer, "input", extracted);
+
+      Object obj = ReflectionUtil.call(crsMultiMediaTransformer, "skipRecord", new Class[] {}, new Object[] {});
+      bval = (boolean) obj;
+      System.out.println(bval);
+    }
+    assertFalse(bval);
+
+  }
+
+  
+  
 }

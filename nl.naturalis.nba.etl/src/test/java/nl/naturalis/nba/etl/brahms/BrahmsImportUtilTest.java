@@ -38,7 +38,7 @@ import nl.naturalis.nba.etl.CSVRecordInfo;;
  * Test class for BrahmsImportUtil.java
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest(BrahmsImportUtil.class)
+@PrepareForTest({BrahmsImportUtil.class,CSVRecordInfo.class})
 @PowerMockIgnore("javax.management.*")
 @SuppressWarnings({"static-method", "static-access"})
 public class BrahmsImportUtilTest {
@@ -123,7 +123,6 @@ public class BrahmsImportUtilTest {
    * 
    * Test to verify getScientificName method returns the expected {@link ScientificName} object
    */
-  @PrepareForTest(CSVRecordInfo.class)
   @Test
   public void testGetScientificName_01() {
 
@@ -156,7 +155,6 @@ public class BrahmsImportUtilTest {
    * 
    * Unit test to get the verify the {@link ScientificName} object when SPECIES field is null
    */
-  @PrepareForTest(CSVRecordInfo.class)
   @Test
   public void testGetScientificName_02() {
 
@@ -192,7 +190,6 @@ public class BrahmsImportUtilTest {
    * {@link DefaultClassification} object is returned
    * 
    */
-  @PrepareForTest(CSVRecordInfo.class)
   @Test
   public void testGetDefaultClassification() {
 
@@ -231,7 +228,6 @@ public class BrahmsImportUtilTest {
    * 
    * Test to verify the testGetSystemClassification() returns the expected List<@link Monomial}>
    */
-  @PrepareForTest(CSVRecordInfo.class)
   @Test
   public void testGetSystemClassification() {
 

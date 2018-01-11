@@ -22,17 +22,11 @@ public class NestedConditionsTest {
     DocumentType<Specimen> dt = DocumentType.SPECIMEN;
 
     QueryCondition condition01 = new QueryCondition(new Path("sourceSystem.code"), EQUALS, "CRS");
-
     QueryCondition condition02 = new QueryCondition(new Path("identifications.scientificName.genusOrMonomial"), EQUALS, "Passer");
-
     QueryCondition condition03 = new QueryCondition(new Path("sex"), EQUALS, "male");
-
     QueryCondition condition04 = new QueryCondition(new Path("gatheringEvent.gatheringPersons.fullName"), EQUALS, "Mavromonstakis, G.A.");
-    
     QueryCondition condition05 = new QueryCondition(new Path("identifications.scientificName.specificEpithet"), EQUALS, "domesticus");
-
     QueryCondition condition06 = new QueryCondition(new Path("collectionType"), EQUALS, "Aves");
-
     QueryCondition condition07 = new QueryCondition(new Path("identifications.scientificName.infraspecificEpithet"), EQUALS, "biblicus");
 
     condition01.and(condition02).and(condition03).and(condition04).
@@ -53,11 +47,8 @@ public class NestedConditionsTest {
     DocumentType<Specimen> dt = DocumentType.SPECIMEN;
 
     QueryCondition condition01 = new QueryCondition(new Path("identifications.scientificName.genusOrMonomial"), EQUALS, "Passer");
-
     QueryCondition condition02 = new QueryCondition(new Path("identifications.scientificName.specificEpithet"), EQUALS, "domesticus");
-    
     QueryCondition condition03 = new QueryCondition(new Path("identifications.scientificName.infraspecificEpithet"), EQUALS, "biblicus");
-    
     QueryCondition condition04 = new QueryCondition(new Path("gatheringEvent.gatheringPersons.fullName"), EQUALS, "Mavromonstakis, G.A.");
 
     condition01.and(condition02.and(condition03.and(condition04)));
@@ -101,65 +92,55 @@ public class NestedConditionsTest {
 
     DocumentType<Specimen> dt = DocumentType.SPECIMEN;
 
-    QueryCondition condition01 = new QueryCondition(
-        new Path("identifications.scientificName.specificEpithet"), EQUALS, "domesticus");
-
-    QueryCondition condition02 = new QueryCondition(
-        new Path("identifications.scientificName.infraspecificEpithet"), EQUALS, "domesticus");
-
-    QueryCondition condition03 = new QueryCondition(
-        new Path("identifications.scientificName.specificEpithet"), EQUALS, "domesticus");
-
-    QueryCondition condition04 = new QueryCondition(
-        new Path("identifications.scientificName.infraspecificEpithet"), EQUALS, "biblicus");
-
-    condition01.and(condition02);
-    condition03.and(condition04);
-    condition01.or(condition03);
+    QueryCondition condition01 = new QueryCondition(new Path("identifications.scientificName.genusOrMonomial"), EQUALS, "Conus");
+    QueryCondition condition02 = new QueryCondition(new Path("unitID"), NOT_EQUALS, null);
+    QueryCondition condition03 = new QueryCondition(new Path("gatheringEvent.gatheringPersons.fullName"), EQUALS, "Hoenselaar, H.J.");
+    QueryCondition condition04 = new QueryCondition(new Path("identifications.defaultClassification.phylum"), EQUALS, "Mollusca");
+    QueryCondition condition05 = new QueryCondition(new Path("gatheringEvent.country"), EQUALS, "Spain");
+    QueryCondition condition06 = new QueryCondition(new Path("gatheringEvent.country"), EQUALS, "Portugal");
+    
+    condition01.and(condition02.and(condition03.and(condition04.and(condition05.or(condition06)))));
 
     QuerySpec query = new QuerySpec();
     query.addCondition(condition01);
-
     QuerySpecTranslator translator = new QuerySpecTranslator(query, dt);
-    System.out.println(JsonUtil.toPrettyJson(query));
-    System.out.println(translator.translate());
-
+    
+    String jsonFile = "NestedConditionsTest__testQuery_04.json";
+    String jsonString = translator.translate().toString();
+    assertTrue("04", jsonEquals(this.getClass(), jsonString, jsonFile));
   }
 
   @Test
   public void test_05() throws InvalidQueryException {
-
+    
     DocumentType<Specimen> dt = DocumentType.SPECIMEN;
 
-    QueryCondition condition01 = new QueryCondition(
-        new Path("identifications.scientificName.genusOrMonomial"), EQUALS, "Passer");
+    QueryCondition condition01 = new QueryCondition(new Path("identifications.scientificName.genusOrMonomial"), NOT_EQUALS, null);
+    
+    QueryCondition condition02 = new QueryCondition(new Path("gatheringEvent.gatheringPersons.fullName"), NOT_EQUALS, null);
+    
+    QueryCondition condition03 = new QueryCondition(new Path("collectionType"), EQUALS, "Botany");
+    QueryCondition condition04 = new QueryCondition(new Path("identifications.scientificName.fullScientificName"), NOT_EQUALS, "test");
+    QueryCondition condition05 = new QueryCondition(new Path("identifications.defaultClassification.phylum"), NOT_EQUALS, "Aves");
+    QueryCondition condition06 = new QueryCondition(new Path("gatheringEvent.country"), NOT_EQUALS, "Spain");
 
-    QueryCondition condition02 = new QueryCondition(
-        new Path("identifications.scientificName.specificEpithet"), EQUALS, "domesticus");
+    QueryCondition condition07 = new QueryCondition(new Path("associatedMultiMediaUris.format"), EQUALS, "image/jpeg");
 
-    QueryCondition condition03 = new QueryCondition(
-        new Path("identifications.scientificName.infraspecificEpithet"), EQUALS, "domesticus");
+    QueryCondition condition08 = new QueryCondition(new Path("sourceInstitutionID"), EQUALS, "Naturalis Biodiversity Center");
 
-    QueryCondition condition05 = new QueryCondition(
-        new Path("identifications.scientificName.specificEpithet"), EQUALS, "domesticus");
-
-    QueryCondition condition06 = new QueryCondition(
-        new Path("identifications.scientificName.infraspecificEpithet"), EQUALS, "biblicus");
-
-    condition02.and(condition03);
-    condition05.and(condition06);
-    condition02.or(condition05);
-
-    condition01.and(condition02);
+    condition03.and(condition04).and(condition05).and(condition06);
+    condition02.and(condition03).and(condition07);
+    condition01.and(condition02).and(condition08);
 
     QuerySpec query = new QuerySpec();
     query.addCondition(condition01);
-
     QuerySpecTranslator translator = new QuerySpecTranslator(query, dt);
-    System.out.println(JsonUtil.toPrettyJson(query));
-    System.out.println(translator.translate());
-
+    
+    String jsonFile = "NestedConditionsTest__testQuery_05.json";
+    String jsonString = translator.translate().toString();
+    assertTrue("05", jsonEquals(this.getClass(), jsonString, jsonFile));
   }
+  
 
   @Test
   public void test_06() throws InvalidQueryException {
@@ -189,8 +170,7 @@ public class NestedConditionsTest {
     query.addCondition(condition01);
 
     QuerySpecTranslator translator = new QuerySpecTranslator(query, dt);
-    System.out.println(JsonUtil.toPrettyJson(query));
-    System.out.println(translator.translate());
+//    System.out.println(translator.translate());
 
   }
 
@@ -225,8 +205,7 @@ public class NestedConditionsTest {
     query.addCondition(condition01);
 
     QuerySpecTranslator translator = new QuerySpecTranslator(query, dt);
-    System.out.println(JsonUtil.toPrettyJson(query));
-    System.out.println(translator.translate());
+    //System.out.println(translator.translate());
 
   }
 

@@ -6,7 +6,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
-import java.net.URL;
 import java.util.List;
 import org.junit.After;
 import org.junit.Before;
@@ -21,7 +20,6 @@ import nl.naturalis.nba.api.model.ServiceAccessPoint;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.etl.AbstractTransformer;
-import nl.naturalis.nba.etl.AllTests;
 import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.utils.CommonReflectionUtil;
@@ -41,15 +39,6 @@ public class BrahmsSpecimenTransformerTest {
      */
     @Before
     public void setUp() throws Exception {
-
-        String logFile = "log4j2.xml";
-        URL logFileUrl = AllTests.class.getResource(logFile);
-        String logFilePath = logFileUrl.getFile().toString();
-        String dirPath = logFilePath.substring(0, logFilePath.lastIndexOf("/"));
-        System.setProperty("nba.v2.conf.dir", dirPath);
-        System.setProperty("brahms.data.dir", dirPath);
-        System.setProperty("log4j.configurationFile", logFilePath);
-        System.setProperty("nl.naturalis.nba.etl.testGenera", "malus,parus,larus,bombus,rhododendron,felix,tulipa,rosa,canis,passer,trientalis");
     }
 
     /**
@@ -119,13 +108,13 @@ public class BrahmsSpecimenTransformerTest {
         String expectedScientificNameGroup = "rhododendron ferrugineum ";
         String expectedGenusMonomial = "Rhododendron";
                
-        assertNotNull(list);
-        assertTrue(list.size() == 1);
-        assertEquals(expectedId, list.stream().map(i -> i.getId()).findFirst().get());
-        assertEquals(expectedGUID, list.stream().map(i -> i.getUnitGUID()).findFirst().get());        
-        assertEquals(expectedFullScientificName,list.stream().map(i -> i.getIdentifications().get(0).getScientificName().getFullScientificName()).findFirst().get());       
-        assertEquals(expectedScientificNameGroup,list.stream().map(i -> i.getIdentifications().get(0).getScientificName().getScientificNameGroup()).findFirst().get());
-        assertEquals(expectedGenusMonomial, list.stream().map(i -> i.getIdentifications().get(0).getScientificName().getGenusOrMonomial()).findFirst().get());
+        assertNotNull("01",list);
+        assertTrue("02",list.size() == 1);
+        assertEquals("03",expectedId, list.stream().map(i -> i.getId()).findFirst().get());
+        assertEquals("04",expectedGUID, list.stream().map(i -> i.getUnitGUID()).findFirst().get());        
+        assertEquals("05",expectedFullScientificName,list.stream().map(i -> i.getIdentifications().get(0).getScientificName().getFullScientificName()).findFirst().get());       
+        assertEquals("06",expectedScientificNameGroup,list.stream().map(i -> i.getIdentifications().get(0).getScientificName().getScientificNameGroup()).findFirst().get());
+        assertEquals("07",expectedGenusMonomial, list.stream().map(i -> i.getIdentifications().get(0).getScientificName().getGenusOrMonomial()).findFirst().get());
         
     }
 
@@ -185,9 +174,9 @@ public class BrahmsSpecimenTransformerTest {
         String expectedContinent = "Europe";
         String expectedCountry = "Netherlands";
 
-        assertNotNull(ge);
-        assertEquals(expectedContinent, ge.getContinent());
-        assertEquals(expectedCountry, ge.getCountry());
+        assertNotNull("01",ge);
+        assertEquals("02",expectedContinent, ge.getContinent());
+        assertEquals("03",expectedCountry, ge.getCountry());
 
     }
 
@@ -250,9 +239,9 @@ public class BrahmsSpecimenTransformerTest {
         String expectedSpecificEpithet = "ferrugineum";
 
 
-        assertNotNull(identification);
-        assertEquals(expectedGenus, identification.getDefaultClassification().getGenus());
-        assertEquals(expectedSpecificEpithet, identification.getDefaultClassification().getSpecificEpithet());
+        assertNotNull("01",identification);
+        assertEquals("02",expectedGenus, identification.getDefaultClassification().getGenus());
+        assertEquals("03",expectedSpecificEpithet, identification.getDefaultClassification().getSpecificEpithet());
         assertEquals(expectedKingdom, identification.getDefaultClassification().getKingdom());
     }
 
@@ -282,8 +271,8 @@ public class BrahmsSpecimenTransformerTest {
 
         String expectedAssembleID = "1993139@BRAHMS";
 
-        assertNotNull(assembleId);
-        assertEquals(expectedAssembleID, assembleId);
+        assertNotNull("01",assembleId);
+        assertEquals("02",expectedAssembleID, assembleId);
 
 
     }
@@ -317,8 +306,8 @@ public class BrahmsSpecimenTransformerTest {
 
         String expectedCollectionNumber = "Unknown  s.n. ";
 
-        assertNotNull(expectedCollectionNumber);
-        assertEquals(expectedCollectionNumber, actualCollectorsNumber);
+        assertNotNull("01",expectedCollectionNumber);
+        assertEquals("02",expectedCollectionNumber, actualCollectorsNumber);
 
     }
 
@@ -352,8 +341,8 @@ public class BrahmsSpecimenTransformerTest {
 
         String actualAccessPoint = actualList.stream().map(i -> i.getAccessUri().toString()).findFirst().get();
 
-        assertNotNull(actualList);
-        assertEquals(expectedAccessPoint, actualAccessPoint);
+        assertNotNull("01",actualList);
+        assertEquals("02",expectedAccessPoint, actualAccessPoint);
 
 
     }

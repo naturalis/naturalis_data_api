@@ -13,7 +13,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 import java.io.File;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -31,7 +30,6 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import nl.naturalis.nba.api.model.DefaultClassification;
 import nl.naturalis.nba.api.model.Monomial;
 import nl.naturalis.nba.api.model.ScientificName;
-import nl.naturalis.nba.etl.AllTests;
 import nl.naturalis.nba.etl.CSVRecordInfo;;
 
 /**
@@ -48,14 +46,6 @@ public class BrahmsImportUtilTest {
    */
   @Before
   public void setUp() throws Exception {
-
-    String logFile = "log4j2.xml";
-    URL logFileUrl = AllTests.class.getResource(logFile);
-    String logFilePath = logFileUrl.getFile().toString();
-    String dirPath = logFilePath.substring(0, logFilePath.lastIndexOf("/"));
-    System.setProperty("nba.v2.conf.dir", dirPath);
-    System.setProperty("brahms.data.dir", dirPath);
-    System.setProperty("log4j.configurationFile", logFilePath);
   }
 
   /**
@@ -80,8 +70,8 @@ public class BrahmsImportUtilTest {
     BrahmsImportUtil brahmsImportUtil = new BrahmsImportUtil();
     File[] actualFiles = brahmsImportUtil.getCsvFiles();
     String file = Arrays.asList(actualFiles).stream().findFirst().get().getName();
-    assertNotNull(file);
-    assertEquals(".CSV", (file.substring(file.indexOf("."))));
+    assertNotNull("01",file);
+    assertEquals("02",".CSV", (file.substring(file.indexOf("."))));
   }
 
   /**
@@ -144,8 +134,8 @@ public class BrahmsImportUtilTest {
     expected.setInfraspecificEpithet("");
 
     ScientificName actual = BrahmsImportUtil.getScientificName(record);
-    assertNotNull(actual);
-    assertEquals(expected.getFullScientificName(), actual.getFullScientificName());
+    assertNotNull("01",actual);
+    assertEquals("02",expected.getFullScientificName(), actual.getFullScientificName());
 
   }
 
@@ -177,8 +167,8 @@ public class BrahmsImportUtilTest {
     expected.setInfraspecificEpithet("");
 
     ScientificName actual = BrahmsImportUtil.getScientificName(record);
-    assertNotNull(actual);
-    assertEquals(expected.getFullScientificName(), actual.getFullScientificName());
+    assertNotNull("01",actual);
+    assertEquals("02",expected.getFullScientificName(), actual.getFullScientificName());
 
   }
 
@@ -216,9 +206,9 @@ public class BrahmsImportUtilTest {
 
     DefaultClassification classification =
         BrahmsImportUtil.getDefaultClassification(record, scientificName);
-    assertNotNull(classification);
-    assertEquals(expectedGenus, classification.getGenus());
-    assertEquals(expectedFamilyname, classification.getKingdom());
+    assertNotNull("01",classification);
+    assertEquals("02",expectedGenus, classification.getGenus());
+    assertEquals("03",expectedFamilyname, classification.getKingdom());
 
   }
 
@@ -275,11 +265,11 @@ public class BrahmsImportUtilTest {
     Map<String, String> expectedResult =
         expectedList.stream().collect(Collectors.toMap(Monomial::getName, Monomial::getRank));
 
-    assertNotNull(list);
-    assertEquals(4, list.size());
-    assertEquals(expectedResult, actualResult);
-    assertArrayEquals(actualResult.keySet().toArray(), expectedResult.keySet().toArray());
-    assertArrayEquals(actualResult.values().toArray(), expectedResult.values().toArray());
+    assertNotNull("01",list);
+    assertEquals("02",4, list.size());
+    assertEquals("03",expectedResult, actualResult);
+    assertArrayEquals("04",actualResult.keySet().toArray(), expectedResult.keySet().toArray());
+    assertArrayEquals("05", actualResult.values().toArray(), expectedResult.values().toArray());
 
   }
 
@@ -310,8 +300,8 @@ public class BrahmsImportUtilTest {
     expected = BrahmsImportUtil.getScientificName(record);
     expected.getAuthorshipVerbatim();
 
-    assertNotNull(expected);
-    assertEquals("L.", expected.getAuthorshipVerbatim());
+    assertNotNull("01",expected);
+    assertEquals("02","L.", expected.getAuthorshipVerbatim());
 
   }
 
@@ -342,8 +332,8 @@ public class BrahmsImportUtilTest {
     PowerMockito.when(brahmsImportUtilSpy, "getInfraspecificMarker", record)
         .thenReturn("testInfraSpecifc");
     expected = BrahmsImportUtil.getScientificName(record);
-    assertNotNull(expected);
-    assertEquals("testInfraSpecifc", expected.getInfraspecificMarker());
+    assertNotNull("01",expected);
+    assertEquals("02","testInfraSpecifc", expected.getInfraspecificMarker());
 
   }
 
@@ -374,8 +364,8 @@ public class BrahmsImportUtilTest {
     PowerMockito.when(brahmsImportUtilSpy, "getInfraspecificEpithet", record)
         .thenReturn("testInfraEpithat");
     expected = BrahmsImportUtil.getScientificName(record);
-    assertNotNull(expected);
-    assertEquals("testInfraEpithat", expected.getInfraspecificEpithet());
+    assertNotNull("01",expected);
+    assertEquals("02","testInfraEpithat", expected.getInfraspecificEpithet());
 
   }
 

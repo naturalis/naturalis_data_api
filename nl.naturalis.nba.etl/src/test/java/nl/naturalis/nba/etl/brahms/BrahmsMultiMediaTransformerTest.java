@@ -5,7 +5,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 import java.net.URI;
-import java.net.URL;
 import java.util.List;
 import org.junit.After;
 import org.junit.Before;
@@ -20,7 +19,6 @@ import nl.naturalis.nba.api.model.MultiMediaGatheringEvent;
 import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.api.model.ServiceAccessPoint;
 import nl.naturalis.nba.etl.AbstractTransformer;
-import nl.naturalis.nba.etl.AllTests;
 import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.utils.CommonReflectionUtil;
@@ -37,16 +35,6 @@ public class BrahmsMultiMediaTransformerTest {
 
     @Before
     public void setUp() throws Exception {
-
-        String logFile = "log4j2.xml";
-        URL logFileUrl = AllTests.class.getResource(logFile);
-        String logFilePath = logFileUrl.getFile().toString();
-        String dirPath = logFilePath.substring(0, logFilePath.lastIndexOf("/"));
-        System.setProperty("nba.v2.conf.dir", dirPath);
-        System.setProperty("brahms.data.dir", dirPath);
-        System.setProperty("log4j.configurationFile", logFilePath);
-        System.setProperty("nl.naturalis.nba.etl.testGenera", "malus,parus,larus,bombus,rhododendron,felix,tulipa,rosa,canis,passer,trientalis");
-
     }
 
     @After
@@ -109,10 +97,10 @@ public class BrahmsMultiMediaTransformerTest {
         String expectedSourceID = "Brahms";
         List<MultiMediaObject> list = (List<MultiMediaObject>) obj;
 
-        assertNotNull(list);
-        assertTrue(list.size() == 1);
-        assertEquals(expectedAssociatedSpecimenRef, list.stream().map(i -> i.getAssociatedSpecimenReference()).findFirst().get());
-        assertEquals(expectedSourceID, list.stream().map(i -> i.getSourceID()).findFirst().get());
+        assertNotNull("01",list);
+        assertTrue("02",list.size() == 1);
+        assertEquals("03",expectedAssociatedSpecimenRef, list.stream().map(i -> i.getAssociatedSpecimenReference()).findFirst().get());
+        assertEquals("04",expectedSourceID, list.stream().map(i -> i.getSourceID()).findFirst().get());
 
     }
 
@@ -173,8 +161,8 @@ public class BrahmsMultiMediaTransformerTest {
         Object obj = CommonReflectionUtil.callMethod(url, String.class, brahmsMultiMediaTransformer, "transformOne");
 
         MultiMediaObject mediaObject = (MultiMediaObject) obj;
-        assertNotNull(mediaObject);
-        assertEquals(expectedAssociatedSpecimenRef, mediaObject.getAssociatedSpecimenReference());
+        assertNotNull("01",mediaObject);
+        assertEquals("02",expectedAssociatedSpecimenRef, mediaObject.getAssociatedSpecimenReference());
 
     }
 
@@ -237,9 +225,9 @@ public class BrahmsMultiMediaTransformerTest {
 
         MultiMediaContentIdentification contentIdentification = (MultiMediaContentIdentification) obj;
 
-        assertNotNull(contentIdentification);
-        assertEquals(expectedScientificNameGroup, contentIdentification.getScientificName().getScientificNameGroup());
-        assertEquals(expectedTaxonGroup, contentIdentification.getScientificName().getAuthorshipVerbatim());
+        assertNotNull("01",contentIdentification);
+        assertEquals("02",expectedScientificNameGroup, contentIdentification.getScientificName().getScientificNameGroup());
+        assertEquals("03",expectedTaxonGroup, contentIdentification.getScientificName().getAuthorshipVerbatim());
     }
 
 
@@ -309,9 +297,9 @@ public class BrahmsMultiMediaTransformerTest {
         Object obj = CommonReflectionUtil.callMethod(url, String.class, brahmsMultiMediaTransformer, "getUri");
 
         URI uri = (URI) obj;
-        assertNotNull(uri);
-        assertEquals(expectedPath, uri.getPath());
-        assertEquals(expectedHost, uri.getHost());
+        assertNotNull("01",uri);
+        assertEquals("02",expectedPath, uri.getPath());
+        assertEquals("03",expectedHost, uri.getHost());
 
     }
 
@@ -343,9 +331,9 @@ public class BrahmsMultiMediaTransformerTest {
 
         ServiceAccessPoint serviceAccessPoint = (ServiceAccessPoint) obj;
 
-        assertNotNull(obj);
-        assertEquals(ServiceAccessPoint.class, serviceAccessPoint.getClass());
-        assertEquals(uri, serviceAccessPoint.getAccessUri());
+        assertNotNull("01",obj);
+        assertEquals("02",ServiceAccessPoint.class, serviceAccessPoint.getClass());
+        assertEquals("03",uri, serviceAccessPoint.getAccessUri());
 
     }
 

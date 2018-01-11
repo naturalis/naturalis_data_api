@@ -40,16 +40,10 @@ import nl.naturalis.nba.etl.nsr.NsrTaxonTransformerTest;
     CoLVernacularNameBatchTransformerTest.class,
     CoLReferenceBatchTransformerTest.class,
     GeoTransformerTest.class,
-    GeoImportUtilTest.class,
     TransformUtilTest.class,
     NsrImportUtilTest.class,
     NsrMultiMediaTransformerTest.class,
-    NsrTaxonTransformerTest.class,
-    EnrichmentUtilTest.class,
-    SpecimenTaxonomicEnricher2Test.class,
-    SpecimenMultimediaEnricherTest.class,
-    MultimediaTaxonomicEnricher2Test.class,
-    SummaryObjectUtilTest.class
+    NsrTaxonTransformerTest.class
 })
 public class AllTests {
 

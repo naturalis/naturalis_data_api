@@ -13,7 +13,15 @@ import nl.naturalis.nba.etl.col.CoLVernacularNameBatchTransformerTest;
 import nl.naturalis.nba.etl.crs.CrsImportUtilTest;
 import nl.naturalis.nba.etl.crs.CrsMultiMediaTransformerTest;
 import nl.naturalis.nba.etl.crs.CrsSpecimenTransformerTest;
+import nl.naturalis.nba.etl.enrich.EnrichmentUtilTest;
+import nl.naturalis.nba.etl.enrich.MultimediaTaxonomicEnricher2Test;
+import nl.naturalis.nba.etl.enrich.SpecimenMultimediaEnricherTest;
+import nl.naturalis.nba.etl.enrich.SpecimenTaxonomicEnricher2Test;
+import nl.naturalis.nba.etl.geo.GeoImportUtilTest;
 import nl.naturalis.nba.etl.geo.GeoTransformerTest;
+import nl.naturalis.nba.etl.nsr.NsrImportUtilTest;
+import nl.naturalis.nba.etl.nsr.NsrMultiMediaTransformerTest;
+import nl.naturalis.nba.etl.nsr.NsrTaxonTransformerTest;
 
 
 @RunWith(Suite.class)
@@ -32,7 +40,16 @@ import nl.naturalis.nba.etl.geo.GeoTransformerTest;
     CoLVernacularNameBatchTransformerTest.class,
     CoLReferenceBatchTransformerTest.class,
     GeoTransformerTest.class,
-    TransformUtilTest.class
+    GeoImportUtilTest.class,
+    TransformUtilTest.class,
+    NsrImportUtilTest.class,
+    NsrMultiMediaTransformerTest.class,
+    NsrTaxonTransformerTest.class,
+    EnrichmentUtilTest.class,
+    SpecimenTaxonomicEnricher2Test.class,
+    SpecimenMultimediaEnricherTest.class,
+    MultimediaTaxonomicEnricher2Test.class,
+    SummaryObjectUtilTest.class
 })
 public class AllTests {
 

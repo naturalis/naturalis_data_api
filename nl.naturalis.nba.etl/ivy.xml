@@ -26,7 +26,6 @@
 		<dependency org="org.mockito" name="mockito-all" rev="1.10.19"/>
 		<dependency org="org.powermock" name="powermock-module-junit4" rev="1.7.1"/>
 		<dependency org="org.powermock" name="powermock-api-mockito" rev="1.7.1"/>
-		<dependency org="org.powermock" name="powermock-core" rev="1.7.1"/>
 		
 	</dependencies>
 	

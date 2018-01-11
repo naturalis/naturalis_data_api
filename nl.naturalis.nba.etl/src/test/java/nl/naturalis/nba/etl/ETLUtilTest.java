@@ -39,6 +39,7 @@ public class ETLUtilTest {
     CoLTaxonImporter cti = new CoLTaxonImporter();
     String path = AllTests.class.getResource("taxa.txt").getPath();
     cti.importCsv(path);
+    System.setProperty("nl.naturalis.nba.etl.testGenera", "malus,parus,larus,bombus,rhododendron,felix,tulipa,rosa,canis,passer,trientalis");
   }
 
   /**

@@ -16,6 +16,22 @@
                         "boost" : 1.0
                       }
                     }
+                  },
+                  {
+                    "term" : {
+                      "identifications.scientificName.specificEpithet" : {
+                        "value" : "domesticus",
+                        "boost" : 1.0
+                      }
+                    }
+                  },
+                  {
+                    "term" : {
+                      "identifications.scientificName.infraspecificEpithet" : {
+                        "value" : "biblicus",
+                        "boost" : 1.0
+                      }
+                    }
                   }
                 ],
                 "disable_coord" : false,
@@ -31,32 +47,7 @@
         },
         {
           "bool" : {
-            "must" : [
-              {
-                "nested" : {
-                  "query" : {
-                    "bool" : {
-                      "must" : [
-                        {
-                          "term" : {
-                            "identifications.scientificName.specificEpithet" : {
-                              "value" : "domesticus",
-                              "boost" : 1.0
-                            }
-                          }
-                        }
-                      ],
-                      "disable_coord" : false,
-                      "adjust_pure_negative" : true,
-                      "boost" : 1.0
-                    }
-                  },
-                  "path" : "identifications",
-                  "ignore_unmapped" : false,
-                  "score_mode" : "avg",
-                  "boost" : 1.0
-                }
-              },
+            "must_not" : [
               {
                 "bool" : {
                   "must" : [
@@ -67,8 +58,24 @@
                             "must" : [
                               {
                                 "term" : {
+                                  "identifications.scientificName.genusOrMonomial" : {
+                                    "value" : "Passer",
+                                    "boost" : 1.0
+                                  }
+                                }
+                              },
+                              {
+                                "term" : {
+                                  "identifications.scientificName.specificEpithet" : {
+                                    "value" : "domesticus",
+                                    "boost" : 1.0
+                                  }
+                                }
+                              },
+                              {
+                                "term" : {
                                   "identifications.scientificName.infraspecificEpithet" : {
-                                    "value" : "biblicus",
+                                    "value" : "domesticus",
                                     "boost" : 1.0
                                   }
                                 }
@@ -80,31 +87,6 @@
                           }
                         },
                         "path" : "identifications",
-                        "ignore_unmapped" : false,
-                        "score_mode" : "avg",
-                        "boost" : 1.0
-                      }
-                    },
-                    {
-                      "nested" : {
-                        "query" : {
-                          "bool" : {
-                            "must" : [
-                              {
-                                "term" : {
-                                  "gatheringEvent.gatheringPersons.fullName" : {
-                                    "value" : "Mavromonstakis, G.A.",
-                                    "boost" : 1.0
-                                  }
-                                }
-                              }
-                            ],
-                            "disable_coord" : false,
-                            "adjust_pure_negative" : true,
-                            "boost" : 1.0
-                          }
-                        },
-                        "path" : "gatheringEvent.gatheringPersons",
                         "ignore_unmapped" : false,
                         "score_mode" : "avg",
                         "boost" : 1.0

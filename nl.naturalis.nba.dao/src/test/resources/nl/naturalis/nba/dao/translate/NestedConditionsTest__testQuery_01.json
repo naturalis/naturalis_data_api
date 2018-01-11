@@ -35,31 +35,6 @@
                 "must" : [
                   {
                     "term" : {
-                      "gatheringEvent.gatheringPersons.fullName" : {
-                        "value" : "Mavromonstakis, G.A.",
-                        "boost" : 1.0
-                      }
-                    }
-                  }
-                ],
-                "disable_coord" : false,
-                "adjust_pure_negative" : true,
-                "boost" : 1.0
-              }
-            },
-            "path" : "gatheringEvent.gatheringPersons",
-            "ignore_unmapped" : false,
-            "score_mode" : "avg",
-            "boost" : 1.0
-          }
-        },
-        {
-          "nested" : {
-            "query" : {
-              "bool" : {
-                "must" : [
-                  {
-                    "term" : {
                       "identifications.scientificName.genusOrMonomial" : {
                         "value" : "Passer",
                         "boost" : 1.0
@@ -89,6 +64,31 @@
               }
             },
             "path" : "identifications",
+            "ignore_unmapped" : false,
+            "score_mode" : "avg",
+            "boost" : 1.0
+          }
+        },
+        {
+          "nested" : {
+            "query" : {
+              "bool" : {
+                "must" : [
+                  {
+                    "term" : {
+                      "gatheringEvent.gatheringPersons.fullName" : {
+                        "value" : "Mavromonstakis, G.A.",
+                        "boost" : 1.0
+                      }
+                    }
+                  }
+                ],
+                "disable_coord" : false,
+                "adjust_pure_negative" : true,
+                "boost" : 1.0
+              }
+            },
+            "path" : "gatheringEvent.gatheringPersons",
             "ignore_unmapped" : false,
             "score_mode" : "avg",
             "boost" : 1.0

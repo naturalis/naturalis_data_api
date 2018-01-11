@@ -16,7 +16,7 @@ import static org.elasticsearch.index.query.QueryBuilders.constantScoreQuery;
 import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 import org.apache.logging.log4j.Logger;
 import org.apache.lucene.search.join.ScoreMode;
@@ -95,11 +95,14 @@ abstract class ConditionTranslator {
 	{
 		preprocess();
 		QueryBuilder query = translateCondition();
+		
+		// Sorting
 		if (forSortField)
 			query = postprocessForSortField(query);
 		else
 			query = postprocess(query);
 		
+		// AND / OR sibling conditions
 		if (hasElements(condition.getAnd())) {
 			query = generateAndSiblings(query);
 			if (hasElements(condition.getOr())) {
@@ -109,16 +112,13 @@ abstract class ConditionTranslator {
 		else if (hasElements(condition.getOr())) {
 			query = generateOrSiblings(query);
 		}
-//		else {
-//		  String nestedPath = getNestedPath(condition.getField(), mappingInfo);
-//		  if (nestedPath != null ) {
-//		    query = nestedQuery(nestedPath, query, ScoreMode.Avg);
-//		  }
-//		}
 
+		// NOT
 		if (condition.isNegated()) {
 			query = not(query);
 		}
+
+		// Boost
 		query.boost(condition.getBoost());
 		return query;
 	}
@@ -170,7 +170,7 @@ abstract class ConditionTranslator {
       throws InvalidConditionException {
 
     // Collect all conditions that use a nested path
-    HashMap<String, ArrayList<QueryCondition>> mapNestedPaths = new HashMap<>();
+    LinkedHashMap<String, ArrayList<QueryCondition>> mapNestedPaths = new LinkedHashMap<>();
 
     // First condition
     String nestedPathFirst = getNestedPath(condition.getField(), mappingInfo);
@@ -226,7 +226,7 @@ abstract class ConditionTranslator {
 			throws InvalidConditionException
 	{
     // Collect all conditions that use a nested path
-    HashMap<String, ArrayList<QueryCondition>> mapNestedPaths = new HashMap<>();
+    LinkedHashMap<String, ArrayList<QueryCondition>> mapNestedPaths = new LinkedHashMap<>();
 
     // First condition
     String nestedPathFirst = getNestedPath(condition.getField(), mappingInfo);

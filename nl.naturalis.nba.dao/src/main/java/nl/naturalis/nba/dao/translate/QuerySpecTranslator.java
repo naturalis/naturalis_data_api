@@ -20,6 +20,7 @@ import org.elasticsearch.search.sort.SortBuilder;
 
 import nl.naturalis.nba.api.InvalidConditionException;
 import nl.naturalis.nba.api.InvalidQueryException;
+import nl.naturalis.nba.api.LogicalOperator;
 import nl.naturalis.nba.api.NoSuchFieldException;
 import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.api.QueryCondition;
@@ -126,21 +127,23 @@ public class QuerySpecTranslator {
 	{
 		List<QueryCondition> conditions = spec.getConditions();
 		if (conditions.size() == 1) {
-			QueryCondition c = conditions.iterator().next();
-			return getTranslator(c, dt).translate();
+			QueryCondition condition = conditions.iterator().next();
+			return getTranslator(condition, dt).translate();
 		}
-		BoolQueryBuilder result = QueryBuilders.boolQuery();
-		if (spec.getLogicalOperator() == OR) {
-			for (QueryCondition c : conditions) {
-				result.should(getTranslator(c, dt).translate());
-			}
+		else if (spec.getLogicalOperator() == OR) {
+		  QueryCondition condition = conditions.iterator().next();
+		  for (int n = 1; n < conditions.size(); n++) {
+		    condition.or(conditions.get(n));
+		  }
+		  return getTranslator(condition, dt).translate();
 		}
-		else {
-			for (QueryCondition c : conditions) {
-				result.must(getTranslator(c, dt).translate());
-			}
-		}
-		return result;
+    else {
+      QueryCondition condition = conditions.iterator().next();
+      for (int n = 1; n < conditions.size(); n++) {
+        condition.and(conditions.get(n));
+      }
+      return getTranslator(condition, dt).translate();
+    }
 	}
 
 	/*

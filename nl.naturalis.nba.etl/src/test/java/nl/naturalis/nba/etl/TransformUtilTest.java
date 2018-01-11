@@ -141,7 +141,7 @@ public class TransformUtilTest {
    */
 
   @Test
-  public void testEqualizeNameComponentsTaxon() throws NameMismatchException {
+  public void testEqualizeNameComponentsTaxon_01() throws NameMismatchException {
 
     ScientificName name = new ScientificName();
     name.setGenusOrMonomial("Larus");
@@ -165,6 +165,76 @@ public class TransformUtilTest {
 
   }
 
+  
+  /**
+   * Test method for
+   * {@link nl.naturalis.nba.etl.TransformUtil#equalizeNameComponents(nl.naturalis.nba.api.model.Taxon)}.
+   *
+   * Test to verify if the equalizeNameComponents which takes in {@link Taxon} object throws a NameMismatchException if the DefaultClassification and ScientificName values are different 
+   *
+   * @throws NameMismatchException
+   * 
+   */
+
+  @Test(expected=NameMismatchException.class)
+  public void testEqualizeNameComponentsTaxon_02() throws NameMismatchException {
+
+    ScientificName name = new ScientificName();
+    name.setGenusOrMonomial("Larus");
+    name.setSpecificEpithet("argentatus");
+    name.setInfraspecificEpithet("argentatus");
+    name.setSubgenus("testSubGenus");
+
+    DefaultClassification classification = new DefaultClassification();
+    classification.setSubgenus("test");
+    classification.setSpecificEpithet("randaomSpEp");
+    classification.setInfraspecificEpithet("randomINSpEp");
+    classification.setGenus("Rosa");
+
+    
+    Taxon taxon = new Taxon();
+    taxon.setAcceptedName(name);
+    taxon.setDefaultClassification(classification);
+
+    TransformUtil.equalizeNameComponents(taxon);
+
+  }
+
+  
+  /**
+   * Test method for
+   * {@link nl.naturalis.nba.etl.TransformUtil#equalizeNameComponents(nl.naturalis.nba.api.model.Taxon)}.
+   *
+   * Test to verify if the equalizeNameComponents which takes in {@link Taxon} object throws NullPointerException if  DefaultClassification/ScientificName or both are null
+   *
+   * @throws NameMismatchException
+   * 
+   */
+
+  @Test(expected=NameMismatchException.class)
+  public void testEqualizeNameComponentsTaxon_03() throws NameMismatchException {
+
+    ScientificName name = new ScientificName();
+    name.setGenusOrMonomial("Larus");
+    name.setSpecificEpithet("argentatus");
+    name.setInfraspecificEpithet("argentatus");
+    name.setSubgenus("testSubGenus");
+
+    DefaultClassification classification = new DefaultClassification();
+    classification.setSubgenus("test");
+    classification.setSpecificEpithet("randaomSpEp");
+    classification.setInfraspecificEpithet("randomINSpEp");
+    classification.setGenus("Rosa");
+
+    
+    Taxon taxon = new Taxon();
+    taxon.setAcceptedName(name);
+    taxon.setDefaultClassification(classification);
+
+    TransformUtil.equalizeNameComponents(taxon);
+
+  }
+  
   /**
    * Test method for
    * {@link nl.naturalis.nba.etl.TransformUtil#equalizeNameComponents(nl.naturalis.nba.api.model.Specimen)}.
@@ -176,7 +246,7 @@ public class TransformUtilTest {
    * 
    *
    */
-  @Test
+  @Test(expected=NullPointerException.class)
   public void testEqualizeNameComponentsSpecimen() throws NameMismatchException {
 
     ScientificName name = new ScientificName();
@@ -185,14 +255,8 @@ public class TransformUtilTest {
     name.setInfraspecificEpithet("argentatus");
     name.setSubgenus("testSubGenus");
 
-    DefaultClassification classification = new DefaultClassification();
-    classification.setSubgenus("testSubGenus");
-    classification.setSpecificEpithet("argentatus");
-    classification.setInfraspecificEpithet("argentatus");
-    classification.setGenus("Larus");
-
     SpecimenIdentification identification = new SpecimenIdentification();
-    identification.setDefaultClassification(classification);
+    identification.setDefaultClassification(null);
     identification.setScientificName(name);
 
     List<SpecimenIdentification> identifications = new ArrayList<>();
@@ -201,11 +265,7 @@ public class TransformUtilTest {
     Specimen specimen = new Specimen();
     specimen.setIdentifications(identifications);;
 
-    PowerMockito.mockStatic(TransformUtil.class);
     TransformUtil.equalizeNameComponents(specimen);
-    PowerMockito.verifyStatic(TransformUtil.class, Mockito.times(1));
-    TransformUtil.equalizeNameComponents(specimen);
-
   }
 
   /**

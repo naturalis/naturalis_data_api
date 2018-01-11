@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
-import java.net.URL;
 import java.util.List;
 import org.junit.After;
 import org.junit.Before;
@@ -16,7 +15,6 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import nl.naturalis.nba.api.model.GeoArea;
 import nl.naturalis.nba.etl.AbstractTransformer;
-import nl.naturalis.nba.etl.AllTests;
 import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.utils.CommonReflectionUtil;
@@ -36,14 +34,6 @@ public class GeoTransformerTest {
    */
   @Before
   public void setUp() throws Exception {
-
-    String logFile = "log4j2.xml";
-    URL logFileUrl = AllTests.class.getResource(logFile);
-    String logFilePath = logFileUrl.getFile().toString();
-    String dirPath = logFilePath.substring(0, logFilePath.lastIndexOf("/"));
-    System.setProperty("nba.v2.conf.dir", dirPath);
-    System.setProperty("brahms.data.dir", dirPath);
-    System.setProperty("log4j.configurationFile", logFilePath);
   }
 
   /**
@@ -96,11 +86,11 @@ public class GeoTransformerTest {
 
     assertNotNull(actual);
     assertTrue(list.size() == 1);
-    assertEquals(expectedId, actual.getId());
-    assertEquals(expectedAreaType, actual.getAreaType());
-    assertEquals(expectedLocaity, actual.getLocality());
-    assertEquals(expectedSource, actual.getSource());
-    assertEquals(expectedIso, actual.getIsoCode());
+    assertEquals("01",expectedId, actual.getId());
+    assertEquals("02",expectedAreaType, actual.getAreaType());
+    assertEquals("03",expectedLocaity, actual.getLocality());
+    assertEquals("04",expectedSource, actual.getSource());
+    assertEquals("05",expectedIso, actual.getIsoCode());
 
   }
 

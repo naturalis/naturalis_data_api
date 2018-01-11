@@ -88,16 +88,16 @@ public class CoLVernacularNameBatchTransformerTest {
     String expectedVernecularName = "pinhead spot";
     String expectedLanguage = "English US";
 
-    assertNotNull(actual);
-    assertEquals(expectedId, actual.getId());
-    assertEquals(expectedRecordURI, actual.getRecordURI().toString());
-    assertEquals(expectedAuthorshipVerbatim, actual.getValidName().getAuthorshipVerbatim());
-    assertEquals(expectedScientificNameGroup, actual.getValidName().getScientificNameGroup());
-    assertEquals(expectedFullScientificName, actual.getValidName().getFullScientificName());
-    assertEquals(expectedSourceSystemName, actual.getSourceSystem().getName());
-    assertEquals(expectedSpcificEpithet, actual.getDefaultClassification().getSpecificEpithet());
-    assertEquals(expectedVernecularName, actual.getVernacularNames().iterator().next().getName());
-    assertEquals(expectedLanguage, actual.getVernacularNames().iterator().next().getLanguage());
+    assertNotNull("01",actual);
+    assertEquals("02",expectedId, actual.getId());
+    assertEquals("03",expectedRecordURI, actual.getRecordURI().toString());
+    assertEquals("04",expectedAuthorshipVerbatim, actual.getValidName().getAuthorshipVerbatim());
+    assertEquals("05",expectedScientificNameGroup, actual.getValidName().getScientificNameGroup());
+    assertEquals("06",expectedFullScientificName, actual.getValidName().getFullScientificName());
+    assertEquals("07",expectedSourceSystemName, actual.getSourceSystem().getName());
+    assertEquals("08",expectedSpcificEpithet, actual.getDefaultClassification().getSpecificEpithet());
+    assertEquals("09",expectedVernecularName, actual.getVernacularNames().iterator().next().getName());
+    assertEquals("10",expectedLanguage, actual.getVernacularNames().iterator().next().getLanguage());
 
   }
 
@@ -139,13 +139,13 @@ public class CoLVernacularNameBatchTransformerTest {
     String expectedSourceSystemName = "Species 2000 - Catalogue Of Life";
     String expectedSpcificEpithet = "affinis";
 
-    assertEquals(expectedKey, actualResults.keySet().iterator().next());
-    assertEquals(expectedId, actual.getId());
-    assertEquals(expectedRecordURI, actual.getRecordURI().toString());
-    assertEquals(expectedFullScientificName, actual.getAcceptedName().getFullScientificName());
-    assertEquals(expectedScientificNameGroup, actual.getAcceptedName().getScientificNameGroup());
-    assertEquals(expectedSpcificEpithet, actual.getDefaultClassification().getSpecificEpithet());
-    assertEquals(expectedSourceSystemName, actual.getSourceSystem().getName());
+    assertEquals("01",expectedKey, actualResults.keySet().iterator().next());
+    assertEquals("02",expectedId, actual.getId());
+    assertEquals("03",expectedRecordURI, actual.getRecordURI().toString());
+    assertEquals("04",expectedFullScientificName, actual.getAcceptedName().getFullScientificName());
+    assertEquals("05",expectedScientificNameGroup, actual.getAcceptedName().getScientificNameGroup());
+    assertEquals("06",expectedSpcificEpithet, actual.getDefaultClassification().getSpecificEpithet());
+    assertEquals("07",expectedSourceSystemName, actual.getSourceSystem().getName());
 
   }
 
@@ -175,9 +175,9 @@ public class CoLVernacularNameBatchTransformerTest {
     String expectedVenecularName = "pinhead spot";
     String expectedLangauge = "English US";
 
-    assertNotNull(actual);
-    assertEquals(expectedVenecularName, actual.getName());
-    assertEquals(expectedLangauge, actual.getLanguage());
+    assertNotNull("01",actual);
+    assertEquals("02",expectedVenecularName, actual.getName());
+    assertEquals("03",expectedLangauge, actual.getLanguage());
 
   }
 

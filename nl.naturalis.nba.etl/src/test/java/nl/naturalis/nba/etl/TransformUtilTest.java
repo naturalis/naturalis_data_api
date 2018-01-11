@@ -5,7 +5,6 @@ package nl.naturalis.nba.etl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.After;
@@ -41,14 +40,6 @@ public class TransformUtilTest {
    */
   @Before
   public void setUp() throws Exception {
-
-    String logFile = "log4j2.xml";
-    URL logFileUrl = AllTests.class.getResource(logFile);
-    String logFilePath = logFileUrl.getFile().toString();
-    String dirPath = logFilePath.substring(0, logFilePath.lastIndexOf("/"));
-    System.setProperty("nba.v2.conf.dir", dirPath);
-    System.setProperty("brahms.data.dir", dirPath);
-    System.setProperty("log4j.configurationFile", logFilePath);
   }
 
   /**
@@ -76,11 +67,11 @@ public class TransformUtilTest {
 
     DefaultClassification actual = TransformUtil.extractClassificiationFromName(name);
 
-    assertNotNull(actual);
-    assertEquals("testSubGenus", actual.getSubgenus());
-    assertEquals("argentatus", actual.getSpecificEpithet());
-    assertEquals("Larus", actual.getGenus());
-    assertEquals("argentatus", actual.getInfraspecificEpithet());
+    assertNotNull("01",actual);
+    assertEquals("02","testSubGenus", actual.getSubgenus());
+    assertEquals("03","argentatus", actual.getSpecificEpithet());
+    assertEquals("04","Larus", actual.getGenus());
+    assertEquals("05","argentatus", actual.getInfraspecificEpithet());
 
   }
 
@@ -102,14 +93,14 @@ public class TransformUtilTest {
     List<Monomial> actual = TransformUtil.getMonomialsInName(name);
 
     assertNotNull(actual);
-    assertEquals("Larus", actual.get(0).getName());
-    assertEquals("genus", actual.get(0).getRank());
-    assertEquals("testSubGenus", actual.get(1).getName());
-    assertEquals("subgenus", actual.get(1).getRank());
-    assertEquals("argentatus", actual.get(2).getName());
-    assertEquals("species", actual.get(2).getRank());
-    assertEquals("argentatus", actual.get(3).getName());
-    assertEquals("subspecies", actual.get(3).getRank());
+    assertEquals("01","Larus", actual.get(0).getName());
+    assertEquals("02","genus", actual.get(0).getRank());
+    assertEquals("03","testSubGenus", actual.get(1).getName());
+    assertEquals("04","subgenus", actual.get(1).getRank());
+    assertEquals("05","argentatus", actual.get(2).getName());
+    assertEquals("06","species", actual.get(2).getRank());
+    assertEquals("07","argentatus", actual.get(3).getName());
+    assertEquals("08","subspecies", actual.get(3).getRank());
   }
 
   /**
@@ -131,10 +122,10 @@ public class TransformUtilTest {
     ScientificName actual = TransformUtil.extractNameFromClassification(classification);
 
     assertNotNull(actual);
-    assertEquals("testSubGenus", actual.getSubgenus());
-    assertEquals("argentatus", actual.getSpecificEpithet());
-    assertEquals("argentatus", actual.getInfraspecificEpithet());
-    assertEquals("Larus", actual.getGenusOrMonomial());
+    assertEquals("01","testSubGenus", actual.getSubgenus());
+    assertEquals("02","argentatus", actual.getSpecificEpithet());
+    assertEquals("03","argentatus", actual.getInfraspecificEpithet());
+    assertEquals("04","Larus", actual.getGenusOrMonomial());
 
   }
 
@@ -270,8 +261,8 @@ public class TransformUtilTest {
     String actual = TransformUtil.guessMimeType(
         "http://images.naturalis.nl/original/104527_zilvermeeuw-20130210-egmond_aan_zee-001arnold_wijker.jpg");
 
-    assertNotNull(actual);
-    assertEquals(expectedMimeType, actual);
+    assertNotNull("01",actual);
+    assertEquals("02",expectedMimeType, actual);
   }
 
 }

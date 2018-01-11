@@ -41,16 +41,9 @@ public class CrsMultiMediaTransformerTest {
    */
   @Before
   public void setUp() throws Exception {
-
-    String logFile = "log4j2.xml";
-    URL logFileUrl = AllTests.class.getResource(logFile);
-    String logFilePath = logFileUrl.getFile().toString();
-    String dirPath = logFilePath.substring(0, logFilePath.lastIndexOf("/"));
-    System.setProperty("nba.v2.conf.dir", dirPath);
-    System.setProperty("brahms.data.dir", dirPath);
-    System.setProperty("log4j.configurationFile", logFilePath);
+    
     System.setProperty("nl.naturalis.nba.etl.testGenera",
-        "malus,aedes,parus,larus,bombus,rhododendron,felix,tulipa,rosa,canis,passer,trientalis");
+        "malus,parus,larus,bombus,rhododendron,aedes,felix,tulipa,rosa,canis,passer,trientalis");
     multimediaUrl = AllTests.class.getResource("multimedia.00000000000000.013159.oai.xml");
     multimediaFile = new File(multimediaUrl.getFile());
   }
@@ -99,18 +92,18 @@ public class CrsMultiMediaTransformerTest {
       expectedMmo.setAssociatedSpecimenReference("RMNH.INS.867435@CRS");
       expectedMmo.setMultiMediaPublic(true);
 
-      assertNotNull(sp);
-      assertEquals(expectedMmo.getId(), sp.getId());
-      assertEquals(expectedMmo.getSourceInstitutionID(), sp.getSourceInstitutionID());
-      assertEquals(expectedMmo.getSourceID(), sp.getSourceID());
-      assertEquals(expectedMmo.getOwner(), sp.getOwner());
-      assertEquals(expectedMmo.getUnitID(), sp.getUnitID());
-      assertEquals(expectedMmo.getLicense(), sp.getLicense());
-      assertEquals(expectedMmo.getCollectionType(), sp.getCollectionType());
-      assertEquals(expectedMmo.getTitle(), sp.getTitle());
-      assertEquals(expectedMmo.getAssociatedSpecimenReference(),
+      assertNotNull("01",sp);
+      assertEquals("02",expectedMmo.getId(), sp.getId());
+      assertEquals("03",expectedMmo.getSourceInstitutionID(), sp.getSourceInstitutionID());
+      assertEquals("04",expectedMmo.getSourceID(), sp.getSourceID());
+      assertEquals("05",expectedMmo.getOwner(), sp.getOwner());
+      assertEquals("06",expectedMmo.getUnitID(), sp.getUnitID());
+      assertEquals("07",expectedMmo.getLicense(), sp.getLicense());
+      assertEquals("08",expectedMmo.getCollectionType(), sp.getCollectionType());
+      assertEquals("09",expectedMmo.getTitle(), sp.getTitle());
+      assertEquals("10",expectedMmo.getAssociatedSpecimenReference(),
           sp.getAssociatedSpecimenReference());
-      assertEquals(expectedMmo.isMultiMediaPublic(), sp.isMultiMediaPublic());
+      assertEquals("11",expectedMmo.isMultiMediaPublic(), sp.isMultiMediaPublic());
 
     }
   }
@@ -156,15 +149,15 @@ public class CrsMultiMediaTransformerTest {
     expectedMmo.setAssociatedSpecimenReference("RMNH.INS.867435@CRS");
     expectedMmo.setMultiMediaPublic(false);
 
-    assertNotNull(mmo);
-    assertEquals(expectedMmo.getSourceInstitutionID(), mmo.getSourceInstitutionID());
-    assertEquals(expectedMmo.getSourceID(), mmo.getSourceID());
-    assertEquals(expectedMmo.getOwner(), mmo.getOwner());
-    assertEquals(expectedMmo.getLicense(), mmo.getLicense());
-    assertEquals(expectedMmo.getCollectionType(), mmo.getCollectionType());
-    assertEquals(expectedMmo.getAssociatedSpecimenReference(),
+    assertNotNull("01",mmo);
+    assertEquals("02",expectedMmo.getSourceInstitutionID(), mmo.getSourceInstitutionID());
+    assertEquals("03",expectedMmo.getSourceID(), mmo.getSourceID());
+    assertEquals("04",expectedMmo.getOwner(), mmo.getOwner());
+    assertEquals("05",expectedMmo.getLicense(), mmo.getLicense());
+    assertEquals("06",expectedMmo.getCollectionType(), mmo.getCollectionType());
+    assertEquals("07",expectedMmo.getAssociatedSpecimenReference(),
         mmo.getAssociatedSpecimenReference());
-    assertEquals(expectedMmo.isMultiMediaPublic(), mmo.isMultiMediaPublic());
+    assertEquals("08",expectedMmo.isMultiMediaPublic(), mmo.isMultiMediaPublic());
 
   }
 
@@ -208,9 +201,9 @@ public class CrsMultiMediaTransformerTest {
         ids.stream().map(i -> i.getScientificName().getSpecificEpithet()).findFirst().get());
 
     // Assert DefaultClassification Object values
-    assertEquals("Aedes",
+    assertEquals("01","Aedes",
         ids.stream().map(i -> i.getDefaultClassification().getGenus()).findFirst().get());
-    assertEquals("kabaenensis",
+    assertEquals("02","kabaenensis",
         ids.stream().map(i -> i.getDefaultClassification().getSpecificEpithet()).findFirst().get());
   }
 
@@ -249,11 +242,11 @@ public class CrsMultiMediaTransformerTest {
     expectedGe.setProvinceState("Southeast Sulawesi");
     expectedGe.setSublocality("Kabaena, Pulau");
 
-    assertNotNull(ge);
-    assertEquals(expectedGe.getCountry(), ge.getCountry());
-    assertEquals(expectedGe.getWorldRegion(), ge.getWorldRegion());
-    assertEquals(expectedGe.getProvinceState(), ge.getProvinceState());
-    assertEquals(expectedGe.getSublocality(), ge.getSublocality());
+    assertNotNull("01",ge);
+    assertEquals("02",expectedGe.getCountry(), ge.getCountry());
+    assertEquals("03",expectedGe.getWorldRegion(), ge.getWorldRegion());
+    assertEquals("04",expectedGe.getProvinceState(), ge.getProvinceState());
+    assertEquals("05",expectedGe.getSublocality(), ge.getSublocality());
 
   }
 
@@ -292,9 +285,10 @@ public class CrsMultiMediaTransformerTest {
       expectedSn.setGenusOrMonomial("Aedes");
       expectedSn.setScientificNameGroup("aedes kabaenensis");
 
-      assertNotNull(expectedSn.getFullScientificName(), sn.getFullScientificName());
-      assertNotNull(expectedSn.getGenusOrMonomial(), sn.getGenusOrMonomial());
-      assertNotNull(expectedSn.getScientificNameGroup(), sn.getScientificNameGroup());
+      assertNotNull(sn);
+      assertEquals("01",expectedSn.getFullScientificName(), sn.getFullScientificName());
+      assertEquals("02",expectedSn.getGenusOrMonomial(), sn.getGenusOrMonomial());
+      assertEquals("03",expectedSn.getScientificNameGroup(), sn.getScientificNameGroup());
 
     }
 
@@ -329,8 +323,8 @@ public class CrsMultiMediaTransformerTest {
           new Object[] {frmDigitaleBestandenElem, "RMNH.INS.867435"});
       String title = (String) obj;
 
-      assertNotNull(obj);
-      assertEquals("RMNH.INS.867435", title);
+      assertNotNull("01",obj);
+      assertEquals("02","RMNH.INS.867435", title);
 
     }
 
@@ -373,9 +367,9 @@ public class CrsMultiMediaTransformerTest {
     String expectedQulifierName1 = qualifiers.get(0);
     String expectedQualifierName2 = qualifiers.get(1);
 
-    assertNotNull(qualifiers);
-    assertEquals(expectedQulifierName1, qualifiers.get(0));
-    assertEquals(expectedQualifierName2, qualifiers.get(1));
+    assertNotNull("01",qualifiers);
+    assertEquals("02",expectedQulifierName1, qualifiers.get(0));
+    assertEquals("03",expectedQualifierName2, qualifiers.get(1));
   }
 
   /**
@@ -411,9 +405,9 @@ public class CrsMultiMediaTransformerTest {
       }
     }
     String expectedVernecularName = "TestVernacularName";
-    assertNotNull(vernacularNames);
-    assertEquals(1, vernacularNames.size());
-    assertEquals(expectedVernecularName, vernacularNames.get(0).getName());
+    assertNotNull("01",vernacularNames);
+    assertEquals("02",1, vernacularNames.size());
+    assertEquals("03",expectedVernecularName, vernacularNames.get(0).getName());
 
   }
 
@@ -450,8 +444,8 @@ public class CrsMultiMediaTransformerTest {
       }
     }
     String expectedPhase = "embryo";
-    assertNotNull(phaseOrStage);
-    assertEquals(expectedPhase, phaseOrStage);
+    assertNotNull("01",phaseOrStage);
+    assertEquals("02",expectedPhase, phaseOrStage);
 
   }
 
@@ -489,8 +483,8 @@ public class CrsMultiMediaTransformerTest {
     }
     String expectedSpecimenTypeStatus = "ISOTYPE";
 
-    assertNotNull(specimenTypeStatus);
-    assertEquals(expectedSpecimenTypeStatus, specimenTypeStatus.name());
+    assertNotNull("01",specimenTypeStatus);
+    assertEquals("02",expectedSpecimenTypeStatus, specimenTypeStatus.name());
 
   }
 
@@ -528,8 +522,8 @@ public class CrsMultiMediaTransformerTest {
     }
     String expectedSex = "male";
 
-    assertNotNull(expectedSex);
-    assertEquals(expectedSex, sex);
+    assertNotNull("01",expectedSex);
+    assertEquals("02",expectedSex, sex);
 
   }
 
@@ -626,8 +620,8 @@ public class CrsMultiMediaTransformerTest {
       Object obj = ReflectionUtil.call(crsMultiMediaTransformer, "val", new Class[] {Element.class, String.class}, new Object[] {frmDigitaleBestandenElem, "dwc:sex"});
       val = (String) obj;
      }
-    assertNotNull(val);
-    assertEquals("male", val);
+    assertNotNull("01",val);
+    assertEquals("02","male", val);
 
   }
 
@@ -665,8 +659,8 @@ public class CrsMultiMediaTransformerTest {
 
     }
     Double expectedDouble = 14.3405556;
-    assertNotNull(dval);
-    assertEquals(expectedDouble, dval);
+    assertNotNull("01",dval);
+    assertEquals("02",expectedDouble, dval);
 
   }
 
@@ -712,9 +706,9 @@ public class CrsMultiMediaTransformerTest {
    * {@link nl.naturalis.nba.etl.crs.CrsMultiMediaTransformer#skipRecord()}.
    * 
    * @throws Exception
-   * 
    *         Test to verify if the skipRecord method returns the expected expected boolean value 
    */
+  
   @Test
   public void testSkipRecord() throws Exception {
 

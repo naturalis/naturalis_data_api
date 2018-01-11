@@ -41,16 +41,6 @@ public class NsrTaxonTransformerTest {
    */
   @Before
   public void setUp() throws Exception {
-
-    String logFile = "log4j2.xml";
-    URL logFileUrl = AllTests.class.getResource(logFile);
-    String logFilePath = logFileUrl.getFile().toString();
-    String dirPath = logFilePath.substring(0, logFilePath.lastIndexOf("/"));
-    System.setProperty("nba.v2.conf.dir", dirPath);
-    System.setProperty("brahms.data.dir", dirPath);
-    System.setProperty("log4j.configurationFile", logFilePath);
-    System.setProperty("nl.naturalis.nba.etl.testGenera",
-        "malus,aedes,parus,larus,bombus,rhododendron,felix,tulipa,rosa,canis,passer,trientalis");
     nsrFileURL = AllTests.class.getResource("nsr-export--2017-12-30_0533--06.xml");
     nsrFile = new File(nsrFileURL.getFile());
 
@@ -586,15 +576,15 @@ public class NsrTaxonTransformerTest {
     String expectedAuthorshipVerbatim = "Pontoppidan, 1763";
     String expectedYear = "1763";
 
-    assertNotNull(actual);
-    assertEquals(expectedAuthorName, actual.getAuthor());
-    assertEquals(expectedFullScintificName, actual.getFullScientificName());
-    assertEquals(expectedGenusOrMonomial, actual.getGenusOrMonomial());
-    assertEquals(expectedScientificNameGroup, actual.getScientificNameGroup());
-    assertEquals(expectedSpecificEpithet, actual.getSpecificEpithet());
-    assertEquals(expectedInfraspecificEpithet, actual.getInfraspecificEpithet());
-    assertEquals(expectedAuthorshipVerbatim, actual.getAuthorshipVerbatim());
-    assertEquals(expectedYear, actual.getYear());
+    assertNotNull("01",actual);
+    assertEquals("02",expectedAuthorName, actual.getAuthor());
+    assertEquals("03",expectedFullScintificName, actual.getFullScientificName());
+    assertEquals("04",expectedGenusOrMonomial, actual.getGenusOrMonomial());
+    assertEquals("05",expectedScientificNameGroup, actual.getScientificNameGroup());
+    assertEquals("06",expectedSpecificEpithet, actual.getSpecificEpithet());
+    assertEquals("07",expectedInfraspecificEpithet, actual.getInfraspecificEpithet());
+    assertEquals("08",expectedAuthorshipVerbatim, actual.getAuthorshipVerbatim());
+    assertEquals("09",expectedYear, actual.getYear());
 
   }
 
@@ -638,10 +628,10 @@ public class NsrTaxonTransformerTest {
     boolean isPreffered = true;
     String expectedLanguage = "Dutch";
 
-    assertNotNull(actual);
-    assertEquals(expectedName, actual.getName());
-    assertEquals(isPreffered, actual.getPreferred());
-    assertEquals(expectedLanguage, actual.getLanguage());
+    assertNotNull("01",actual);
+    assertEquals("02",expectedName, actual.getName());
+    assertEquals("03",isPreffered, actual.getPreferred());
+    assertEquals("04",expectedLanguage, actual.getLanguage());
 
   }
 
@@ -682,8 +672,8 @@ public class NsrTaxonTransformerTest {
 
     }
     String expectedDateString = "2015-01-01T00:00Z";
-    assertNotNull(actual);
-    assertEquals(expectedDateString, actual.toString());
+    assertNotNull("01",actual);
+    assertEquals("02",expectedDateString, actual.toString());
 
   }
 
@@ -724,8 +714,8 @@ public class NsrTaxonTransformerTest {
 
     }
     String expectedDateString = "accepted name";
-    assertNotNull(actual);
-    assertEquals(expectedDateString, actual.toString());
+    assertNotNull("01",actual);
+    assertEquals("02",expectedDateString, actual.toString());
 
   }
 

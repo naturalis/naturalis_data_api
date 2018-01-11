@@ -52,13 +52,6 @@ public class CrsSpecimenTransformerTest {
   @Before
   public void setUp() throws Exception {
 
-    String logFile = "log4j2.xml";
-    URL logFileUrl = AllTests.class.getResource(logFile);
-    String logFilePath = logFileUrl.getFile().toString();
-    String dirPath = logFilePath.substring(0, logFilePath.lastIndexOf("/"));
-    System.setProperty("nba.v2.conf.dir", dirPath);
-    System.setProperty("brahms.data.dir", dirPath);
-    System.setProperty("log4j.configurationFile", logFilePath);
     System.setProperty("nl.naturalis.nba.etl.testGenera",
         "malus,parus,larus,bombus,rhododendron,felix,tulipa,rosa,canis,passer,trientalis");
     specimenFileUrl = AllTests.class.getResource("specimens.20140701000000.000008.oai.xml");
@@ -95,7 +88,6 @@ public class CrsSpecimenTransformerTest {
       Object returned =
           CommonReflectionUtil.callMethod(null, null, crsSpecimenTransformer, "doTransform");
       list = (List<Specimen>) returned;
-      // if (list != null) break;
       Specimen sp = list.get(0);
 
       Specimen expectedSpecimen = new Specimen();
@@ -107,15 +99,16 @@ public class CrsSpecimenTransformerTest {
       expectedSpecimen.setKindOfUnit("WholeOrganism");
       expectedSpecimen.setCollectionType("PreservedSpecimen");
       expectedSpecimen.setNumberOfSpecimen(1);
-
-      assertEquals(expectedSpecimen.getSourceID(), sp.getSourceID());
-      assertEquals(expectedSpecimen.getId(), sp.getId());
-      assertEquals(expectedSpecimen.getUnitGUID(), sp.getUnitGUID());
-      assertEquals(expectedSpecimen.getOwner(), sp.getOwner());
-      assertEquals(expectedSpecimen.getTitle(), sp.getTitle());
-      assertEquals(expectedSpecimen.getKindOfUnit(), sp.getKindOfUnit());
-      assertEquals(expectedSpecimen.getCollectionType(), sp.getCollectionType());
-      assertEquals(expectedSpecimen.getNumberOfSpecimen(), sp.getNumberOfSpecimen());
+      
+      assertNotNull("01",sp);
+      assertEquals("02",expectedSpecimen.getSourceID(), sp.getSourceID());
+      assertEquals("03",expectedSpecimen.getId(), sp.getId());
+      assertEquals("04",expectedSpecimen.getUnitGUID(), sp.getUnitGUID());
+      assertEquals("05",expectedSpecimen.getOwner(), sp.getOwner());
+      assertEquals("06",expectedSpecimen.getTitle(), sp.getTitle());
+      assertEquals("07",expectedSpecimen.getKindOfUnit(), sp.getKindOfUnit());
+      assertEquals("08",expectedSpecimen.getCollectionType(), sp.getCollectionType());
+      assertEquals("09",expectedSpecimen.getNumberOfSpecimen(), sp.getNumberOfSpecimen());
 
     }
   }
@@ -161,10 +154,10 @@ public class CrsSpecimenTransformerTest {
 
     assertTrue(identification.isPreferred());
 
-    assertEquals(expectedSid.getRockType(), identification.getRockType());
-    assertEquals(expectedSid.getAssociatedFossilAssemblage(),
+    assertEquals("01",expectedSid.getRockType(), identification.getRockType());
+    assertEquals("02",expectedSid.getAssociatedFossilAssemblage(),
         identification.getAssociatedFossilAssemblage());
-    assertEquals(expectedSid.getRockMineralUsage(), identification.getRockMineralUsage());
+    assertEquals("03",expectedSid.getRockMineralUsage(), identification.getRockMineralUsage());
   }
 
   /**
@@ -202,9 +195,9 @@ public class CrsSpecimenTransformerTest {
     expectedGa.setProvinceState("Noord Holland");
     expectedGa.setLocality("Amsterdam");
 
-    assertEquals(expectedGa.getCountry(), event.getCountry());
-    assertEquals(expectedGa.getProvinceState(), event.getProvinceState());
-    assertEquals(expectedGa.getLocality(), event.getLocality());
+    assertEquals("01",expectedGa.getCountry(), event.getCountry());
+    assertEquals("02",expectedGa.getProvinceState(), event.getProvinceState());
+    assertEquals("03",expectedGa.getLocality(), event.getLocality());
   }
 
   /**
@@ -241,10 +234,10 @@ public class CrsSpecimenTransformerTest {
     expectedSn.setSpecificEpithet("japonica");
     expectedSn.setScientificNameGroup("cleyera japonica");
 
-    assertEquals(expectedSn.getFullScientificName(), scientificName.getFullScientificName());
-    assertEquals(expectedSn.getGenusOrMonomial(), scientificName.getGenusOrMonomial());
-    assertEquals(expectedSn.getSpecificEpithet(), scientificName.getSpecificEpithet());
-    assertEquals(expectedSn.getScientificNameGroup(), scientificName.getScientificNameGroup());
+    assertEquals("01",expectedSn.getFullScientificName(), scientificName.getFullScientificName());
+    assertEquals("02",expectedSn.getGenusOrMonomial(), scientificName.getGenusOrMonomial());
+    assertEquals("03",expectedSn.getSpecificEpithet(), scientificName.getSpecificEpithet());
+    assertEquals("04",expectedSn.getScientificNameGroup(), scientificName.getScientificNameGroup());
 
   }
 
@@ -290,9 +283,9 @@ public class CrsSpecimenTransformerTest {
     expectedMono.setName("Cleyera");
     expectedMono.setRank("genus");
 
-    assertEquals(2, listSize);
-    assertEquals(expectedMono.getName(), classification.get(0).getName());
-    assertEquals(expectedMono.getRank(), classification.get(0).getRank());
+    assertEquals("01",2, listSize);
+    assertEquals("02",expectedMono.getName(), classification.get(0).getName());
+    assertEquals("03",expectedMono.getRank(), classification.get(0).getRank());
   }
 
   /**
@@ -332,11 +325,11 @@ public class CrsSpecimenTransformerTest {
     expectedCsg.setYoungRegionalStage("Test Regional Stage");
     expectedCsg.setYoungChronoName("CRETACEOUS");
 
-    assertEquals(1, listSize);
-    assertEquals(expectedCsg.getYoungRegionalSubstage(),
+    assertEquals("01",1, listSize);
+    assertEquals("02",expectedCsg.getYoungRegionalSubstage(),
         actualList.get(0).getYoungRegionalSubstage());
-    assertEquals(expectedCsg.getYoungRegionalStage(), actualList.get(0).getYoungRegionalStage());
-    assertEquals(expectedCsg.getYoungChronoName(), actualList.get(0).getYoungChronoName());
+    assertEquals("03",expectedCsg.getYoungRegionalStage(), actualList.get(0).getYoungRegionalStage());
+    assertEquals("04",expectedCsg.getYoungChronoName(), actualList.get(0).getYoungChronoName());
 
   }
 
@@ -377,10 +370,10 @@ public class CrsSpecimenTransformerTest {
     expectedBs.setYoungFossilZone("Test Young Fossil Zone");
     expectedBs.setOldBioName("Hiatella arctica Acme Zone");
 
-    assertEquals(2, listSize);
-    assertEquals(expectedBs.getYoungBioName(), actualList.get(0).getYoungBioName());
-    assertEquals(expectedBs.getYoungFossilZone(), actualList.get(0).getYoungFossilZone());
-    assertEquals(expectedBs.getOldBioName(), actualList.get(0).getOldBioName());
+    assertEquals("01",2, listSize);
+    assertEquals("02",expectedBs.getYoungBioName(), actualList.get(0).getYoungBioName());
+    assertEquals("03",expectedBs.getYoungFossilZone(), actualList.get(0).getYoungFossilZone());
+    assertEquals("04",expectedBs.getOldBioName(), actualList.get(0).getOldBioName());
 
   }
 
@@ -421,10 +414,10 @@ public class CrsSpecimenTransformerTest {
     expectedLs.setBed("Test Bed");
     expectedLs.setInformalName("Test InfoName");
 
-    assertEquals(2, listSize);
-    assertEquals(expectedLs.getQualifier(), actualList.get(1).getQualifier());
-    assertEquals(expectedLs.getBed(), actualList.get(1).getBed());
-    assertEquals(expectedLs.getInformalName(), actualList.get(1).getInformalName());
+    assertEquals("01",2, listSize);
+    assertEquals("02",expectedLs.getQualifier(), actualList.get(1).getQualifier());
+    assertEquals("03",expectedLs.getBed(), actualList.get(1).getBed());
+    assertEquals("04",expectedLs.getInformalName(), actualList.get(1).getInformalName());
 
   }
 
@@ -538,7 +531,6 @@ public class CrsSpecimenTransformerTest {
 
   }
 
-  // 1980-11-22T00:00Z
   /**
    * Test method for
    * {@link nl.naturalis.nba.etl.crs.CrsSpecimenTransformer#date(Element element, String tag)}.

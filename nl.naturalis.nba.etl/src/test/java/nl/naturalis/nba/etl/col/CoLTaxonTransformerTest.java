@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
-import java.net.URL;
 import java.util.List;
 import org.junit.After;
 import org.junit.Before;
@@ -19,7 +18,6 @@ import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.api.model.TaxonomicStatus;
 import nl.naturalis.nba.etl.AbstractTransformer;
-import nl.naturalis.nba.etl.AllTests;
 import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.utils.CommonReflectionUtil;
@@ -39,16 +37,6 @@ public class CoLTaxonTransformerTest {
    */
   @Before
   public void setUp() throws Exception {
-
-    String logFile = "log4j2.xml";
-    URL logFileUrl = AllTests.class.getResource(logFile);
-    String logFilePath = logFileUrl.getFile().toString();
-    String dirPath = logFilePath.substring(0, logFilePath.lastIndexOf("/"));
-    System.setProperty("nba.v2.conf.dir", dirPath);
-    System.setProperty("brahms.data.dir", dirPath);
-    System.setProperty("log4j.configurationFile", logFilePath);
-    System.setProperty("nl.naturalis.nba.etl.testGenera",
-        "malus,parus,larus,bombus,rhododendron,felix,tulipa,rosa,canis,passer,trientalis");
 
   }
 
@@ -122,20 +110,20 @@ public class CoLTaxonTransformerTest {
     String expectedSpcificEpithet = "affinis";
     //
 
-    assertNotNull(list);
-    assertTrue(list.size() == 1);
-    assertEquals(expectedId, list.stream().map(i -> i.getId()).findFirst().get());
-    assertEquals(expectedRecordURI,
+    assertNotNull("01",list);
+    assertTrue("02",list.size() == 1);
+    assertEquals("03",expectedId, list.stream().map(i -> i.getId()).findFirst().get());
+    assertEquals("04",expectedRecordURI,
         list.stream().map(i -> i.getRecordURI()).findFirst().get().toString());
-    assertEquals(expectedAuthorshipVerbatim, list.stream()
+    assertEquals("05",expectedAuthorshipVerbatim, list.stream()
         .map(i -> i.getAcceptedName().getAuthorshipVerbatim()).findFirst().get().toString());
-    assertEquals(expectedFullScientificName, list.stream()
+    assertEquals("06",expectedFullScientificName, list.stream()
         .map(i -> i.getAcceptedName().getFullScientificName()).findFirst().get().toString());
-    assertEquals(expectedScientificNameGroup, list.stream()
+    assertEquals("07",expectedScientificNameGroup, list.stream()
         .map(i -> i.getAcceptedName().getScientificNameGroup()).findFirst().get().toString());
-    assertEquals(expectedGenusOrMonomial, list.stream()
+    assertEquals("08",expectedGenusOrMonomial, list.stream()
         .map(i -> i.getAcceptedName().getGenusOrMonomial()).findFirst().get().toString());
-    assertEquals(expectedSpcificEpithet, list.stream()
+    assertEquals("09",expectedSpcificEpithet, list.stream()
         .map(i -> i.getAcceptedName().getSpecificEpithet()).findFirst().get().toString());
   }
 
@@ -205,15 +193,15 @@ public class CoLTaxonTransformerTest {
     expected.setSubgenus("test_subgenus");
     expected.setSpecificEpithet("affinis");
 
-    assertNotNull(returned);
-    assertEquals(expected.getKingdom(), defaultClassification.getKingdom());
-    assertEquals(expected.getPhylum(), defaultClassification.getPhylum());
-    assertEquals(expected.getClassName(), defaultClassification.getClassName());
-    assertEquals(expected.getSuperFamily(), defaultClassification.getSuperFamily());
-    assertEquals(expected.getFamily(), defaultClassification.getFamily());
-    assertEquals(expected.getGenus(), defaultClassification.getGenus());
-    assertEquals(expected.getSubgenus(), defaultClassification.getSubgenus());
-    assertEquals(expected.getSpecificEpithet(), defaultClassification.getSpecificEpithet());
+    assertNotNull("01",returned);
+    assertEquals("02",expected.getKingdom(), defaultClassification.getKingdom());
+    assertEquals("03",expected.getPhylum(), defaultClassification.getPhylum());
+    assertEquals("04",expected.getClassName(), defaultClassification.getClassName());
+    assertEquals("05",expected.getSuperFamily(), defaultClassification.getSuperFamily());
+    assertEquals("06",expected.getFamily(), defaultClassification.getFamily());
+    assertEquals("07",expected.getGenus(), defaultClassification.getGenus());
+    assertEquals("08",expected.getSubgenus(), defaultClassification.getSubgenus());
+    assertEquals("09",expected.getSpecificEpithet(), defaultClassification.getSpecificEpithet());
   }
 
   /**
@@ -282,15 +270,15 @@ public class CoLTaxonTransformerTest {
     expected.setTaxonomicStatus(TaxonomicStatus.ACCEPTED_NAME);
     expected.setScientificNameGroup("bombus affinis test_infraspecificepithet");
 
-    assertNotNull(returned);
-    assertEquals(expected.getFullScientificName(), name.getFullScientificName());
-    assertEquals(expected.getGenusOrMonomial(), name.getGenusOrMonomial());
-    assertEquals(expected.getSubgenus(), name.getSubgenus());
-    assertEquals(expected.getSpecificEpithet(), name.getSpecificEpithet());
-    assertEquals(expected.getInfraspecificEpithet(), name.getInfraspecificEpithet());
-    assertEquals(expected.getAuthorshipVerbatim(), name.getAuthorshipVerbatim());
-    assertEquals(expected.getTaxonomicStatus(), name.getTaxonomicStatus());
-    assertEquals(expected.getScientificNameGroup(), name.getScientificNameGroup());
+    assertNotNull("01",returned);
+    assertEquals("02",expected.getFullScientificName(), name.getFullScientificName());
+    assertEquals("03",expected.getGenusOrMonomial(), name.getGenusOrMonomial());
+    assertEquals("04",expected.getSubgenus(), name.getSubgenus());
+    assertEquals("05",expected.getSpecificEpithet(), name.getSpecificEpithet());
+    assertEquals("06",expected.getInfraspecificEpithet(), name.getInfraspecificEpithet());
+    assertEquals("07",expected.getAuthorshipVerbatim(), name.getAuthorshipVerbatim());
+    assertEquals("08",expected.getTaxonomicStatus(), name.getTaxonomicStatus());
+    assertEquals("09",expected.getScientificNameGroup(), name.getScientificNameGroup());
   }
 
   /**

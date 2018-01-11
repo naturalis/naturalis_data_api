@@ -2,12 +2,10 @@ package nl.naturalis.nba.etl.crs;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import java.net.URL;
 import java.util.Date;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import nl.naturalis.nba.etl.AllTests;
 import nl.naturalis.nba.utils.reflect.ReflectionUtil;
 /**
  * Test class for CrsImportUtil.java
@@ -20,15 +18,6 @@ public class CrsImportUtilTest {
    */
   @Before
   public void setUp() throws Exception {
-
-    String logFile = "log4j2.xml";
-    URL logFileUrl = AllTests.class.getResource(logFile);
-    String logFilePath = logFileUrl.getFile().toString();
-    String dirPath = logFilePath.substring(0, logFilePath.lastIndexOf("/"));
-    System.setProperty("nba.v2.conf.dir", dirPath);
-    System.setProperty("brahms.data.dir", dirPath);
-    System.setProperty("log4j.configurationFile", logFilePath);
-
   }
 
   /**
@@ -53,8 +42,8 @@ public class CrsImportUtilTest {
     Date untilDate = new Date(2016, 11, 27);
 
     byte[] result = crsImportUtil.callSpecimenService(fromDate, untilDate);
-    assertNotNull(result);
-    assertTrue(result instanceof byte[]);
+    assertNotNull("01",result);
+    assertTrue("02",result instanceof byte[]);
   }
 
   /**

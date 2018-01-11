@@ -6,7 +6,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.times;
 import java.io.IOException;
-import java.net.URL;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -21,6 +20,7 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import nl.naturalis.nba.etl.col.CoLTaxonImporter;
 import nl.naturalis.nba.utils.reflect.ReflectionUtil;
 
 /**
@@ -35,14 +35,10 @@ public class ETLUtilTest {
   @Before
   public void setUp() throws Exception {
 
-    String fileName = "log4j2.xml";
-    URL url = getClass().getResource(fileName);
-    String filePath = url.getPath().toString();
-    String dirPath = filePath.substring(0, filePath.lastIndexOf("/"));
-    System.setProperty("nba.v2.conf.dir", dirPath);
-    System.setProperty("log4j.configurationFile", filePath);
-    System.setProperty("nl.naturalis.nba.etl.testGenera",
-        "malus,parus,larus,bombus,rhododendron,felix,tulipa,rosa,canis,passer,trientalis");
+    // First import a test data row into the ES store .
+    CoLTaxonImporter cti = new CoLTaxonImporter();
+    String path = AllTests.class.getResource("taxa.txt").getPath();
+    cti.importCsv(path);
   }
 
   /**
@@ -78,7 +74,7 @@ public class ETLUtilTest {
     String expected = "This is a an IO Exception...";
 
     assertNotNull(actual);
-    assertEquals(expected, actual.getMessage());
+    assertEquals("01", expected, actual.getMessage());
   }
 
   /**
@@ -96,6 +92,7 @@ public class ETLUtilTest {
     Logger logger = ETLUtil.getLogger(Loader.class);
     long timeStamp = 12585L;
     PowerMockito.mockStatic(ETLUtil.class);
+   
     ETLUtil.logDuration(logger, logger.getClass(), timeStamp);
     PowerMockito.verifyStatic(ETLUtil.class, times(1));
     ETLUtil.logDuration(logger, logger.getClass(), timeStamp);
@@ -116,8 +113,8 @@ public class ETLUtilTest {
     Matcher matcherFormat = patternFormat.matcher(actual);
     Matcher matcherValidFormat = validFormat.matcher(actual);
 
-    assertTrue(matcherFormat.find());
-    assertTrue(matcherValidFormat.find());
+    assertTrue("01", matcherFormat.find());
+    assertTrue("02",matcherValidFormat.find());
   }
 
   /**
@@ -135,8 +132,8 @@ public class ETLUtilTest {
     Matcher matcherFormat = patternFormat.matcher(actual);
     Matcher matcherValidFormat = ifValidFormat.matcher(actual);
 
-    assertTrue(matcherFormat.find());
-    assertTrue(matcherValidFormat.find());
+    assertTrue("01",matcherFormat.find());
+    assertTrue("02",matcherValidFormat.find());
   }
 
   /**
@@ -150,8 +147,8 @@ public class ETLUtilTest {
     String expected = "nl.naturalis.nba.etl.Loader";
     Logger actual = ETLUtil.getLogger(Loader.class);
 
-    assertNotNull(actual);
-    assertEquals(actual.getName(), expected);
+    assertNotNull("01",actual);
+    assertEquals("02",actual.getName(), expected);
   }
 
   /**
@@ -174,8 +171,8 @@ public class ETLUtilTest {
     String[] expected = {"malus", "parus", "larus", "bombus", "rhododendron", "felix", "tulipa",
         "rosa", "canis", "passer", "trientalis"};
 
-    assertNotNull(expected);
-    assertArrayEquals(expected, actual);
+    assertNotNull("01",expected);
+    assertArrayEquals("02",expected, actual);
   }
 
   /**
@@ -192,8 +189,8 @@ public class ETLUtilTest {
     URIBuilder actualBuilder =
         (URIBuilder) ReflectionUtil.callStatic(ETLUtil.class, "getPurlBuilder", new Object[] {});
 
-    assertNotNull(actualBuilder);
-    assertEquals(expectedUrl, actualBuilder.toString());
+    assertNotNull("01",actualBuilder);
+    assertEquals("02",expectedUrl, actualBuilder.toString());
 
   }
 

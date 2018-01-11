@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -39,20 +38,10 @@ public class CoLSynonymBatchTransformerTest {
   @Before
   public void setUp() throws Exception {
 
-    String logFile = "log4j2.xml";
-    URL logFileUrl = AllTests.class.getResource(logFile);
-    String logFilePath = logFileUrl.getFile().toString();
-    String dirPath = logFilePath.substring(0, logFilePath.lastIndexOf("/"));
-    System.setProperty("nba.v2.conf.dir", dirPath);
-    System.setProperty("brahms.data.dir", dirPath);
-    System.setProperty("log4j.configurationFile", logFilePath);
-
     // First import a test data row into the ES store .
     CoLTaxonImporter cti = new CoLTaxonImporter();
-    cti.importCsv(dirPath + "/taxa.txt");
-
-    System.setProperty("nl.naturalis.nba.etl.testGenera",
-        "malus,parus,larus,bombus,rhododendron,felix,tulipa,rosa,canis,passer,trientalis");
+    String path = AllTests.class.getResource("taxa.txt").getPath();
+    cti.importCsv(path);
 
   }
 
@@ -126,14 +115,14 @@ public class CoLSynonymBatchTransformerTest {
     String expectedSourceSystemName = "Species 2000 - Catalogue Of Life";
     String expectedSpcificEpithet = "affinis";
 
-    assertNotNull(actual);
-    assertEquals(expectedId, actual.getId());
-    assertEquals(expectedRecordURI, actual.getRecordURI().toString());
-    assertEquals(expectedAuthorshipVerbatim, actual.getValidName().getAuthorshipVerbatim());
-    assertEquals(expectedScientificNameGroup, actual.getValidName().getScientificNameGroup());
-    assertEquals(expectedFullScientificName, actual.getValidName().getFullScientificName());
-    assertEquals(expectedSourceSystemName, actual.getSourceSystem().getName());
-    assertEquals(expectedSpcificEpithet, actual.getDefaultClassification().getSpecificEpithet());
+    assertNotNull("01",actual);
+    assertEquals("02",expectedId, actual.getId());
+    assertEquals("03",expectedRecordURI, actual.getRecordURI().toString());
+    assertEquals("04",expectedAuthorshipVerbatim, actual.getValidName().getAuthorshipVerbatim());
+    assertEquals("05",expectedScientificNameGroup, actual.getValidName().getScientificNameGroup());
+    assertEquals("06",expectedFullScientificName, actual.getValidName().getFullScientificName());
+    assertEquals("07",expectedSourceSystemName, actual.getSourceSystem().getName());
+    assertEquals("08",expectedSpcificEpithet, actual.getDefaultClassification().getSpecificEpithet());
 
   }
 
@@ -202,13 +191,13 @@ public class CoLSynonymBatchTransformerTest {
     String expectedSourceSystemName = "Species 2000 - Catalogue Of Life";
     String expectedSpcificEpithet = "affinis";
 
-    assertEquals(expectedKey, actualResults.keySet().iterator().next());
-    assertEquals(expectedId, actual.getId());
-    assertEquals(expectedRecordURI, actual.getRecordURI().toString());
-    assertEquals(expectedFullScientificName, actual.getAcceptedName().getFullScientificName());
-    assertEquals(expectedScientificNameGroup, actual.getAcceptedName().getScientificNameGroup());
-    assertEquals(expectedSpcificEpithet, actual.getDefaultClassification().getSpecificEpithet());
-    assertEquals(expectedSourceSystemName, actual.getSourceSystem().getName());
+    assertEquals("01",expectedKey, actualResults.keySet().iterator().next());
+    assertEquals("02",expectedId, actual.getId());
+    assertEquals("03",expectedRecordURI, actual.getRecordURI().toString());
+    assertEquals("04",expectedFullScientificName, actual.getAcceptedName().getFullScientificName());
+    assertEquals("05",expectedScientificNameGroup, actual.getAcceptedName().getScientificNameGroup());
+    assertEquals("06",expectedSpcificEpithet, actual.getDefaultClassification().getSpecificEpithet());
+    assertEquals("07",expectedSourceSystemName, actual.getSourceSystem().getName());
   }
 
   /**
@@ -265,10 +254,10 @@ public class CoLSynonymBatchTransformerTest {
     String expectedScientificNameGroup = "bombus affinis ";
     String expectedFullScientificName = "Bombus affinis Cresson, 1863";
 
-    assertNotNull(actual);
-    assertEquals(expectedFullScientificName, actual.getFullScientificName());
-    assertEquals(expectedScientificNameGroup, actual.getScientificNameGroup());
-    assertEquals(expectedGenus, actual.getGenusOrMonomial());
+    assertNotNull("01",actual);
+    assertEquals("02",expectedFullScientificName, actual.getFullScientificName());
+    assertEquals("03",expectedScientificNameGroup, actual.getScientificNameGroup());
+    assertEquals("04",expectedGenus, actual.getGenusOrMonomial());
   }
 
   /**

@@ -31,15 +31,6 @@ public class NsrImportUtilTest {
   @Before
   public void setUp() throws Exception {
 
-    String logFile = "log4j2.xml";
-    URL logFileUrl = AllTests.class.getResource(logFile);
-    String logFilePath = logFileUrl.getFile().toString();
-    String dirPath = logFilePath.substring(0, logFilePath.lastIndexOf("/"));
-    System.setProperty("nba.v2.conf.dir", dirPath);
-    System.setProperty("brahms.data.dir", dirPath);
-    System.setProperty("log4j.configurationFile", logFilePath);
-    System.setProperty("nl.naturalis.nba.etl.testGenera",
-        "malus,aedes,parus,larus,bombus,rhododendron,felix,tulipa,rosa,canis,passer,trientalis");
     nsrFileURL = AllTests.class.getResource("nsr-export--2017-12-30_0533--06.xml");
     nsrFile = new File(nsrFileURL.getFile());
 
@@ -83,8 +74,8 @@ public class NsrImportUtilTest {
 
     }
     String expectedNameValue = "Scandinavische zilvermeeuw";
-    assertNotNull(actual);
-    assertEquals(expectedNameValue, actual);
+    assertNotNull("01",actual);
+    assertEquals("02",expectedNameValue, actual);
 
   }
 

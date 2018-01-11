@@ -3,7 +3,6 @@ package nl.naturalis.nba.etl.col;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -38,21 +37,10 @@ public class CoLReferenceBatchTransformerTest {
   @Before
   public void setUp() throws Exception {
 
-    String logFile = "log4j2.xml";
-    URL logFileUrl = AllTests.class.getResource(logFile);
-    String logFilePath = logFileUrl.getFile().toString();
-    String dirPath = logFilePath.substring(0, logFilePath.lastIndexOf("/"));
-    System.setProperty("nba.v2.conf.dir", dirPath);
-    System.setProperty("brahms.data.dir", dirPath);
-    System.setProperty("log4j.configurationFile", logFilePath);
-
     // First import a test data row into the ES store .
     CoLTaxonImporter cti = new CoLTaxonImporter();
-    cti.importCsv(dirPath + "/taxa.txt");
-
-    System.setProperty("nl.naturalis.nba.etl.testGenera",
-        "malus,parus,larus,bombus,rhododendron,felix,tulipa,rosa,canis,passer,trientalis");
-
+    String path = AllTests.class.getResource("taxa.txt").getPath();
+    cti.importCsv(path);
   }
 
   /**
@@ -105,18 +93,18 @@ public class CoLReferenceBatchTransformerTest {
     String titleCitation = "Diagnosen einiger neuer Heliceen.";
     String publicationDate = "1846-01-01T00:00Z";
 
-    assertNotNull(actual);
-    assertEquals(expectedId, actual.getId());
-    assertEquals(expectedRecordURI, actual.getRecordURI().toString());
-    assertEquals(expectedAuthorshipVerbatim, actual.getValidName().getAuthorshipVerbatim());
-    assertEquals(expectedScientificNameGroup, actual.getValidName().getScientificNameGroup());
-    assertEquals(expectedFullScientificName, actual.getValidName().getFullScientificName());
-    assertEquals(expectedSourceSystemName, actual.getSourceSystem().getName());
-    assertEquals(expectedSpcificEpithet, actual.getDefaultClassification().getSpecificEpithet());
-    assertEquals(authorName, actual.getReferences().iterator().next().getAuthor().getFullName());
-    assertEquals(citationDetail, actual.getReferences().iterator().next().getCitationDetail());
-    assertEquals(titleCitation, actual.getReferences().iterator().next().getTitleCitation());
-    assertEquals(publicationDate,
+    assertNotNull("01",actual);
+    assertEquals("02",expectedId, actual.getId());
+    assertEquals("03",expectedRecordURI, actual.getRecordURI().toString());
+    assertEquals("04",expectedAuthorshipVerbatim, actual.getValidName().getAuthorshipVerbatim());
+    assertEquals("05",expectedScientificNameGroup, actual.getValidName().getScientificNameGroup());
+    assertEquals("06",expectedFullScientificName, actual.getValidName().getFullScientificName());
+    assertEquals("07",expectedSourceSystemName, actual.getSourceSystem().getName());
+    assertEquals("08",expectedSpcificEpithet, actual.getDefaultClassification().getSpecificEpithet());
+    assertEquals("09",authorName, actual.getReferences().iterator().next().getAuthor().getFullName());
+    assertEquals("10",citationDetail, actual.getReferences().iterator().next().getCitationDetail());
+    assertEquals("11",titleCitation, actual.getReferences().iterator().next().getTitleCitation());
+    assertEquals("12",publicationDate,
         actual.getReferences().iterator().next().getPublicationDate().toString());
   }
 
@@ -160,13 +148,13 @@ public class CoLReferenceBatchTransformerTest {
     String expectedSourceSystemName = "Species 2000 - Catalogue Of Life";
     String expectedSpcificEpithet = "affinis";
 
-    assertEquals(expectedKey, actualResults.keySet().iterator().next());
-    assertEquals(expectedId, actual.getId());
-    assertEquals(expectedRecordURI, actual.getRecordURI().toString());
-    assertEquals(expectedFullScientificName, actual.getAcceptedName().getFullScientificName());
-    assertEquals(expectedScientificNameGroup, actual.getAcceptedName().getScientificNameGroup());
-    assertEquals(expectedSpcificEpithet, actual.getDefaultClassification().getSpecificEpithet());
-    assertEquals(expectedSourceSystemName, actual.getSourceSystem().getName());
+    assertEquals("01",expectedKey, actualResults.keySet().iterator().next());
+    assertEquals("02",expectedId, actual.getId());
+    assertEquals("03",expectedRecordURI, actual.getRecordURI().toString());
+    assertEquals("04",expectedFullScientificName, actual.getAcceptedName().getFullScientificName());
+    assertEquals("05",expectedScientificNameGroup, actual.getAcceptedName().getScientificNameGroup());
+    assertEquals("06",expectedSpcificEpithet, actual.getDefaultClassification().getSpecificEpithet());
+    assertEquals("07",expectedSourceSystemName, actual.getSourceSystem().getName());
 
   }
 
@@ -199,11 +187,11 @@ public class CoLReferenceBatchTransformerTest {
     String titleCitation = "Diagnosen einiger neuer Heliceen.";
     String publicationDate = "1846-01-01T00:00Z";
 
-    assertNotNull(actual);
-    assertEquals(authorName, actual.getAuthor().getFullName());
-    assertEquals(citationDetail, actual.getCitationDetail());
-    assertEquals(titleCitation, actual.getTitleCitation());
-    assertEquals(publicationDate, actual.getPublicationDate().toString());
+    assertNotNull("01",actual);
+    assertEquals("02",authorName, actual.getAuthor().getFullName());
+    assertEquals("03",citationDetail, actual.getCitationDetail());
+    assertEquals("04",titleCitation, actual.getTitleCitation());
+    assertEquals("05",publicationDate, actual.getPublicationDate().toString());
 
   }
 

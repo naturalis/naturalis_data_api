@@ -37,15 +37,6 @@ public class NsrMultiMediaTransformerTest {
    */
   @Before
   public void setUp() throws Exception {
-    String logFile = "log4j2.xml";
-    URL logFileUrl = AllTests.class.getResource(logFile);
-    String logFilePath = logFileUrl.getFile().toString();
-    String dirPath = logFilePath.substring(0, logFilePath.lastIndexOf("/"));
-    System.setProperty("nba.v2.conf.dir", dirPath);
-    System.setProperty("brahms.data.dir", dirPath);
-    System.setProperty("log4j.configurationFile", logFilePath);
-    System.setProperty("nl.naturalis.nba.etl.testGenera",
-        "malus,aedes,parus,larus,bombus,rhododendron,felix,tulipa,rosa,canis,passer,trientalis");
     nsrFileURL = AllTests.class.getResource("nsr-export--2017-12-30_0533--06.xml");
     nsrFile = new File(nsrFileURL.getFile());
   }
@@ -109,18 +100,18 @@ public class NsrMultiMediaTransformerTest {
     String expectedSourceSystemId = "D3KF0JNQ0UA_1011552535";
     String expectedUnitId = "D3KF0JNQ0UA_1011552535";
 
-    assertEquals(expectedAssociatedTaxRef, actual.get(0).getAssociatedTaxonReference());
-    assertEquals(expectedCreator, actual.get(0).getCreator());
-    assertEquals(expectedCollectionType, actual.get(0).getCollectionType());
-    assertEquals(expectedCaption, actual.get(0).getCaption());
-    assertEquals(expectedDescription, actual.get(0).getDescription());
-    assertEquals(expectedId, actual.get(0).getId());
-    assertEquals(expectedLicense, actual.get(0).getLicense());
-    assertEquals(expectedOwner, actual.get(0).getOwner());
-    assertEquals(expectedLicenseType, actual.get(0).getLicenseType());
-    assertEquals(expectedSourceId, actual.get(0).getSourceID());
-    assertEquals(expectedSourceSystemId, actual.get(0).getSourceSystemId());
-    assertEquals(expectedUnitId, actual.get(0).getUnitID());
+    assertEquals("01",expectedAssociatedTaxRef, actual.get(0).getAssociatedTaxonReference());
+    assertEquals("02",expectedCreator, actual.get(0).getCreator());
+    assertEquals("03",expectedCollectionType, actual.get(0).getCollectionType());
+    assertEquals("04",expectedCaption, actual.get(0).getCaption());
+    assertEquals("05",expectedDescription, actual.get(0).getDescription());
+    assertEquals("06",expectedId, actual.get(0).getId());
+    assertEquals("07",expectedLicense, actual.get(0).getLicense());
+    assertEquals("08",expectedOwner, actual.get(0).getOwner());
+    assertEquals("09",expectedLicenseType, actual.get(0).getLicenseType());
+    assertEquals("10",expectedSourceId, actual.get(0).getSourceID());
+    assertEquals("12",expectedSourceSystemId, actual.get(0).getSourceSystemId());
+    assertEquals("13",expectedUnitId, actual.get(0).getUnitID());
 
   }
 
@@ -180,18 +171,18 @@ public class NsrMultiMediaTransformerTest {
     String expectedSourceSystemId = "D3KF0JNQ0UA_1011552535";
     String expectedUnitId = "D3KF0JNQ0UA_1011552535";
 
-    assertEquals(expectedAssociatedTaxRef, actual.getAssociatedTaxonReference());
-    assertEquals(expectedCreator, actual.getCreator());
-    assertEquals(expectedCollectionType, actual.getCollectionType());
-    assertEquals(expectedCaption, actual.getCaption());
-    assertEquals(expectedDescription, actual.getDescription());
-    assertEquals(expectedId, actual.getId());
-    assertEquals(expectedLicense, actual.getLicense());
-    assertEquals(expectedOwner, actual.getOwner());
-    assertEquals(expectedLicenseType, actual.getLicenseType());
-    assertEquals(expectedSourceId, actual.getSourceID());
-    assertEquals(expectedSourceSystemId, actual.getSourceSystemId());
-    assertEquals(expectedUnitId, actual.getUnitID());
+    assertEquals("01",expectedAssociatedTaxRef, actual.getAssociatedTaxonReference());
+    assertEquals("01",expectedCreator, actual.getCreator());
+    assertEquals("02",expectedCollectionType, actual.getCollectionType());
+    assertEquals("03",expectedCaption, actual.getCaption());
+    assertEquals("04",expectedDescription, actual.getDescription());
+    assertEquals("05",expectedId, actual.getId());
+    assertEquals("06",expectedLicense, actual.getLicense());
+    assertEquals("07",expectedOwner, actual.getOwner());
+    assertEquals("08",expectedLicenseType, actual.getLicenseType());
+    assertEquals("09",expectedSourceId, actual.getSourceID());
+    assertEquals("10",expectedSourceSystemId, actual.getSourceSystemId());
+    assertEquals("11",expectedUnitId, actual.getUnitID());
 
   }
 
@@ -266,10 +257,10 @@ public class NsrMultiMediaTransformerTest {
     String expectedOwner = "Naturalis Biodiversity Center";
     String expectedSourceId = "LNG NSR";
 
-    assertEquals(expectedAssociatedTaxRef, actual.getAssociatedTaxonReference());
-    assertEquals(expectedCollectionType, actual.getCollectionType());
-    assertEquals(expectedOwner, actual.getOwner());
-    assertEquals(expectedSourceId, actual.getSourceID());
+    assertEquals("01",expectedAssociatedTaxRef, actual.getAssociatedTaxonReference());
+    assertEquals("02",expectedCollectionType, actual.getCollectionType());
+    assertEquals("03",expectedOwner, actual.getOwner());
+    assertEquals("04",expectedSourceId, actual.getSourceID());
 
   }
 
@@ -321,11 +312,11 @@ public class NsrMultiMediaTransformerTest {
     String expectedScientificNameGroup = "larus argentatus argentatus";
     String expectedGenusOrMonomial = "Larus";
 
-    assertNotNull(actual);
-    assertEquals(expectedTaxonRank, actual.getTaxonRank());
-    assertEquals(expectedFullScientificName, actual.getScientificName().getFullScientificName());
-    assertEquals(expectedScientificNameGroup, actual.getScientificName().getScientificNameGroup());
-    assertEquals(expectedGenusOrMonomial, actual.getScientificName().getGenusOrMonomial());
+    assertNotNull("01",actual);
+    assertEquals("02",expectedTaxonRank, actual.getTaxonRank());
+    assertEquals("03",expectedFullScientificName, actual.getScientificName().getFullScientificName());
+    assertEquals("04",expectedScientificNameGroup, actual.getScientificName().getScientificNameGroup());
+    assertEquals("05",expectedGenusOrMonomial, actual.getScientificName().getGenusOrMonomial());
 
   }
 
@@ -375,8 +366,8 @@ public class NsrMultiMediaTransformerTest {
     String expectedURI =
         "http://images.naturalis.nl/original/104527_zilvermeeuw-20130210-egmond_aan_zee-001arnold_wijker.jpg";
 
-    assertNotNull(actual);
-    assertEquals(expectedURI, actual.toString());
+    assertNotNull("01",actual);
+    assertEquals("02",expectedURI, actual.toString());
   }
 
 }

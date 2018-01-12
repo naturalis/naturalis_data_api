@@ -46,15 +46,17 @@ public class BrahmsImportUtilTest {
    */
   @Before
   public void setUp() throws Exception {
+    BrahmsImportUtil.removeBackupExtension();// clears the backup extension after each run
   }
+  
 
   /**
    * @throws java.lang.Exception
    */
   @After
   public void tearDown() throws Exception {
-
     BrahmsImportUtil.removeBackupExtension();// clears the backup extension after each run
+   
   }
 
   /**

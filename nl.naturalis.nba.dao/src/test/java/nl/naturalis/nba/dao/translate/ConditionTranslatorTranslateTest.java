@@ -1,6 +1,7 @@
 package nl.naturalis.nba.dao.translate;
 
-import static nl.naturalis.nba.api.ComparisonOperator.*;
+import static nl.naturalis.nba.api.ComparisonOperator.EQUALS;
+import static nl.naturalis.nba.api.ComparisonOperator.NOT_EQUALS;
 import static nl.naturalis.nba.api.UnaryBooleanOperator.NOT;
 import static nl.naturalis.nba.dao.DaoTestUtil.jsonEquals;
 import static org.junit.Assert.assertTrue;
@@ -10,11 +11,14 @@ import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.Specimen;
-import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.DocumentType;
 
-@SuppressWarnings("static-method")
-public class NestedConditionsTest {
+
+/*
+ * Unit test for testing the translation of mulitple query conditions, nested or not, in need of 
+ * a nested path or not, into a correct Elasticsearch query.
+ */
+public class ConditionTranslatorTranslateTest {
 
   @Test
   public void test_01() throws InvalidQueryException {
@@ -147,66 +151,88 @@ public class NestedConditionsTest {
 
     DocumentType<Specimen> dt = DocumentType.SPECIMEN;
 
-    QueryCondition condition01 = new QueryCondition(
-        new Path("identifications.scientificName.genusOrMonomial"), EQUALS, "Passer");
+    // Conditions without nested path
+    QueryCondition condition10 = new QueryCondition(new Path("license"), EQUALS, "CC0");
+    QueryCondition condition11 = new QueryCondition(new Path("licenseType"), EQUALS, "Copyright");
+    QueryCondition condition12 = new QueryCondition(new Path("owner"), EQUALS, "Naturalis Biodiversity Center");
+    
+    QueryCondition condition20 = new QueryCondition(new Path("collectionType"), EQUALS, "Botany");
+    QueryCondition condition21 = new QueryCondition(new Path("collectionType"), EQUALS, "Mollusca");
+    QueryCondition condition22 = new QueryCondition(new Path("collectionType"), EQUALS, "Lepidoptera");
+    
+    QueryCondition condition30 = new QueryCondition(new Path("recordBasis"), EQUALS, "Herbarium sheet");
+    QueryCondition condition31 = new QueryCondition(new Path("recordBasis"), EQUALS, "PreservedSpecimen");
+    QueryCondition condition32 = new QueryCondition(new Path("recordBasis"), EQUALS, "FossilSpecimen");
 
-    QueryCondition condition02 = new QueryCondition(
-        new Path("identifications.scientificName.specificEpithet"), EQUALS, "domesticus");
+    // Conditions with nested path
+    QueryCondition condition40 = new QueryCondition(new Path("identifications.scientificName.genusOrMonomial"), NOT_EQUALS, "test");
+    QueryCondition condition41 = new QueryCondition(new Path("identifications.scientificName.specificEpithet"), NOT_EQUALS, "test");
+    QueryCondition condition42 = new QueryCondition(new Path("identifications.scientificName.infraspecificEpithet"), NOT_EQUALS, "test");
 
-    QueryCondition condition03 = new QueryCondition(
-        new Path("identifications.scientificName.infraspecificEpithet"), EQUALS, "domesticus");
+    QueryCondition condition50 = new QueryCondition(new Path("gatheringEvent.gatheringPersons.fullName"), NOT_EQUALS, "test");
+    QueryCondition condition51 = new QueryCondition(new Path("gatheringEvent.gatheringPersons.agentText"), EQUALS, null);
 
-    QueryCondition condition04 = new QueryCondition(
-        new Path("identifications.scientificName.genusOrMonomial"), EQUALS, "Passer");
+    QueryCondition condition60 = new QueryCondition(new Path("associatedMultiMediaUris.format"), EQUALS, "image/jpeg");
+    QueryCondition condition61 = new QueryCondition(new Path("associatedMultiMediaUris.variant"), EQUALS, "MEDIUM_QUALITY");
 
-    QueryCondition condition05 = new QueryCondition(
-        new Path("identifications.scientificName.infraspecificEpithet"), EQUALS, "biblicus");
-
-    condition01.and(condition02).and(condition03);
-    condition04.and(condition02).and(condition05);
-    condition01.or(condition04);
-
+    
+    QueryCondition conditionA = condition20
+                                .or(condition21
+                                    .or(condition22));
+    
+    QueryCondition conditionB = condition50
+                                .and(condition51);
+    
+    QueryCondition conditionC = condition30
+                                .and(condition31
+                                    .and(condition40))
+                                .or(condition41
+                                    .and(condition42))
+                                .or(condition50
+                                    .and(condition60));
+    
+    QueryCondition conditionD = condition12.and(condition60.and(condition32.and(condition61)));
+    
+    QueryCondition condition;
+    condition =      condition10
+                 .or(condition40)
+                 .or(conditionA)
+                 .or(conditionB)
+                 .or(conditionC)
+                 .or(condition60)
+                 .or(condition11)
+                 .or(condition41)
+                 .or(condition21)
+                 .or(conditionD)
+                 .or(condition31)
+                 .or(condition61);
+    
+    
     QuerySpec query = new QuerySpec();
-    query.addCondition(condition01);
-
+    query.addCondition(condition);
     QuerySpecTranslator translator = new QuerySpecTranslator(query, dt);
-//    System.out.println(translator.translate());
-
+    
+    String jsonFile = "NestedConditionsTest__testQuery_06.json";
+    String jsonString = translator.translate().toString();
+    assertTrue("06", jsonEquals(this.getClass(), jsonString, jsonFile));
   }
 
   @Test
   public void test_07() throws InvalidQueryException {
-
+    
     DocumentType<Specimen> dt = DocumentType.SPECIMEN;
 
-    QueryCondition condition01 = new QueryCondition(
-        new Path("identifications.scientificName.genusOrMonomial"), EQUALS, "Passer");
-
-    QueryCondition condition02a = new QueryCondition(
-        new Path("identifications.scientificName.specificEpithet"), EQUALS, "domesticus");
-
-    QueryCondition condition02b = new QueryCondition(
-        new Path("identifications.scientificName.specificEpithet"), EQUALS, "domesticus");
-
-    QueryCondition condition03 = new QueryCondition(
-        new Path("identifications.scientificName.infraspecificEpithet"), EQUALS, "domesticus");
-
-    QueryCondition condition04 = new QueryCondition(
-        new Path("identifications.scientificName.genusOrMonomial"), EQUALS, "Passer");
-
-    QueryCondition condition05 = new QueryCondition(
-        new Path("identifications.scientificName.infraspecificEpithet"), EQUALS, "biblicus");
-
-    condition01.and(condition02a.and(condition03));
-    condition04.and(condition02b.and(condition05));
-    condition01.or(condition04);
+    QueryCondition condition01 = new QueryCondition(new Path("identifications.scientificName.genusOrMonomial"), EQUALS, "Alethe");
+    QueryCondition condition02 = new QueryCondition(new Path("identifications.scientificName.specificEpithet"), EQUALS, "castanea");
+    QueryCondition condition03 = new QueryCondition(new Path("identifications.scientificName.infraspecificEpithet"), EQUALS, null);
 
     QuerySpec query = new QuerySpec();
-    query.addCondition(condition01);
-
+    query.addCondition( condition01.and(condition02.and(condition03)) );
     QuerySpecTranslator translator = new QuerySpecTranslator(query, dt);
-    //System.out.println(translator.translate());
-
+    
+    String jsonFile = "NestedConditionsTest__testQuery_07.json";
+    String jsonString = translator.translate().toString();
+    assertTrue("07", jsonEquals(this.getClass(), jsonString, jsonFile));
   }
 
 }

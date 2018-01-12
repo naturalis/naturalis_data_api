@@ -6,6 +6,8 @@ import static nl.naturalis.nba.api.ComparisonOperator.NOT_IN;
 import static nl.naturalis.nba.api.ComparisonOperator.NOT_MATCHES;
 import static nl.naturalis.nba.api.ComparisonOperator.NOT_STARTS_WITH;
 import static nl.naturalis.nba.api.ComparisonOperator.NOT_STARTS_WITH_IC;
+import static nl.naturalis.nba.api.LogicalOperator.AND;
+import static nl.naturalis.nba.api.LogicalOperator.OR;
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static nl.naturalis.nba.dao.translate.TranslatorUtil.getNestedPath;
 import static nl.naturalis.nba.dao.translate.TranslatorUtil.isFalseCondition;
@@ -17,6 +19,7 @@ import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map.Entry;
 import org.apache.logging.log4j.Logger;
 import org.apache.lucene.search.join.ScoreMode;
@@ -25,6 +28,7 @@ import org.elasticsearch.index.query.NestedQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import nl.naturalis.nba.api.ComparisonOperator;
 import nl.naturalis.nba.api.InvalidConditionException;
+import nl.naturalis.nba.api.LogicalOperator;
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 
@@ -166,34 +170,14 @@ abstract class ConditionTranslator {
 		return query;
 	}
 
-  private BoolQueryBuilder generateAndSiblings(QueryBuilder firstSibling)
-      throws InvalidConditionException {
+  private BoolQueryBuilder generateAndSiblings(QueryBuilder firstSibling) throws InvalidConditionException {
 
-    // Collect all conditions that use a nested path
-    LinkedHashMap<String, ArrayList<QueryCondition>> mapNestedPaths = new LinkedHashMap<>();
-
-    // First condition
-    String nestedPathFirst = getNestedPath(condition.getField(), mappingInfo);
-    mapNestedPaths.putIfAbsent(nestedPathFirst, new ArrayList<QueryCondition>());
-    mapNestedPaths.get(nestedPathFirst).add(condition);
-
-    // Next condition(s)
-    for (QueryCondition c : condition.getAnd()) {
-      if (hasElements(c.getAnd()) || hasElements(c.getOr())) {
-        mapNestedPaths.putIfAbsent(null, new ArrayList<QueryCondition>());
-        mapNestedPaths.get(null).add(c);
-
-      } else {
-        String nestedPathNext = getNestedPath(c.getField(), mappingInfo);
-        mapNestedPaths.putIfAbsent(nestedPathNext, new ArrayList<QueryCondition>());
-        mapNestedPaths.get(nestedPathNext).add(c);
-      }
-    }
+    LinkedHashMap<String, ArrayList<QueryCondition>> conditionsMap = createConditionsMap(AND);
 
     // Build the query from the conditions stored in the map
     BoolQueryBuilder bq = boolQuery();
 
-    for (Entry<String, ArrayList<QueryCondition>> entry : mapNestedPaths.entrySet()) {
+    for (Entry<String, ArrayList<QueryCondition>> entry : conditionsMap.entrySet()) {
       String nestedPath = entry.getKey();
       if (nestedPath == null) {
         for (QueryCondition qc : entry.getValue()) {
@@ -225,31 +209,13 @@ abstract class ConditionTranslator {
 	private BoolQueryBuilder generateOrSiblings(QueryBuilder firstSibling)
 			throws InvalidConditionException
 	{
-    // Collect all conditions that use a nested path
-    LinkedHashMap<String, ArrayList<QueryCondition>> mapNestedPaths = new LinkedHashMap<>();
 
-    // First condition
-    String nestedPathFirst = getNestedPath(condition.getField(), mappingInfo);
-    mapNestedPaths.putIfAbsent(nestedPathFirst, new ArrayList<QueryCondition>());
-    mapNestedPaths.get(nestedPathFirst).add(condition);
-
-    // Next condition(s)
-    for (QueryCondition c : condition.getOr()) {
-      if (hasElements(c.getAnd()) || hasElements(c.getOr())) {
-        mapNestedPaths.putIfAbsent(null, new ArrayList<QueryCondition>());
-        mapNestedPaths.get(null).add(c);
-
-      } else {
-        String nestedPathNext = getNestedPath(c.getField(), mappingInfo);
-        mapNestedPaths.putIfAbsent(nestedPathNext, new ArrayList<QueryCondition>());
-        mapNestedPaths.get(nestedPathNext).add(c);
-      }
-    }
-
-    // Build the query from the conditions stored in the map
+	  LinkedHashMap<String, ArrayList<QueryCondition>> conditionsMap = createConditionsMap(OR);
+    
+	  // Build the query from the conditions stored in the map
     BoolQueryBuilder bq = boolQuery();
 
-    for (Entry<String, ArrayList<QueryCondition>> entry : mapNestedPaths.entrySet()) {
+    for (Entry<String, ArrayList<QueryCondition>> entry : conditionsMap.entrySet()) {
       String nestedPath = entry.getKey();
       if (nestedPath == null) {
         for (QueryCondition qc : entry.getValue()) {
@@ -283,7 +249,38 @@ abstract class ConditionTranslator {
     }
     return bq;
 	}
+		
+	private LinkedHashMap<String, ArrayList<QueryCondition>> createConditionsMap(LogicalOperator op) {
+    // Collect and group all conditions per nested path
+    LinkedHashMap<String, ArrayList<QueryCondition>> conditionsMap = new LinkedHashMap<>();
 
+    List<QueryCondition> siblingConditions;
+    if (op == AND) {
+      siblingConditions = condition.getAnd();
+    }
+    else {
+      siblingConditions = condition.getOr();
+    }
+    
+    // First condition
+    String nestedPath = getNestedPath(condition.getField(), mappingInfo);
+    conditionsMap.putIfAbsent(nestedPath, new ArrayList<QueryCondition>());
+    conditionsMap.get(nestedPath).add(condition);
+
+    // Remaining condition(s)
+    for (QueryCondition c : siblingConditions) {
+      if (hasElements(c.getAnd()) || hasElements(c.getOr())) {
+        conditionsMap.putIfAbsent(null, new ArrayList<QueryCondition>());
+        conditionsMap.get(null).add(c);
+      } else {
+        String nestedPathNext = getNestedPath(c.getField(), mappingInfo);
+        conditionsMap.putIfAbsent(nestedPathNext, new ArrayList<QueryCondition>());
+        conditionsMap.get(nestedPathNext).add(c);
+      }
+    }
+    return conditionsMap;
+	}
+	
 	/*
 	 * Whether or not the condition translated by this translator instance uses
 	 * a negating operator.

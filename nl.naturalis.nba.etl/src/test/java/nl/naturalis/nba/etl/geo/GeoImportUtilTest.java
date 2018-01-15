@@ -3,7 +3,7 @@
  */
 package nl.naturalis.nba.etl.geo;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertNotNull;
 import java.io.File;
 import java.util.Arrays;
@@ -42,12 +42,10 @@ public class GeoImportUtilTest {
    */
   @Test
   public void testGetCsvFiles() {
-
     File[] actualFiles = GeoImportUtil.getCsvFiles();
     String file = Arrays.asList(actualFiles).stream().findFirst().get().getName();
     assertNotNull(file);
     assertEquals(".csv", (file.substring(file.indexOf("."))));
-
   }
 
   /**
@@ -57,15 +55,8 @@ public class GeoImportUtilTest {
    */
   @Test
   public void testGetDataDir() {
-
-    Object obj = ReflectionUtil.callStatic(GeoImportUtil.class, "getDataDir", new Class[] {},
-        new Object[] {});
-    File actual = (File) obj;
-
-    String expcetedName = "nba-brondata-geo";
-
-    assertEquals(expcetedName, actual.getName());
-
+    File f = ReflectionUtil.callStatic(GeoImportUtil.class, "getDataDir");
+    assertTrue("01", f != null);
   }
 
 }

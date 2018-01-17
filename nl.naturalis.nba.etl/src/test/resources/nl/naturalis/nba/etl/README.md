@@ -10,7 +10,7 @@ Executing Unit Test cases :
 -Xms256m 
 -Xmx1536m
 
-2)To make sure nba.properties files contains all these values under  proto.conf.dir has the correct values udpate build.v2.properties with these values :
+2)To make sure nba.properties file under the proto.conf.dir contains all data file location values udpate build.v2.properties with these values :
 
 # Directories containing the CSV dumps, XML dumps, etc.
 etl.crs.data.dir=/home/plabon/nba/data/nba-brondata-crs
@@ -24,7 +24,7 @@ etl.medialib.data.dir=/home/plabon/nba/data/medialib
 
 3) Makes sure EleasticSearch is up and running!
 
-4) If you want to run all test at once using the Suite class AllTests.java makes sure you update the VM arguments to increase the virtual memory for Test VM, the tests will fail otherwise as it will run out of Heap space for 
+4) If you want to run all test at once using the Suite class AllTests.java makes sure you update the VM arguments for AllTest.java to increase the virtual memory for Test VM, the tests will fail otherwise as it will run out of Heap space for 
 e.g. set the Xms and Xmx values to :  
 -Xms512m 
 -Xmx4096m

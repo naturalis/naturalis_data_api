@@ -41,6 +41,7 @@
         <apache-commons-csv.version>1.4</apache-commons-csv.version>
         <apache-logging.version>2.7</apache-logging.version>
         <apache-commons-compress.version>1.12</apache-commons-compress.version>
+        
         <osgi.version>4.3.1</osgi.version>
         <com.lmax.disruptor.version>3.3.5</com.lmax.disruptor.version>
         <com.conversantmedia.disruptor.version>1.2.8-JDK7</com.conversantmedia.disruptor.version>

@@ -8,6 +8,7 @@ import static nl.naturalis.nba.api.ComparisonOperator.NOT_STARTS_WITH;
 import static nl.naturalis.nba.api.ComparisonOperator.NOT_STARTS_WITH_IC;
 import static nl.naturalis.nba.api.LogicalOperator.AND;
 import static nl.naturalis.nba.api.LogicalOperator.OR;
+import static nl.naturalis.nba.api.ComparisonOperator.EQUALS;
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static nl.naturalis.nba.dao.translate.TranslatorUtil.getNestedPath;
 import static nl.naturalis.nba.dao.translate.TranslatorUtil.isFalseCondition;
@@ -65,6 +66,7 @@ abstract class ConditionTranslator {
 
 	QueryCondition condition;
 	MappingInfo<?> mappingInfo;
+	boolean singleCondition = false;
 
 	/*
 	 * Whether or not to translate this condition for a "nested_filter" block
@@ -87,6 +89,15 @@ abstract class ConditionTranslator {
 		return this;
 	}
 
+	/*
+	 * Only used when there's just one condition to be translated.
+	 */
+	public QueryBuilder translate(boolean singleCondition) throws InvalidConditionException
+	{
+	  this.singleCondition = singleCondition;
+	  return translate();
+	}
+	
 	/**
 	 * Converts the {@link QueryCondition} passed in through the
 	 * {@link #ConditionTranslator(QueryCondition) constructor} to an
@@ -115,6 +126,18 @@ abstract class ConditionTranslator {
 		}
 		else if (hasElements(condition.getOr())) {
 			query = generateOrSiblings(query);
+		}
+		else if (singleCondition) {
+		  // Single condition which uses a nested path
+		  String nestedPath = getNestedPath(condition.getField(), mappingInfo);
+		  if (nestedPath != null) {
+		    query = nestedQuery(nestedPath, query, ScoreMode.Avg);
+		  }
+		  // Single condition is null query
+		  if (getClass() == IsNullConditionTranslator.class) {
+		    BoolQueryBuilder bq = boolQuery();
+		    query = bq.mustNot(query);
+		  }
 		}
 
 		// NOT

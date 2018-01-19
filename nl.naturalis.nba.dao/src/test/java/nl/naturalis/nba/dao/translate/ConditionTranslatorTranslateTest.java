@@ -232,7 +232,92 @@ public class ConditionTranslatorTranslateTest {
     
     String jsonFile = "NestedConditionsTest__testQuery_07.json";
     String jsonString = translator.translate().toString();
-    assertTrue("07", jsonEquals(this.getClass(), jsonString, jsonFile));
+    assertTrue("01", jsonEquals(this.getClass(), jsonString, jsonFile));
   }
 
+  @Test
+  public void test_08() throws InvalidQueryException {
+    
+    DocumentType<Specimen> dt = DocumentType.SPECIMEN;
+
+    QueryCondition condition = new QueryCondition(new Path("identifications.scientificName.genusOrMonomial"), EQUALS, "Alethe");
+
+    QuerySpec query = new QuerySpec();
+    query.addCondition(condition);
+    QuerySpecTranslator translator = new QuerySpecTranslator(query, dt);
+
+    String jsonFile = "NestedConditionsTest__testQuery_08.json";
+    String jsonString = translator.translate().toString();
+    assertTrue("01", jsonEquals(this.getClass(), jsonString, jsonFile));
+  }
+
+  @Test
+  public void test_09() throws InvalidQueryException {
+    
+    DocumentType<Specimen> dt = DocumentType.SPECIMEN;
+
+    QueryCondition condition01 = new QueryCondition("gatheringEvent.siteCoordinates.latitudeDecimal", "=", null);
+    QueryCondition condition02 = new QueryCondition("gatheringEvent.siteCoordinates.longitudeDecimal", "=", null);
+
+    condition01.and(condition02);
+    
+    QuerySpec query = new QuerySpec();
+    query.addCondition(condition01);
+    QuerySpecTranslator translator = new QuerySpecTranslator(query, dt);
+    
+    System.out.println(translator.translate());
+
+//    String jsonFile = "NestedConditionsTest__testQuery_09.json";
+//    String jsonString = translator.translate().toString();
+//    assertTrue("09", jsonEquals(this.getClass(), jsonString, jsonFile));
+  }
+
+  @Test
+  public void test_10() throws InvalidQueryException {
+    
+    DocumentType<Specimen> dt = DocumentType.SPECIMEN;
+
+    QueryCondition condition01 = new QueryCondition("gatheringEvent.siteCoordinates.latitudeDecimal", ">", 0);
+    QueryCondition condition02 = new QueryCondition("gatheringEvent.siteCoordinates.longitudeDecimal", ">", 100);
+
+    condition01.and(condition02);
+    
+    QuerySpec query = new QuerySpec();
+    query.addCondition(condition01);
+    QuerySpecTranslator translator = new QuerySpecTranslator(query, dt);
+    
+    System.out.println(translator.translate());
+
+//    String jsonFile = "NestedConditionsTest__testQuery_09.json";
+//    String jsonString = translator.translate().toString();
+//    assertTrue("09", jsonEquals(this.getClass(), jsonString, jsonFile));
+  }
+
+  @Test
+  public void test_11() throws InvalidQueryException {
+    
+    DocumentType<Specimen> dt = DocumentType.SPECIMEN;
+
+    String f1 = "identifications.scientificName.genusOrMonomial";
+    String f2 = "identifications.scientificName.specificEpithet";
+
+    QueryCondition condition01 = new QueryCondition(f1, NOT_EQUALS, null);
+    QueryCondition condition02 = new QueryCondition(f2, NOT_EQUALS, null);
+    
+    QuerySpec query = new QuerySpec();
+    query.addCondition( condition01.and(condition02) );
+    query.sortBy(f1);
+    query.sortBy(f2);
+    QuerySpecTranslator translator = new QuerySpecTranslator(query, dt);
+    
+    System.out.println(translator.translate());
+    
+//    String jsonFile = "NestedConditionsTest__testQuery_11.json";
+//    String jsonString = translator.translate().toString();
+//    assertTrue("01", jsonEquals(this.getClass(), jsonString, jsonFile));
+  }
+
+  
+  
+  
 }

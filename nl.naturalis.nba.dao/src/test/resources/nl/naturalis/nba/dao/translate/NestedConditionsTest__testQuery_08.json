@@ -1,0 +1,21 @@
+{
+  "from" : 0,
+  "size" : 10,
+  "query" : {
+    "nested" : {
+      "query" : {
+        "term" : {
+          "identifications.scientificName.genusOrMonomial" : {
+            "value" : "Alethe",
+            "boost" : 1.0
+          }
+        }
+      },
+      "path" : "identifications",
+      "ignore_unmapped" : false,
+      "score_mode" : "avg",
+      "boost" : 1.0
+    }
+  },
+  "ext" : { }
+}

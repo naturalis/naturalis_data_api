@@ -150,7 +150,8 @@ public class SpecimenDaoTest_In {
 	/*
 	 * Test where one of the search values is null in combination with NOT_IN.
 	 * So the searched field must be neither be null/empty nor have ANY of the
-	 * other (non-null) search values.
+	 * other (non-null) search values. Test is only true for tRexSpecimen01,
+	 * and malusSylvestrisSpecimen01, hence: 2.
 	 */
 	@Test
 	public void testQuery__SearchSpec__05() throws InvalidQueryException
@@ -163,7 +164,7 @@ public class SpecimenDaoTest_In {
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
 		QueryResult<Specimen> result = dao.query(qs);
-		assertEquals("01", 1, result.size());
+		assertEquals("01", 2, result.size());
 	}
 
 }

@@ -17,9 +17,12 @@ import org.junit.Test;
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QueryResult;
+import nl.naturalis.nba.api.QueryResultItem;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.Specimen;
+import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.mock.SpecimenMock;
+import nl.naturalis.nba.dao.translate.QuerySpecTranslator;
 
 @SuppressWarnings("static-method")
 public class SpecimenDaoTest_Between {
@@ -220,8 +223,13 @@ public class SpecimenDaoTest_Between {
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
 		QueryResult<Specimen> result = dao.query(qs);
+
+		System.out.println(JsonUtil.toPrettyJson(result));
+		
 		// All but tRex
-		assertEquals("01", 4, result.size());
+		assertEquals("01", 3, result.size());  // This should be 3!!!
+		
+
 	}
 
 	/*

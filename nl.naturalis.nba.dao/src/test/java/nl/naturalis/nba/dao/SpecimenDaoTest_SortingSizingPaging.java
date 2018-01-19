@@ -109,7 +109,7 @@ public class SpecimenDaoTest_SortingSizingPaging {
 		QueryResult<Specimen> result = dao.query(qs);
 		for (int i = 0; i < result.size(); i++) {
 			String unitID = result.get(i).getItem().getUnitID();
-			assertEquals("01", expected.get(i).getUnitID(), unitID);
+			assertEquals("0" + i, expected.get(i).getUnitID(), unitID);
 		}
 	}
 

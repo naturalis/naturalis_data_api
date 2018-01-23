@@ -184,6 +184,20 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
   }
 
   @GET
+  @Path("/countDistinctValuesPerGroup/{field}/{group}")
+  @ApiOperation(value = "Count the distinct number of group values that exist per the given field",
+      response = Map.class, notes = "")
+  @Produces(JSON_CONTENT_TYPE)
+  public String countDistinctValuesPerGroup(@ApiParam(value = "name of field in specimen object", required = true,
+      defaultValue = "identifications.defaultClassification.family") 
+      @PathParam("field") String field,
+      @PathParam("group") String group, 
+      @Context UriInfo uriInfo) {
+    logger.info("countDistinctValuesPerGroup/" + field + "/" + group);
+    return super.countDistinctValuesPerGroup(field, group, uriInfo);
+  }
+
+  @GET
   @Path("/getDistinctValues/{field}")
   @ApiOperation(value = "Get all different values that exist for a field", response = Map.class,
       notes = "A list of all fields for specimen documents can be retrieved with /metadata/getFieldInfo")
@@ -223,6 +237,20 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
     return super.getDistinctValuesHttpPostJson(field, qs, uriInfo);
   }
 
+  @GET
+  @Path("/getDistinctValuesPerGroup/{field}/{group}")
+  @ApiOperation(value = "Count the distinct number of group values that exist per the given field",
+      response = Map.class, notes = "")
+  @Produces(JSON_CONTENT_TYPE)
+  public String getDistinctValuesPerGroup(@ApiParam(value = "name of field in specimen object", required = true,
+      defaultValue = "identifications.defaultClassification.family") 
+      @PathParam("field") String field,
+      @PathParam("group") String group, 
+      @Context UriInfo uriInfo) {
+    logger.info("getDistinctValuesPerGroup/" + field + "/" + group);
+    return super.getDistinctValuesPerGroup(field, group, uriInfo);
+  }
+  
   @GET
   @Path("/dwca/query")
   @ApiOperation(

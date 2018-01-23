@@ -7,7 +7,9 @@ import org.junit.runners.Suite.SuiteClasses;
 import nl.naturalis.nba.dao.format.DocumentFlattenerTest;
 import nl.naturalis.nba.dao.format.calc.NamePublishedInCalculatorTest;
 import nl.naturalis.nba.dao.translate.BetweenConditionTranslatorTest;
+import nl.naturalis.nba.dao.translate.ConditionCollectorTest;
 import nl.naturalis.nba.dao.translate.ConditionTranslatorFactoryTest;
+import nl.naturalis.nba.dao.translate.ConditionTranslatorTranslateTest;
 import nl.naturalis.nba.dao.translate.EqualsConditionTranslatorTest;
 import nl.naturalis.nba.dao.translate.EqualsIgnoreCaseConditionTranslatorTest;
 import nl.naturalis.nba.dao.translate.ExploderTest;
@@ -30,6 +32,8 @@ import nl.naturalis.nba.dao.util.es.ESUtilTest;
 	SwapFileOutputStreamTest.class,
 	DocumentFlattenerTest.class,
 	ConditionTranslatorFactoryTest.class,
+	ConditionTranslatorTranslateTest.class,
+	ConditionCollectorTest.class,
 	BetweenConditionTranslatorTest.class,
 	EqualsConditionTranslatorTest.class,
 	EqualsIgnoreCaseConditionTranslatorTest.class,

@@ -7,13 +7,11 @@ import java.time.format.DateTimeFormatter;
 
 import org.junit.Test;
 
-import nl.naturalis.nba.api.InvalidConditionException;
-
 @SuppressWarnings("static-method")
 public class ConditionPreprocessorTest {
 
 	@Test
-	public void testConvertValueForDateField() throws InvalidConditionException
+	public void testConvertValueForDateField()
 	{
 		OffsetDateTime date = OffsetDateTime.parse("2017-02-03T10:15:30+01:00");
 		System.out.println(date);

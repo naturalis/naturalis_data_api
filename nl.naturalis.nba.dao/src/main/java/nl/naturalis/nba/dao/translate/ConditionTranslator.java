@@ -19,7 +19,6 @@ import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map.Entry;
 import org.apache.logging.log4j.Logger;
 import org.apache.lucene.search.join.ScoreMode;
@@ -28,7 +27,6 @@ import org.elasticsearch.index.query.NestedQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import nl.naturalis.nba.api.ComparisonOperator;
 import nl.naturalis.nba.api.InvalidConditionException;
-import nl.naturalis.nba.api.LogicalOperator;
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 
@@ -191,7 +189,7 @@ abstract class ConditionTranslator {
 
   private BoolQueryBuilder generateAndSiblings(QueryBuilder firstSibling) throws InvalidConditionException {
 
-    LinkedHashMap<String, ArrayList<QueryCondition>> conditionsMap = createConditionsMap(AND);
+    LinkedHashMap<String, ArrayList<QueryCondition>> conditionsMap = ConditionCollector.createConditionsMap(condition, mappingInfo, AND);
     BoolQueryBuilder bq = boolQuery();
     for (Entry<String, ArrayList<QueryCondition>> entry : conditionsMap.entrySet()) {
       String nestedPath = entry.getKey();
@@ -226,7 +224,7 @@ abstract class ConditionTranslator {
 			throws InvalidConditionException
 	{
 
-	  LinkedHashMap<String, ArrayList<QueryCondition>> conditionsMap = createConditionsMap(OR);
+	  LinkedHashMap<String, ArrayList<QueryCondition>> conditionsMap = ConditionCollector.createConditionsMap(condition, mappingInfo, OR);
     BoolQueryBuilder bq = boolQuery();
     for (Entry<String, ArrayList<QueryCondition>> entry : conditionsMap.entrySet()) {
       String nestedPath = entry.getKey();
@@ -261,34 +259,6 @@ abstract class ConditionTranslator {
       }
     }
     return bq;
-	}
-	
-	private LinkedHashMap<String, ArrayList<QueryCondition>> createConditionsMap(LogicalOperator op) {
-
-    LinkedHashMap<String, ArrayList<QueryCondition>> conditionsMap = new LinkedHashMap<>();
-    List<QueryCondition> siblingConditions;
-    if (op == AND) {
-      siblingConditions = condition.getAnd();
-    }
-    else {
-      siblingConditions = condition.getOr();
-    }
-
-    String nestedPath = getNestedPath(condition.getField(), mappingInfo);
-    conditionsMap.putIfAbsent(nestedPath, new ArrayList<QueryCondition>());
-    conditionsMap.get(nestedPath).add(condition);
-    
-    for (QueryCondition c : siblingConditions) {
-      if (hasElements(c.getAnd()) || hasElements(c.getOr())) {
-        conditionsMap.putIfAbsent(null, new ArrayList<QueryCondition>());
-        conditionsMap.get(null).add(c);
-      } else {
-        String nestedPathNext = getNestedPath(c.getField(), mappingInfo);
-        conditionsMap.putIfAbsent(nestedPathNext, new ArrayList<QueryCondition>());
-        conditionsMap.get(nestedPathNext).add(c);
-      }
-    }
-    return conditionsMap;
 	}
 	
 	/*

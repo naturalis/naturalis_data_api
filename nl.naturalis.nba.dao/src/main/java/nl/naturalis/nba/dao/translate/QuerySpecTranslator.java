@@ -72,8 +72,6 @@ public class QuerySpecTranslator {
       }
       request.setQuery(query);
     }
-    
-    // Fields
     if (spec.getFields() != null) {
       if (spec.getFields().isEmpty()) {
         request.setFetchSource(false);
@@ -81,12 +79,8 @@ public class QuerySpecTranslator {
         addFields(request);
       }
     }
-    
-    // From and Size
     request.setFrom(spec.getFrom() == null ? 0 : spec.getFrom());
     request.setSize(spec.getSize() == null ? DEFAULT_SIZE : spec.getSize());
-    
-    // Sort fields
     if (spec.getSortFields() != null) {
       SortFieldsTranslator sfTranslator = new SortFieldsTranslator(spec, dt);
       for (SortBuilder<?> sortBuilder : sfTranslator.translate()) {

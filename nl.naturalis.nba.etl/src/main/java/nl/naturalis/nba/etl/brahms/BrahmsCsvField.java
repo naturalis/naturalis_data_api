@@ -6,7 +6,7 @@ package nl.naturalis.nba.etl.brahms;
  * @author Ayco Holleman
  *
  */
-enum BrahmsCsvField
+public enum BrahmsCsvField
 {
 	TAG,
 	DEL,

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<nederlands_soortenregister exportdate="2017-12-30T05:47:26+00:00">
+<taxa>
+	<taxon>
+		  <name>Larus argentatus argentatus Pontoppidan, 1763</name>
+		  <rank>subspecies</rank>
+		  <nsr_id>D3KF0JNQ0UA</nsr_id>
+		  <nsr_id_parent>464943689</nsr_id_parent>
+		  <url>http://nederlandsesoorten.nl/nsr/concept/0D3KF0JNQ0UA</url>
+		  <classification>
+		    <taxon>
+		      <name>Animalia</name>
+		      <rank>regnum</rank>
+		    </taxon>
+		    <taxon>
+		      <name>Chordata</name>
+		      <rank>phylum</rank>
+		    </taxon>
+		    <taxon>
+		      <name>Aves</name>
+		      <rank>classis</rank>
+		    </taxon>
+		    <taxon>
+		      <name>Charadriiformes</name>
+		      <rank>ordo</rank>
+		    </taxon>
+		    <taxon>
+		      <name>Laridae</name>
+		      <rank>familia</rank>
+		    </taxon>
+		    <taxon>
+		      <name>Larus</name>
+		      <rank>genus</rank>
+		    </taxon>
+		    <taxon>
+		      <name>Larus</name>
+		      <rank>species</rank>
+		    </taxon>
+		  </classification>
+		  <status>
+		    <status>1b Incidenteel/Periodiek. Minder dan 10 jaar achtereen voortplanting en toevallige gasten.</status>
+		    <reference_title>Waarnemingen aanwezig in NDFF / Waarneming.nl</reference_title>
+		    <expert_name/>
+		    <organisation_name/>
+		  </status>
+		  <description/>
+		  <names>
+		    <name>
+		      <fullname>Scandinavische zilvermeeuw</fullname>
+		      <uninomial/>
+		      <specific_epithet/>
+		      <infra_specific_epithet/>
+		      <authorship/>
+		      <name_author/>
+		      <authorship_year/>
+		      <reference/>
+		      <expert/>
+		      <organisation/>
+		      <nametype>isPreferredNameOf</nametype>
+		      <expert_name/>
+		      <organisation_name/>
+		      <reference_title/>
+		      <reference_author/>
+		      <reference_date>2015</reference_date>
+		      <language>Dutch</language>
+		    </name>
+		    <name>
+		      <fullname>Larus argentatus argentatus Pontoppidan, 1763</fullname>
+		      <uninomial>Larus</uninomial>
+		      <specific_epithet>argentatus</specific_epithet>
+		      <infra_specific_epithet>argentatus</infra_specific_epithet>
+		      <authorship>Pontoppidan, 1763</authorship>
+		      <name_author>Pontoppidan</name_author>
+		      <authorship_year>1763</authorship_year>
+		      <reference/>
+		      <expert/>
+		      <organisation/>
+		      <nametype>isValidNameOf</nametype>
+		      <expert_name/>
+		      <organisation_name/>
+		      <reference_title/>
+		      <reference_author/>
+		      <reference_date>2015</reference_date>
+		      <language>Scientific</language>
+		    </name>
+		  </names>
+		   <images>
+	      <image>
+		      <file_name>104527_zilvermeeuw-20130210-egmond_aan_zee-001arnold_wijker.jpg</file_name>
+		      <mime_type>image/jpeg</mime_type>
+		      <photographer_name>Arnold Wijker</photographer_name>
+		      <date_taken>10 February 2013</date_taken>
+		      <short_description>Adult winter</short_description>
+		      <geography>Egmond aan zee, strand</geography>
+		      <copyright/>
+		      <maker_adress>awijker@quicknet.nl</maker_adress>
+		      <licence>CC BY-NC-ND</licence>
+		      <licence_type>Copyright</licence_type>
+		      <url>http://images.naturalis.nl/original/104527_zilvermeeuw-20130210-egmond_aan_zee-001arnold_wijker.jpg</url>
+	      </image>
+	      <image>
+		      <file_name>104528_zilvermeeuw-20130210-egmond_aan_zee-002arnold_wijker.jpg</file_name>
+		      <mime_type>image/jpeg</mime_type>
+		      <photographer_name>Arnold Wijker</photographer_name>
+		      <date_taken>10 February 2013</date_taken>
+		      <short_description>Adult winter</short_description>
+		      <geography>Egmond aan zee, strand</geography>
+		      <copyright/>
+		      <maker_adress>awijker@quicknet.nl</maker_adress>
+		      <licence>CC BY-NC-ND</licence>
+		      <licence_type>Copyright</licence_type>
+		      <url>http://images.naturalis.nl/original/104528_zilvermeeuw-20130210-egmond_aan_zee-002arnold_wijker.jpg</url>
+	     </image>
+	   </images>
+	</taxon>	
+</taxa>
+</nederlands_soortenregister>
+

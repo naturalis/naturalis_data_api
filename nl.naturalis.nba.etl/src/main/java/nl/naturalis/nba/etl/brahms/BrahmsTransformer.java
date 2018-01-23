@@ -68,7 +68,7 @@ abstract class BrahmsTransformer<T extends IDocumentObject>
 	}
 
 	@Override
-	protected String getObjectID()
+	public String getObjectID()
 	{
 		return input.get(BARCODE);
 	}

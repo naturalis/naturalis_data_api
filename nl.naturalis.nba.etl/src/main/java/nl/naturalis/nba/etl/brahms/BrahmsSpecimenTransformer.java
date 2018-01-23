@@ -59,7 +59,7 @@ class BrahmsSpecimenTransformer extends BrahmsTransformer<Specimen> {
     themeCache = ThemeCache.getInstance();
   }
 
-  BrahmsSpecimenTransformer(ETLStatistics stats)
+  BrahmsSpecimenTransformer(ETLStatistics stats) //constructor made public for test.
   {
     super(stats);
   }

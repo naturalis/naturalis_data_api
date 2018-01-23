@@ -38,9 +38,9 @@ import nl.naturalis.nba.etl.ETLStatistics;
  * @author Ayco Holleman
  *
  */
-class BrahmsMultiMediaTransformer extends BrahmsTransformer<MultiMediaObject> {
+class BrahmsMultiMediaTransformer extends BrahmsTransformer<MultiMediaObject> {//made public for test purpose
 
-	public BrahmsMultiMediaTransformer(ETLStatistics stats)
+	BrahmsMultiMediaTransformer(ETLStatistics stats)
 	{
 		super(stats);
 	}

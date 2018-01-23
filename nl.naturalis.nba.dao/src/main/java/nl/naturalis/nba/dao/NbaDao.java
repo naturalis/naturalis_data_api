@@ -7,12 +7,11 @@ import static nl.naturalis.nba.dao.util.es.ESUtil.toDocumentObject;
 import static nl.naturalis.nba.utils.debug.DebugUtil.printCall;
 import static org.elasticsearch.search.aggregations.AggregationBuilders.nested;
 import static org.elasticsearch.search.aggregations.AggregationBuilders.terms;
-
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.DocWriteResponse.Result;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequestBuilder;
@@ -29,12 +28,19 @@ import org.elasticsearch.common.bytes.BytesReference;
 import org.elasticsearch.index.query.IdsQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.aggregations.AggregationBuilder;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.bucket.nested.InternalNested;
+import org.elasticsearch.search.aggregations.bucket.nested.InternalReverseNested;
 import org.elasticsearch.search.aggregations.bucket.nested.Nested;
 import org.elasticsearch.search.aggregations.bucket.nested.NestedAggregationBuilder;
+import org.elasticsearch.search.aggregations.bucket.nested.ReverseNestedAggregationBuilder;
+import org.elasticsearch.search.aggregations.bucket.terms.StringTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
-
+import org.elasticsearch.search.aggregations.metrics.cardinality.CardinalityAggregationBuilder;
+import org.elasticsearch.search.aggregations.metrics.cardinality.InternalCardinality;
 import nl.naturalis.nba.api.INbaAccess;
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.NoSuchFieldException;
@@ -179,6 +185,399 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
 		}
 		return result;
 	}
+	
+  public String countDistinctValuesPerGroup(String group, String field, QuerySpec querySpec)
+      throws InvalidQueryException {
+
+    if (logger.isDebugEnabled()) {
+      logger.debug(printCall("countDistinctValuesPerGroup", group, field, querySpec));
+    }
+
+    SearchRequestBuilder request;
+    if (querySpec == null) {
+      querySpec = new QuerySpec();
+    }
+    QuerySpecTranslator translator = new QuerySpecTranslator(querySpec, dt);
+    request = translator.translate();
+
+    /*
+     * NOTE: the value of the size parameter from the queryspec is used to set the value of the
+     * aggregation size!
+     */
+    int aggSize = 10000;
+    if (querySpec.getSize() != null && querySpec.getSize() > 0) {
+      aggSize = querySpec.getSize();
+    }
+    request.setSize(0);
+
+    List<Map<String, Object>> result = new LinkedList<>();
+
+    // Map group and field to query path
+    MappingInfo<T> mappingInfo = new MappingInfo<>(dt.getMapping());
+
+    String pathToNestedGroup;
+    try {
+      pathToNestedGroup = mappingInfo.getNestedPath(group);
+    } catch (NoSuchFieldException e) {
+      throw new InvalidQueryException(e.getMessage());
+    }
+
+    String pathToNestedField;
+    try {
+      pathToNestedField = mappingInfo.getNestedPath(field);
+    } catch (NoSuchFieldException e) {
+      throw new InvalidQueryException(e.getMessage());
+    }
+
+    // Based on the query mapping, use the correct aggregation builder
+
+    if (pathToNestedGroup == null && pathToNestedField == null) {
+      // Group + Field
+      // http://localhost:8080/v2/specimen/countDistinctValuesPerGroup/collectionType/recordBasis
+
+      AggregationBuilder groupAgg = AggregationBuilders.terms("GROUP").field(group).size(aggSize);
+      CardinalityAggregationBuilder cardinalityField =
+          AggregationBuilders.cardinality("DISTINCT_VALUES").field(field);
+      groupAgg.subAggregation(cardinalityField);
+
+      request.addAggregation(groupAgg);
+      SearchResponse response = executeSearchRequest(request);
+
+      Terms groupTerms = response.getAggregations().get("GROUP");
+      List<Bucket> buckets = groupTerms.getBuckets();
+
+      for (Bucket bucket : buckets) {
+
+        InternalCardinality cardinality = bucket.getAggregations().get("DISTINCT_VALUES");
+
+        Map<String, Object> hashMap = new LinkedHashMap<>(2);
+        hashMap.put(group, bucket.getKeyAsString());
+        hashMap.put(field, cardinality.getValue());
+        result.add(hashMap);
+      }
+    } else if (pathToNestedGroup == null && pathToNestedField != null) {
+      // Group + Nested Field
+      // http://localhost:8080/v2/specimen/countDistinctValuesPerGroup/collectionType/gatheringEvent.gatheringPersons.fullName
+
+      AggregationBuilder groupAgg = AggregationBuilders.terms("GROUP").field(group).size(aggSize);
+      AggregationBuilder fieldAgg = AggregationBuilders.nested("FIELD", pathToNestedField);
+      CardinalityAggregationBuilder cardinalityField =
+          AggregationBuilders.cardinality("DISTINCT_VALUES").field(field);
+
+      fieldAgg.subAggregation(cardinalityField);
+      groupAgg.subAggregation(fieldAgg);
+
+      request.addAggregation(groupAgg);
+      SearchResponse response = executeSearchRequest(request);
+
+      Terms groupTerms = response.getAggregations().get("GROUP");
+      List<Bucket> buckets = groupTerms.getBuckets();
+
+      for (Bucket bucket : buckets) {
+
+        InternalNested fields = bucket.getAggregations().get("FIELD");
+        InternalCardinality cardinality = fields.getAggregations().get("DISTINCT_VALUES");
+
+        Map<String, Object> hashMap = new LinkedHashMap<>(2);
+        hashMap.put(group, bucket.getKeyAsString());
+        hashMap.put(field, cardinality.getValue());
+        result.add(hashMap);
+      }
+
+    } else if (pathToNestedGroup != null && pathToNestedField == null) {
+      // Nested Group + Field
+      // http://localhost:8080/v2/specimen/countDistinctValuesPerGroup/identifications.defaultClassification.className/collectionType
+
+      AggregationBuilder groupAgg = AggregationBuilders.nested("NESTED_GROUP", pathToNestedGroup);
+      AggregationBuilder groupTerm = AggregationBuilders.terms("GROUP").field(group).size(aggSize);
+
+      AggregationBuilder fieldAgg = AggregationBuilders.reverseNested("REVERSE_NESTED_FIELD");
+      CardinalityAggregationBuilder cardinalityField =
+          AggregationBuilders.cardinality("DISTINCT_VALUES").field(field);
+
+      fieldAgg.subAggregation(cardinalityField);
+      groupTerm.subAggregation(fieldAgg);
+      groupAgg.subAggregation(groupTerm);
+
+      request.addAggregation(groupAgg);
+      SearchResponse response = executeSearchRequest(request);
+
+      InternalNested nestedGroup = response.getAggregations().get("NESTED_GROUP");
+      Terms groupTerms = nestedGroup.getAggregations().get("GROUP");
+      List<Bucket> buckets = groupTerms.getBuckets();
+
+      for (Bucket bucket : buckets) {
+
+        InternalReverseNested fields = bucket.getAggregations().get("REVERSE_NESTED_FIELD");
+        InternalCardinality cardinality = fields.getAggregations().get("DISTINCT_VALUES");
+
+        Map<String, Object> hashMap = new LinkedHashMap<>(2);
+        hashMap.put(group, bucket.getKeyAsString());
+        hashMap.put(field, cardinality.getValue());
+        result.add(hashMap);
+      }
+    } else {
+      // Nested Group + (Reverse) Nested Field
+      // http://localhost:8080/v2/specimen/countDistinctValuesPerGroup/identifications.defaultClassification.className/gatheringEvent.gatheringPersons.fullName
+
+      AggregationBuilder groupAgg = AggregationBuilders.nested("NESTED_GROUP", pathToNestedGroup);
+      AggregationBuilder groupTerm = AggregationBuilders.terms("GROUP").field(group).size(aggSize);
+
+      AggregationBuilder fieldAgg = AggregationBuilders.reverseNested("REVERSE_NESTED_FIELD");
+      AggregationBuilder fieldNested = AggregationBuilders.nested(field, pathToNestedField);
+      CardinalityAggregationBuilder cardinalityField =
+          AggregationBuilders.cardinality("DISTINCT_VALUES").field(field);
+
+      fieldNested.subAggregation(cardinalityField);
+      fieldAgg.subAggregation(fieldNested);
+      groupTerm.subAggregation(fieldAgg);
+      groupAgg.subAggregation(groupTerm);
+
+      request.addAggregation(groupAgg);
+      SearchResponse response = executeSearchRequest(request);
+
+      InternalNested nestedGroup = response.getAggregations().get("NESTED_GROUP");
+      Terms groupTerms = nestedGroup.getAggregations().get("GROUP");
+      List<Bucket> buckets = groupTerms.getBuckets();
+
+      for (Bucket bucket : buckets) {
+
+        InternalReverseNested fields = bucket.getAggregations().get("REVERSE_NESTED_FIELD");
+        InternalNested nestedFields = fields.getAggregations().get(field);
+        InternalCardinality cardinality = nestedFields.getAggregations().get("DISTINCT_VALUES");
+
+        Map<String, Object> hashMap = new LinkedHashMap<>(2);
+        hashMap.put(group, bucket.getKeyAsString());
+        hashMap.put(field, cardinality.getValue());
+        result.add(hashMap);
+      }
+    }
+
+    return JsonUtil.toJson(result);
+  }
+
+  public String getDistinctValuesPerGroup(String group, String field, QuerySpec querySpec)
+      throws InvalidQueryException {
+
+    if (logger.isDebugEnabled()) {
+      logger.debug(printCall("getDistinctValuesPerGroup", group, field, querySpec));
+    }
+
+    SearchRequestBuilder request;
+    if (querySpec == null) {
+      querySpec = new QuerySpec();
+    }
+    QuerySpecTranslator translator = new QuerySpecTranslator(querySpec, dt);
+    request = translator.translate();
+
+    /*
+     * NOTE: the value of the size parameter from the queryspec is used to set the value of the
+     * aggregation size!
+     */
+    int aggSize = 10000;
+    if (querySpec.getSize() != null && querySpec.getSize() > 0) {
+      aggSize = querySpec.getSize();
+    }
+    request.setSize(0);
+
+    List<Map<String, Object>> result = new LinkedList<>();
+
+    // Map group and field to query path
+    MappingInfo<T> mappingInfo = new MappingInfo<>(dt.getMapping());
+    String pathToNestedGroup;
+    try {
+      pathToNestedGroup = mappingInfo.getNestedPath(group);
+    } catch (NoSuchFieldException e) {
+      throw new InvalidQueryException(e.getMessage());
+    }
+
+    String pathToNestedField;
+    try {
+      pathToNestedField = mappingInfo.getNestedPath(field);
+    } catch (NoSuchFieldException e) {
+      throw new InvalidQueryException(e.getMessage());
+    }
+
+    // Based on the query mapping, use the correct aggregation builder
+
+    if (pathToNestedGroup == null && pathToNestedField == null) {
+      // Group + Field
+      // http://localhost:8080/v2/specimen/getDistinctValuesPerGroup/sourceSystem.code/collectionType
+
+      AggregationBuilder groupAgg = AggregationBuilders.terms("GROUP").field(group).size(aggSize);
+      AggregationBuilder fieldAgg = AggregationBuilders.terms("FIELD").field(field).size(aggSize);
+      groupAgg.subAggregation(fieldAgg);
+
+      request.addAggregation(groupAgg);
+      SearchResponse response = executeSearchRequest(request);
+
+      Terms groupTerms = response.getAggregations().get("GROUP");
+      List<Bucket> buckets = groupTerms.getBuckets();
+
+      for (Bucket bucket : buckets) {
+
+        StringTerms fieldTerms = bucket.getAggregations().get("FIELD");
+        List<StringTerms.Bucket> innerBuckets = fieldTerms.getBucketsInternal();
+        List<Map<String, Object>> fieldTermsList = new LinkedList<>();
+
+        for (Bucket innerBucket : innerBuckets) {
+          Map<String, Object> aggregate = new LinkedHashMap<>(2);
+          aggregate.put(field, innerBucket.getKeyAsString());
+          aggregate.put("count", innerBucket.getDocCount());
+          if (innerBucket.getDocCount() > 0) {
+            fieldTermsList.add(aggregate);
+          }
+        }
+
+        Map<String, Object> hashMap = new LinkedHashMap<>(2);
+        hashMap.put(group, bucket.getKeyAsString());
+        hashMap.put("count", bucket.getDocCount());
+        if (fieldTermsList.size() > 0) {
+          hashMap.put("values", fieldTermsList);
+        }
+        result.add(hashMap);
+      }
+    } else if (pathToNestedGroup == null && pathToNestedField != null) {
+      // Group + Nested Field
+      // http://localhost:8080/v2/specimen/getDistinctValuesPerGroup/sourceSystem.code/identifications.taxonRank
+
+      AggregationBuilder groupAgg = AggregationBuilders.terms("GROUP").field(group).size(aggSize);
+      AggregationBuilder nestedFieldAgg =
+          AggregationBuilders.nested("NESTED_FIELD", pathToNestedField);
+      AggregationBuilder fieldAgg = AggregationBuilders.terms("FIELD").field(field).size(aggSize);
+      nestedFieldAgg.subAggregation(fieldAgg);
+      groupAgg.subAggregation(nestedFieldAgg);
+
+      request.addAggregation(groupAgg);
+      SearchResponse response = executeSearchRequest(request);
+
+      Terms groupTerms = response.getAggregations().get("GROUP");
+      List<Bucket> buckets = groupTerms.getBuckets();
+
+      for (Bucket bucket : buckets) {
+
+        Nested nestedField = bucket.getAggregations().get("NESTED_FIELD");
+        Terms fieldTerms = nestedField.getAggregations().get("FIELD");
+        List<Bucket> innerBuckets = fieldTerms.getBuckets();
+        List<Map<String, Object>> fieldTermsList = new LinkedList<>();
+
+        for (Bucket innerBucket : innerBuckets) {
+          Map<String, Object> aggregate = new LinkedHashMap<>(2);
+          aggregate.put(field, innerBucket.getKeyAsString());
+          aggregate.put("count", innerBucket.getDocCount());
+          if (innerBucket.getDocCount() > 0) {
+            fieldTermsList.add(aggregate);
+          }
+        }
+
+        Map<String, Object> hashMap = new LinkedHashMap<>(2);
+        hashMap.put(group, bucket.getKeyAsString());
+        hashMap.put("count", bucket.getDocCount());
+        if (fieldTermsList.size() > 0) {
+          hashMap.put("values", fieldTermsList);
+        }
+        result.add(hashMap);
+      }
+    } else if (pathToNestedGroup != null && pathToNestedField == null) {
+      // Nested group + Reverse nested field
+      // http://localhost:8080/v2/specimen/getDistinctValuesPerGroup/identifications.taxonRank/sourceSystem.code
+
+      AggregationBuilder nestedGroupAgg =
+          AggregationBuilders.nested("NESTED_GROUP", pathToNestedGroup);
+      AggregationBuilder groupAgg = AggregationBuilders.terms("GROUP").field(group).size(aggSize);
+      AggregationBuilder fieldAgg = AggregationBuilders.terms("FIELD").field(field).size(aggSize);
+      ReverseNestedAggregationBuilder revNestedFieldAgg =
+          AggregationBuilders.reverseNested("REVERSE_NESTED_FIELD");
+      revNestedFieldAgg.subAggregation(fieldAgg);
+      groupAgg.subAggregation(revNestedFieldAgg);
+      nestedGroupAgg.subAggregation(groupAgg);
+
+      request.addAggregation(nestedGroupAgg);
+      SearchResponse response = executeSearchRequest(request);
+
+      Nested nestedGroup = response.getAggregations().get("NESTED_GROUP");
+      Terms groupTerms = nestedGroup.getAggregations().get("GROUP");
+      List<Bucket> buckets = groupTerms.getBuckets();
+
+      for (Bucket bucket : buckets) {
+
+        InternalReverseNested nestedField = bucket.getAggregations().get("REVERSE_NESTED_FIELD");
+        Terms fieldTerms = nestedField.getAggregations().get("FIELD");
+        List<Bucket> innerBuckets = fieldTerms.getBuckets();
+        List<Map<String, Object>> fieldTermsList = new LinkedList<>();
+
+        for (Bucket innerBucket : innerBuckets) {
+          Map<String, Object> aggregate = new LinkedHashMap<>(2);
+          aggregate.put(field, innerBucket.getKeyAsString());
+          aggregate.put("count", innerBucket.getDocCount());
+          if (innerBucket.getDocCount() > 0) {
+            fieldTermsList.add(aggregate);
+          }
+        }
+
+        Map<String, Object> hashMap = new LinkedHashMap<>(2);
+        hashMap.put(group, bucket.getKeyAsString());
+        hashMap.put("count", bucket.getDocCount());
+        if (fieldTermsList.size() > 0) {
+          hashMap.put("values", fieldTermsList);
+        }
+        result.add(hashMap);
+      }
+    } else {
+      // Nested group + Reverse nested field
+      // http://localhost:8080/v2/specimen/getDistinctValuesPerGroup/identifications.taxonRank/gatheringEvent.gatheringPersons.fullName
+
+      AggregationBuilder nestedGroupAgg =
+          AggregationBuilders.nested("NESTED_GROUP", pathToNestedGroup);
+      AggregationBuilder groupAgg = AggregationBuilders.terms("GROUP").field(group).size(aggSize);
+      AggregationBuilder nestedFieldAgg =
+          AggregationBuilders.nested("NESTED_FIELD", pathToNestedField);
+      AggregationBuilder fieldAgg = AggregationBuilders.terms("FIELD").field(field).size(aggSize);
+      ReverseNestedAggregationBuilder revNestedFieldAgg =
+          AggregationBuilders.reverseNested("REVERSE_NESTED_FIELD");
+      nestedFieldAgg.subAggregation(fieldAgg);
+      revNestedFieldAgg.subAggregation(nestedFieldAgg);
+      groupAgg.subAggregation(revNestedFieldAgg);
+      nestedGroupAgg.subAggregation(groupAgg);
+
+      request.addAggregation(nestedGroupAgg);
+      SearchResponse response = executeSearchRequest(request);
+
+      Nested nestedGroup = response.getAggregations().get("NESTED_GROUP");
+      Terms groupTerms = nestedGroup.getAggregations().get("GROUP");
+      List<Bucket> buckets = groupTerms.getBuckets();
+
+      for (Bucket bucket : buckets) {
+
+        InternalReverseNested reverseNestedField =
+            bucket.getAggregations().get("REVERSE_NESTED_FIELD");
+        Nested nestedField = reverseNestedField.getAggregations().get("NESTED_FIELD");
+        Terms fieldTerms = nestedField.getAggregations().get("FIELD");
+        List<Bucket> innerBuckets = fieldTerms.getBuckets();
+        List<Map<String, Object>> fieldTermsList = new LinkedList<>();
+
+        for (Bucket innerBucket : innerBuckets) {
+          Map<String, Object> aggregate = new LinkedHashMap<>(2);
+          aggregate.put(field, innerBucket.getKeyAsString());
+          aggregate.put("count", innerBucket.getDocCount());
+          if (innerBucket.getDocCount() > 0) {
+            fieldTermsList.add(aggregate);
+          }
+        }
+
+        Map<String, Object> hashMap = new LinkedHashMap<>(2);
+        hashMap.put(group, bucket.getKeyAsString());
+        hashMap.put("count", bucket.getDocCount());
+        if (fieldTermsList.size() > 0) {
+          hashMap.put("values", fieldTermsList);
+        }
+        result.add(hashMap);
+      }
+    }
+
+    return JsonUtil.toPrettyJson(result);
+  }
+
 
 	public String save(T apiObject, boolean immediate)
 	{

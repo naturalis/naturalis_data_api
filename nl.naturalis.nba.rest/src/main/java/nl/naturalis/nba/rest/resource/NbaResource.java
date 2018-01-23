@@ -125,5 +125,24 @@ public abstract class NbaResource<T extends IDocumentObject, U extends NbaDao<T>
       throw handleError(uriInfo, t);
     }
   }
+  
+  public String countDistinctValuesPerGroup(String field, String group, UriInfo uriInfo) {
+    try {
+        QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
+        return dao.countDistinctValuesPerGroup(field, group, qs);
+    } catch (Throwable t) {
+        throw handleError(uriInfo, t);
+    }
+}
+
+  public String getDistinctValuesPerGroup(String field, String group, UriInfo uriInfo) {
+    try {
+        QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
+        return dao.getDistinctValuesPerGroup(field, group, qs);
+    } catch (Throwable t) {
+        throw handleError(uriInfo, t);
+    }
+}
+
 
 }

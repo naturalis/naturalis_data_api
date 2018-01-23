@@ -58,7 +58,7 @@ class IsNullConditionTranslator extends ConditionTranslator {
 	   * to wrap the exists query just after it has been wrapped  (only when
 	   * needed) as a nested path query during translate().
 	   */
-	  if (singleCondition) {
+	  if ( isSingleCondition() ) {
 	    return false;
 	  }
 		return true;

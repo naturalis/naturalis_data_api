@@ -8,7 +8,6 @@ import static nl.naturalis.nba.api.ComparisonOperator.NOT_STARTS_WITH;
 import static nl.naturalis.nba.api.ComparisonOperator.NOT_STARTS_WITH_IC;
 import static nl.naturalis.nba.api.LogicalOperator.AND;
 import static nl.naturalis.nba.api.LogicalOperator.OR;
-import static nl.naturalis.nba.api.ComparisonOperator.EQUALS;
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static nl.naturalis.nba.dao.translate.TranslatorUtil.getNestedPath;
 import static nl.naturalis.nba.dao.translate.TranslatorUtil.isFalseCondition;
@@ -66,7 +65,13 @@ abstract class ConditionTranslator {
 
 	QueryCondition condition;
 	MappingInfo<?> mappingInfo;
-	boolean singleCondition = false;
+	
+	/*
+	 * Dealing with conditions, there is one special case: the single condition.
+	 * We have to mark this condition, because it needs a special treatment
+	 * during translation.  
+	 */
+	private boolean singleCondition = false;
 
 	/*
 	 * Whether or not to translate this condition for a "nested_filter" block
@@ -83,19 +88,20 @@ abstract class ConditionTranslator {
 		this.mappingInfo = mappingInfo;
 	}
 
+	ConditionTranslator singleCondition()
+	{
+	  this.singleCondition = true;
+	  return this;
+	}
+	
+	boolean isSingleCondition() {
+	  return singleCondition;
+	}
+	
 	ConditionTranslator forSortField()
 	{
 		this.forSortField = true;
 		return this;
-	}
-
-	/*
-	 * Only used when there's just one condition to be translated.
-	 */
-	public QueryBuilder translate(boolean singleCondition) throws InvalidConditionException
-	{
-	  this.singleCondition = singleCondition;
-	  return translate();
 	}
 	
 	/**
@@ -110,14 +116,10 @@ abstract class ConditionTranslator {
 	{
 		preprocess();
 		QueryBuilder query = translateCondition();
-		
-		// Sorting
 		if (forSortField)
 			query = postprocessForSortField(query);
 		else
 			query = postprocess(query);
-		
-		// AND / OR sibling conditions
 		if (hasElements(condition.getAnd())) {
 			query = generateAndSiblings(query);
 			if (hasElements(condition.getOr())) {
@@ -127,29 +129,23 @@ abstract class ConditionTranslator {
 		else if (hasElements(condition.getOr())) {
 			query = generateOrSiblings(query);
 		}
-		else if (singleCondition) {
-		  // Single condition which uses a nested path
+		else if ( isSingleCondition() ) {
 		  String nestedPath = getNestedPath(condition.getField(), mappingInfo);
 		  if (nestedPath != null) {
 		    query = nestedQuery(nestedPath, query, ScoreMode.Avg);
 		  }
-		  // Single condition is null query
 		  if (getClass() == IsNullConditionTranslator.class) {
 		    BoolQueryBuilder bq = boolQuery();
 		    query = bq.mustNot(query);
 		  }
 		}
-
-		// NOT
 		if (condition.isNegated()) {
 			query = not(query);
 		}
-
-		// Boost
 		query.boost(condition.getBoost());
 		return query;
 	}
-
+	
 	/*
 	 * Implement any up-front/fail-fast checks you can think of. Subclasses
 	 * should throw an InvalidConditionException if the condition is deemed
@@ -196,13 +192,10 @@ abstract class ConditionTranslator {
   private BoolQueryBuilder generateAndSiblings(QueryBuilder firstSibling) throws InvalidConditionException {
 
     LinkedHashMap<String, ArrayList<QueryCondition>> conditionsMap = createConditionsMap(AND);
-
-    // Build the query from the conditions stored in the map
     BoolQueryBuilder bq = boolQuery();
-
     for (Entry<String, ArrayList<QueryCondition>> entry : conditionsMap.entrySet()) {
       String nestedPath = entry.getKey();
-      if (nestedPath == null) {
+      if (forSortField || nestedPath == null) {
         for (QueryCondition qc : entry.getValue()) {
           if (qc == condition) {
             bq.must(firstSibling);
@@ -234,13 +227,10 @@ abstract class ConditionTranslator {
 	{
 
 	  LinkedHashMap<String, ArrayList<QueryCondition>> conditionsMap = createConditionsMap(OR);
-    
-	  // Build the query from the conditions stored in the map
     BoolQueryBuilder bq = boolQuery();
-
     for (Entry<String, ArrayList<QueryCondition>> entry : conditionsMap.entrySet()) {
       String nestedPath = entry.getKey();
-      if (nestedPath == null) {
+      if (forSortField || nestedPath == null) {
         for (QueryCondition qc : entry.getValue()) {
           if (qc == condition) {
             bq.should(firstSibling);
@@ -272,11 +262,10 @@ abstract class ConditionTranslator {
     }
     return bq;
 	}
-		
+	
 	private LinkedHashMap<String, ArrayList<QueryCondition>> createConditionsMap(LogicalOperator op) {
-    // Collect and group all conditions per nested path
-    LinkedHashMap<String, ArrayList<QueryCondition>> conditionsMap = new LinkedHashMap<>();
 
+    LinkedHashMap<String, ArrayList<QueryCondition>> conditionsMap = new LinkedHashMap<>();
     List<QueryCondition> siblingConditions;
     if (op == AND) {
       siblingConditions = condition.getAnd();
@@ -284,13 +273,11 @@ abstract class ConditionTranslator {
     else {
       siblingConditions = condition.getOr();
     }
-    
-    // First condition
+
     String nestedPath = getNestedPath(condition.getField(), mappingInfo);
     conditionsMap.putIfAbsent(nestedPath, new ArrayList<QueryCondition>());
     conditionsMap.get(nestedPath).add(condition);
-
-    // Remaining condition(s)
+    
     for (QueryCondition c : siblingConditions) {
       if (hasElements(c.getAnd()) || hasElements(c.getOr())) {
         conditionsMap.putIfAbsent(null, new ArrayList<QueryCondition>());

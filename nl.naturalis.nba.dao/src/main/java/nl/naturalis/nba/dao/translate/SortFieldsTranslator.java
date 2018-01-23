@@ -6,6 +6,7 @@ import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static nl.naturalis.nba.dao.translate.ConditionTranslatorFactory.getTranslator;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.logging.log4j.Logger;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.ScoreSortBuilder;
@@ -23,7 +24,6 @@ import nl.naturalis.nba.common.es.map.ESField;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.common.es.map.SimpleField;
 import nl.naturalis.nba.dao.DocumentType;
-import org.apache.logging.log4j.Logger;
 
 class SortFieldsTranslator {
   
@@ -38,10 +38,7 @@ class SortFieldsTranslator {
 
   private QuerySpec querySpec;
   private DocumentType<?> dt;
-  boolean singleCondition = false;
   
-
-
   SortFieldsTranslator(QuerySpec querySpec, DocumentType<?> documentType) {
     this.querySpec = querySpec;
     this.dt = documentType;
@@ -49,10 +46,7 @@ class SortFieldsTranslator {
 
   SortBuilder<?>[] translate() throws InvalidQueryException {
     MappingInfo<?> mappingInfo = new MappingInfo<>(dt.getMapping());
-    List<SortField> sortFields = querySpec.getSortFields();
-    for (SortField sortF : sortFields)
-     logger.debug("> path: " + sortF.getPath() + " sortOrder: " + sortF.getSortOrder());
-    
+    List<SortField> sortFields = querySpec.getSortFields();    
     SortBuilder<?>[] result = new SortBuilder[sortFields.size()];
     int i = 0;
     for (SortField sf : sortFields) {
@@ -86,15 +80,12 @@ class SortFieldsTranslator {
         } catch (NoSuchFieldException e) {
           throw invalidSortField(sf.getPath());
         }
-        logger.debug("Nested path:" + nestedPath);
         if (nestedPath != null) {
-          fsb.setNestedPath(nestedPath);
-          logger.debug("Nested path is set.");
-          logger.debug("translateConditions(" + path + ")");
           QueryBuilder query = translateConditions(path);
           if (query != null) {
             fsb.setNestedFilter(query);
           }
+          fsb.setNestedPath(nestedPath);
         }
         result[i++] = fsb;
       }
@@ -117,21 +108,21 @@ class SortFieldsTranslator {
     }
     if (conditions.size() == 1) {
       QueryCondition condition = conditions.iterator().next();
-      return getTranslator(condition, dt).translate();
+      return getTranslator(condition, dt).forSortField().translate();
     } 
     else if (querySpec.getLogicalOperator() == OR) {
       QueryCondition condition = conditions.iterator().next();
       for (int n = 1; n < conditions.size(); n++) {
         condition.or(conditions.get(n));
       }
-      return getTranslator(condition, dt).translate();
+      return getTranslator(condition, dt).forSortField().translate();
     } 
     else {
       QueryCondition condition = conditions.iterator().next();
       for (int n = 1; n < conditions.size(); n++) {
         condition.and(conditions.get(n));
       }
-      return getTranslator(condition, dt).translate();
+      return getTranslator(condition, dt).forSortField().translate();
     }
   }
 
@@ -151,7 +142,6 @@ class SortFieldsTranslator {
         copies.add(c);
       }
     }
-    logger.debug("Size copies: " + copies.size());
     return copies.size() == 0 ? null : copies;
   }
 

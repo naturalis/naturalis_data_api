@@ -125,7 +125,7 @@ public class QuerySpecTranslator {
       QueryCondition condition = conditions.iterator().next();
       // Check for a single condition
       if (!hasElements(condition.getOr()) && !hasElements(condition.getAnd())) {
-        return getTranslator(condition, dt).translate(true);
+        return getTranslator(condition, dt).singleCondition().translate();
       }
       return getTranslator(condition, dt).translate();
     } else if (spec.getLogicalOperator() == OR) {

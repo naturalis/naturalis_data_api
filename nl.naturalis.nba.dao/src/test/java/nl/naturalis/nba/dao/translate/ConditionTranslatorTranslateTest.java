@@ -4,14 +4,19 @@ import static nl.naturalis.nba.api.ComparisonOperator.EQUALS;
 import static nl.naturalis.nba.api.ComparisonOperator.NOT_EQUALS;
 import static nl.naturalis.nba.api.UnaryBooleanOperator.NOT;
 import static nl.naturalis.nba.dao.DaoTestUtil.jsonEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import nl.naturalis.nba.api.InvalidQueryException;
+import nl.naturalis.nba.api.LogicalOperator;
 import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.api.QueryCondition;
+import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QuerySpec;
+import nl.naturalis.nba.api.SortOrder;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.dao.DocumentType;
+import nl.naturalis.nba.dao.SpecimenDao;
 
 
 /*
@@ -317,7 +322,29 @@ public class ConditionTranslatorTranslateTest {
 //    assertTrue("01", jsonEquals(this.getClass(), jsonString, jsonFile));
   }
 
-  
-  
+  @Test
+  public void test_12() throws InvalidQueryException {
+    
+    DocumentType<Specimen> dt = DocumentType.SPECIMEN;
+
+    String f1 = "identifications.scientificName.fullScientificName";
+    String f2 = "identifications.scientificName.fullScientificName";
+
+    QueryCondition condition01 = new QueryCondition(f1, EQUALS, "Larus f. fuscus");
+    QueryCondition condition02 = new QueryCondition(f2, EQUALS, "Malus sylvestris");
+    
+    QuerySpec query = new QuerySpec();
+    query.addCondition( condition01.or(condition02) );
+    query.sortBy(f1, SortOrder.DESC);
+    query.sortBy("unitID");
+    QuerySpecTranslator translator = new QuerySpecTranslator(query, dt);
+    
+//    System.out.println(translator.translate());
+    
+    String jsonFile = "NestedConditionsTest__testQuery_12.json";
+    String jsonString = translator.translate().toString();
+    assertTrue("01", jsonEquals(this.getClass(), jsonString, jsonFile));
+  }
+    
   
 }

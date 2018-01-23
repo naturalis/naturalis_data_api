@@ -39,7 +39,7 @@ public class EqualsIgnoreCaseConditionTranslatorTest {
 		QueryCondition condition = new QueryCondition("addressBook.street", EQUALS_IC, "Market street");
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 
-		QueryBuilder query = ct.translate(true);  // true, since this query has only one condition.
+		QueryBuilder query = ct.singleCondition().translate();  // true, since this query has only one condition.
 
 		assertTrue("01", query instanceof NestedQueryBuilder);
 		

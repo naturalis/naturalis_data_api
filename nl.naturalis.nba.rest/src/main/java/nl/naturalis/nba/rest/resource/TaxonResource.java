@@ -149,6 +149,33 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
       @Context UriInfo uriInfo) {
     return super.countHttpPostJson(qs, uriInfo);
   }
+  
+  @GET
+  @Path("/countDistinctValues/{field}")
+  @ApiOperation(value = "Count the distinct number of values that exist for a given field",
+      response = Map.class, notes = "")
+  @Produces(TEXT_CONTENT_TYPE)
+  public Long countDistinctValues(@ApiParam(value = "name of field in taxon object", required = true,
+      defaultValue = "defaultClassification.family") 
+      @PathParam("field") String field,
+      @Context UriInfo uriInfo) {
+    logger.info("countDistinctValues/" + field);
+    return super.countDistinctValues(field, uriInfo);
+  }
+
+  @GET
+  @Path("/countDistinctValuesPerGroup/{field}/{group}")
+  @ApiOperation(value = "Count the distinct number of group values that exist per the given field",
+      response = Map.class, notes = "")
+  @Produces(JSON_CONTENT_TYPE)
+  public String countDistinctValuesPerGroup(@ApiParam(value = "name of field in taxon object", required = true,
+      defaultValue = "defaultClassification.family") 
+      @PathParam("field") String field,
+      @PathParam("group") String group, 
+      @Context UriInfo uriInfo) {
+    logger.info("countDistinctValuesPerGroup/" + field + "/" + group);
+    return super.countDistinctValuesPerGroup(field, group, uriInfo);
+  }
 
   @GET
   @Path("/getDistinctValues/{field}")

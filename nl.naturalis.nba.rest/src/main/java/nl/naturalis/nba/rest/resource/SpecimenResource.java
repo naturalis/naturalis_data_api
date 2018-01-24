@@ -184,6 +184,19 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
   }
 
   @GET
+  @Path("/countDistinctValues/{field}")
+  @ApiOperation(value = "Count the distinct number of values that exist for a given field",
+      response = Map.class, notes = "")
+  @Produces(TEXT_CONTENT_TYPE)
+  public Long countDistinctValues(@ApiParam(value = "name of field in specimen object", required = true,
+      defaultValue = "identifications.defaultClassification.family") 
+      @PathParam("field") String field,
+      @Context UriInfo uriInfo) {
+    logger.info("countDistinctValues/" + field);
+    return super.countDistinctValues(field, uriInfo);
+  }
+
+  @GET
   @Path("/countDistinctValuesPerGroup/{field}/{group}")
   @ApiOperation(value = "Count the distinct number of group values that exist per the given field",
       response = Map.class, notes = "")

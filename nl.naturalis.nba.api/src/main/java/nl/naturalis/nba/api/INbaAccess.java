@@ -147,6 +147,16 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
 	 * @throws InvalidQueryException
 	 */
 	long count(QuerySpec querySpec) throws InvalidQueryException;
+	
+	/**
+	 * Returns ...
+	 * 
+	 * @param field
+	 * @param querySpec
+	 * @return
+	 * @throws InvalidQueryException
+	 */
+	long countDistinctValues(String field, QuerySpec querySpec) throws InvalidQueryException;
 
 	/**
 	 * <p>

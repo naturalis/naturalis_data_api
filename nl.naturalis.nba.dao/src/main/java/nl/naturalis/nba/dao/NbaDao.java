@@ -39,6 +39,7 @@ import org.elasticsearch.search.aggregations.bucket.terms.StringTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
+import org.elasticsearch.search.aggregations.metrics.cardinality.Cardinality;
 import org.elasticsearch.search.aggregations.metrics.cardinality.CardinalityAggregationBuilder;
 import org.elasticsearch.search.aggregations.metrics.cardinality.InternalCardinality;
 import nl.naturalis.nba.api.INbaAccess;
@@ -138,6 +139,51 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
 		SearchResponse response = executeSearchRequest(request);
 		return response.getHits().totalHits();
 	}
+	
+  public long countDistinctValues(String field, QuerySpec querySpec) throws InvalidQueryException {
+
+    if (logger.isDebugEnabled()) {
+      logger.debug(printCall("countDistinct", field, querySpec));
+    }
+
+    SearchRequestBuilder request;
+    if (querySpec == null) {
+      querySpec = new QuerySpec();
+      request = newSearchRequest(dt);
+    }
+    QuerySpecTranslator translator = new QuerySpecTranslator(querySpec, dt);
+    request = translator.translate();
+
+    MappingInfo<T> mappingInfo = new MappingInfo<>(dt.getMapping());
+
+    String nestedPath;
+    try {
+      nestedPath = mappingInfo.getNestedPath(field);
+    } catch (NoSuchFieldException e) {
+      throw new InvalidQueryException(e.getMessage());
+    }
+
+    if (nestedPath != null) {
+      AggregationBuilder agg = AggregationBuilders.nested("NESTED", nestedPath);
+      AggregationBuilder card = AggregationBuilders.cardinality("CARDINALITY").field(field);
+      agg.subAggregation(card);
+      request.addAggregation(agg);
+    } else {
+      AggregationBuilder agg = AggregationBuilders.cardinality("CARDINALITY").field(field);
+      request.addAggregation(agg);
+    }
+
+    request.setSize(0);
+    SearchResponse response = executeSearchRequest(request);
+
+    if (nestedPath != null) {
+      Nested nestedDocs = response.getAggregations().get("NESTED");
+      Cardinality card = nestedDocs.getAggregations().get("CARDINALITY");
+      return card.getValue();
+    }
+    Cardinality card = response.getAggregations().get("CARDINALITY");
+    return card.getValue();
+  }
 
 	@Override
 	public Map<String, Long> getDistinctValues(String forField, QuerySpec querySpec)

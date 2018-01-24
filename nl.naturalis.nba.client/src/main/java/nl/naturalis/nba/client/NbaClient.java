@@ -96,8 +96,24 @@ abstract class NbaClient<T extends IDocumentObject> extends Client implements IN
 			}
 			throw exception;
 		}
-		return ClientUtil.getObject(request.getResponseBody(), Long.class);
+		return ClientUtil.getLong(request.getResponseBody());
 	}
+	
+  @Override
+  public long countDistinctValues(String field, QuerySpec querySpec) throws InvalidQueryException {
+    SimpleHttpRequest request = newQuerySpecRequest("countDistinctValues", querySpec);
+    sendRequest(request);
+    int status = request.getStatus();
+    if (status != HTTP_OK) {
+      byte[] response = request.getResponseBody();
+      ServerException exception = newServerException(status, response);
+      if (exception.was(InvalidQueryException.class)) {
+        throw invalidQueryException(exception);
+      }
+      throw exception;
+    }
+    return ClientUtil.getLong(request.getResponseBody());
+  }
 
 	@Override
 	public Map<String, Long> getDistinctValues(String forField, QuerySpec querySpec)

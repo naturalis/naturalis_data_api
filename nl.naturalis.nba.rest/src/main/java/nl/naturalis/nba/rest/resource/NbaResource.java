@@ -98,6 +98,15 @@ public abstract class NbaResource<T extends IDocumentObject, U extends NbaDao<T>
     }
   }
 
+  public Long countDistinctValues(String field, UriInfo uriInfo) {
+    try {
+      QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
+      return dao.countDistinctValues(field, qs);
+    } catch (Throwable t) {
+      throw handleError(uriInfo, t);
+    }
+  }
+
   public Map<String, Long> getDistinctValuesHttpGet(String field, UriInfo uriInfo) {
     try {
       QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
@@ -125,24 +134,23 @@ public abstract class NbaResource<T extends IDocumentObject, U extends NbaDao<T>
       throw handleError(uriInfo, t);
     }
   }
-  
+
   public String countDistinctValuesPerGroup(String field, String group, UriInfo uriInfo) {
     try {
-        QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
-        return dao.countDistinctValuesPerGroup(field, group, qs);
+      QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
+      return dao.countDistinctValuesPerGroup(field, group, qs);
     } catch (Throwable t) {
-        throw handleError(uriInfo, t);
+      throw handleError(uriInfo, t);
     }
-}
+  }
 
   public String getDistinctValuesPerGroup(String field, String group, UriInfo uriInfo) {
     try {
-        QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
-        return dao.getDistinctValuesPerGroup(field, group, qs);
+      QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
+      return dao.getDistinctValuesPerGroup(field, group, qs);
     } catch (Throwable t) {
-        throw handleError(uriInfo, t);
+      throw handleError(uriInfo, t);
     }
-}
-
+  }
 
 }

@@ -13,7 +13,14 @@ import nl.naturalis.nba.common.es.map.MappingInfo;
 /**
  * Utility class for the ConditionTranslator class
  */
-public abstract class ConditionCollector {
+class ConditionCollector {
+  QueryCondition condition;
+  MappingInfo<?> mappingInfo;
+  
+  ConditionCollector(QueryCondition condition, MappingInfo<?> mappingInfo) {
+    this.condition = condition;
+    this.mappingInfo = mappingInfo;
+  }
   
   /*
    * This method takes one or more queryconditions (each of which can have a sibling condition) and 
@@ -22,7 +29,7 @@ public abstract class ConditionCollector {
    * The methods needs to know how the queryconditions are connected, so you need to supply the 
    * logical operator as well.
    */
-  static LinkedHashMap<String, ArrayList<QueryCondition>> createConditionsMap(QueryCondition condition, MappingInfo<?> mappingInfo, LogicalOperator op) {
+  LinkedHashMap<String, ArrayList<QueryCondition>> createConditionsMap(LogicalOperator op) {
     
     LinkedHashMap<String, ArrayList<QueryCondition>> conditionsMap = new LinkedHashMap<>();
     List<QueryCondition> siblingConditions;

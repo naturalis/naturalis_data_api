@@ -40,8 +40,11 @@ class ConditionCollector {
     else {
       siblingConditions = condition.getOr();
     }
-    
-    String nestedPath = getNestedPath(condition.getField(), mappingInfo);
+
+    String nestedPath = null;
+    if (condition.getField() != null) {
+      nestedPath = getNestedPath(condition.getField(), mappingInfo);
+    }
     conditionsMap.putIfAbsent(nestedPath, new ArrayList<QueryCondition>());
     conditionsMap.get(nestedPath).add(condition);
     

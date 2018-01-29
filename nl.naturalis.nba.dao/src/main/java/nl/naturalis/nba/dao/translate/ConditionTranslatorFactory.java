@@ -62,9 +62,15 @@ public class ConditionTranslatorFactory {
 			MappingInfo<?> mappingInfo) throws InvalidConditionException
 	{
 		if (TranslatorUtil.isTrueCondition(condition)) {
+	    if (logger.isDebugEnabled()) {
+	      logger.debug("Instantiating {}", TrueConditionTranslator.class);
+	    }
 			return new TrueConditionTranslator(condition, mappingInfo);
 		}
 		if (TranslatorUtil.isFalseCondition(condition)) {
+      if (logger.isDebugEnabled()) {
+        logger.debug("Instantiating {} ", FalseConditionTranslator.class);
+      }
 			return new FalseConditionTranslator(condition, mappingInfo);
 		}
 		ConditionValidator validator = new ConditionValidator(condition, mappingInfo);

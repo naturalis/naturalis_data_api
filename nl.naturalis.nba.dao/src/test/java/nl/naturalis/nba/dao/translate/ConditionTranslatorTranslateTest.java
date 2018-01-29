@@ -1,5 +1,6 @@
 package nl.naturalis.nba.dao.translate;
 
+import static nl.naturalis.nba.api.LogicalOperator.OR;
 import static nl.naturalis.nba.api.ComparisonOperator.EQUALS;
 import static nl.naturalis.nba.api.ComparisonOperator.NOT_EQUALS;
 import static nl.naturalis.nba.api.UnaryBooleanOperator.NOT;
@@ -307,6 +308,58 @@ public class ConditionTranslatorTranslateTest {
     String jsonString = translator.translate().toString();
     assertTrue("01", jsonEquals(this.getClass(), jsonString, jsonFile));
   }
+
+  @Test
+  public void test_13() throws InvalidQueryException {
     
+    DocumentType<Specimen> dt = DocumentType.SPECIMEN;
+    QueryCondition condition01 = new QueryCondition("identifications.defaultClassification.genus", EQUALS, "Alethe");
+    QueryCondition condition02 = new QueryCondition("identifications.scientificName.genusOrMonomial", EQUALS, "Alethe");
+    condition01.or(condition02);
+    
+    QueryCondition condition03 = new QueryCondition("identifications.defaultClassification.specificEpithet", EQUALS, "castanea");
+    
+    QuerySpec query = new QuerySpec();
+    query.addCondition(condition01);
+    query.addCondition(condition03);
+    QuerySpecTranslator translator = new QuerySpecTranslator(query, dt);
+    
+    String jsonFile = "NestedConditionsTest__testQuery_13_01.json";
+    String jsonString = translator.translate().toString();
+    assertTrue("01", jsonEquals(this.getClass(), jsonString, jsonFile));
+    
+    query = new QuerySpec();
+    query.addCondition(condition03);
+    query.addCondition(condition01);
+    translator = new QuerySpecTranslator(query, dt);
+
+    jsonFile = "NestedConditionsTest__testQuery_13_02.json";
+    jsonString = translator.translate().toString();
+    assertTrue("02", jsonEquals(this.getClass(), jsonString, jsonFile));
+  }
+
+  @Test
+  public void test_14() throws InvalidQueryException {
+    
+    DocumentType<Specimen> dt = DocumentType.SPECIMEN;
+    QueryCondition condition01 = new QueryCondition("identifications.defaultClassification.genus", EQUALS, "Alethe");
+    QueryCondition condition02 = new QueryCondition("identifications.defaultClassification.specificEpithet", EQUALS, "castanea");
+    condition01.and(condition02);
+    
+    QueryCondition condition03 = new QueryCondition("identifications.scientificName.genusOrMonomial", EQUALS, "Alethe");
+    QueryCondition condition04 = new QueryCondition("identifications.scientificName.specificEpithet", EQUALS, "castanea");
+    condition03.and(condition04);
+        
+    QuerySpec query = new QuerySpec();
+    query.setLogicalOperator(OR);
+    query.addCondition(condition01);
+    query.addCondition(condition03);
+    
+    QuerySpecTranslator translator = new QuerySpecTranslator(query, dt);
+    
+    String jsonFile = "NestedConditionsTest__testQuery_14.json";
+    String jsonString = translator.translate().toString();
+    assertTrue("01", jsonEquals(this.getClass(), jsonString, jsonFile));
+  }
   
 }

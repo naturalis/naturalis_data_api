@@ -30,7 +30,7 @@ script:
     -v $(pwd):/source
     --env BUILD_CMD=$BUILD_CMD
     --link es:es
-    builder sh -c 'cd source/nl.naturalis.nba.build ; ant $BUILD_CMD'
+    builder sh -c 'cd source/nl.naturalis.nba.build ; ant -silent $BUILD_CMD'
   - if [ $PRODUCT = 'etl' ] ; then sudo rm -fr payload/software/conf/thematic-search ; fi
   - if [ $PRODUCT = 'etl' ] ; then sudo git clone https://github.com/naturalis/nba-brondata-bijzcol payload/software/conf/thematic-search ; fi
   - sudo mv payload/* docker/$PRODUCT/

@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<dataset-config xmlns="http://data.naturalis.nl/nba-dataset-config">
+	<shared-data-source>
+		<document>Specimen</document>
+		<query-spec>
+			<conditions>
+				<condition>
+					<field>collectionType</field>
+					<operator>EQUALS</operator>
+					<value>Hymenoptera</value>
+				</condition>
+			</conditions>
+		</query-spec>
+	</shared-data-source>
+	<entity name="specimen">
+		<mapping>
+			<field name="catalogNumber" term="http://rs.tdwg.org/dwc/terms/catalogNumber">
+				<path>sourceSystemId</path>
+			</field>
+			<field name="basisOfRecord" term="http://rs.tdwg.org/dwc/terms/basisOfRecord">
+				<path>recordBasis</path>
+			</field>
+			<field name="class" term="http://rs.tdwg.org/dwc/terms/class">
+				<path>identifications.0.defaultClassification.className</path>
+			</field>
+			<field name="collectionCode" term="http://rs.tdwg.org/dwc/terms/collectionCode">
+				<path>collectionType</path>
+			</field>
+			<field name="continent" term="http://rs.tdwg.org/dwc/terms/continent">
+				<path>gatheringEvent.continent</path>
+			</field>
+			<field name="country" term="http://rs.tdwg.org/dwc/terms/country">
+				<path>gatheringEvent.country</path>
+			</field>
+			<field name="city" term="http://rs.tdwg.org/dwc/terms/county">
+				<path>gatheringEvent.city</path>
+			</field>
+			<field name="dateIdentified" term="http://rs.tdwg.org/dwc/terms/dateIdentified">
+				<path>identifications.0.dateIdentified</path>
+			</field>
+			<!-- Calculator latitudeDecimal -->
+			<field name="latitudeDecimal" term="http://rs.tdwg.org/dwc/terms/decimalLatitude">
+				<calculator>
+					<java-class>LatitudeCalculator</java-class>
+				</calculator>
+			</field>
+			<!-- Calculator longitudeDecimal -->
+			<field name="longitudeDecimal" term="http://rs.tdwg.org/dwc/terms/decimalLongitude">
+				<calculator>
+					<java-class>LongitudeCalculator</java-class>
+				</calculator>
+			</field>
+			<field name="family" term="http://rs.tdwg.org/dwc/terms/family">
+				<path>identifications.0.defaultClassification.family</path>
+			</field>
+			<field name="genus" term="http://rs.tdwg.org/dwc/terms/genus">
+				<path>identifications.0.defaultClassification.genus</path>
+			</field>
+			<!-- Calculator identifiedBy -->
+			<field name="identifiedBy" term="http://rs.tdwg.org/dwc/terms/identifiedBy">
+				<calculator>
+					<java-class>IdentifiedByCalculator</java-class>
+				</calculator>
+			</field>
+			<field name="individualCount" term="http://rs.tdwg.org/dwc/terms/individualCount">
+				<path>numberOfSpecimen</path>
+			</field>
+			<field name="infraspecificEpithet" term="http://rs.tdwg.org/dwc/terms/infraspecificEpithet">
+				<path>identifications.0.defaultClassification.infraspecificEpithet</path>
+			</field>
+			<field name="island" term="http://rs.tdwg.org/dwc/terms/island">
+				<path>gatheringEvent.island</path>
+			</field>
+			<!-- Calculator Kingdom -->
+			<field name="kingdom" term="http://rs.tdwg.org/dwc/terms/kingdom">
+				<calculator>
+					<java-class>KingdomCalculator</java-class>
+				</calculator>
+			</field>
+			<field name="lifeStage" term="http://rs.tdwg.org/dwc/terms/lifeStage">
+				<path>phaseOrStage</path>
+			</field>
+			<field name="locality" term="http://rs.tdwg.org/dwc/terms/locality">
+				<path>gatheringEvent.locality</path>
+			</field>
+			<field name="occurrenceID" term="http://rs.tdwg.org/dwc/terms/occurrenceID">
+				<path>unitGUID</path>
+			</field>
+			<field name="order" term="http://rs.tdwg.org/dwc/terms/order">
+				<path>identifications.0.defaultClassification.order</path>
+			</field>
+			<field name="phylum" term="http://rs.tdwg.org/dwc/terms/phylum">
+				<path>identifications.0.defaultClassification.phylum</path>
+			</field>
+			<field name="preparations" term="http://rs.tdwg.org/dwc/terms/preparations">
+				<path>preparationType</path>
+			</field>
+			<!-- Calculator RecordedBy -->
+			<field name="recordedBy" term="http://rs.tdwg.org/dwc/terms/recordedBy">
+				<calculator>
+					<java-class>RecordedByCalculator</java-class>
+				</calculator>
+			</field>
+			<field name="scientificName" term="http://rs.tdwg.org/dwc/terms/scientificName">
+				<path>identifications.0.scientificName.fullScientificName</path>
+			</field>
+			<field name="authorshipVerbatim" term="http://rs.tdwg.org/dwc/terms/scientificNameAuthorship">
+				<path>identifications.0.scientificName.authorshipVerbatim</path>
+			</field>
+			<field name="sex" term="http://rs.tdwg.org/dwc/terms/sex">
+				<path>sex</path>
+			</field>
+			<field name="specificEpithet" term="http://rs.tdwg.org/dwc/terms/specificEpithet">
+				<path>identifications.0.defaultClassification.specificEpithet</path>
+			</field>
+			<field name="provinceState" term="http://rs.tdwg.org/dwc/terms/stateProvince">
+				<path>gatheringEvent.provinceState</path>
+			</field>
+			<field name="subgenus" term="http://rs.tdwg.org/dwc/terms/subgenus">
+				<path>identifications.0.defaultClassification.subgenus</path>
+			</field>
+			<field name="taxonRank" term="http://rs.tdwg.org/dwc/terms/taxonRank">
+				<path>identifications.0.taxonRank</path>
+			</field>
+			<field name="remarks" term="http://rs.tdwg.org/dwc/terms/taxonRemarks">
+				<calculator>
+					<java-class>TaxonRemarksCalculator</java-class>
+				</calculator>
+			</field>
+			<field name="typeStatus" term="http://rs.tdwg.org/dwc/terms/typeStatus">
+				<path>identifications.0.typeStatus</path>
+			</field>
+			<field name="depth" term="http://rs.tdwg.org/dwc/terms/verbatimDepth">
+				<path>gatheringEvent.depth</path>
+			</field>
+			<field name="altitudeUnifOfMeasurement" term="http://rs.tdwg.org/dwc/terms/verbatimElevation">
+				<path>gatheringEvent.altitudeUnifOfMeasurement</path>
+			</field>
+			<field name="taxonRank" term="http://rs.tdwg.org/dwc/terms/verbatimTaxonRank">
+				<path>identifications.0.taxonRank</path>
+			</field>
+			<!-- Calculator associatedMedia -->
+			<field name="associatedMedia" term="http://rs.tdwg.org/dwc/terms/associatedMedia">
+				<calculator>
+					<java-class>SpecimenMultiMediaCalculator</java-class>
+				</calculator>
+			</field>
+			<!-- Calculator verbatimCoordinates -->
+			<field name="verbatimCoordinates" term="http://rs.tdwg.org/dwc/terms/verbatimCoordinates">
+				<calculator>
+					<java-class>VerbatimCoordinatesCalculator</java-class>
+				</calculator>
+			</field>
+			<!-- Calculator verbatimEventDate -->
+			<field name="verbatimEventDate" term="http://rs.tdwg.org/dwc/terms/verbatimEventDate">
+				<calculator>
+					<java-class>VerbatimEventDateCalculator</java-class>
+				</calculator>
+			</field>
+			<!-- Calculator higherClassification -->
+			<field name="higherClassification" term="http://rs.tdwg.org/dwc/terms/higherClassification">
+				<calculator>
+					<java-class>HigherClassificationCalculator</java-class>
+				</calculator>
+			</field>
+		</mapping>
+	</entity>
+</dataset-config>

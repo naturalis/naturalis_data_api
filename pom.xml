@@ -24,6 +24,9 @@
     </prerequisites>
 
     <properties>
+    
+    	<test.conf.dir>${project.basedir}/../nl.naturalis.nba.dao/target/test-classes/conf</test.conf.dir>
+    	
 	
 		<!-- build settings -->
         <minimumMavenVersion>3.3</minimumMavenVersion>
@@ -104,7 +107,7 @@
         <module>nl.naturalis.nba.etl</module>
         <module>nl.naturalis.nba.client</module>
     </modules>
-
+    
     <distributionManagement>
         <repository>
             <id>gbif-release</id>
@@ -302,6 +305,20 @@
     </dependencyManagement>
 
     <build>
+    
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <filtering>true</filtering>
+            </testResource>
+        </testResources>
+        
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -438,7 +455,8 @@
                         <forkCount>1</forkCount>
                         <reuseForks>false</reuseForks>
                         <redirectTestOutputToFile>true</redirectTestOutputToFile>
-                        <argLine>-Xmx256m -Dnba.v2.conf.dir=${nba-test.conf.dir} -Dlog4jConfigurationFile=${nba-test.conf.dir}/log4j2-test.xml </argLine>                      
+            
+                        <argLine>-Xmx256m -Dnba.v2.conf.dir=${test.conf.dir} -Dlog4jConfigurationFile=${test.conf.dir}/log4j2-test.xml</argLine>                      
                         <runOrder>random</runOrder>
 
                         <includes>

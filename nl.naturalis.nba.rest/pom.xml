@@ -11,6 +11,9 @@
 
     <artifactId>nl.naturalis.nba.rest</artifactId>
     <name>NBA REST layer</name>
+    
+    <packaging>war</packaging>
+   
 
     <dependencies>
 

@@ -105,6 +105,7 @@
         <module>nl.naturalis.nba.common</module>
         <module>nl.naturalis.nba.dao</module>
         <module>nl.naturalis.nba.etl</module>
+        <module>nl.naturalis.nba.rest</module>
         <module>nl.naturalis.nba.client</module>
     </modules>
     

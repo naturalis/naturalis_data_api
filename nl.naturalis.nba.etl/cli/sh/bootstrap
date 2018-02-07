@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# WATCH OUT! Running this script will delete NBA indexes.
+
+. ./include.sh
+
+java -cp ${classpath} $JAVA_OPTS ${root_package}.NbaBootstrap $@
+

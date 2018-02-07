@@ -1,0 +1,57 @@
+#!/bin/bash
+
+action="${1}"
+
+# This will kick of all imports from a single Java process.
+# Probably somewhat more efficient, but generates a single
+# log file.
+if [ "${action}" = single ]
+then
+	. ./include.sh
+	java -cp ${classpath} $JAVA_OPTS ${root_package}.NbaImportAll
+	exit 0
+fi
+
+start=$(date)
+
+scripts=" \
+	bootstrap_--all \
+	nsr-import_reset \
+	nsr-import_taxa \
+	nsr-import_multimedia \
+	geo-import \
+	col-import \
+	brahms-import_reset \
+	brahms-import_specimens \
+	brahms-import_multimedia \
+	crs-import_specimens \
+	crs-import_multimedia \
+	add-multimedia-to-specimens \
+	add-taxonomy-to-specimens \
+	add-taxonomy-to-multimedia \
+	"
+
+for script in $scripts
+do
+  script=${script/_/ }
+  echo
+  echo Executing $script ...
+  script="./${script}"
+  $script
+  result=$?
+  if [ "$result" != 0 ]
+  then
+    finish=$(date)
+    echo "Error while executing $script. Import aborted"
+	echo "Import started at ${start}"
+	echo "Import aborted at ${finish}"
+    exit $result
+  fi
+done
+
+finish=$(date)
+
+echo "Import started at ${start}"
+echo "Import finished at ${finish}"
+
+

@@ -1,0 +1,5 @@
+#!/bin/bash
+
+. ./include.sh
+
+java -cp ${classpath} ${JAVA_OPTS} ${root_package}.col.CoLImportAll

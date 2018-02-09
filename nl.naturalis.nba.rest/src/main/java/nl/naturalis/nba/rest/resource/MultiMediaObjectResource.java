@@ -1,6 +1,7 @@
 package nl.naturalis.nba.rest.resource;
 
 import static nl.naturalis.nba.rest.util.ResourceUtil.JSON_CONTENT_TYPE;
+import static nl.naturalis.nba.rest.util.ResourceUtil.TEXT_CONTENT_TYPE;
 import java.util.Map;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -135,14 +136,93 @@ public class MultiMediaObjectResource extends NbaResource<MultiMediaObject, Mult
   }
 
   @GET
+  @Path("/countDistinctValues/{field}")
+  @ApiOperation(value = "Count the distinct number of values that exist for a given field",
+      response = Map.class, notes = "")
+  @Produces(TEXT_CONTENT_TYPE)
+  public Long countDistinctValuesHttpGet(@ApiParam(value = "name of field in taxon object", required = true,
+      defaultValue = "defaultClassification.family") 
+      @PathParam("field") String field,
+      @Context UriInfo uriInfo) {
+    logger.info("countDistinctValues/" + field);
+    return super.countDistinctValuesHttpGet(field, uriInfo);
+  }
+
+  @POST
+  @Path("/countDistinctValues/{field}")
+  @ApiOperation(value = "Count the distinct number of values that exist for a given field", response = Map.class, notes = "")
+  @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+  @Produces(TEXT_CONTENT_TYPE)
+  public Long countDistinctValuesHttpPost(
+      @ApiParam(value = "name of field in the multimedia object", required = true, defaultValue = "identifications.defaultClassification.family") @PathParam("field") String field,
+      @ApiParam(value = "query object in POST form", required = false) MultivaluedMap<String, String> form,  
+      @Context UriInfo uriInfo) {
+    logger.info("countDistinctValues/" + field);
+    return super.countDistinctValuesHttpPostForm(field, form, uriInfo);
+  }
+
+  @POST
+  @Path("/countDistinctValues/{field}")
+  @ApiOperation(value = "Count the distinct number of values that exist for a given field", response = Map.class, notes = "")
+  @Consumes(JSON_CONTENT_TYPE)
+  @Produces(TEXT_CONTENT_TYPE)
+  public Long countDistinctValuesHttpJson(
+      @ApiParam(value = "name of field in the multimedia object", required = true, defaultValue = "identifications.defaultClassification.family") @PathParam("field") String field,
+      @ApiParam(value = "querySpec JSON", required = false) QuerySpec qs, 
+      @Context UriInfo uriInfo) {
+    logger.info("countDistinctValues/" + field);
+    return super.countDistinctValuesHttpPostJson(field, qs, uriInfo);
+  }
+
+  @GET
+  @Path("/countDistinctValuesPerGroup/{field}/{group}")
+  @ApiOperation(value = "Count the distinct number of group values that exist per the given field",
+      response = Map.class, notes = "")
+  @Produces(JSON_CONTENT_TYPE)
+  public String countDistinctValuesPerGroupHttpGet(
+      @ApiParam(value = "name of field in the multimedia object", required = true, defaultValue = "identifications.typeStatus") @PathParam("field") String field,
+      @ApiParam(value = "name of group in the multimedia object", required = true, defaultValue = "collectionType") @PathParam("group") String group, 
+      @Context UriInfo uriInfo) {
+    logger.info("countDistinctValuesPerGroup/" + field + "/" + group);
+    return super.countDistinctValuesPerGroupHttpGet(field, group, uriInfo);
+  }
+
+  @POST
+  @Path("/countDistinctValuesPerGroup/{field}/{group}")
+  @ApiOperation(value = "Count the distinct number of group values that exist per the given field", response = Map.class, notes = "")
+  @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+  @Produces(JSON_CONTENT_TYPE)
+  public String countDistinctValuesPerGroupHttpPostForm(
+      @ApiParam(value = "name of field in the multimedia object", required = true, defaultValue = "identifications.typeStatus") @PathParam("field") String field,
+      @ApiParam(value = "name of group in the multimedia object", required = true, defaultValue = "collectionType") @PathParam("group") String group, 
+      @ApiParam(value = "query object in POST form", required = false) MultivaluedMap<String, String> form,
+      @Context UriInfo uriInfo) {
+    logger.info("countDistinctValuesPerGroup/" + field + "/" + group);
+    return super.countDistinctValuesPerGroupHttpPostForm(field, group, form, uriInfo);
+  }
+
+  @POST
+  @Path("/countDistinctValuesPerGroup/{field}/{group}")
+  @ApiOperation(value = "Count the distinct number of group values that exist per the given field", response = Map.class, notes = "")
+  @Consumes(JSON_CONTENT_TYPE)
+  @Produces(JSON_CONTENT_TYPE)
+  public String countDistinctValuesPerGroupHttpPostJson(
+      @ApiParam(value = "name of field in the multimedia object", required = true, defaultValue = "identifications.typeStatus") @PathParam("field") String field,
+      @ApiParam(value = "name of group in the multimedia object", required = true, defaultValue = "collectionType") @PathParam("group") String group,
+      @ApiParam(value = "querySpec JSON", required = false) QuerySpec qs,
+      @Context UriInfo uriInfo) {
+    logger.info("countDistinctValuesPerGroup/" + field + "/" + group);
+    return super.countDistinctValuesPerGroupHttpPostJson(field, group, qs, uriInfo);
+  }
+
+  @GET
   @Path("/getDistinctValues/{field}")
   @ApiOperation(value = "Get all different values that can be found for one field",
       response = Map.class,
       notes = "A list of all fields for multimedia documents can be retrieved with /metadata/getFieldInfo")
   @Produces(JSON_CONTENT_TYPE)
   public Map<String, Long> getDistinctValuesHttpGet(
-      @ApiParam(value = "field", required = true,
-          defaultValue = "gatheringEvents.worldRegion") @PathParam("field") String field,
+      @ApiParam(value = "field", required = true, defaultValue = "gatheringEvents.worldRegion") @PathParam("field") String field,
       @Context UriInfo uriInfo) {
     return super.getDistinctValuesHttpGet(field, uriInfo);
   }
@@ -151,11 +231,10 @@ public class MultiMediaObjectResource extends NbaResource<MultiMediaObject, Mult
   @Path("/getDistinctValues/{field}")
   @ApiOperation(value = "Get all different values that exist for a field", response = Map.class,
       notes = "A list of all fields for multimedia documents can be retrieved with /metadata/getFieldInfo")
-  @Produces(JSON_CONTENT_TYPE)
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+  @Produces(JSON_CONTENT_TYPE)
   public Map<String, Long> getDistinctValuesHttpPostForm(
-      @ApiParam(value = "name of field in a multimedia object", required = true,
-          defaultValue = "gatheringEvents.worldRegion") @PathParam("field") String field,
+      @ApiParam(value = "name of field in a multimedia object", required = true, defaultValue = "gatheringEvents.worldRegion") @PathParam("field") String field,
       @ApiParam(value = "POST payload", required = false) MultivaluedMap<String, String> form,
       @Context UriInfo uriInfo) {
     return super.getDistinctValuesHttpPostForm(field, form, uriInfo);
@@ -165,14 +244,53 @@ public class MultiMediaObjectResource extends NbaResource<MultiMediaObject, Mult
   @Path("/getDistinctValues/{field}")
   @ApiOperation(value = "Get all different values that exist for a field", response = Map.class,
       notes = "A list of all fields for multimedia documents can be retrieved with /metadata/getFieldInfo")
-  @Produces(JSON_CONTENT_TYPE)
   @Consumes(JSON_CONTENT_TYPE)
+  @Produces(JSON_CONTENT_TYPE)
   public Map<String, Long> getDistinctValuesHttpPostJson(
-      @ApiParam(value = "name of field in a multimedia object", required = true,
-          defaultValue = "gatheringEvents.worldRegion") @PathParam("field") String field,
+      @ApiParam(value = "name of field in a multimedia object", required = true, defaultValue = "gatheringEvents.worldRegion") @PathParam("field") String field,
       @ApiParam(value = "querySpec JSON", required = false) QuerySpec qs,
       @Context UriInfo uriInfo) {
     return super.getDistinctValuesHttpPostJson(field, qs, uriInfo);
+  }
+  
+  @GET
+  @Path("/getDistinctValuesPerGroup/{field}/{group}")
+  @ApiOperation(value = "Count the distinct number of group values that exist per the given field", response = Map.class, notes = "")
+  @Produces(JSON_CONTENT_TYPE)
+  public String getDistinctValuesPerGroupHttpGet(
+      @ApiParam(value = "name of field in the multimedia object", required = true, defaultValue = "collectionType") @PathParam("field") String field,
+      @ApiParam(value = "name of group in the multimedia object", required = true, defaultValue = "identifications.scientificName.genusOrMonomial") @PathParam("group") String group, 
+      @Context UriInfo uriInfo) {
+    logger.info("getDistinctValuesPerGroup/" + field + "/" + group);
+    return super.getDistinctValuesPerGroupHttpGet(field, group, uriInfo);
+  }
+  
+  @POST
+  @Path("/getDistinctValuesPerGroup/{field}/{group}")
+  @ApiOperation(value = "Count the distinct number of group values that exist per the given field", response = Map.class, notes = "")
+  @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+  @Produces(JSON_CONTENT_TYPE)
+  public String getDistinctValuesPerGroupHttpPostForm(
+      @ApiParam(value = "name of field in the multimedia object", required = true, defaultValue = "collectionType") @PathParam("field") String field,
+      @ApiParam(value = "name of group in the multimedia object", required = true, defaultValue = "identifications.scientificName.genusOrMonomial") @PathParam("group") String group, 
+      @ApiParam(value = "query object in POST form", required = false) MultivaluedMap<String, String> form,
+      @Context UriInfo uriInfo) {
+    logger.info("getDistinctValuesPerGroup/" + field + "/" + group);
+    return super.getDistinctValuesPerGroupHttpPost(field, group, form, uriInfo);
+  }
+  
+  @POST
+  @Path("/getDistinctValuesPerGroup/{field}/{group}")
+  @ApiOperation(value = "Count the distinct number of group values that exist per the given field", response = Map.class, notes = "")
+  @Consumes(JSON_CONTENT_TYPE)
+  @Produces(JSON_CONTENT_TYPE)
+  public String getDistinctValuesPerGroup(
+      @ApiParam(value = "name of field in the multimedia object", required = true, defaultValue = "collectionType") @PathParam("field") String field,
+      @ApiParam(value = "name of group in the multimedia object", required = true, defaultValue = "identifications.scientificName.genusOrMonomial") @PathParam("group") String group,
+      @ApiParam(value = "querySpec JSON", required = false) QuerySpec qs,
+      @Context UriInfo uriInfo) {
+    logger.info("getDistinctValuesPerGroup/" + field + "/" + group);
+    return super.getDistinctValuesPerGroupHttpJson(field, group, qs, uriInfo);
   }
 
 }

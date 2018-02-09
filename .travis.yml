@@ -4,7 +4,7 @@ notifications:
   slack: naturalis:ezcm1O2U6hlcJ5tWsWrBAqRF
 
 env:
-  - PRODUCT=api BUILD_CMD=install-service
+  - PRODUCT=api BUILD_CMD="-silent install-service"
   - PRODUCT=etl BUILD_CMD=install-etl-module
 
 services:
@@ -21,16 +21,16 @@ before_script:
   - docker logs es
   - echo $PRODUCT
   - echo $BUILD_CMD
-
-script:
   - cp docker/builder/build.v2.properties nl.naturalis.nba.build/build.v2.properties
   - >
     docker run --rm
     -v $(pwd)/payload:/payload
     -v $(pwd):/source
-    --env BUILD_CMD=$BUILD_CMD
+    --env BUILD_CMD="$BUILD_CMD"
     --link es:es
-    builder sh -c 'cd source/nl.naturalis.nba.build ; ant -silent $BUILD_CMD'
+    builder sh -c 'cd source/nl.naturalis.nba.build ; ant $BUILD_CMD'
+
+script:
   - if [ $PRODUCT = 'etl' ] ; then sudo rm -fr payload/software/conf/thematic-search ; fi
   - if [ $PRODUCT = 'etl' ] ; then sudo git clone https://github.com/naturalis/nba-brondata-bijzcol payload/software/conf/thematic-search ; fi
   - sudo mv payload/* docker/$PRODUCT/

@@ -136,9 +136,6 @@ public class FileUtilTest {
         assertNotNull(actual_2);
         assertEquals(expectedSubDir_2, actual_2);
         
-        File[] subDirectories = FileUtil.getSubdirectories(new File("test"));
-        assertNull(subDirectories);
-
     }
 
     /**

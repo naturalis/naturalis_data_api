@@ -135,7 +135,6 @@ public class FileUtilTest {
         String actual_2 = subDirectories_01[0].toString().substring(subDirectories_01[0].toString().lastIndexOf("/"));
         assertNotNull(actual_2);
         assertEquals(expectedSubDir_2, actual_2);
-        
     }
 
     /**

@@ -70,7 +70,6 @@
 
 
 		<!-- Maven plugin versions. Check for available updates: mvn versions:display-plugin-updates -->
-		<exec-maven-plugin.version>1.2.1</exec-maven-plugin.version>
 		<maven-clean-plugin.version>3.0.0</maven-clean-plugin.version>
 		<maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
 		<maven-dependency-plugin.version>3.0.1</maven-dependency-plugin.version>
@@ -84,6 +83,7 @@
 		<maven-surefire-plugin.version>2.20</maven-surefire-plugin.version>
 		<maven-war-plugin.version>3.2.0</maven-war-plugin.version>
 		<versions-maven-plugin.version>2.4</versions-maven-plugin.version>
+		<exec-maven-plugin.version>1.6.0</exec-maven-plugin.version>
 
 	</properties>
 
@@ -496,6 +496,32 @@
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>exec-maven-plugin</artifactId>
 					<version>${exec-maven-plugin.version}</version>
+				</plugin>
+				<!--This plugin's configuration is used to store Eclipse m2e settings 
+					only. It has no influence on the Maven build itself. -->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.codehaus.mojo</groupId>
+										<artifactId>exec-maven-plugin</artifactId>
+										<versionRange>[1.0,)</versionRange>
+										<goals>
+											<goal>exec</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<execute />
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
 				</plugin>
 			</plugins>
 		</pluginManagement>

@@ -123,12 +123,19 @@ public class FileUtilTest {
     @Test
     public void testGetSubdirectories() {
 
-        String expectedDir = "/xml";
+        String expectedSubDir_1 = "/xml";
+        String expectedSubDir_2 = "/reflect";
+        
         File[] subDirectories_01 = FileUtil.getSubdirectories(fileDir);
-        String actual = subDirectories_01[1].toString().substring(subDirectories_01[0].toString().lastIndexOf("/"));
-        assertNotNull(subDirectories_01);
-        assertEquals(expectedDir, actual);
 
+        String actual_1 = subDirectories_01[1].toString().substring(subDirectories_01[1].toString().lastIndexOf("/"));
+        assertNotNull(actual_1);
+        assertEquals(expectedSubDir_1, actual_1);
+        
+        String actual_2 = subDirectories_01[0].toString().substring(subDirectories_01[0].toString().lastIndexOf("/"));
+        assertNotNull(actual_2);
+        assertEquals(expectedSubDir_2, actual_2);
+        
         File[] subDirectories = FileUtil.getSubdirectories(new File("test"));
         assertNull(subDirectories);
 

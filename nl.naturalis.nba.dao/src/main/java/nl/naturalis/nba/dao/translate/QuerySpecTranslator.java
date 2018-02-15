@@ -21,6 +21,7 @@ import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.common.es.map.MappingInfo;
+import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.DocumentType;
 
 /**
@@ -55,7 +56,7 @@ public class QuerySpecTranslator {
    * 
    * @return
    * @throws InvalidQueryException
-   * @throws NoSuchFieldException 
+   * @throws NoSuchFieldException
    */
   public SearchRequestBuilder translate() throws InvalidQueryException {
     if (logger.isDebugEnabled()) {
@@ -123,17 +124,23 @@ public class QuerySpecTranslator {
       }
       return getTranslator(condition, dt).translate();
     } else if (spec.getLogicalOperator() == OR) {
-      QueryCondition condition = conditions.iterator().next();
-      for (int n = 1; n < conditions.size(); n++) {
-        condition.or(conditions.get(n));
+      QueryCondition qc = new QueryCondition(false);
+      for(QueryCondition c : conditions) {
+        qc.or(c);
       }
-      return getTranslator(condition, dt).translate();
+      if (logger.isDebugEnabled()) {
+        logger.debug("Rewritten query to:\n" + JsonUtil.toPrettyJson(qc));        
+      }
+      return getTranslator(qc, dt).translate();
     } else {
-      QueryCondition condition = conditions.iterator().next();
-      for (int n = 1; n < conditions.size(); n++) {
-        condition.and(conditions.get(n));
+      QueryCondition qc = new QueryCondition(true);
+      for(QueryCondition c :conditions) {
+        qc.and(c);
       }
-      return getTranslator(condition, dt).translate();
+      if (logger.isDebugEnabled()) {
+        logger.debug("Rewritten query to:\n" + JsonUtil.toPrettyJson(qc));        
+      }
+      return getTranslator(qc, dt).translate();
     }
   }
 

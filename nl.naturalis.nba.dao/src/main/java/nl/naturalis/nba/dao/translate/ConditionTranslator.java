@@ -189,7 +189,8 @@ abstract class ConditionTranslator {
 
   private BoolQueryBuilder generateAndSiblings(QueryBuilder firstSibling) throws InvalidConditionException {
 
-    LinkedHashMap<String, ArrayList<QueryCondition>> conditionsMap = ConditionCollector.createConditionsMap(condition, mappingInfo, AND);
+    ConditionCollector collector = new ConditionCollector(condition, mappingInfo);
+    LinkedHashMap<String, ArrayList<QueryCondition>> conditionsMap = collector.createConditionsMap(AND);
     BoolQueryBuilder bq = boolQuery();
     for (Entry<String, ArrayList<QueryCondition>> entry : conditionsMap.entrySet()) {
       String nestedPath = entry.getKey();
@@ -223,8 +224,9 @@ abstract class ConditionTranslator {
 	private BoolQueryBuilder generateOrSiblings(QueryBuilder firstSibling)
 			throws InvalidConditionException
 	{
-
-	  LinkedHashMap<String, ArrayList<QueryCondition>> conditionsMap = ConditionCollector.createConditionsMap(condition, mappingInfo, OR);
+	  
+	  ConditionCollector collector = new ConditionCollector(condition, mappingInfo);
+	  LinkedHashMap<String, ArrayList<QueryCondition>> conditionsMap = collector.createConditionsMap(OR);
     BoolQueryBuilder bq = boolQuery();
     for (Entry<String, ArrayList<QueryCondition>> entry : conditionsMap.entrySet()) {
       String nestedPath = entry.getKey();

@@ -36,7 +36,8 @@ public class ConditionCollectorTest {
     condition.or(condition01).or(condition02).or(condition03).or(condition04.or(condition04A)).or(condition05).or(condition06).or(condition07);
     LogicalOperator operator = OR;
     
-    LinkedHashMap<String, ArrayList<QueryCondition>> conditionsMap = ConditionCollector.createConditionsMap(condition, mappingInfo, operator);
+    ConditionCollector collector = new ConditionCollector(condition, mappingInfo);
+    LinkedHashMap<String, ArrayList<QueryCondition>> conditionsMap = collector.createConditionsMap(operator);
     
     assertTrue("01", conditionsMap.containsKey(null));
     assertTrue("02", conditionsMap.containsKey("gatheringEvent.gatheringPersons"));
@@ -65,7 +66,8 @@ public class ConditionCollectorTest {
     condition.and(condition01).and(condition02).and(condition03).and(condition04);
     LogicalOperator operator = AND;
     
-    LinkedHashMap<String, ArrayList<QueryCondition>> conditionsMap = ConditionCollector.createConditionsMap(condition, mappingInfo, operator);
+    ConditionCollector collector = new ConditionCollector(condition, mappingInfo);
+    LinkedHashMap<String, ArrayList<QueryCondition>> conditionsMap = collector.createConditionsMap(operator);
     assertTrue("01", conditionsMap.containsKey(null));
     assertTrue("02", conditionsMap.containsKey("associatedMultiMediaUris"));
     assertTrue("03", conditionsMap.containsKey("gatheringEvent.gatheringPersons"));

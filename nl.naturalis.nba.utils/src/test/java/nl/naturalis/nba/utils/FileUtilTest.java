@@ -116,25 +116,6 @@ public class FileUtilTest {
     }
 
     /**
-     * Test method for {@link nl.naturalis.nba.utils.FileUtil#getSubdirectories(java.io.File)}.
-     * 
-     * Test to get subDirectories from the specified directory.
-     */
-    @Test
-    public void testGetSubdirectories() {
-
-        String expectedDir = "/xml";
-        File[] subDirectories_01 = FileUtil.getSubdirectories(fileDir);
-        String actual = subDirectories_01[1].toString().substring(subDirectories_01[0].toString().lastIndexOf("/"));
-        assertNotNull(subDirectories_01);
-        assertEquals(expectedDir, actual);
-
-        File[] subDirectories = FileUtil.getSubdirectories(new File("test"));
-        assertNull(subDirectories);
-
-    }
-
-    /**
      * Test method for
      * {@link nl.naturalis.nba.utils.FileUtil#convertEncoding(java.io.File, java.io.File, java.lang.String, java.lang.String)}.
      * 

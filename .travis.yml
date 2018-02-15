@@ -1,10 +1,10 @@
-language: shell
+nguage: shell
 
 notifications:
   slack: naturalis:ezcm1O2U6hlcJ5tWsWrBAqRF
 
 env:
-  - PRODUCT=api BUILD_CMD=install-service
+  - PRODUCT=api BUILD_CMD="-silent install-service"
   - PRODUCT=etl BUILD_CMD=install-etl-module
 
 services:
@@ -15,22 +15,28 @@ before_install:
   - docker build -t builder docker/builder
   - docker run --name es -d -e ES_JAVA_OPTS="-Xms512m -Xmx512m" elasticsearch:5.1.2 elasticsearch -Ecluster.name="nba-cluster" -Enetwork.host="_site_"
   - mkdir payload
+  - mkdir payload/data
+  - mkdir -p payload/data/{geo,brahms,crs,col,nsr,ndff,medialib}
+  - cp docker/resources/bp_areas.csv payload/data/geo/
+  - cp docker/resources/L_6_13-10-2017_at_09-25-11.CSV payload/data/brahms/
+  - cp docker/resources/mimetypes.zip payload/data/medialib/
+
 
 before_script:
   - sleep 10
   - docker logs es
   - echo $PRODUCT
   - echo $BUILD_CMD
-
-script:
   - cp docker/builder/build.v2.properties nl.naturalis.nba.build/build.v2.properties
   - >
     docker run --rm
     -v $(pwd)/payload:/payload
     -v $(pwd):/source
-    --env BUILD_CMD=$BUILD_CMD
+    --env BUILD_CMD="$BUILD_CMD"
     --link es:es
     builder sh -c 'cd source/nl.naturalis.nba.build ; ant $BUILD_CMD'
+
+script:
   - if [ $PRODUCT = 'etl' ] ; then sudo rm -fr payload/software/conf/thematic-search ; fi
   - if [ $PRODUCT = 'etl' ] ; then sudo git clone https://github.com/naturalis/nba-brondata-bijzcol payload/software/conf/thematic-search ; fi
   - sudo mv payload/* docker/$PRODUCT/

@@ -78,8 +78,6 @@ public class CoLVernacularNameBatchTransformerTest {
     Taxon actual = updates.iterator().next();
 
     String expectedId = "6931870@COL";
-    String expectedRecordURI =
-        "http://www.catalogueoflife.org/annual-checklist/2016/details/species/id/39ed89a52a61ef3a59eef66b9ce8ad7e";
     String expectedAuthorshipVerbatim = "Cresson, 1863";
     String expectedScientificNameGroup = "bombus affinis";
     String expectedFullScientificName = "Bombus affinis Cresson, 1863";
@@ -90,7 +88,7 @@ public class CoLVernacularNameBatchTransformerTest {
 
     assertNotNull("01",actual);
     assertEquals("02",expectedId, actual.getId());
-    assertEquals("03",expectedRecordURI, actual.getRecordURI().toString());
+    assertNotNull("03",actual.getRecordURI());
     assertEquals("04",expectedAuthorshipVerbatim, actual.getValidName().getAuthorshipVerbatim());
     assertEquals("05",expectedScientificNameGroup, actual.getValidName().getScientificNameGroup());
     assertEquals("06",expectedFullScientificName, actual.getValidName().getFullScientificName());
@@ -132,8 +130,6 @@ public class CoLVernacularNameBatchTransformerTest {
     String expectedKey = "6931870";
     Taxon actual = actualResults.get(expectedKey);
     String expectedId = "6931870@COL";
-    String expectedRecordURI =
-        "http://www.catalogueoflife.org/annual-checklist/2016/details/species/id/39ed89a52a61ef3a59eef66b9ce8ad7e";
     String expectedScientificNameGroup = "bombus affinis";
     String expectedFullScientificName = "Bombus affinis Cresson, 1863";
     String expectedSourceSystemName = "Species 2000 - Catalogue Of Life";
@@ -141,7 +137,7 @@ public class CoLVernacularNameBatchTransformerTest {
 
     assertEquals("01",expectedKey, actualResults.keySet().iterator().next());
     assertEquals("02",expectedId, actual.getId());
-    assertEquals("03",expectedRecordURI, actual.getRecordURI().toString());
+    assertNotNull("03",actual.getRecordURI());
     assertEquals("04",expectedFullScientificName, actual.getAcceptedName().getFullScientificName());
     assertEquals("05",expectedScientificNameGroup, actual.getAcceptedName().getScientificNameGroup());
     assertEquals("06",expectedSpcificEpithet, actual.getDefaultClassification().getSpecificEpithet());

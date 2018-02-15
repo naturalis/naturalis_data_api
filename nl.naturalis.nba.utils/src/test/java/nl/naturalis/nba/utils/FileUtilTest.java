@@ -23,7 +23,6 @@ import java.nio.charset.StandardCharsets;
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -114,26 +113,6 @@ public class FileUtilTest {
         assertFalse(conditionFalse);
 
 
-    }
-
-    /**
-     * Test method for {@link nl.naturalis.nba.utils.FileUtil#getSubdirectories(java.io.File)}.
-     * 
-     * Test to get subDirectories from the specified directory.
-     */
-    @Ignore("https://jira.naturalis.nl/projects/NBAX/issues/NBAX-85")
-    @Test
-    public void testGetSubdirectories() {
-
-        String expectedDir = "/xml";
-        File[] subDirectories_01 = FileUtil.getSubdirectories(fileDir);
-        String actual = subDirectories_01[0].toString().substring(subDirectories_01[0].toString().lastIndexOf("/"));
-        
-        assertNotNull(subDirectories_01);
-        assertEquals(expectedDir, actual);
-
-        File[] subDirectories = FileUtil.getSubdirectories(new File("test"));
-        assertNull(subDirectories);
     }
 
     /**

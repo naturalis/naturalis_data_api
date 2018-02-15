@@ -10,7 +10,7 @@ Executing Unit Test cases :
 -Xms256m 
 -Xmx1536m
 
-2)To make sure nba.properties files contains all these values under  proto.conf.dir has the correct values udpate build.v2.properties with these values :
+2)To make sure nba.properties files contains all these values under  proto.conf.dir has the correct values update build.v2.properties with these values (paths will be different based on the your local setup):
 
 # Directories containing the CSV dumps, XML dumps, etc.
 etl.crs.data.dir=/home/plabon/nba/data/nba-brondata-crs

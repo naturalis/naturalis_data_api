@@ -1,6 +1,7 @@
 package nl.naturalis.nba.api;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import nl.naturalis.nba.api.model.IDocumentObject;
@@ -203,6 +204,17 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
 	Map<String, Long> getDistinctValues(String forField, QuerySpec querySpec)
 			throws InvalidQueryException;
 
+	/**
+	 * 
+	 */
+	List<Map<String, Object>> countDistinctValuesPerGroup(String group, String field, QuerySpec querySpec)
+      throws InvalidQueryException;
+	
+	/**
+	 * 
+	 */
+	List<Map<String, Object>> getDistinctValuesPerGroup(String group, String field, QuerySpec querySpec) throws InvalidQueryException;
+	
 //	/**
 //	 * <p>
 //	 * Returns the unique values of the specified field, given the value of

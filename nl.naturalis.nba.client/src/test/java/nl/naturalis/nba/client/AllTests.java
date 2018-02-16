@@ -8,10 +8,11 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 //@formatter:off
 @SuiteClasses({
-	GeoAreaClientTest.class,
-	NbaClientTest.class,
-	SpecimenClientTest.class,
-	TaxonClientTest.class
+  NbaClientTest.class,
+  SpecimenClientTest.class,
+  MultiMediaObjectClientTest.class,
+  TaxonClientTest.class,
+	GeoAreaClientTest.class
 })
 //@formatter:on
 public class AllTests {

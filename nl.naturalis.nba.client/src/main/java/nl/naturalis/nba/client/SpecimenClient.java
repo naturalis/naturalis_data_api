@@ -7,15 +7,11 @@ import static nl.naturalis.nba.client.ClientUtil.noSuchDataSetException;
 import static nl.naturalis.nba.client.ClientUtil.sendRequest;
 import static nl.naturalis.nba.client.ServerException.newServerException;
 import static nl.naturalis.nba.utils.http.SimpleHttpRequest.HTTP_OK;
-
 import java.io.InputStream;
 import java.io.OutputStream;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import com.fasterxml.jackson.core.type.TypeReference;
-
 import nl.naturalis.nba.api.GroupByScientificNameQueryResult;
 import nl.naturalis.nba.api.GroupByScientificNameQuerySpec;
 import nl.naturalis.nba.api.ISpecimenAccess;
@@ -188,5 +184,5 @@ public class SpecimenClient extends NbaClient<Specimen> implements ISpecimenAcce
 	{
 		return new TypeReference<QueryResult<Specimen>>() {};
 	}
-
+	
 }

@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -155,7 +156,7 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
   @Path("/countDistinctValues/{field}")
   @ApiOperation(value = "Count the distinct number of values that exist for a given field", response = Map.class, notes = "")
   @Produces(TEXT_CONTENT_TYPE)
-  public Long countDistinctValuesHttpGet(
+  public long countDistinctValuesHttpGet(
       @ApiParam(value = "name of field in the taxon object", required = true, defaultValue = "acceptedName.genusOrMonomial") @PathParam("field") String field,
       @Context UriInfo uriInfo) {
     logger.info("countDistinctValues/" + field);
@@ -193,7 +194,7 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
   @ApiOperation(value = "Count the distinct number of group values that exist per the given field",
       response = Map.class, notes = "")
   @Produces(JSON_CONTENT_TYPE)
-  public String countDistinctValuesPerGroupHttpGet(
+  public List<Map<String, Object>> countDistinctValuesPerGroupHttpGet(
       @ApiParam(value = "name of field in the taxon object", required = true, defaultValue = "sourceSystem.code") @PathParam("field") String field,
       @ApiParam(value = "name of group in the taxon object", required = true, defaultValue = "defaultClassification.genus") @PathParam("group") String group, 
       @Context UriInfo uriInfo) {
@@ -206,7 +207,7 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
   @ApiOperation(value = "Count the distinct number of group values that exist per the given field", response = Map.class, notes = "")
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
   @Produces(JSON_CONTENT_TYPE)
-  public String countDistinctValuesPerGroupHttpPostForm(
+  public List<Map<String, Object>> countDistinctValuesPerGroupHttpPostForm(
       @ApiParam(value = "name of field in the taxon object", required = true, defaultValue = "sourceSystem.code") @PathParam("field") String field,
       @ApiParam(value = "name of group in the taxon object", required = true, defaultValue = "defaultClassification.genus") @PathParam("group") String group, 
       @ApiParam(value = "query object in POST form", required = false) MultivaluedMap<String, String> form,
@@ -220,7 +221,7 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
   @ApiOperation(value = "Count the distinct number of group values that exist per the given field", response = Map.class, notes = "")
   @Consumes(JSON_CONTENT_TYPE)
   @Produces(JSON_CONTENT_TYPE)
-  public String countDistinctValuesPerGroupHttpPostJson(
+  public List<Map<String, Object>> countDistinctValuesPerGroupHttpPostJson(
       @ApiParam(value = "name of field in the taxon object", required = true, defaultValue = "sourceSystem.code") @PathParam("field") String field,
       @ApiParam(value = "name of group in the taxon object", required = true, defaultValue = "defaultClassification.genus") @PathParam("group") String group,
       @ApiParam(value = "querySpec JSON", required = false) QuerySpec qs,
@@ -271,9 +272,12 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
   
   @GET
   @Path("/getDistinctValuesPerGroup/{field}/{group}")
-  @ApiOperation(value = "Count the distinct number of group values that exist per the given field", response = Map.class, notes = "")
+  @ApiOperation(
+      value = "Count the distinct number of group values that exist per the given field", 
+      response = List.class, 
+      notes = "")
   @Produces(JSON_CONTENT_TYPE)
-  public String getDistinctValuesPerGroupHttpGet(
+  public List<Map<String, Object>> getDistinctValuesPerGroupHttpGet(
       @ApiParam(value = "name of field in the taxon object", required = true, defaultValue = "sourceSystem.code") @PathParam("field") String field,
       @ApiParam(value = "name of group in the taxon object", required = true, defaultValue = "defaultClassification.family") @PathParam("group") String group, 
       @Context UriInfo uriInfo) {
@@ -283,10 +287,13 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
   
   @POST
   @Path("/getDistinctValuesPerGroup/{field}/{group}")
-  @ApiOperation(value = "Count the distinct number of group values that exist per the given field", response = Map.class, notes = "")
+  @ApiOperation(
+      value = "Count the distinct number of group values that exist per the given field", 
+      response = List.class, 
+      notes = "")
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
   @Produces(JSON_CONTENT_TYPE)
-  public String getDistinctValuesPerGroupHttpPostForm(
+  public List<Map<String, Object>> getDistinctValuesPerGroupHttpPostForm(
       @ApiParam(value = "name of field in the taxon object", required = true, defaultValue = "sourceSystem.code") @PathParam("field") String field,
       @ApiParam(value = "name of group in the taxon object", required = true, defaultValue = "defaultClassification.family") @PathParam("group") String group, 
       @ApiParam(value = "query object in POST form", required = false) MultivaluedMap<String, String> form,
@@ -297,10 +304,13 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
   
   @POST
   @Path("/getDistinctValuesPerGroup/{field}/{group}")
-  @ApiOperation(value = "Count the distinct number of group values that exist per the given field", response = Map.class, notes = "")
+  @ApiOperation(
+      value = "Count the distinct number of group values that exist per the given field", 
+      response = List.class, 
+      notes = "")
   @Consumes(JSON_CONTENT_TYPE)
   @Produces(JSON_CONTENT_TYPE)
-  public String getDistinctValuesPerGroup(
+  public List<Map<String, Object>> getDistinctValuesPerGroup(
       @ApiParam(value = "name of field in the taxon object", required = true, defaultValue = "sourceSystem.code") @PathParam("field") String field,
       @ApiParam(value = "name of group in the taxon object", required = true, defaultValue = "defaultClassification.family") @PathParam("group") String group,
       @ApiParam(value = "querySpec JSON", required = false) QuerySpec qs,

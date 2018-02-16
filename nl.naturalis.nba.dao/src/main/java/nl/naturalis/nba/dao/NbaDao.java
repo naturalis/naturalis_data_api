@@ -232,7 +232,7 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
 		return result;
 	}
 	
-  public String countDistinctValuesPerGroup(String group, String field, QuerySpec querySpec)
+  public List<Map<String, Object>> countDistinctValuesPerGroup(String group, String field, QuerySpec querySpec)
       throws InvalidQueryException {
 
     if (logger.isDebugEnabled()) {
@@ -399,10 +399,10 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
       }
     }
 
-    return JsonUtil.toJson(result);
+    return result;
   }
 
-  public String getDistinctValuesPerGroup(String group, String field, QuerySpec querySpec)
+  public List<Map<String, Object>> getDistinctValuesPerGroup(String group, String field, QuerySpec querySpec)
       throws InvalidQueryException {
 
     if (logger.isDebugEnabled()) {
@@ -621,7 +621,7 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
       }
     }
 
-    return JsonUtil.toPrettyJson(result);
+    return result;
   }
 
 

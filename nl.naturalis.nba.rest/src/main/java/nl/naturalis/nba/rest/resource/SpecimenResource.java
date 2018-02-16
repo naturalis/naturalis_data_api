@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -58,9 +59,13 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
     super(new SpecimenDao());
   }
 
+  //@formatter:off
   @GET
   @Path("/find/{id}")
-  @ApiOperation(value = "Find a specimen by id", response = Specimen.class, notes = "If found, returns a single specimen")
+  @ApiOperation(
+      value = "Find a specimen by id", 
+      response = Specimen.class, 
+      notes = "If found, returns a single specimen")
   @ApiResponses(value = {@ApiResponse(code = 404, message = "id not found")})
   @Produces(JSON_CONTENT_TYPE)
   public Specimen find(
@@ -71,7 +76,10 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
 
   @GET
   @Path("/findByIds/{ids}")
-  @ApiOperation(value = "Find specimens by ids", response = Specimen[].class, notes = "Given multiple ids, returns a list of specimen")
+  @ApiOperation(
+      value = "Find specimens by ids", 
+      response = Specimen[].class, 
+      notes = "Given multiple ids, returns a list of specimen")
   @Produces(JSON_CONTENT_TYPE)
   public Specimen[] findByIds(
       @ApiParam(value = "ids of multiple specimen, separated by comma", required = true, defaultValue = "RMNH.MOL.326483@CRS,ZMA.MAM.4211@CRS", allowMultiple = true) @PathParam("ids") String ids, 
@@ -81,7 +89,10 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
 
   @GET
   @Path("/findByUnitID/{unitID}")
-  @ApiOperation(value = "Find a specimen by unitID", response = Specimen[].class, notes = "Get a specimen by its unitID. Returns a list of specimens since unitIDs are not strictly unique")
+  @ApiOperation(
+      value = "Find a specimen by unitID", 
+      response = Specimen[].class, 
+      notes = "Get a specimen by its unitID. Returns a list of specimens since unitIDs are not strictly unique")
   @Produces(JSON_CONTENT_TYPE)
   public Specimen[] findByUnitID(
       @ApiParam(value = "the unitID of the specimen to query", required = true, defaultValue = "RMNH.MAM.17209.B") @PathParam("unitID") String unitID,
@@ -96,7 +107,10 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
 
   @GET
   @Path("/exists/{unitID}")
-  @ApiOperation(value = "Returns whether or not a unitID for a specimen exists", response = boolean.class, notes = "Returns either true or false")
+  @ApiOperation(
+      value = "Returns whether or not a unitID for a specimen exists", 
+      response = boolean.class, 
+      notes = "Returns either true or false")
   @Produces(TEXT_CONTENT_TYPE)
   public boolean exists(
       @ApiParam(value = "the unitID of the specimen to query", required = true, defaultValue = "RMNH.MAM.17209.B") @PathParam("unitID") String unitID,
@@ -111,17 +125,29 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
 
   @GET
   @Path("/query")
-  @ApiOperation(value = "Query for specimens", response = QueryResult.class, notes = "Search for specimens (GET) using query parameters or a querySpec JSON")
+  @ApiOperation(
+      value = "Query for specimens", 
+      response = QueryResult.class, 
+      notes = "Search for specimens (GET) using query parameters or a querySpec JSON")
   @Produces(JSON_CONTENT_TYPE)
-  @ApiImplicitParams({@ApiImplicitParam(name = "collectionType", value = "Example query param",
-      dataType = "string", paramType = "query", defaultValue = "Crustacea", required = false)})
+  @ApiImplicitParams({@ApiImplicitParam(
+      name = "collectionType", 
+      value = "Example query param",
+      dataType = "string", 
+      paramType = "query", 
+      defaultValue = "Crustacea", 
+      required = false)})
   public QueryResult<Specimen> queryHttpGet(@Context UriInfo uriInfo) {
     return super.queryHttpGet(uriInfo);
   }
 
   @POST
   @Path("/query")
-  @ApiOperation(hidden = true, value = "Query for specimens", response = QueryResult.class, notes = "Search for specimens (POST) using query parameters or a querySpec JSON")
+  @ApiOperation(
+      hidden = true, 
+      value = "Query for specimens", 
+      response = QueryResult.class, 
+      notes = "Search for specimens (POST) using query parameters or a querySpec JSON")
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
   @Produces(JSON_CONTENT_TYPE)
   public QueryResult<Specimen> queryHttpPostForm(
@@ -132,7 +158,9 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
 
   @POST
   @Path("/query")
-  @ApiOperation(value = "Query for specimens", response = QueryResult.class,
+  @ApiOperation(
+      value = "Query for specimens", 
+      response = QueryResult.class, 
       notes = "Search for specimens (GET) using query parameters or a querySpec JSON")
   @Consumes(JSON_CONTENT_TYPE)
   @Produces(JSON_CONTENT_TYPE)
@@ -144,7 +172,9 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
 
   @GET
   @Path("/count")
-  @ApiOperation(value = "Get the number of specimens matching a condition", response = long.class,
+  @ApiOperation(
+      value = "Get the number of specimens matching a condition", 
+      response = long.class, 
       notes = "Conditions given as query parameters or a querySpec JSON")
   @Produces(TEXT_CONTENT_TYPE)
   @ApiImplicitParams({@ApiImplicitParam(name = "collectionType", value = "Example query param",
@@ -155,8 +185,11 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
 
   @POST
   @Path("/count")
-  @ApiOperation(hidden = true, value = "Get the number of specimens matching a condition",
-      response = long.class, notes = "Conditions given as query parameters or a querySpec JSON")
+  @ApiOperation(
+      hidden = true, 
+      value = "Get the number of specimens matching a condition",
+      response = long.class, 
+      notes = "Conditions given as query parameters or a querySpec JSON")
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
   @Produces(TEXT_CONTENT_TYPE)
   public long countHttpPostForm(
@@ -167,21 +200,31 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
 
   @POST
   @Path("/count")
-  @ApiOperation(value = "Get the number of specimens matching a condition", response = long.class, notes = "Conditions given as query parameters or a querySpec JSON")
+  @ApiOperation(
+      value = "Get the number of specimens matching a condition", 
+      response = long.class, 
+      notes = "Conditions given as query parameters or a querySpec JSON")
   @Consumes(JSON_CONTENT_TYPE)
   @Produces(TEXT_CONTENT_TYPE)
   public long countHttpPostJson(
-    @ApiParam(value = "querySpec JSON", required = false) QuerySpec qs,
+    @ApiParam(value = "QuerySpec in JSON form", required = false) QuerySpec qs,
     @Context UriInfo uriInfo) {
     return super.countHttpPostJson(qs, uriInfo);
   }
 
   @GET
   @Path("/countDistinctValues/{field}")
-  @ApiOperation(value = "Count the distinct number of values that exist for a given field", response = Map.class, notes = "")
+  @ApiOperation(
+      value = "Count the distinct number of values that exist for a given field", 
+      response = long.class, 
+      notes = "")
   @Produces(TEXT_CONTENT_TYPE)
-  public Long countDistinctValuesHttpGet(
-      @ApiParam(value = "name of field in the specimen object", required = true, defaultValue = "identifications.defaultClassification.family") @PathParam("field") String field,
+  public long countDistinctValuesHttpGet(
+      @ApiParam(
+          value = "Name of field in the specimen object", 
+          required = true, 
+          defaultValue = "identifications.defaultClassification.family") 
+      @PathParam("field") String field,
       @Context UriInfo uriInfo) {
     logger.info("countDistinctValues/" + field);
     return super.countDistinctValuesHttpGet(field, uriInfo);
@@ -189,12 +232,15 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
 
   @POST
   @Path("/countDistinctValues/{field}")
-  @ApiOperation(value = "Count the distinct number of values that exist for a given field", response = Map.class, notes = "")
+  @ApiOperation(
+      value = "Count the distinct number of values that exist for a given field", 
+      response = long.class, 
+      notes = "")
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
   @Produces(TEXT_CONTENT_TYPE)
-  public Long countDistinctValuesHttpPost(
-      @ApiParam(value = "name of field in the specimen object", required = true, defaultValue = "identifications.defaultClassification.family") @PathParam("field") String field,
-      @ApiParam(value = "query object in POST form", required = false) MultivaluedMap<String, String> form,  
+  public long countDistinctValuesHttpPost(
+      @ApiParam(value = "Name of field in the specimen object", required = true, defaultValue = "identifications.defaultClassification.family") @PathParam("field") String field,
+      @ApiParam(value = "Query object in POST form", required = false) MultivaluedMap<String, String> form,  
       @Context UriInfo uriInfo) {
     logger.info("countDistinctValues/" + field);
     return super.countDistinctValuesHttpPostForm(field, form, uriInfo);
@@ -202,12 +248,15 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
 
   @POST
   @Path("/countDistinctValues/{field}")
-  @ApiOperation(value = "Count the distinct number of values that exist for a given field", response = Map.class, notes = "")
+  @ApiOperation(
+      value = "Count the distinct number of values that exist for a given field", 
+      response = long.class, 
+      notes = "")
   @Consumes(JSON_CONTENT_TYPE)
   @Produces(TEXT_CONTENT_TYPE)
-  public Long countDistinctValuesHttpJson(
-      @ApiParam(value = "name of field in the specimen object", required = true, defaultValue = "identifications.defaultClassification.family") @PathParam("field") String field,
-      @ApiParam(value = "querySpec JSON", required = false) QuerySpec qs, 
+  public long countDistinctValuesHttpJson(
+      @ApiParam(value = "Name of field in the specimen object", required = true, defaultValue = "identifications.defaultClassification.family") @PathParam("field") String field,
+      @ApiParam(value = "QuerySpec in JSON form", required = false) QuerySpec qs, 
       @Context UriInfo uriInfo) {
     logger.info("countDistinctValues/" + field);
     return super.countDistinctValuesHttpPostJson(field, qs, uriInfo);
@@ -215,12 +264,14 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
 
   @GET
   @Path("/countDistinctValuesPerGroup/{field}/{group}")
-  @ApiOperation(value = "Count the distinct number of group values that exist per the given field",
-      response = Map.class, notes = "")
+  @ApiOperation(
+      value = "Count the distinct number of group values that exist per the given field",
+      response = List.class, 
+      notes = "")
   @Produces(JSON_CONTENT_TYPE)
-  public String countDistinctValuesPerGroupHttpGet(
-      @ApiParam(value = "name of field in the specimen object", required = true, defaultValue = "identifications.typeStatus") @PathParam("field") String field,
-      @ApiParam(value = "name of group in the specimen object", required = true, defaultValue = "collectionType") @PathParam("group") String group, 
+  public List<Map<String, Object>> countDistinctValuesPerGroupHttpGet(
+      @ApiParam(value = "Name of field in the specimen object", required = true, defaultValue = "identifications.typeStatus") @PathParam("field") String field,
+      @ApiParam(value = "Name of group in the specimen object", required = true, defaultValue = "collectionType") @PathParam("group") String group, 
       @Context UriInfo uriInfo) {
     logger.info("countDistinctValuesPerGroup/" + field + "/" + group);
     return super.countDistinctValuesPerGroupHttpGet(field, group, uriInfo);
@@ -228,13 +279,16 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
 
   @POST
   @Path("/countDistinctValuesPerGroup/{field}/{group}")
-  @ApiOperation(value = "Count the distinct number of group values that exist per the given field", response = Map.class, notes = "")
+  @ApiOperation(
+      value = "Count the distinct number of group values that exist per the given field", 
+      response = List.class, 
+      notes = "")
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
   @Produces(JSON_CONTENT_TYPE)
-  public String countDistinctValuesPerGroupHttpPostForm(
-      @ApiParam(value = "name of field in the specimen object", required = true, defaultValue = "identifications.typeStatus") @PathParam("field") String field,
-      @ApiParam(value = "name of group in the specimen object", required = true, defaultValue = "collectionType") @PathParam("group") String group, 
-      @ApiParam(value = "query object in POST form", required = false) MultivaluedMap<String, String> form,
+  public List<Map<String, Object>> countDistinctValuesPerGroupHttpPostForm(
+      @ApiParam(value = "Name of field in the specimen object", required = true, defaultValue = "identifications.typeStatus") @PathParam("field") String field,
+      @ApiParam(value = "Name of group in the specimen object", required = true, defaultValue = "collectionType") @PathParam("group") String group, 
+      @ApiParam(value = "Query object in POST form", required = false) MultivaluedMap<String, String> form,
       @Context UriInfo uriInfo) {
     logger.info("countDistinctValuesPerGroup/" + field + "/" + group);
     return super.countDistinctValuesPerGroupHttpPostForm(field, group, form, uriInfo);
@@ -242,13 +296,16 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
 
   @POST
   @Path("/countDistinctValuesPerGroup/{field}/{group}")
-  @ApiOperation(value = "Count the distinct number of group values that exist per the given field", response = Map.class, notes = "")
+  @ApiOperation(
+      value = "Count the distinct number of group values that exist per the given field", 
+      response = List.class, 
+      notes = "")
   @Consumes(JSON_CONTENT_TYPE)
   @Produces(JSON_CONTENT_TYPE)
-  public String countDistinctValuesPerGroupHttpPostJson(
-      @ApiParam(value = "name of field in the specimen object", required = true, defaultValue = "identifications.typeStatus") @PathParam("field") String field,
-      @ApiParam(value = "name of group in the specimen object", required = true, defaultValue = "collectionType") @PathParam("group") String group,
-      @ApiParam(value = "querySpec JSON", required = false) QuerySpec qs,
+  public List<Map<String, Object>> countDistinctValuesPerGroupHttpPostJson(
+      @ApiParam(value = "Name of field in the specimen object", required = true, defaultValue = "identifications.typeStatus") @PathParam("field") String field,
+      @ApiParam(value = "Name of group in the specimen object", required = true, defaultValue = "collectionType") @PathParam("group") String group,
+      @ApiParam(value = "QuerySpec in JSON form", required = false) QuerySpec qs,
       @Context UriInfo uriInfo) {
     logger.info("countDistinctValuesPerGroup/" + field + "/" + group);
     return super.countDistinctValuesPerGroupHttpPostJson(field, group, qs, uriInfo);
@@ -256,45 +313,57 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
 
   @GET
   @Path("/getDistinctValues/{field}")
-  @ApiOperation(value = "Get all different values that exist for a field", response = Map.class, notes = "A list of all fields for specimen documents can be retrieved with /metadata/getFieldInfo")
+  @ApiOperation(
+      value = "Get all different values that exist for a field", 
+      response = Map.class, 
+      notes = "A list of all fields for specimen documents can be retrieved with /metadata/getFieldInfo")
   @Produces(JSON_CONTENT_TYPE)
   public Map<String, Long> getDistinctValuesHttpGet(
-      @ApiParam(value = "name of field in specimen object", required = true, defaultValue = "identifications.defaultClassification.family") @PathParam("field") String field,
+      @ApiParam(value = "Name of field in specimen object", required = true, defaultValue = "identifications.defaultClassification.family") @PathParam("field") String field,
       @Context UriInfo uriInfo) {
     return super.getDistinctValuesHttpGet(field, uriInfo);
   }
 
   @POST
   @Path("/getDistinctValues/{field}")
-  @ApiOperation(value = "Get all different values that exist for a field", response = Map.class, notes = "A list of all fields for specimen documents can be retrieved with /metadata/getFieldInfo")
+  @ApiOperation(
+      value = "Get all different values that exist for a field", 
+      response = Map.class, 
+      notes = "A list of all fields for specimen documents can be retrieved with /metadata/getFieldInfo")
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
   @Produces(JSON_CONTENT_TYPE)
   public Map<String, Long> getDistinctValuesHttpPostForm(
-      @ApiParam(value = "name of field in specimen object", required = true, defaultValue = "identifications.defaultClassification.family") @PathParam("field") String field,
-      @ApiParam(value = "query object in POST form", required = false) MultivaluedMap<String, String> form,
+      @ApiParam(value = "Name of field in specimen object", required = true, defaultValue = "identifications.defaultClassification.family") @PathParam("field") String field,
+      @ApiParam(value = "Query object in POST form", required = false) MultivaluedMap<String, String> form,
       @Context UriInfo uriInfo) {
     return super.getDistinctValuesHttpPostForm(field, form, uriInfo);
   }
 
   @POST
   @Path("/getDistinctValues/{field}")
-  @ApiOperation(value = "Get all different values that exist for a field", response = Map.class, notes = "A list of all fields for specimen documents can be retrieved with /metadata/getFieldInfo")
+  @ApiOperation(
+      value = "Get all different values that exist for a field", 
+      response = Map.class, 
+      notes = "A list of all fields for specimen documents can be retrieved with /metadata/getFieldInfo")
   @Consumes(JSON_CONTENT_TYPE)
   @Produces(JSON_CONTENT_TYPE)
   public Map<String, Long> getDistinctValuesHttpPostJson(
-      @ApiParam(value = "name of field in specimen object", required = true, defaultValue = "identifications.defaultClassification.family") @PathParam("field") String field,
-      @ApiParam(value = "querySpec JSON", required = false) QuerySpec qs,
+      @ApiParam(value = "Name of field in specimen object", required = true, defaultValue = "identifications.defaultClassification.family") @PathParam("field") String field,
+      @ApiParam(value = "QuerySpec in JSON form", required = false) QuerySpec qs,
       @Context UriInfo uriInfo) {
     return super.getDistinctValuesHttpPostJson(field, qs, uriInfo);
   }
 
   @GET
   @Path("/getDistinctValuesPerGroup/{field}/{group}")
-  @ApiOperation(value = "Count the distinct number of group values that exist per the given field", response = Map.class, notes = "")
+  @ApiOperation(
+      value = "Count the distinct number of group values that exist per the given field", 
+      response = List.class, 
+      notes = "")
   @Produces(JSON_CONTENT_TYPE)
-  public String getDistinctValuesPerGroupHttpGet(
-      @ApiParam(value = "name of field in the specimen object", required = true, defaultValue = "identifications.typeStatus") @PathParam("field") String field,
-      @ApiParam(value = "name of group in the specimen object", required = true, defaultValue = "collectionType") @PathParam("group") String group, 
+  public List<Map<String, Object>> getDistinctValuesPerGroupHttpGet(
+      @ApiParam(value = "Name of field in the specimen object", required = true, defaultValue = "identifications.typeStatus") @PathParam("field") String field,
+      @ApiParam(value = "Name of group in the specimen object", required = true, defaultValue = "collectionType") @PathParam("group") String group, 
       @Context UriInfo uriInfo) {
     logger.info("getDistinctValuesPerGroup/" + field + "/" + group);
     return super.getDistinctValuesPerGroupHttpGet(field, group, uriInfo);
@@ -302,13 +371,16 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
   
   @POST
   @Path("/getDistinctValuesPerGroup/{field}/{group}")
-  @ApiOperation(value = "Count the distinct number of group values that exist per the given field", response = Map.class, notes = "")
+  @ApiOperation(
+      value = "Count the distinct number of group values that exist per the given field", 
+      response = List.class, 
+      notes = "")
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
   @Produces(JSON_CONTENT_TYPE)
-  public String getDistinctValuesPerGroupHttpPostForm(
-      @ApiParam(value = "name of field in the specimen object", required = true, defaultValue = "identifications.typeStatus") @PathParam("field") String field,
-      @ApiParam(value = "name of group in the specimen object", required = true, defaultValue = "collectionType") @PathParam("group") String group, 
-      @ApiParam(value = "query object in POST form", required = false) MultivaluedMap<String, String> form,
+  public List<Map<String, Object>> getDistinctValuesPerGroupHttpPostForm(
+      @ApiParam(value = "Name of field in the specimen object", required = true, defaultValue = "identifications.typeStatus") @PathParam("field") String field,
+      @ApiParam(value = "Name of group in the specimen object", required = true, defaultValue = "collectionType") @PathParam("group") String group, 
+      @ApiParam(value = "Query object in POST form", required = false) MultivaluedMap<String, String> form,
       @Context UriInfo uriInfo) {
     logger.info("getDistinctValuesPerGroup/" + field + "/" + group);
     return super.getDistinctValuesPerGroupHttpPost(field, group, form, uriInfo);
@@ -316,13 +388,16 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
   
   @POST
   @Path("/getDistinctValuesPerGroup/{field}/{group}")
-  @ApiOperation(value = "Count the distinct number of group values that exist per the given field", response = Map.class, notes = "")
+  @ApiOperation(
+      value = "Count the distinct number of group values that exist per the given field", 
+      response = List.class, 
+      notes = "")
   @Consumes(JSON_CONTENT_TYPE)
   @Produces(JSON_CONTENT_TYPE)
-  public String getDistinctValuesPerGroup(
-      @ApiParam(value = "name of field in the specimen object", required = true, defaultValue = "identifications.typeStatus") @PathParam("field") String field,
-      @ApiParam(value = "name of group in the specimen object", required = true, defaultValue = "collectionType") @PathParam("group") String group,
-      @ApiParam(value = "querySpec JSON", required = false) QuerySpec qs,
+  public List<Map<String, Object>> getDistinctValuesPerGroup(
+      @ApiParam(value = "Name of field in the specimen object", required = true, defaultValue = "identifications.typeStatus") @PathParam("field") String field,
+      @ApiParam(value = "Name of group in the specimen object", required = true, defaultValue = "collectionType") @PathParam("group") String group,
+      @ApiParam(value = "QuerySpec JSON", required = false) QuerySpec qs,
       @Context UriInfo uriInfo) {
     logger.info("getDistinctValuesPerGroup/" + field + "/" + group);
     return super.getDistinctValuesPerGroupHttpJson(field, group, qs, uriInfo);
@@ -335,8 +410,13 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
       response = Response.class,
       notes = "Query with query parameters or querySpec JSON. Response saved to nba-specimens.dwca.zip")
   @Produces(ZIP_CONTENT_TYPE)
-  @ApiImplicitParams({@ApiImplicitParam(name = "collectionType", value = "Example query param",
-      dataType = "string", paramType = "query", defaultValue = "Crustacea", required = false)})
+  @ApiImplicitParams({@ApiImplicitParam(
+      name = "collectionType", 
+      value = "Example query param",
+      dataType = "string", 
+      paramType = "query", 
+      defaultValue = "Crustacea", 
+      required = false)})
   public Response dwcaQueryHttpGet(
       @ApiParam(value = "query string", required = true) @Context UriInfo uriInfo) {
     try {
@@ -352,6 +432,7 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
           }
         }
       };
+      
       ResponseBuilder response = Response.ok(stream);
       response.type(ZIP_CONTENT_TYPE);
       response.header("Content-Disposition", "attachment; filename=\"nba-specimens.dwca.zip\"");
@@ -385,6 +466,7 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
           }
         }
       };
+      
       ResponseBuilder response = Response.ok(stream);
       response.type(ZIP_CONTENT_TYPE);
       response.header("Content-Disposition", "attachment; filename=\"nba-specimens.dwca.zip\"");
@@ -416,6 +498,7 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
           }
         }
       };
+      
       ResponseBuilder response = Response.ok(stream);
       response.type(ZIP_CONTENT_TYPE);
       response.header("Content-Disposition", "attachment; filename=\"nba-specimens.dwca.zip\"");
@@ -427,12 +510,13 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
 
   @GET
   @Path("/dwca/getDataSet/{dataset}")
-  @ApiOperation(value = "Download dataset as Darwin Core Archive File", response = Response.class,
+  @ApiOperation(
+      value = "Download dataset as Darwin Core Archive File", 
+      response = Response.class,
       notes = "Available datasets can be queried with /specimen/dwca/getDataSetNames. Response saved to <datasetname>-<yyyymmdd>.dwca.zip")
   @Produces(ZIP_CONTENT_TYPE)
   public Response dwcaGetDataSet(
-      @ApiParam(value = "name of dataset", required = true,
-          defaultValue = "amphibia-and-reptilia") @PathParam("dataset") String name,
+      @ApiParam(value = "name of dataset", required = true, defaultValue = "amphibia-and-reptilia") @PathParam("dataset") String name,
       @Context UriInfo uriInfo) {
     try {
       StreamingOutput stream = new StreamingOutput() {
@@ -447,6 +531,7 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
           }
         }
       };
+      
       ResponseBuilder response = Response.ok(stream);
       response.type(ZIP_CONTENT_TYPE);
       SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
@@ -461,7 +546,9 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
 
   @GET
   @Path("/dwca/getDataSetNames")
-  @ApiOperation(value = "Retrieve the names of all available datasets", response = String[].class,
+  @ApiOperation(
+      value = "Retrieve the names of all available datasets", 
+      response = String[].class,
       notes = "Individual datasets can then be downloaded with /dwca/getDataSet/{dataset}")
   @Produces(JSON_CONTENT_TYPE)
   public String[] dwcaGetDataSetNames(@Context UriInfo uriInfo) {
@@ -475,8 +562,10 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
 
   @GET
   @Path("/getNamedCollections")
-  @ApiOperation(value = "Retrieve the names of all 'special collections' of specimens",
-      response = String[].class, notes = "")
+  @ApiOperation(
+      value = "Retrieve the names of all 'special collections' of specimens",
+      response = String[].class, 
+      notes = "")
   @Produces(JSON_CONTENT_TYPE)
   public String[] getNamedCollections(@Context UriInfo uriInfo) {
     try {
@@ -489,7 +578,8 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
 
   @GET
   @Path("/getIdsInCollection/{name}")
-  @ApiOperation(value = "Retrieve all ids within a 'special collection' of specimens",
+  @ApiOperation(
+      value = "Retrieve all ids within a 'special collection' of specimens",
       response = String[].class,
       notes = "Available collections can be queried with /getNamedCollections")
   @Produces(JSON_CONTENT_TYPE)
@@ -510,12 +600,16 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
       response = QueryResult.class,
       notes = "Returns a list with ScientificNameGroups, which contain Taxon and Specimen documents that share a scientific name")
   @Produces(JSON_CONTENT_TYPE)
-  @ApiImplicitParams({@ApiImplicitParam(name = "collectionType", value = "Example query param",
-      dataType = "string", paramType = "query", defaultValue = "Crustacea", required = false)})
+  @ApiImplicitParams({@ApiImplicitParam(
+      name = "collectionType", 
+      value = "Example query param",
+      dataType = "string", 
+      paramType = "query", 
+      defaultValue = "Crustacea", 
+      required = false)})
   public GroupByScientificNameQueryResult groupByScientificNameHttpGet(@Context UriInfo uriInfo) {
     try {
-      GroupByScientificNameQuerySpec qs =
-          new HttpGroupByScientificNameQuerySpecBuilder(uriInfo).build();
+      GroupByScientificNameQuerySpec qs = new HttpGroupByScientificNameQuerySpecBuilder(uriInfo).build();
       SpecimenDao dao = new SpecimenDao();
       return dao.groupByScientificName(qs);
     } catch (Throwable t) {
@@ -535,8 +629,7 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
       @ApiParam(value = "POST payload", required = false) MultivaluedMap<String, String> form,
       @Context UriInfo uriInfo) {
     try {
-      GroupByScientificNameQuerySpec qs =
-          new HttpGroupByScientificNameQuerySpecBuilder(form, uriInfo).build();
+      GroupByScientificNameQuerySpec qs = new HttpGroupByScientificNameQuerySpecBuilder(form, uriInfo).build();
       SpecimenDao dao = new SpecimenDao();
       return dao.groupByScientificName(qs);
     } catch (Throwable t) {
@@ -562,5 +655,6 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
       throw handleError(uriInfo, t);
     }
   }
+  //@formatter:on
 
 }

@@ -1,6 +1,7 @@
 package nl.naturalis.nba.rest.resource;
 
 import static nl.naturalis.nba.rest.util.ResourceUtil.handleError;
+import java.util.List;
 import java.util.Map;
 import javax.ejb.EJB;
 import javax.ws.rs.core.MultivaluedMap;
@@ -98,7 +99,7 @@ public abstract class NbaResource<T extends IDocumentObject, U extends NbaDao<T>
     }
   }
 
-  public Long countDistinctValuesHttpGet(String field, UriInfo uriInfo) {
+  public long countDistinctValuesHttpGet(String field, UriInfo uriInfo) {
     try {
       QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
       return dao.countDistinctValues(field, qs);
@@ -124,7 +125,7 @@ public abstract class NbaResource<T extends IDocumentObject, U extends NbaDao<T>
     }
   }
 
-  public String countDistinctValuesPerGroupHttpGet(String field, String group, UriInfo uriInfo) {
+  public List<Map<String, Object>> countDistinctValuesPerGroupHttpGet(String field, String group, UriInfo uriInfo) {
     try {
       QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
       return dao.countDistinctValuesPerGroup(field, group, qs);
@@ -133,7 +134,7 @@ public abstract class NbaResource<T extends IDocumentObject, U extends NbaDao<T>
     }
   }
 
-  public String countDistinctValuesPerGroupHttpPostForm(String field, String group, MultivaluedMap<String, String> form, UriInfo uriInfo) {
+  public List<Map<String, Object>> countDistinctValuesPerGroupHttpPostForm(String field, String group, MultivaluedMap<String, String> form, UriInfo uriInfo) {
     try {
       QuerySpec qs = new HttpQuerySpecBuilder(form, uriInfo).build();
       return dao.countDistinctValuesPerGroup(field, group, qs);
@@ -142,7 +143,7 @@ public abstract class NbaResource<T extends IDocumentObject, U extends NbaDao<T>
     }
   }
 
-  public String countDistinctValuesPerGroupHttpPostJson(String field, String group, QuerySpec qs, UriInfo uriInfo) {
+  public List<Map<String, Object>> countDistinctValuesPerGroupHttpPostJson(String field, String group, QuerySpec qs, UriInfo uriInfo) {
     try {
       return dao.countDistinctValuesPerGroup(field, group, qs);
     } catch (Throwable t) {
@@ -176,7 +177,7 @@ public abstract class NbaResource<T extends IDocumentObject, U extends NbaDao<T>
     }
   }
 
-  public String getDistinctValuesPerGroupHttpGet(String field, String group, UriInfo uriInfo) {
+  public List<Map<String, Object>> getDistinctValuesPerGroupHttpGet(String field, String group, UriInfo uriInfo) {
     try {
       QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
       return dao.getDistinctValuesPerGroup(field, group, qs);
@@ -185,7 +186,7 @@ public abstract class NbaResource<T extends IDocumentObject, U extends NbaDao<T>
     }
   }
 
-  public String getDistinctValuesPerGroupHttpPost(String field, String group, MultivaluedMap<String, String> form, UriInfo uriInfo) {
+  public List<Map<String, Object>> getDistinctValuesPerGroupHttpPost(String field, String group, MultivaluedMap<String, String> form, UriInfo uriInfo) {
     try {
       QuerySpec qs = new HttpQuerySpecBuilder(form, uriInfo).build();
       return dao.getDistinctValuesPerGroup(field, group, qs);
@@ -194,7 +195,7 @@ public abstract class NbaResource<T extends IDocumentObject, U extends NbaDao<T>
     }
   }
 
-  public String getDistinctValuesPerGroupHttpJson(String field, String group, QuerySpec qs, UriInfo uriInfo) {
+  public List<Map<String, Object>> getDistinctValuesPerGroupHttpJson(String field, String group, QuerySpec qs, UriInfo uriInfo) {
     try {
       return dao.getDistinctValuesPerGroup(field, group, qs);
     } catch (Throwable t) {

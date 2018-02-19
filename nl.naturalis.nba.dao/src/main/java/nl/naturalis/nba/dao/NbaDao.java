@@ -48,6 +48,7 @@ import nl.naturalis.nba.api.NoSuchFieldException;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QueryResultItem;
 import nl.naturalis.nba.api.QuerySpec;
+import nl.naturalis.nba.api.SortField;
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.common.json.JsonUtil;
@@ -172,7 +173,7 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
       AggregationBuilder agg = AggregationBuilders.cardinality("CARDINALITY").field(field);
       request.addAggregation(agg);
     }
-
+    
     request.setSize(0);
     SearchResponse response = executeSearchRequest(request);
 
@@ -200,6 +201,15 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
 			request = new QuerySpecTranslator(querySpec, dt).translate();
 		}
 		request.setSize(0);
+    /*
+     * The value of the size parameter from the queryspec is used to set 
+     * the value of the aggregation size!
+     */
+    int aggSize = 10000;
+    if (querySpec.getSize() != null && querySpec.getSize() > 0) {
+      aggSize = querySpec.getSize();
+    }
+    
 		MappingInfo<T> mappingInfo = new MappingInfo<>(dt.getMapping());
 		String nestedPath;
 		try {
@@ -210,7 +220,29 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
 		}
 		TermsAggregationBuilder termsAggregation = terms("agg0");
 		termsAggregation.field(forField);
-		termsAggregation.size(10000);
+		termsAggregation.size(aggSize);
+		
+		/*
+		 * If the field is included as a sortField in the querySpec, then
+		 * that's used to order the aggregation result by the field terms.
+		 * Otherwise, the aggregation will be ordered by descending
+		 * document count. 
+		 */
+		if (querySpec.getSortFields() != null) {
+		  for (SortField sortField : querySpec.getSortFields()) {
+		    if (sortField.equals(new SortField(forField))) {
+		      if (sortField.getSortOrder() == nl.naturalis.nba.api.SortOrder.ASC) {
+		        termsAggregation.order(Terms.Order.term(true));
+		      }
+		      else {
+		        termsAggregation.order(Terms.Order.term(false));
+		      }
+		    }
+		  }
+		} else {
+		  termsAggregation.order(Terms.Order.count(false));
+		}
+		
 		Terms terms;
 		if (nestedPath == null) {
 			request.addAggregation(termsAggregation);
@@ -245,7 +277,7 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
     }
     QuerySpecTranslator translator = new QuerySpecTranslator(querySpec, dt);
     request = translator.translate();
-
+    request.setSize(0);
     /*
      * NOTE: the value of the size parameter from the queryspec is used to set the value of the
      * aggregation size!
@@ -254,19 +286,11 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
     if (querySpec.getSize() != null && querySpec.getSize() > 0) {
       aggSize = querySpec.getSize();
     }
-    request.setSize(0);
-
-    List<Map<String, Object>> result = new LinkedList<>();
 
     // Map group and field to query path
+    List<Map<String, Object>> result = new LinkedList<>();
+    
     MappingInfo<T> mappingInfo = new MappingInfo<>(dt.getMapping());
-
-    String pathToNestedGroup;
-    try {
-      pathToNestedGroup = mappingInfo.getNestedPath(group);
-    } catch (NoSuchFieldException e) {
-      throw new InvalidQueryException(e.getMessage());
-    }
 
     String pathToNestedField;
     try {
@@ -275,15 +299,23 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
       throw new InvalidQueryException(e.getMessage());
     }
 
-    // Based on the query mapping, use the correct aggregation builder
+    String pathToNestedGroup;
+    try {
+      pathToNestedGroup = mappingInfo.getNestedPath(group);
+    } catch (NoSuchFieldException e) {
+      throw new InvalidQueryException(e.getMessage());
+    }
 
+    // Based on the query mapping, use the correct aggregation builder
     if (pathToNestedGroup == null && pathToNestedField == null) {
       // Group + Field
       // http://localhost:8080/v2/specimen/countDistinctValuesPerGroup/collectionType/recordBasis
+      
+      // Ordering of bucket aggregations:
+      // https://www.elastic.co/guide/en/elasticsearch/client/java-api/5.1/_bucket_aggregations.html#_order
 
-      AggregationBuilder groupAgg = AggregationBuilders.terms("GROUP").field(group).size(aggSize);
-      CardinalityAggregationBuilder cardinalityField =
-          AggregationBuilders.cardinality("DISTINCT_VALUES").field(field);
+      AggregationBuilder groupAgg = AggregationBuilders.terms("GROUP").field(group).size(aggSize).order(Terms.Order.term(true));
+      CardinalityAggregationBuilder cardinalityField = AggregationBuilders.cardinality("DISTINCT_VALUES").field(field);
       groupAgg.subAggregation(cardinalityField);
 
       request.addAggregation(groupAgg);
@@ -305,7 +337,7 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
       // Group + Nested Field
       // http://localhost:8080/v2/specimen/countDistinctValuesPerGroup/collectionType/gatheringEvent.gatheringPersons.fullName
 
-      AggregationBuilder groupAgg = AggregationBuilders.terms("GROUP").field(group).size(aggSize);
+      AggregationBuilder groupAgg = AggregationBuilders.terms("GROUP").field(group).size(aggSize).order(Terms.Order.term(true));
       AggregationBuilder fieldAgg = AggregationBuilders.nested("FIELD", pathToNestedField);
       CardinalityAggregationBuilder cardinalityField =
           AggregationBuilders.cardinality("DISTINCT_VALUES").field(field);
@@ -335,7 +367,7 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
       // http://localhost:8080/v2/specimen/countDistinctValuesPerGroup/identifications.defaultClassification.className/collectionType
 
       AggregationBuilder groupAgg = AggregationBuilders.nested("NESTED_GROUP", pathToNestedGroup);
-      AggregationBuilder groupTerm = AggregationBuilders.terms("GROUP").field(group).size(aggSize);
+      AggregationBuilder groupTerm = AggregationBuilders.terms("GROUP").field(group).size(aggSize).order(Terms.Order.term(true));
 
       AggregationBuilder fieldAgg = AggregationBuilders.reverseNested("REVERSE_NESTED_FIELD");
       CardinalityAggregationBuilder cardinalityField =
@@ -367,7 +399,7 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
       // http://localhost:8080/v2/specimen/countDistinctValuesPerGroup/identifications.defaultClassification.className/gatheringEvent.gatheringPersons.fullName
 
       AggregationBuilder groupAgg = AggregationBuilders.nested("NESTED_GROUP", pathToNestedGroup);
-      AggregationBuilder groupTerm = AggregationBuilders.terms("GROUP").field(group).size(aggSize);
+      AggregationBuilder groupTerm = AggregationBuilders.terms("GROUP").field(group).size(aggSize).order(Terms.Order.term(true));
 
       AggregationBuilder fieldAgg = AggregationBuilders.reverseNested("REVERSE_NESTED_FIELD");
       AggregationBuilder fieldNested = AggregationBuilders.nested(field, pathToNestedField);

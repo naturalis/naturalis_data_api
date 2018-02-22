@@ -6,7 +6,7 @@
 		</Console>
 	</Appenders>
 	<Loggers>
-		<Logger name="nl.naturalis" level="INFO" additivity="false">
+		<Logger name="nl.naturalis" level="DEBUG" additivity="false">
 			<AppenderRef ref="CONSOLE" />
 		</Logger>
 		<Root level="ERROR">

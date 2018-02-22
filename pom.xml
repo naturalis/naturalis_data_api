@@ -25,6 +25,12 @@
 
 	<properties>
 
+		<!--
+			Both dao and etl module unit tests must be started with -Dnba.v2.conf.dir,
+			pointing to a directory containg nba.properties and log4j2.xml. We use
+			src/test/resources/conf in the dao module to cater for both dao unit tests
+			and etl unit tests.
+		-->
 		<test.conf.dir>${project.basedir}/../nl.naturalis.nba.dao/target/test-classes/conf</test.conf.dir>
 
 

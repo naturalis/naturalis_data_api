@@ -179,16 +179,25 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
 	/**
 	 * <p>
 	 * Returns the unique values of the specified field. The result is returned
-	 * as a {@link Map} with the each key specifying one of the unique values
-	 * and the value specifying a document count (the number of documents for
-	 * which the specified field has that value). Note that if the specified
-	 * field is an {@link Collection} or array, the sum of the document counts
-	 * may add up to more than the total number of documents in the index. You
-	 * may specify {@code null} for the {@code querySpec} argument if you simply
-	 * want a total document count. Otherwise you should only set the query
-	 * conditions and (possibly) the {@link LogicalOperator logical operator} on
-	 * the {@code QuerySpec}. Setting anything else on the {@code QuerySpec} has
-	 * no effect.
+	 * as a {@link Map} with each key specifying one of the unique values and 
+	 * its value the document count (the number of documents for which the 
+	 * specified field has that value).<p>
+	 * 
+   * <p>You may specify {@code null} for the {@code querySpec} argument if you 
+   * simply want a total document count. Otherwise you should only set the query
+   * conditions and (possibly) the {@link LogicalOperator logical operator} on
+   * the {@code QuerySpec}.</p> 
+	 * 
+	 * <p>By default, the result will be sorted descending by document count. You
+	 * can choose to sort the result by the value of the field name by including
+	 * that as sort field in the {@code querySpec}:
+	 * <pre>"sortFields" : [ { "path" : "[<i>forField</i>]", "sortOrder" : "ASC|DESC" } ]</pre>
+	 * </p>
+	 *    
+	 * <p>Note that if the specified field is a {@link Collection} or an array, 
+	 * the sum of the document counts may add up to more than the total number 
+	 * of documents in the index.</p> 
+	 * 
 	 * </p>
 	 * <h5>REST API</h5>
 	 * <p>
@@ -200,9 +209,7 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
 	 * http://api.biodiversitydata.nl/v2/&lt;document-type&gt;/getDistinctValues/{forField}
 	 * </code>
 	 * </p>
-	 * <p>
-	 * For example:
-	 * </p>
+	 * <p>For example:</p>
 	 * <p>
 	 * <code>
 	 * http://api.biodiversitydata.nl/v2/specimen/getDistinctValues/recordBasis<br>

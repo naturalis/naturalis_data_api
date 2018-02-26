@@ -144,7 +144,7 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
   public long countDistinctValues(String field, QuerySpec querySpec) throws InvalidQueryException {
 
     if (logger.isDebugEnabled()) {
-      logger.debug(printCall("countDistinct", field, querySpec));
+      logger.debug(printCall("countDistinctValues", field, querySpec));
     }
 
     SearchRequestBuilder request;
@@ -186,84 +186,6 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
     return card.getValue();
   }
 
-	@Override
-	public Map<String, Long> getDistinctValues(String forField, QuerySpec querySpec)
-			throws InvalidQueryException
-	{
-		if (logger.isDebugEnabled()) {
-			logger.debug(printCall("getDistinctValues", forField, querySpec));
-		}
-		SearchRequestBuilder request;
-		if (querySpec == null) {
-			request = newSearchRequest(dt);
-		}
-		else {
-			request = new QuerySpecTranslator(querySpec, dt).translate();
-		}
-		request.setSize(0);
-    /*
-     * The value of the size parameter from the queryspec is used to set 
-     * the value of the aggregation size!
-     */
-    int aggSize = 10000;
-    if (querySpec.getSize() != null && querySpec.getSize() > 0) {
-      aggSize = querySpec.getSize();
-    }
-    
-		MappingInfo<T> mappingInfo = new MappingInfo<>(dt.getMapping());
-		String nestedPath;
-		try {
-			nestedPath = mappingInfo.getNestedPath(forField);
-		}
-		catch (NoSuchFieldException e) {
-			throw new InvalidQueryException(e.getMessage());
-		}
-		TermsAggregationBuilder termsAggregation = terms("agg0");
-		termsAggregation.field(forField);
-		termsAggregation.size(aggSize);
-		
-		/*
-		 * If the field is included as a sortField in the querySpec, then
-		 * that's used to order the aggregation result by the field terms.
-		 * Otherwise, the aggregation will be ordered by descending
-		 * document count. 
-		 */
-		if (querySpec.getSortFields() != null) {
-		  for (SortField sortField : querySpec.getSortFields()) {
-		    if (sortField.equals(new SortField(forField))) {
-		      if (sortField.getSortOrder() == nl.naturalis.nba.api.SortOrder.ASC) {
-		        termsAggregation.order(Terms.Order.term(true));
-		      }
-		      else {
-		        termsAggregation.order(Terms.Order.term(false));
-		      }
-		    }
-		  }
-		} else {
-		  termsAggregation.order(Terms.Order.count(false));
-		}
-		
-		Terms terms;
-		if (nestedPath == null) {
-			request.addAggregation(termsAggregation);
-			SearchResponse response = executeSearchRequest(request);
-			terms = response.getAggregations().get("agg0");
-		}
-		else {
-			NestedAggregationBuilder nestedAggregation = nested("agg1", nestedPath);
-			nestedAggregation.subAggregation(termsAggregation);
-			request.addAggregation(nestedAggregation);
-			SearchResponse response = executeSearchRequest(request);
-			Nested nested = response.getAggregations().get("agg1");
-			terms = nested.getAggregations().get("agg0");
-		}
-		Map<String, Long> result = new LinkedHashMap<>(terms.getBuckets().size());
-		for (Bucket bucket : terms.getBuckets()) {
-			result.put(bucket.getKeyAsString(), bucket.getDocCount());
-		}
-		return result;
-	}
-	
   public List<Map<String, Object>> countDistinctValuesPerGroup(String group, String field, QuerySpec querySpec)
       throws InvalidQueryException {
 
@@ -434,6 +356,84 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
     return result;
   }
 
+  @Override
+  public Map<String, Long> getDistinctValues(String forField, QuerySpec querySpec)
+      throws InvalidQueryException
+  {
+    if (logger.isDebugEnabled()) {
+      logger.debug(printCall("getDistinctValues", forField, querySpec));
+    }
+    SearchRequestBuilder request;
+    if (querySpec == null) {
+      request = newSearchRequest(dt);
+    }
+    else {
+      request = new QuerySpecTranslator(querySpec, dt).translate();
+    }
+    request.setSize(0);
+    /*
+     * The value of the size parameter from the queryspec is used to set 
+     * the value of the aggregation size!
+     */
+    int aggSize = 10000;
+    if (querySpec.getSize() != null && querySpec.getSize() > 0) {
+      aggSize = querySpec.getSize();
+    }
+    
+    MappingInfo<T> mappingInfo = new MappingInfo<>(dt.getMapping());
+    String nestedPath;
+    try {
+      nestedPath = mappingInfo.getNestedPath(forField);
+    }
+    catch (NoSuchFieldException e) {
+      throw new InvalidQueryException(e.getMessage());
+    }
+    TermsAggregationBuilder termsAggregation = terms("agg0");
+    termsAggregation.field(forField);
+    termsAggregation.size(aggSize);
+    
+    /*
+     * If the field is included as a sortField in the querySpec, then
+     * it's also used to order the aggregation result by the field terms.
+     * Otherwise, the aggregation will be ordered by descending
+     * document count. 
+     */
+    if (querySpec.getSortFields() != null) {
+      for (SortField sortField : querySpec.getSortFields()) {
+        if (sortField.getPath().equals(new SortField(forField).getPath())) {          
+          if (sortField.isAscending()) {
+            termsAggregation.order(Terms.Order.term(true));
+          }
+          else  {
+            termsAggregation.order(Terms.Order.term(false));
+          }
+        }
+      }
+    } else {
+      termsAggregation.order(Terms.Order.count(false));
+    }
+    
+    Terms terms;
+    if (nestedPath == null) {
+      request.addAggregation(termsAggregation);
+      SearchResponse response = executeSearchRequest(request);
+      terms = response.getAggregations().get("agg0");
+    }
+    else {
+      NestedAggregationBuilder nestedAggregation = nested("agg1", nestedPath);
+      nestedAggregation.subAggregation(termsAggregation);
+      request.addAggregation(nestedAggregation);
+      SearchResponse response = executeSearchRequest(request);
+      Nested nested = response.getAggregations().get("agg1");
+      terms = nested.getAggregations().get("agg0");
+    }
+    Map<String, Long> result = new LinkedHashMap<>(terms.getBuckets().size());
+    for (Bucket bucket : terms.getBuckets()) {
+      result.put(bucket.getKeyAsString(), bucket.getDocCount());
+    }
+    return result;
+  }
+  
   public List<Map<String, Object>> getDistinctValuesPerGroup(String group, String field, QuerySpec querySpec)
       throws InvalidQueryException {
 

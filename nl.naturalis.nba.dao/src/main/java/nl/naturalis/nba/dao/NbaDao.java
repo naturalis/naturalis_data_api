@@ -38,6 +38,7 @@ import org.elasticsearch.search.aggregations.bucket.nested.ReverseNestedAggregat
 import org.elasticsearch.search.aggregations.bucket.terms.StringTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
+import org.elasticsearch.search.aggregations.bucket.terms.Terms.Order;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 import org.elasticsearch.search.aggregations.metrics.cardinality.Cardinality;
 import org.elasticsearch.search.aggregations.metrics.cardinality.CardinalityAggregationBuilder;
@@ -58,89 +59,83 @@ import nl.naturalis.nba.dao.util.es.ESUtil;
 
 public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 
-	private static final Logger logger = getLogger(NbaDao.class);
+  private static final Logger logger = getLogger(NbaDao.class);
 
-	private final DocumentType<T> dt;
+  private final DocumentType<T> dt;
 
-	NbaDao(DocumentType<T> dt)
-	{
-		this.dt = dt;
-	}
+  NbaDao(DocumentType<T> dt) {
+    this.dt = dt;
+  }
 
-	@Override
-	public T find(String id)
-	{
-		if (logger.isDebugEnabled()) {
-			logger.debug(printCall("find", id));
-		}
-		GetRequestBuilder request = ESUtil.esClient().prepareGet();
-		String index = dt.getIndexInfo().getName();
-		String type = dt.getName();
-		request.setIndex(index);
-		request.setType(type);
-		request.setId(id);
-		GetResponse response = request.execute().actionGet();
-		if (!response.isExists()) {
-			if (logger.isDebugEnabled()) {
-				logger.debug("{} with id \"{}\" not found", dt, id);
-			}
-			return null;
-		}
-		byte[] json = BytesReference.toBytes(response.getSourceAsBytesRef());
-		T obj = JsonUtil.deserialize(dt.getObjectMapper(), json, dt.getJavaType());
-		obj.setId(id);
-		return obj;
-	}
+  @Override
+  public T find(String id) {
+    if (logger.isDebugEnabled()) {
+      logger.debug(printCall("find", id));
+    }
+    GetRequestBuilder request = ESUtil.esClient().prepareGet();
+    String index = dt.getIndexInfo().getName();
+    String type = dt.getName();
+    request.setIndex(index);
+    request.setType(type);
+    request.setId(id);
+    GetResponse response = request.execute().actionGet();
+    if (!response.isExists()) {
+      if (logger.isDebugEnabled()) {
+        logger.debug("{} with id \"{}\" not found", dt, id);
+      }
+      return null;
+    }
+    byte[] json = BytesReference.toBytes(response.getSourceAsBytesRef());
+    T obj = JsonUtil.deserialize(dt.getObjectMapper(), json, dt.getJavaType());
+    obj.setId(id);
+    return obj;
+  }
 
-	@Override
-	public T[] findByIds(String[] ids)
-	{
-		if (logger.isDebugEnabled()) {
-			logger.debug(printCall("find", ids));
-		}
-		if (ids.length > 1024) {
-			String fmt = "Number of ids to look up exceeds maximum of 1024: %s";
-			String msg = String.format(fmt, ids.length);
-			throw new DaoException(msg);
-		}
-		String type = dt.getName();
-		SearchRequestBuilder request = newSearchRequest(dt);
-		IdsQueryBuilder query = QueryBuilders.idsQuery(type);
-		query.addIds(ids);
-		request.setQuery(query);
-		request.setSize(ids.length);
-		return processSearchRequest(request);
-	}
+  @Override
+  public T[] findByIds(String[] ids) {
+    if (logger.isDebugEnabled()) {
+      logger.debug(printCall("find", ids));
+    }
+    if (ids.length > 1024) {
+      String fmt = "Number of ids to look up exceeds maximum of 1024: %s";
+      String msg = String.format(fmt, ids.length);
+      throw new DaoException(msg);
+    }
+    String type = dt.getName();
+    SearchRequestBuilder request = newSearchRequest(dt);
+    IdsQueryBuilder query = QueryBuilders.idsQuery(type);
+    query.addIds(ids);
+    request.setQuery(query);
+    request.setSize(ids.length);
+    return processSearchRequest(request);
+  }
 
-	@Override
-	public QueryResult<T> query(QuerySpec querySpec) throws InvalidQueryException
-	{
-		if (logger.isDebugEnabled()) {
-			logger.debug(printCall("query", querySpec));
-		}
-		QuerySpecTranslator translator = new QuerySpecTranslator(querySpec, dt);
-		return createSearchResult(translator.translate());
-	}
+  @Override
+  public QueryResult<T> query(QuerySpec querySpec) throws InvalidQueryException {
+    if (logger.isDebugEnabled()) {
+      logger.debug(printCall("query", querySpec));
+    }
+    QuerySpecTranslator translator = new QuerySpecTranslator(querySpec, dt);
+    return createSearchResult(translator.translate());
+  }
 
-	@Override
-	public long count(QuerySpec querySpec) throws InvalidQueryException
-	{
-		if (logger.isDebugEnabled()) {
-			logger.debug(printCall("count", querySpec));
-		}
-		SearchRequestBuilder request;
-		if (querySpec == null) {
-			request = newSearchRequest(dt);
-		}
-		else {
-			QuerySpecTranslator translator = new QuerySpecTranslator(querySpec, dt);
-			request = translator.translate();
-		}
-		request.setSize(0);
-		SearchResponse response = executeSearchRequest(request);
-		return response.getHits().totalHits();
-	}
-	
+  @Override
+  public long count(QuerySpec querySpec) throws InvalidQueryException {
+    if (logger.isDebugEnabled()) {
+      logger.debug(printCall("count", querySpec));
+    }
+    SearchRequestBuilder request;
+    if (querySpec == null) {
+      request = newSearchRequest(dt);
+    } else {
+      QuerySpecTranslator translator = new QuerySpecTranslator(querySpec, dt);
+      request = translator.translate();
+    }
+    request.setSize(0);
+    SearchResponse response = executeSearchRequest(request);
+    return response.getHits().totalHits();
+  }
+
   public long countDistinctValues(String field, QuerySpec querySpec) throws InvalidQueryException {
 
     if (logger.isDebugEnabled()) {
@@ -173,7 +168,7 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
       AggregationBuilder agg = AggregationBuilders.cardinality("CARDINALITY").field(field);
       request.addAggregation(agg);
     }
-    
+
     request.setSize(0);
     SearchResponse response = executeSearchRequest(request);
 
@@ -186,11 +181,11 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
     return card.getValue();
   }
 
-  public List<Map<String, Object>> countDistinctValuesPerGroup(String group, String field, QuerySpec querySpec)
-      throws InvalidQueryException {
+  public List<Map<String, Object>> countDistinctValuesPerGroup(String field, String group,
+      QuerySpec querySpec) throws InvalidQueryException {
 
     if (logger.isDebugEnabled()) {
-      logger.debug(printCall("countDistinctValuesPerGroup", group, field, querySpec));
+      logger.debug(printCall("countDistinctValuesPerGroup", field, group, querySpec));
     }
 
     SearchRequestBuilder request;
@@ -211,7 +206,7 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
 
     // Map group and field to query path
     List<Map<String, Object>> result = new LinkedList<>();
-    
+
     MappingInfo<T> mappingInfo = new MappingInfo<>(dt.getMapping());
 
     String pathToNestedField;
@@ -232,12 +227,14 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
     if (pathToNestedGroup == null && pathToNestedField == null) {
       // Group + Field
       // http://localhost:8080/v2/specimen/countDistinctValuesPerGroup/collectionType/recordBasis
-      
+
       // Ordering of bucket aggregations:
       // https://www.elastic.co/guide/en/elasticsearch/client/java-api/5.1/_bucket_aggregations.html#_order
 
-      AggregationBuilder groupAgg = AggregationBuilders.terms("GROUP").field(group).size(aggSize).order(Terms.Order.term(true));
-      CardinalityAggregationBuilder cardinalityField = AggregationBuilders.cardinality("DISTINCT_VALUES").field(field);
+      AggregationBuilder groupAgg = AggregationBuilders.terms("GROUP").field(group).size(aggSize)
+          .order(Terms.Order.term(true));
+      CardinalityAggregationBuilder cardinalityField =
+          AggregationBuilders.cardinality("DISTINCT_VALUES").field(field);
       groupAgg.subAggregation(cardinalityField);
 
       request.addAggregation(groupAgg);
@@ -259,7 +256,8 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
       // Group + Nested Field
       // http://localhost:8080/v2/specimen/countDistinctValuesPerGroup/collectionType/gatheringEvent.gatheringPersons.fullName
 
-      AggregationBuilder groupAgg = AggregationBuilders.terms("GROUP").field(group).size(aggSize).order(Terms.Order.term(true));
+      AggregationBuilder groupAgg = AggregationBuilders.terms("GROUP").field(group).size(aggSize)
+          .order(Terms.Order.term(true));
       AggregationBuilder fieldAgg = AggregationBuilders.nested("FIELD", pathToNestedField);
       CardinalityAggregationBuilder cardinalityField =
           AggregationBuilders.cardinality("DISTINCT_VALUES").field(field);
@@ -289,7 +287,8 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
       // http://localhost:8080/v2/specimen/countDistinctValuesPerGroup/identifications.defaultClassification.className/collectionType
 
       AggregationBuilder groupAgg = AggregationBuilders.nested("NESTED_GROUP", pathToNestedGroup);
-      AggregationBuilder groupTerm = AggregationBuilders.terms("GROUP").field(group).size(aggSize).order(Terms.Order.term(true));
+      AggregationBuilder groupTerm = AggregationBuilders.terms("GROUP").field(group).size(aggSize)
+          .order(Terms.Order.term(true));
 
       AggregationBuilder fieldAgg = AggregationBuilders.reverseNested("REVERSE_NESTED_FIELD");
       CardinalityAggregationBuilder cardinalityField =
@@ -321,7 +320,8 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
       // http://localhost:8080/v2/specimen/countDistinctValuesPerGroup/identifications.defaultClassification.className/gatheringEvent.gatheringPersons.fullName
 
       AggregationBuilder groupAgg = AggregationBuilders.nested("NESTED_GROUP", pathToNestedGroup);
-      AggregationBuilder groupTerm = AggregationBuilders.terms("GROUP").field(group).size(aggSize).order(Terms.Order.term(true));
+      AggregationBuilder groupTerm = AggregationBuilders.terms("GROUP").field(group).size(aggSize)
+          .order(Terms.Order.term(true));
 
       AggregationBuilder fieldAgg = AggregationBuilders.reverseNested("REVERSE_NESTED_FIELD");
       AggregationBuilder fieldNested = AggregationBuilders.nested(field, pathToNestedField);
@@ -358,53 +358,48 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
 
   @Override
   public Map<String, Long> getDistinctValues(String forField, QuerySpec querySpec)
-      throws InvalidQueryException
-  {
+      throws InvalidQueryException {
     if (logger.isDebugEnabled()) {
       logger.debug(printCall("getDistinctValues", forField, querySpec));
     }
     SearchRequestBuilder request;
     if (querySpec == null) {
       request = newSearchRequest(dt);
-    }
-    else {
+    } else {
       request = new QuerySpecTranslator(querySpec, dt).translate();
     }
     request.setSize(0);
     /*
-     * The value of the size parameter from the queryspec is used to set 
-     * the value of the aggregation size!
+     * The value of the size parameter from the queryspec is used to set the value of the
+     * aggregation size!
      */
     int aggSize = 10000;
     if (querySpec.getSize() != null && querySpec.getSize() > 0) {
       aggSize = querySpec.getSize();
     }
-    
+
     MappingInfo<T> mappingInfo = new MappingInfo<>(dt.getMapping());
     String nestedPath;
     try {
       nestedPath = mappingInfo.getNestedPath(forField);
-    }
-    catch (NoSuchFieldException e) {
+    } catch (NoSuchFieldException e) {
       throw new InvalidQueryException(e.getMessage());
     }
     TermsAggregationBuilder termsAggregation = terms("agg0");
     termsAggregation.field(forField);
     termsAggregation.size(aggSize);
-    
+
     /*
-     * If the field is included as a sortField in the querySpec, then
-     * it's also used to order the aggregation result by the field terms.
-     * Otherwise, the aggregation will be ordered by descending
-     * document count. 
+     * If the field is included as a sortField in the querySpec, then it's also used to order the
+     * aggregation result by the field terms. Otherwise, the aggregation will be ordered by
+     * descending document count.
      */
     if (querySpec.getSortFields() != null) {
       for (SortField sortField : querySpec.getSortFields()) {
-        if (sortField.getPath().equals(new SortField(forField).getPath())) {          
+        if (sortField.getPath().equals(new SortField(forField).getPath())) {
           if (sortField.isAscending()) {
             termsAggregation.order(Terms.Order.term(true));
-          }
-          else  {
+          } else {
             termsAggregation.order(Terms.Order.term(false));
           }
         }
@@ -412,14 +407,13 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
     } else {
       termsAggregation.order(Terms.Order.count(false));
     }
-    
+
     Terms terms;
     if (nestedPath == null) {
       request.addAggregation(termsAggregation);
       SearchResponse response = executeSearchRequest(request);
       terms = response.getAggregations().get("agg0");
-    }
-    else {
+    } else {
       NestedAggregationBuilder nestedAggregation = nested("agg1", nestedPath);
       nestedAggregation.subAggregation(termsAggregation);
       request.addAggregation(nestedAggregation);
@@ -433,12 +427,12 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
     }
     return result;
   }
-  
-  public List<Map<String, Object>> getDistinctValuesPerGroup(String group, String field, QuerySpec querySpec)
-      throws InvalidQueryException {
+
+  public List<Map<String, Object>> getDistinctValuesPerGroup(String forField, String forGroup,
+      QuerySpec querySpec) throws InvalidQueryException {
 
     if (logger.isDebugEnabled()) {
-      logger.debug(printCall("getDistinctValuesPerGroup", group, field, querySpec));
+      logger.debug(printCall("getDistinctValuesPerGroup", forField, forGroup, querySpec));
     }
 
     SearchRequestBuilder request;
@@ -464,16 +458,42 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
     MappingInfo<T> mappingInfo = new MappingInfo<>(dt.getMapping());
     String pathToNestedGroup;
     try {
-      pathToNestedGroup = mappingInfo.getNestedPath(group);
+      pathToNestedGroup = mappingInfo.getNestedPath(forGroup);
     } catch (NoSuchFieldException e) {
       throw new InvalidQueryException(e.getMessage());
     }
 
     String pathToNestedField;
     try {
-      pathToNestedField = mappingInfo.getNestedPath(field);
+      pathToNestedField = mappingInfo.getNestedPath(forField);
     } catch (NoSuchFieldException e) {
       throw new InvalidQueryException(e.getMessage());
+    }
+
+    /*
+     * If the field or group is included as a sortField in the querySpec, then it's also used to
+     * order the aggregation result by the field or group terms. Otherwise, the aggregation will be
+     * ordered by descending document count.
+     */
+    Order fieldOrder = Terms.Order.count(false);
+    Order groupOrder = Terms.Order.count(false);
+    if (querySpec.getSortFields() != null) {
+      for (SortField sortField : querySpec.getSortFields()) {
+        if (sortField.getPath().equals(new SortField(forField).getPath())) {
+          if (sortField.isAscending()) {
+            fieldOrder = Terms.Order.term(true);
+          } else {
+            fieldOrder = Terms.Order.term(false);
+          }
+        }
+        if (sortField.getPath().equals(new SortField(forGroup).getPath())) {
+          if (sortField.isAscending()) {
+            groupOrder = Terms.Order.term(true);
+          } else {
+            groupOrder = Terms.Order.term(false);
+          }
+        }
+      }
     }
 
     // Based on the query mapping, use the correct aggregation builder
@@ -482,8 +502,11 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
       // Group + Field
       // http://localhost:8080/v2/specimen/getDistinctValuesPerGroup/sourceSystem.code/collectionType
 
-      AggregationBuilder groupAgg = AggregationBuilders.terms("GROUP").field(group).size(aggSize);
-      AggregationBuilder fieldAgg = AggregationBuilders.terms("FIELD").field(field).size(aggSize);
+      AggregationBuilder groupAgg =
+          AggregationBuilders.terms("GROUP").field(forGroup).size(aggSize).order(groupOrder);
+      AggregationBuilder fieldAgg =
+          AggregationBuilders.terms("FIELD").field(forField).size(aggSize).order(fieldOrder);
+
       groupAgg.subAggregation(fieldAgg);
 
       request.addAggregation(groupAgg);
@@ -500,7 +523,7 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
 
         for (Bucket innerBucket : innerBuckets) {
           Map<String, Object> aggregate = new LinkedHashMap<>(2);
-          aggregate.put(field, innerBucket.getKeyAsString());
+          aggregate.put(forField, innerBucket.getKeyAsString());
           aggregate.put("count", innerBucket.getDocCount());
           if (innerBucket.getDocCount() > 0) {
             fieldTermsList.add(aggregate);
@@ -508,7 +531,7 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
         }
 
         Map<String, Object> hashMap = new LinkedHashMap<>(2);
-        hashMap.put(group, bucket.getKeyAsString());
+        hashMap.put(forGroup, bucket.getKeyAsString());
         hashMap.put("count", bucket.getDocCount());
         if (fieldTermsList.size() > 0) {
           hashMap.put("values", fieldTermsList);
@@ -519,10 +542,12 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
       // Group + Nested Field
       // http://localhost:8080/v2/specimen/getDistinctValuesPerGroup/sourceSystem.code/identifications.taxonRank
 
-      AggregationBuilder groupAgg = AggregationBuilders.terms("GROUP").field(group).size(aggSize);
+      AggregationBuilder groupAgg =
+          AggregationBuilders.terms("GROUP").field(forGroup).size(aggSize).order(groupOrder);
       AggregationBuilder nestedFieldAgg =
           AggregationBuilders.nested("NESTED_FIELD", pathToNestedField);
-      AggregationBuilder fieldAgg = AggregationBuilders.terms("FIELD").field(field).size(aggSize);
+      AggregationBuilder fieldAgg =
+          AggregationBuilders.terms("FIELD").field(forField).size(aggSize).order(fieldOrder);
       nestedFieldAgg.subAggregation(fieldAgg);
       groupAgg.subAggregation(nestedFieldAgg);
 
@@ -541,7 +566,7 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
 
         for (Bucket innerBucket : innerBuckets) {
           Map<String, Object> aggregate = new LinkedHashMap<>(2);
-          aggregate.put(field, innerBucket.getKeyAsString());
+          aggregate.put(forField, innerBucket.getKeyAsString());
           aggregate.put("count", innerBucket.getDocCount());
           if (innerBucket.getDocCount() > 0) {
             fieldTermsList.add(aggregate);
@@ -549,7 +574,7 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
         }
 
         Map<String, Object> hashMap = new LinkedHashMap<>(2);
-        hashMap.put(group, bucket.getKeyAsString());
+        hashMap.put(forGroup, bucket.getKeyAsString());
         hashMap.put("count", bucket.getDocCount());
         if (fieldTermsList.size() > 0) {
           hashMap.put("values", fieldTermsList);
@@ -562,8 +587,10 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
 
       AggregationBuilder nestedGroupAgg =
           AggregationBuilders.nested("NESTED_GROUP", pathToNestedGroup);
-      AggregationBuilder groupAgg = AggregationBuilders.terms("GROUP").field(group).size(aggSize);
-      AggregationBuilder fieldAgg = AggregationBuilders.terms("FIELD").field(field).size(aggSize);
+      AggregationBuilder groupAgg =
+          AggregationBuilders.terms("GROUP").field(forGroup).size(aggSize).order(groupOrder);
+      AggregationBuilder fieldAgg =
+          AggregationBuilders.terms("FIELD").field(forField).size(aggSize).order(fieldOrder);
       ReverseNestedAggregationBuilder revNestedFieldAgg =
           AggregationBuilders.reverseNested("REVERSE_NESTED_FIELD");
       revNestedFieldAgg.subAggregation(fieldAgg);
@@ -586,7 +613,7 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
 
         for (Bucket innerBucket : innerBuckets) {
           Map<String, Object> aggregate = new LinkedHashMap<>(2);
-          aggregate.put(field, innerBucket.getKeyAsString());
+          aggregate.put(forField, innerBucket.getKeyAsString());
           aggregate.put("count", innerBucket.getDocCount());
           if (innerBucket.getDocCount() > 0) {
             fieldTermsList.add(aggregate);
@@ -594,7 +621,7 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
         }
 
         Map<String, Object> hashMap = new LinkedHashMap<>(2);
-        hashMap.put(group, bucket.getKeyAsString());
+        hashMap.put(forGroup, bucket.getKeyAsString());
         hashMap.put("count", bucket.getDocCount());
         if (fieldTermsList.size() > 0) {
           hashMap.put("values", fieldTermsList);
@@ -607,10 +634,12 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
 
       AggregationBuilder nestedGroupAgg =
           AggregationBuilders.nested("NESTED_GROUP", pathToNestedGroup);
-      AggregationBuilder groupAgg = AggregationBuilders.terms("GROUP").field(group).size(aggSize);
+      AggregationBuilder groupAgg =
+          AggregationBuilders.terms("GROUP").field(forGroup).size(aggSize).order(groupOrder);
       AggregationBuilder nestedFieldAgg =
           AggregationBuilders.nested("NESTED_FIELD", pathToNestedField);
-      AggregationBuilder fieldAgg = AggregationBuilders.terms("FIELD").field(field).size(aggSize);
+      AggregationBuilder fieldAgg =
+          AggregationBuilders.terms("FIELD").field(forField).size(aggSize).order(fieldOrder);
       ReverseNestedAggregationBuilder revNestedFieldAgg =
           AggregationBuilders.reverseNested("REVERSE_NESTED_FIELD");
       nestedFieldAgg.subAggregation(fieldAgg);
@@ -636,7 +665,7 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
 
         for (Bucket innerBucket : innerBuckets) {
           Map<String, Object> aggregate = new LinkedHashMap<>(2);
-          aggregate.put(field, innerBucket.getKeyAsString());
+          aggregate.put(forField, innerBucket.getKeyAsString());
           aggregate.put("count", innerBucket.getDocCount());
           if (innerBucket.getDocCount() > 0) {
             fieldTermsList.add(aggregate);
@@ -644,7 +673,7 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
         }
 
         Map<String, Object> hashMap = new LinkedHashMap<>(2);
-        hashMap.put(group, bucket.getKeyAsString());
+        hashMap.put(forGroup, bucket.getKeyAsString());
         hashMap.put("count", bucket.getDocCount());
         if (fieldTermsList.size() > 0) {
           hashMap.put("values", fieldTermsList);
@@ -656,83 +685,76 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
     return result;
   }
 
+  public String save(T apiObject, boolean immediate) {
+    String id = apiObject.getId();
+    String index = dt.getIndexInfo().getName();
+    String type = dt.getName();
+    if (logger.isDebugEnabled()) {
+      String pattern = "New save request (index={};type={};id={})";
+      logger.debug(pattern, index, type, id);
+    }
+    IndexRequestBuilder request = ESUtil.esClient().prepareIndex(index, type, id);
+    byte[] source = JsonUtil.serialize(apiObject);
+    request.setSource(source);
+    IndexResponse response = request.execute().actionGet();
+    if (immediate) {
+      IndicesAdminClient iac = ESUtil.esClient().admin().indices();
+      RefreshRequestBuilder rrb = iac.prepareRefresh(index);
+      rrb.execute().actionGet();
+    }
+    apiObject.setId(response.getId());
+    return response.getId();
+  }
 
-	public String save(T apiObject, boolean immediate)
-	{
-		String id = apiObject.getId();
-		String index = dt.getIndexInfo().getName();
-		String type = dt.getName();
-		if (logger.isDebugEnabled()) {
-			String pattern = "New save request (index={};type={};id={})";
-			logger.debug(pattern, index, type, id);
-		}
-		IndexRequestBuilder request = ESUtil.esClient().prepareIndex(index, type, id);
-		byte[] source = JsonUtil.serialize(apiObject);
-		request.setSource(source);
-		IndexResponse response = request.execute().actionGet();
-		if (immediate) {
-			IndicesAdminClient iac = ESUtil.esClient().admin().indices();
-			RefreshRequestBuilder rrb = iac.prepareRefresh(index);
-			rrb.execute().actionGet();
-		}
-		apiObject.setId(response.getId());
-		return response.getId();
-	}
+  public boolean delete(String id, boolean immediate) {
+    String index = dt.getIndexInfo().getName();
+    String type = dt.getName();
+    DeleteRequestBuilder request = ESUtil.esClient().prepareDelete(index, type, id);
+    DeleteResponse response = request.execute().actionGet();
+    if (immediate) {
+      IndicesAdminClient iac = ESUtil.esClient().admin().indices();
+      RefreshRequestBuilder rrb = iac.prepareRefresh(index);
+      rrb.execute().actionGet();
+    }
+    return response.getResult() == Result.DELETED;
+  }
 
-	public boolean delete(String id, boolean immediate)
-	{
-		String index = dt.getIndexInfo().getName();
-		String type = dt.getName();
-		DeleteRequestBuilder request = ESUtil.esClient().prepareDelete(index, type, id);
-		DeleteResponse response = request.execute().actionGet();
-		if (immediate) {
-			IndicesAdminClient iac = ESUtil.esClient().admin().indices();
-			RefreshRequestBuilder rrb = iac.prepareRefresh(index);
-			rrb.execute().actionGet();
-		}
-		return response.getResult() == Result.DELETED;
-	}
+  abstract T[] createDocumentObjectArray(int length);
 
-	abstract T[] createDocumentObjectArray(int length);
+  T[] processSearchRequest(SearchRequestBuilder request) {
+    SearchResponse response = executeSearchRequest(request);
+    return processQueryResponse(response);
+  }
 
-	T[] processSearchRequest(SearchRequestBuilder request)
-	{
-		SearchResponse response = executeSearchRequest(request);
-		return processQueryResponse(response);
-	}
+  private QueryResult<T> createSearchResult(SearchRequestBuilder request) {
+    SearchResponse response = executeSearchRequest(request);
+    QueryResult<T> result = new QueryResult<>();
+    result.setTotalSize(response.getHits().totalHits());
+    result.setResultSet(createItems(response));
+    return result;
+  }
 
-	private QueryResult<T> createSearchResult(SearchRequestBuilder request)
-	{
-		SearchResponse response = executeSearchRequest(request);
-		QueryResult<T> result = new QueryResult<>();
-		result.setTotalSize(response.getHits().totalHits());
-		result.setResultSet(createItems(response));
-		return result;
-	}
+  private T[] processQueryResponse(SearchResponse response) {
+    SearchHit[] hits = response.getHits().getHits();
+    T[] documentObjects = createDocumentObjectArray(hits.length);
+    for (int i = 0; i < hits.length; ++i) {
+      documentObjects[i] = toDocumentObject(hits[i], dt);
+    }
+    return documentObjects;
+  }
 
-	private T[] processQueryResponse(SearchResponse response)
-	{
-		SearchHit[] hits = response.getHits().getHits();
-		T[] documentObjects = createDocumentObjectArray(hits.length);
-		for (int i = 0; i < hits.length; ++i) {
-			documentObjects[i] = toDocumentObject(hits[i], dt);
-		}
-		return documentObjects;
-	}
-
-	private List<QueryResultItem<T>> createItems(SearchResponse response)
-	{
-		if (logger.isDebugEnabled()) {
-			String type = dt.getJavaType().getSimpleName();
-			logger.debug("Converting search hits to {} instances", type);
-		}
-		SearchHit[] hits = response.getHits().getHits();
-		List<QueryResultItem<T>> items = new ArrayList<>(hits.length);
-		for (SearchHit hit : hits) {
-			T obj = toDocumentObject(hit, dt);
-			items.add(new QueryResultItem<>(obj, hit.getScore()));
-		}
-		return items;
-	}
+  private List<QueryResultItem<T>> createItems(SearchResponse response) {
+    if (logger.isDebugEnabled()) {
+      String type = dt.getJavaType().getSimpleName();
+      logger.debug("Converting search hits to {} instances", type);
+    }
+    SearchHit[] hits = response.getHits().getHits();
+    List<QueryResultItem<T>> items = new ArrayList<>(hits.length);
+    for (SearchHit hit : hits) {
+      T obj = toDocumentObject(hit, dt);
+      items.add(new QueryResultItem<>(obj, hit.getScore()));
+    }
+    return items;
+  }
 
 }

@@ -362,19 +362,21 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
     if (logger.isDebugEnabled()) {
       logger.debug(printCall("getDistinctValues", forField, querySpec));
     }
+
     SearchRequestBuilder request;
     if (querySpec == null) {
-      request = newSearchRequest(dt);
-    } else {
-      request = new QuerySpecTranslator(querySpec, dt).translate();
+      querySpec = new QuerySpec();
     }
+    QuerySpecTranslator translator = new QuerySpecTranslator(querySpec, dt);
+    request = translator.translate();
     request.setSize(0);
+
     /*
      * The value of the size parameter from the queryspec is used to set the value of the
      * aggregation size!
      */
     int aggSize = 10000;
-    if (querySpec.getSize() != null && querySpec.getSize() > 0) {
+    if (querySpec != null && querySpec.getSize() != null && querySpec.getSize() > 0) {
       aggSize = querySpec.getSize();
     }
 

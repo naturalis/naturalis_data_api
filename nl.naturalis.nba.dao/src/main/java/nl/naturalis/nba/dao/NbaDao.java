@@ -224,18 +224,16 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
     }
 
     // Based on the query mapping, use the correct aggregation builder
-    if (pathToNestedGroup == null && pathToNestedField == null) {
-      // Group + Field
+    if (pathToNestedField == null && pathToNestedGroup == null) {
+      // Field + Group
       // http://localhost:8080/v2/specimen/countDistinctValuesPerGroup/collectionType/recordBasis
 
-      // Ordering of bucket aggregations:
-      // https://www.elastic.co/guide/en/elasticsearch/client/java-api/5.1/_bucket_aggregations.html#_order
-
-      AggregationBuilder groupAgg = AggregationBuilders.terms("GROUP").field(group).size(aggSize)
-          .order(Terms.Order.term(true));
-      CardinalityAggregationBuilder cardinalityField =
-          AggregationBuilders.cardinality("DISTINCT_VALUES").field(field);
-      groupAgg.subAggregation(cardinalityField);
+      AggregationBuilder fieldAgg = AggregationBuilders.terms("FIELD").field(field);
+      CardinalityAggregationBuilder cardinalityField = AggregationBuilders.cardinality("DISTINCT_VALUES").field(field);
+      fieldAgg.subAggregation(cardinalityField);
+      
+      AggregationBuilder groupAgg = AggregationBuilders.terms("GROUP").field(group).size(aggSize).order(Terms.Order.term(true));
+      groupAgg.subAggregation(fieldAgg);
 
       request.addAggregation(groupAgg);
       SearchResponse response = executeSearchRequest(request);
@@ -252,17 +250,15 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
         hashMap.put(field, cardinality.getValue());
         result.add(hashMap);
       }
-    } else if (pathToNestedGroup == null && pathToNestedField != null) {
-      // Group + Nested Field
+    } else if (pathToNestedField != null && pathToNestedGroup == null) {
+      // Nested Field + Group + 
       // http://localhost:8080/v2/specimen/countDistinctValuesPerGroup/collectionType/gatheringEvent.gatheringPersons.fullName
 
-      AggregationBuilder groupAgg = AggregationBuilders.terms("GROUP").field(group).size(aggSize)
-          .order(Terms.Order.term(true));
       AggregationBuilder fieldAgg = AggregationBuilders.nested("FIELD", pathToNestedField);
-      CardinalityAggregationBuilder cardinalityField =
-          AggregationBuilders.cardinality("DISTINCT_VALUES").field(field);
-
+      CardinalityAggregationBuilder cardinalityField = AggregationBuilders.cardinality("DISTINCT_VALUES").field(field);
       fieldAgg.subAggregation(cardinalityField);
+
+      AggregationBuilder groupAgg = AggregationBuilders.terms("GROUP").field(group).size(aggSize).order(Terms.Order.term(true));
       groupAgg.subAggregation(fieldAgg);
 
       request.addAggregation(groupAgg);
@@ -282,19 +278,16 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
         result.add(hashMap);
       }
 
-    } else if (pathToNestedGroup != null && pathToNestedField == null) {
-      // Nested Group + Field
+    } else if (pathToNestedField == null && pathToNestedGroup != null) {
+      // Field + Nested Group
       // http://localhost:8080/v2/specimen/countDistinctValuesPerGroup/identifications.defaultClassification.className/collectionType
 
-      AggregationBuilder groupAgg = AggregationBuilders.nested("NESTED_GROUP", pathToNestedGroup);
-      AggregationBuilder groupTerm = AggregationBuilders.terms("GROUP").field(group).size(aggSize)
-          .order(Terms.Order.term(true));
-
       AggregationBuilder fieldAgg = AggregationBuilders.reverseNested("REVERSE_NESTED_FIELD");
-      CardinalityAggregationBuilder cardinalityField =
-          AggregationBuilders.cardinality("DISTINCT_VALUES").field(field);
-
+      CardinalityAggregationBuilder cardinalityField = AggregationBuilders.cardinality("DISTINCT_VALUES").field(field);
       fieldAgg.subAggregation(cardinalityField);
+
+      AggregationBuilder groupAgg = AggregationBuilders.nested("NESTED_GROUP", pathToNestedGroup);
+      AggregationBuilder groupTerm = AggregationBuilders.terms("GROUP").field(group).size(aggSize).order(Terms.Order.term(true));
       groupTerm.subAggregation(fieldAgg);
       groupAgg.subAggregation(groupTerm);
 
@@ -316,20 +309,17 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
         result.add(hashMap);
       }
     } else {
-      // Nested Group + (Reverse) Nested Field
+      // (Reverse) Nested Field + Nested Group
       // http://localhost:8080/v2/specimen/countDistinctValuesPerGroup/identifications.defaultClassification.className/gatheringEvent.gatheringPersons.fullName
-
-      AggregationBuilder groupAgg = AggregationBuilders.nested("NESTED_GROUP", pathToNestedGroup);
-      AggregationBuilder groupTerm = AggregationBuilders.terms("GROUP").field(group).size(aggSize)
-          .order(Terms.Order.term(true));
 
       AggregationBuilder fieldAgg = AggregationBuilders.reverseNested("REVERSE_NESTED_FIELD");
       AggregationBuilder fieldNested = AggregationBuilders.nested(field, pathToNestedField);
-      CardinalityAggregationBuilder cardinalityField =
-          AggregationBuilders.cardinality("DISTINCT_VALUES").field(field);
-
+      CardinalityAggregationBuilder cardinalityField = AggregationBuilders.cardinality("DISTINCT_VALUES").field(field);
       fieldNested.subAggregation(cardinalityField);
       fieldAgg.subAggregation(fieldNested);
+
+      AggregationBuilder groupAgg = AggregationBuilders.nested("NESTED_GROUP", pathToNestedGroup);
+      AggregationBuilder groupTerm = AggregationBuilders.terms("GROUP").field(group).size(aggSize).order(Terms.Order.term(true));
       groupTerm.subAggregation(fieldAgg);
       groupAgg.subAggregation(groupTerm);
 
@@ -455,9 +445,10 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
     request.setSize(0);
 
     List<Map<String, Object>> result = new LinkedList<>();
-
+    
     // Map group and field to query path
     MappingInfo<T> mappingInfo = new MappingInfo<>(dt.getMapping());
+    
     String pathToNestedGroup;
     try {
       pathToNestedGroup = mappingInfo.getNestedPath(forGroup);
@@ -500,15 +491,13 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
 
     // Based on the query mapping, use the correct aggregation builder
 
-    if (pathToNestedGroup == null && pathToNestedField == null) {
-      // Group + Field
+    if (pathToNestedField == null && pathToNestedGroup == null) {
+      // Field + Group
       // http://localhost:8080/v2/specimen/getDistinctValuesPerGroup/sourceSystem.code/collectionType
 
-      AggregationBuilder groupAgg =
-          AggregationBuilders.terms("GROUP").field(forGroup).size(aggSize).order(groupOrder);
-      AggregationBuilder fieldAgg =
-          AggregationBuilders.terms("FIELD").field(forField).size(aggSize).order(fieldOrder);
-
+      AggregationBuilder fieldAgg = AggregationBuilders.terms("FIELD").field(forField).size(aggSize).order(fieldOrder);
+      
+      AggregationBuilder groupAgg = AggregationBuilders.terms("GROUP").field(forGroup).size(aggSize).order(groupOrder);
       groupAgg.subAggregation(fieldAgg);
 
       request.addAggregation(groupAgg);
@@ -540,17 +529,15 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
         }
         result.add(hashMap);
       }
-    } else if (pathToNestedGroup == null && pathToNestedField != null) {
-      // Group + Nested Field
+    } else if (pathToNestedField != null && pathToNestedGroup == null) {
+      // Nested Field + Group
       // http://localhost:8080/v2/specimen/getDistinctValuesPerGroup/sourceSystem.code/identifications.taxonRank
 
-      AggregationBuilder groupAgg =
-          AggregationBuilders.terms("GROUP").field(forGroup).size(aggSize).order(groupOrder);
-      AggregationBuilder nestedFieldAgg =
-          AggregationBuilders.nested("NESTED_FIELD", pathToNestedField);
-      AggregationBuilder fieldAgg =
-          AggregationBuilders.terms("FIELD").field(forField).size(aggSize).order(fieldOrder);
+      AggregationBuilder fieldAgg = AggregationBuilders.terms("FIELD").field(forField).size(aggSize).order(fieldOrder);
+      AggregationBuilder nestedFieldAgg = AggregationBuilders.nested("NESTED_FIELD", pathToNestedField);
       nestedFieldAgg.subAggregation(fieldAgg);
+
+      AggregationBuilder groupAgg = AggregationBuilders.terms("GROUP").field(forGroup).size(aggSize).order(groupOrder);
       groupAgg.subAggregation(nestedFieldAgg);
 
       request.addAggregation(groupAgg);
@@ -583,19 +570,16 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
         }
         result.add(hashMap);
       }
-    } else if (pathToNestedGroup != null && pathToNestedField == null) {
-      // Nested group + Reverse nested field
+    } else if (pathToNestedField == null && pathToNestedGroup != null) {
+      // Reverse nested field + Nested group
       // http://localhost:8080/v2/specimen/getDistinctValuesPerGroup/identifications.taxonRank/sourceSystem.code
 
-      AggregationBuilder nestedGroupAgg =
-          AggregationBuilders.nested("NESTED_GROUP", pathToNestedGroup);
-      AggregationBuilder groupAgg =
-          AggregationBuilders.terms("GROUP").field(forGroup).size(aggSize).order(groupOrder);
-      AggregationBuilder fieldAgg =
-          AggregationBuilders.terms("FIELD").field(forField).size(aggSize).order(fieldOrder);
-      ReverseNestedAggregationBuilder revNestedFieldAgg =
-          AggregationBuilders.reverseNested("REVERSE_NESTED_FIELD");
+      AggregationBuilder fieldAgg = AggregationBuilders.terms("FIELD").field(forField).size(aggSize).order(fieldOrder);
+      ReverseNestedAggregationBuilder revNestedFieldAgg = AggregationBuilders.reverseNested("REVERSE_NESTED_FIELD");
       revNestedFieldAgg.subAggregation(fieldAgg);
+
+      AggregationBuilder nestedGroupAgg = AggregationBuilders.nested("NESTED_GROUP", pathToNestedGroup);
+      AggregationBuilder groupAgg = AggregationBuilders.terms("GROUP").field(forGroup).size(aggSize).order(groupOrder);
       groupAgg.subAggregation(revNestedFieldAgg);
       nestedGroupAgg.subAggregation(groupAgg);
 
@@ -631,20 +615,16 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
         result.add(hashMap);
       }
     } else {
-      // Nested group + Reverse nested field
+      // Reverse nested field + Nested group
       // http://localhost:8080/v2/specimen/getDistinctValuesPerGroup/identifications.taxonRank/gatheringEvent.gatheringPersons.fullName
 
-      AggregationBuilder nestedGroupAgg =
-          AggregationBuilders.nested("NESTED_GROUP", pathToNestedGroup);
-      AggregationBuilder groupAgg =
-          AggregationBuilders.terms("GROUP").field(forGroup).size(aggSize).order(groupOrder);
-      AggregationBuilder nestedFieldAgg =
-          AggregationBuilders.nested("NESTED_FIELD", pathToNestedField);
-      AggregationBuilder fieldAgg =
-          AggregationBuilders.terms("FIELD").field(forField).size(aggSize).order(fieldOrder);
-      ReverseNestedAggregationBuilder revNestedFieldAgg =
-          AggregationBuilders.reverseNested("REVERSE_NESTED_FIELD");
+      AggregationBuilder nestedFieldAgg = AggregationBuilders.nested("NESTED_FIELD", pathToNestedField);
+      AggregationBuilder fieldAgg = AggregationBuilders.terms("FIELD").field(forField).size(aggSize).order(fieldOrder);
       nestedFieldAgg.subAggregation(fieldAgg);
+
+      AggregationBuilder nestedGroupAgg = AggregationBuilders.nested("NESTED_GROUP", pathToNestedGroup);
+      AggregationBuilder groupAgg = AggregationBuilders.terms("GROUP").field(forGroup).size(aggSize).order(groupOrder);
+      ReverseNestedAggregationBuilder revNestedFieldAgg = AggregationBuilders.reverseNested("REVERSE_NESTED_FIELD");
       revNestedFieldAgg.subAggregation(nestedFieldAgg);
       groupAgg.subAggregation(revNestedFieldAgg);
       nestedGroupAgg.subAggregation(groupAgg);
@@ -658,8 +638,7 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
 
       for (Bucket bucket : buckets) {
 
-        InternalReverseNested reverseNestedField =
-            bucket.getAggregations().get("REVERSE_NESTED_FIELD");
+        InternalReverseNested reverseNestedField = bucket.getAggregations().get("REVERSE_NESTED_FIELD");
         Nested nestedField = reverseNestedField.getAggregations().get("NESTED_FIELD");
         Terms fieldTerms = nestedField.getAggregations().get("FIELD");
         List<Bucket> innerBuckets = fieldTerms.getBuckets();

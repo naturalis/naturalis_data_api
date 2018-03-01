@@ -138,11 +138,9 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
   }
 
   public long countDistinctValues(String field, QuerySpec querySpec) throws InvalidQueryException {
-
     if (logger.isDebugEnabled()) {
       logger.debug(printCall("countDistinctValues", field, querySpec));
     }
-
     SearchRequestBuilder request;
     if (querySpec == null) {
       request = newSearchRequest(dt);
@@ -179,13 +177,11 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
     return card.getValue();
   }
 
-  public List<Map<String, Object>> countDistinctValuesPerGroup(String field, String group,
+  public List<Map<String, Object>> countDistinctValuesPerGroup(String forField, String forGroup,
       QuerySpec querySpec) throws InvalidQueryException {
-
     if (logger.isDebugEnabled()) {
-      logger.debug(printCall("countDistinctValuesPerGroup", field, group, querySpec));
+      logger.debug(printCall("countDistinctValuesPerGroup", forField, forGroup, querySpec));
     }
-
     SearchRequestBuilder request;
     if (querySpec == null) {
       request = newSearchRequest(dt);
@@ -195,83 +191,96 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
     }
     request.setSize(0);
     
-    // NOTE: the value of the size parameter from the queryspec is used to set the value of the
-    // aggregation size!
+    // Aggregation Size: The value of the size parameter from the queryspec is used 
+    // to set the value of the aggregation size.    
     int aggSize = 10000;
     if (querySpec != null && querySpec.getSize() != null && querySpec.getSize() > 0) {
       aggSize = querySpec.getSize();
     }
 
+    // Sorting: if the group is included as a sortField in the querySpec, then 
+    // it is also used to order the aggregation result by the group terms. 
+    // Otherwise, the aggregation will be ordered by descending document count.
+    Order groupOrder = Terms.Order.count(true);
+    if (querySpec != null && querySpec.getSortFields() != null) {
+      for (SortField sortField : querySpec.getSortFields()) {
+        if (sortField.getPath().equals(new SortField(forGroup).getPath())) {
+          if (sortField.isAscending())
+            groupOrder = Terms.Order.term(true);
+          else
+            groupOrder = Terms.Order.term(false);
+        }
+      }
+    }
+
     // Map field and group to query path
     MappingInfo<T> mappingInfo = new MappingInfo<>(dt.getMapping());
+    
     String pathToNestedField;
     try {
-      pathToNestedField = mappingInfo.getNestedPath(field);
+      pathToNestedField = mappingInfo.getNestedPath(forField);
     } catch (NoSuchFieldException e) {
       throw new InvalidQueryException(e.getMessage());
     }
 
     String pathToNestedGroup;
     try {
-      pathToNestedGroup = mappingInfo.getNestedPath(group);
+      pathToNestedGroup = mappingInfo.getNestedPath(forGroup);
     } catch (NoSuchFieldException e) {
       throw new InvalidQueryException(e.getMessage());
     }
-
+    
     List<Map<String, Object>> result = new LinkedList<>();
+    Terms groupTerms;
 
     // Based on the query mapping, use the correct aggregation builder
     if (pathToNestedField == null && pathToNestedGroup == null) {
       // http://localhost:8080/v2/specimen/countDistinctValuesPerGroup/collectionType/recordBasis
-      CardinalityAggregationBuilder fieldAgg = AggregationBuilders.cardinality("DISTINCT_VALUES").field(field);
-      
-      AggregationBuilder groupAgg = AggregationBuilders.terms("GROUP").field(group).size(aggSize).order(Terms.Order.term(true));
+      CardinalityAggregationBuilder fieldAgg = AggregationBuilders.cardinality("DISTINCT_VALUES").field(forField);
+      AggregationBuilder groupAgg = AggregationBuilders.terms("GROUP").field(forGroup).size(aggSize).order(groupOrder);
       groupAgg.subAggregation(fieldAgg);
 
       request.addAggregation(groupAgg);
       SearchResponse response = executeSearchRequest(request);
 
-      Terms groupTerms = response.getAggregations().get("GROUP");
+      groupTerms = response.getAggregations().get("GROUP");
       List<Bucket> buckets = groupTerms.getBuckets();
       for (Bucket bucket : buckets) {
         InternalCardinality cardinality = bucket.getAggregations().get("DISTINCT_VALUES");
         Map<String, Object> hashMap = new LinkedHashMap<>(2);
-        hashMap.put(group, bucket.getKeyAsString());
-        hashMap.put(field, cardinality.getValue());
+        hashMap.put(forGroup, bucket.getKeyAsString());
+        hashMap.put(forField, cardinality.getValue());
         result.add(hashMap);
       }
     } else if (pathToNestedField != null && pathToNestedGroup == null) {
       // http://localhost:8080/v2/specimen/countDistinctValuesPerGroup/collectionType/gatheringEvent.gatheringPersons.fullName
       AggregationBuilder fieldAgg = AggregationBuilders.nested("FIELD", pathToNestedField);
-      CardinalityAggregationBuilder cardinalityField = AggregationBuilders.cardinality("DISTINCT_VALUES").field(field);
+      CardinalityAggregationBuilder cardinalityField = AggregationBuilders.cardinality("DISTINCT_VALUES").field(forField);
       fieldAgg.subAggregation(cardinalityField);
-
-      AggregationBuilder groupAgg = AggregationBuilders.terms("GROUP").field(group).size(aggSize).order(Terms.Order.term(true));
+      AggregationBuilder groupAgg = AggregationBuilders.terms("GROUP").field(forGroup).size(aggSize).order(groupOrder);
       groupAgg.subAggregation(fieldAgg);
 
       request.addAggregation(groupAgg);
       SearchResponse response = executeSearchRequest(request);
 
-      Terms groupTerms = response.getAggregations().get("GROUP");
+      groupTerms = response.getAggregations().get("GROUP");
       List<Bucket> buckets = groupTerms.getBuckets();
-
       for (Bucket bucket : buckets) {
         InternalNested fields = bucket.getAggregations().get("FIELD");
         InternalCardinality cardinality = fields.getAggregations().get("DISTINCT_VALUES");
         Map<String, Object> hashMap = new LinkedHashMap<>(2);
-        hashMap.put(group, bucket.getKeyAsString());
-        hashMap.put(field, cardinality.getValue());
+        hashMap.put(forGroup, bucket.getKeyAsString());
+        hashMap.put(forField, cardinality.getValue());
         result.add(hashMap);
       }
 
     } else if (pathToNestedField == null && pathToNestedGroup != null) {
       // http://localhost:8080/v2/specimen/countDistinctValuesPerGroup/identifications.defaultClassification.className/collectionType
       AggregationBuilder fieldAgg = AggregationBuilders.reverseNested("REVERSE_NESTED_FIELD");
-      CardinalityAggregationBuilder cardinalityField = AggregationBuilders.cardinality("DISTINCT_VALUES").field(field);
+      CardinalityAggregationBuilder cardinalityField = AggregationBuilders.cardinality("DISTINCT_VALUES").field(forField);
       fieldAgg.subAggregation(cardinalityField);
-
       AggregationBuilder groupAgg = AggregationBuilders.nested("NESTED_GROUP", pathToNestedGroup);
-      AggregationBuilder groupTerm = AggregationBuilders.terms("GROUP").field(group).size(aggSize).order(Terms.Order.term(true));
+      AggregationBuilder groupTerm = AggregationBuilders.terms("GROUP").field(forGroup).size(aggSize).order(groupOrder);
       groupTerm.subAggregation(fieldAgg);
       groupAgg.subAggregation(groupTerm);
 
@@ -279,27 +288,25 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
       SearchResponse response = executeSearchRequest(request);
 
       InternalNested nestedGroup = response.getAggregations().get("NESTED_GROUP");
-      Terms groupTerms = nestedGroup.getAggregations().get("GROUP");
+      groupTerms = nestedGroup.getAggregations().get("GROUP");
       List<Bucket> buckets = groupTerms.getBuckets();
-
       for (Bucket bucket : buckets) {
         InternalReverseNested fields = bucket.getAggregations().get("REVERSE_NESTED_FIELD");
         InternalCardinality cardinality = fields.getAggregations().get("DISTINCT_VALUES");
         Map<String, Object> hashMap = new LinkedHashMap<>(2);
-        hashMap.put(group, bucket.getKeyAsString());
-        hashMap.put(field, cardinality.getValue());
+        hashMap.put(forGroup, bucket.getKeyAsString());
+        hashMap.put(forField, cardinality.getValue());
         result.add(hashMap);
       }
     } else {
       // http://localhost:8080/v2/specimen/countDistinctValuesPerGroup/identifications.defaultClassification.className/gatheringEvent.gatheringPersons.fullName
       AggregationBuilder fieldAgg = AggregationBuilders.reverseNested("REVERSE_NESTED_FIELD");
-      AggregationBuilder fieldNested = AggregationBuilders.nested(field, pathToNestedField);
-      CardinalityAggregationBuilder cardinalityField = AggregationBuilders.cardinality("DISTINCT_VALUES").field(field);
+      AggregationBuilder fieldNested = AggregationBuilders.nested(forField, pathToNestedField);
+      CardinalityAggregationBuilder cardinalityField = AggregationBuilders.cardinality("DISTINCT_VALUES").field(forField);
       fieldNested.subAggregation(cardinalityField);
       fieldAgg.subAggregation(fieldNested);
-
       AggregationBuilder groupAgg = AggregationBuilders.nested("NESTED_GROUP", pathToNestedGroup);
-      AggregationBuilder groupTerm = AggregationBuilders.terms("GROUP").field(group).size(aggSize).order(Terms.Order.term(true));
+      AggregationBuilder groupTerm = AggregationBuilders.terms("GROUP").field(forGroup).size(aggSize).order(groupOrder);
       groupTerm.subAggregation(fieldAgg);
       groupAgg.subAggregation(groupTerm);
 
@@ -307,20 +314,18 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
       SearchResponse response = executeSearchRequest(request);
 
       InternalNested nestedGroup = response.getAggregations().get("NESTED_GROUP");
-      Terms groupTerms = nestedGroup.getAggregations().get("GROUP");
+      groupTerms = nestedGroup.getAggregations().get("GROUP");
       List<Bucket> buckets = groupTerms.getBuckets();
-
       for (Bucket bucket : buckets) {
         InternalReverseNested fields = bucket.getAggregations().get("REVERSE_NESTED_FIELD");
-        InternalNested nestedFields = fields.getAggregations().get(field);
+        InternalNested nestedFields = fields.getAggregations().get(forField);
         InternalCardinality cardinality = nestedFields.getAggregations().get("DISTINCT_VALUES");
         Map<String, Object> hashMap = new LinkedHashMap<>(2);
-        hashMap.put(group, bucket.getKeyAsString());
-        hashMap.put(field, cardinality.getValue());
+        hashMap.put(forGroup, bucket.getKeyAsString());
+        hashMap.put(forField, cardinality.getValue());
         result.add(hashMap);
       }
     }
-
     return result;
   }
 
@@ -330,7 +335,6 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
     if (logger.isDebugEnabled()) {
       logger.debug(printCall("getDistinctValues", forField, querySpec));
     }
-
     SearchRequestBuilder request;
     if (querySpec == null) {
       request = newSearchRequest(dt);
@@ -340,13 +344,29 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
     }
     request.setSize(0);
 
-    // The value of the size parameter from the queryspec is used to set the value of the
-    // aggregation size.
+    // Aggregation Size: The value of the size parameter from the queryspec is used 
+    // to set the value of the aggregation size.
     int aggSize = 10000;
     if (querySpec != null && querySpec.getSize() != null && querySpec.getSize() > 0) {
       aggSize = querySpec.getSize();
     }
 
+    // Sorting: If the field is included as a sortField in the querySpec, then it's 
+    // also used to order the aggregation result by the field terms. Otherwise, the 
+    // aggregation will be ordered by descending document count.
+    Order fieldOrder = Terms.Order.count(false);
+    if (querySpec != null && querySpec.getSortFields() != null) {
+      for (SortField sortField : querySpec.getSortFields()) {
+        if (sortField.getPath().equals(new SortField(forField).getPath())) {
+          if (sortField.isAscending())
+            fieldOrder = Terms.Order.term(true);
+          else
+            fieldOrder = Terms.Order.term(false);
+        }
+      }
+    }
+    
+    // Map field to query path
     MappingInfo<T> mappingInfo = new MappingInfo<>(dt.getMapping());
     String nestedPath;
     try {
@@ -354,26 +374,10 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
     } catch (NoSuchFieldException e) {
       throw new InvalidQueryException(e.getMessage());
     }
+
     TermsAggregationBuilder termsAggregation = terms("FIELD");
     termsAggregation.field(forField);
-    termsAggregation.size(aggSize);
-
-    // If the field is included as a sortField in the querySpec, then it's also used to order the
-    // aggregation result by the field terms. Otherwise, the aggregation will be ordered by
-    // descending document count.
-    if (querySpec != null && querySpec.getSortFields() != null) {
-      for (SortField sortField : querySpec.getSortFields()) {
-        if (sortField.getPath().equals(new SortField(forField).getPath())) {
-          if (sortField.isAscending()) {
-            termsAggregation.order(Terms.Order.term(true));
-          } else {
-            termsAggregation.order(Terms.Order.term(false));
-          }
-        }
-      }
-    } else {
-      termsAggregation.order(Terms.Order.count(false));
-    }
+    termsAggregation.size(aggSize).order(fieldOrder);
 
     Terms terms;
     if (nestedPath == null) {
@@ -397,11 +401,9 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
 
   public List<Map<String, Object>> getDistinctValuesPerGroup(String forField, String forGroup,
       QuerySpec querySpec) throws InvalidQueryException {
-
     if (logger.isDebugEnabled()) {
       logger.debug(printCall("getDistinctValuesPerGroup", forField, forGroup, querySpec));
     }
-
     SearchRequestBuilder request;
     if (querySpec == null) {
       request = newSearchRequest(dt);
@@ -411,11 +413,33 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
     }
     request.setSize(0);
 
-    // The value of the size parameter from the queryspec is used to set the value of the
-    // aggregation size!
+    // Aggregation Size: The value of the size parameter from the queryspec is used 
+    // to set the value of the aggregation size.
     int aggSize = 10000;
     if (querySpec != null && querySpec.getSize() != null && querySpec.getSize() > 0) {
       aggSize = querySpec.getSize();
+    }
+    
+    // Sorting: when field or group is included as a sortField in the querySpec, 
+    // it is also used to order the aggregation result. Otherwise, the aggregation 
+    // result will be ordered by descending document count.
+    Order fieldOrder = Terms.Order.count(false);
+    Order groupOrder = Terms.Order.count(false);
+    if (querySpec != null && querySpec.getSortFields() != null) {
+      for (SortField sortField : querySpec.getSortFields()) {
+        if (sortField.getPath().equals(new SortField(forField).getPath())) {
+          if (sortField.isAscending())
+            fieldOrder = Terms.Order.term(true);
+          else
+            fieldOrder = Terms.Order.term(false);
+        }
+        if (sortField.getPath().equals(new SortField(forGroup).getPath())) {
+          if (sortField.isAscending())
+            groupOrder = Terms.Order.term(true);
+          else
+            groupOrder = Terms.Order.term(false);
+        }
+      }
     }
 
     // Map field and group to its query path
@@ -435,52 +459,25 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
       throw new InvalidQueryException(e.getMessage());
     }
 
-    // If the field or group is included as a sortField in the querySpec, then it's also used to
-    // order the aggregation result by the field or group terms. Otherwise, the aggregation will be
-    // ordered by descending document count.
-    Order fieldOrder = Terms.Order.count(false);
-    Order groupOrder = Terms.Order.count(false);
-    if (querySpec != null && querySpec.getSortFields() != null) {
-      for (SortField sortField : querySpec.getSortFields()) {
-        if (sortField.getPath().equals(new SortField(forField).getPath())) {
-          if (sortField.isAscending()) {
-            fieldOrder = Terms.Order.term(true);
-          } else {
-            fieldOrder = Terms.Order.term(false);
-          }
-        }
-        if (sortField.getPath().equals(new SortField(forGroup).getPath())) {
-          if (sortField.isAscending()) {
-            groupOrder = Terms.Order.term(true);
-          } else {
-            groupOrder = Terms.Order.term(false);
-          }
-        }
-      }
-    }
-    
     List<Map<String, Object>> result = new LinkedList<>();
-
-    // Based on the query mapping, use the correct aggregation builder
+    Terms groupTerms;
+    StringTerms fieldTerms;
+    
     if (pathToNestedField == null && pathToNestedGroup == null) {
       // http://localhost:8080/v2/specimen/getDistinctValuesPerGroup/sourceSystem.code/collectionType
-      AggregationBuilder fieldAgg = AggregationBuilders.terms("FIELD").field(forField).size(aggSize).order(fieldOrder);
-      
+      AggregationBuilder fieldAgg = AggregationBuilders.terms("FIELD").field(forField).size(aggSize).order(fieldOrder);      
       AggregationBuilder groupAgg = AggregationBuilders.terms("GROUP").field(forGroup).size(aggSize).order(groupOrder);
       groupAgg.subAggregation(fieldAgg);
 
       request.addAggregation(groupAgg);
       SearchResponse response = executeSearchRequest(request);
 
-      Terms groupTerms = response.getAggregations().get("GROUP");
+      groupTerms = response.getAggregations().get("GROUP");
       List<Bucket> buckets = groupTerms.getBuckets();
-
       for (Bucket bucket : buckets) {
-
-        StringTerms fieldTerms = bucket.getAggregations().get("FIELD");
+        fieldTerms = bucket.getAggregations().get("FIELD");
         List<StringTerms.Bucket> innerBuckets = fieldTerms.getBucketsInternal();
         List<Map<String, Object>> fieldTermsList = new LinkedList<>();
-
         for (Bucket innerBucket : innerBuckets) {
           Map<String, Object> aggregate = new LinkedHashMap<>(2);
           aggregate.put(forField, innerBucket.getKeyAsString());
@@ -489,7 +486,6 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
             fieldTermsList.add(aggregate);
           }
         }
-
         Map<String, Object> hashMap = new LinkedHashMap<>(2);
         hashMap.put(forGroup, bucket.getKeyAsString());
         hashMap.put("count", bucket.getDocCount());
@@ -499,29 +495,23 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
         result.add(hashMap);
       }
     } else if (pathToNestedField != null && pathToNestedGroup == null) {
-      // Nested Field + Group
       // http://localhost:8080/v2/specimen/getDistinctValuesPerGroup/sourceSystem.code/identifications.taxonRank
-
       AggregationBuilder fieldAgg = AggregationBuilders.terms("FIELD").field(forField).size(aggSize).order(fieldOrder);
       AggregationBuilder nestedFieldAgg = AggregationBuilders.nested("NESTED_FIELD", pathToNestedField);
       nestedFieldAgg.subAggregation(fieldAgg);
-
       AggregationBuilder groupAgg = AggregationBuilders.terms("GROUP").field(forGroup).size(aggSize).order(groupOrder);
       groupAgg.subAggregation(nestedFieldAgg);
 
       request.addAggregation(groupAgg);
       SearchResponse response = executeSearchRequest(request);
 
-      Terms groupTerms = response.getAggregations().get("GROUP");
+      groupTerms = response.getAggregations().get("GROUP");
       List<Bucket> buckets = groupTerms.getBuckets();
-
       for (Bucket bucket : buckets) {
-
         Nested nestedField = bucket.getAggregations().get("NESTED_FIELD");
-        Terms fieldTerms = nestedField.getAggregations().get("FIELD");
+        fieldTerms = nestedField.getAggregations().get("FIELD");
         List<Bucket> innerBuckets = fieldTerms.getBuckets();
         List<Map<String, Object>> fieldTermsList = new LinkedList<>();
-
         for (Bucket innerBucket : innerBuckets) {
           Map<String, Object> aggregate = new LinkedHashMap<>(2);
           aggregate.put(forField, innerBucket.getKeyAsString());
@@ -530,7 +520,6 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
             fieldTermsList.add(aggregate);
           }
         }
-
         Map<String, Object> hashMap = new LinkedHashMap<>(2);
         hashMap.put(forGroup, bucket.getKeyAsString());
         hashMap.put("count", bucket.getDocCount());
@@ -540,13 +529,10 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
         result.add(hashMap);
       }
     } else if (pathToNestedField == null && pathToNestedGroup != null) {
-      // Reverse nested field + Nested group
       // http://localhost:8080/v2/specimen/getDistinctValuesPerGroup/identifications.taxonRank/sourceSystem.code
-
       AggregationBuilder fieldAgg = AggregationBuilders.terms("FIELD").field(forField).size(aggSize).order(fieldOrder);
       ReverseNestedAggregationBuilder revNestedFieldAgg = AggregationBuilders.reverseNested("REVERSE_NESTED_FIELD");
       revNestedFieldAgg.subAggregation(fieldAgg);
-
       AggregationBuilder nestedGroupAgg = AggregationBuilders.nested("NESTED_GROUP", pathToNestedGroup);
       AggregationBuilder groupAgg = AggregationBuilders.terms("GROUP").field(forGroup).size(aggSize).order(groupOrder);
       groupAgg.subAggregation(revNestedFieldAgg);
@@ -556,16 +542,13 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
       SearchResponse response = executeSearchRequest(request);
 
       Nested nestedGroup = response.getAggregations().get("NESTED_GROUP");
-      Terms groupTerms = nestedGroup.getAggregations().get("GROUP");
+      groupTerms = nestedGroup.getAggregations().get("GROUP");
       List<Bucket> buckets = groupTerms.getBuckets();
-
       for (Bucket bucket : buckets) {
-
         InternalReverseNested nestedField = bucket.getAggregations().get("REVERSE_NESTED_FIELD");
-        Terms fieldTerms = nestedField.getAggregations().get("FIELD");
+        fieldTerms = nestedField.getAggregations().get("FIELD");
         List<Bucket> innerBuckets = fieldTerms.getBuckets();
         List<Map<String, Object>> fieldTermsList = new LinkedList<>();
-
         for (Bucket innerBucket : innerBuckets) {
           Map<String, Object> aggregate = new LinkedHashMap<>(2);
           aggregate.put(forField, innerBucket.getKeyAsString());
@@ -574,7 +557,6 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
             fieldTermsList.add(aggregate);
           }
         }
-
         Map<String, Object> hashMap = new LinkedHashMap<>(2);
         hashMap.put(forGroup, bucket.getKeyAsString());
         hashMap.put("count", bucket.getDocCount());
@@ -584,13 +566,10 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
         result.add(hashMap);
       }
     } else {
-      // Reverse nested field + Nested group
       // http://localhost:8080/v2/specimen/getDistinctValuesPerGroup/identifications.taxonRank/gatheringEvent.gatheringPersons.fullName
-
       AggregationBuilder nestedFieldAgg = AggregationBuilders.nested("NESTED_FIELD", pathToNestedField);
       AggregationBuilder fieldAgg = AggregationBuilders.terms("FIELD").field(forField).size(aggSize).order(fieldOrder);
       nestedFieldAgg.subAggregation(fieldAgg);
-
       AggregationBuilder nestedGroupAgg = AggregationBuilders.nested("NESTED_GROUP", pathToNestedGroup);
       AggregationBuilder groupAgg = AggregationBuilders.terms("GROUP").field(forGroup).size(aggSize).order(groupOrder);
       ReverseNestedAggregationBuilder revNestedFieldAgg = AggregationBuilders.reverseNested("REVERSE_NESTED_FIELD");
@@ -602,17 +581,14 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
       SearchResponse response = executeSearchRequest(request);
 
       Nested nestedGroup = response.getAggregations().get("NESTED_GROUP");
-      Terms groupTerms = nestedGroup.getAggregations().get("GROUP");
+      groupTerms = nestedGroup.getAggregations().get("GROUP");
       List<Bucket> buckets = groupTerms.getBuckets();
-
       for (Bucket bucket : buckets) {
-
         InternalReverseNested reverseNestedField = bucket.getAggregations().get("REVERSE_NESTED_FIELD");
         Nested nestedField = reverseNestedField.getAggregations().get("NESTED_FIELD");
-        Terms fieldTerms = nestedField.getAggregations().get("FIELD");
+        fieldTerms = nestedField.getAggregations().get("FIELD");
         List<Bucket> innerBuckets = fieldTerms.getBuckets();
         List<Map<String, Object>> fieldTermsList = new LinkedList<>();
-
         for (Bucket innerBucket : innerBuckets) {
           Map<String, Object> aggregate = new LinkedHashMap<>(2);
           aggregate.put(forField, innerBucket.getKeyAsString());
@@ -621,7 +597,6 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
             fieldTermsList.add(aggregate);
           }
         }
-
         Map<String, Object> hashMap = new LinkedHashMap<>(2);
         hashMap.put(forGroup, bucket.getKeyAsString());
         hashMap.put("count", bucket.getDocCount());
@@ -631,7 +606,6 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
         result.add(hashMap);
       }
     }
-
     return result;
   }
 

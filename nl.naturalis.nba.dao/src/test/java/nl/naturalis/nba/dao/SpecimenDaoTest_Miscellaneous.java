@@ -1,8 +1,8 @@
 package nl.naturalis.nba.dao;
 
+import static nl.naturalis.nba.api.ComparisonOperator.CONTAINS;
 import static nl.naturalis.nba.api.ComparisonOperator.EQUALS;
 import static nl.naturalis.nba.api.ComparisonOperator.EQUALS_IC;
-import static nl.naturalis.nba.api.ComparisonOperator.CONTAINS;
 import static nl.naturalis.nba.api.ComparisonOperator.NOT_EQUALS;
 import static nl.naturalis.nba.api.ComparisonOperator.NOT_EQUALS_IC;
 import static nl.naturalis.nba.api.UnaryBooleanOperator.NOT;
@@ -10,21 +10,17 @@ import static nl.naturalis.nba.dao.util.es.ESUtil.createIndex;
 import static nl.naturalis.nba.dao.util.es.ESUtil.deleteIndex;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-
 import java.util.Iterator;
 import java.util.Map;
-
 import org.apache.logging.log4j.Logger;
 import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.Specimen;
-import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.mock.SpecimenMock;
 
 @SuppressWarnings("static-method")
@@ -404,6 +400,46 @@ public class SpecimenDaoTest_Miscellaneous {
 	}
 
 	/*
+	 * Test count with and without QuerySpec
+	 */
+	@Test
+	public void testCount() throws InvalidQueryException
+	{
+	  SpecimenDao dao = new SpecimenDao();
+
+	  assertEquals("01", 5L, dao.count(null));
+	  QuerySpec querySpec = new QuerySpec();
+	  QueryCondition condition = new QueryCondition("gatheringEvent.country", EQUALS, "Netherlands");
+	  querySpec.addCondition(condition);
+	  assertEquals("02", 3L, dao.count(querySpec));
+	}
+	
+	/*
+	 * Test countDistinctValues
+	 */
+	@Test
+	public void testCountDistinctValues() throws InvalidQueryException
+	{
+	  SpecimenDao dao = new SpecimenDao();
+	  
+	  // Test without nested path
+	  String field = "phaseOrStage";
+	  assertEquals("01", 3L, dao.countDistinctValues(field, null));
+    QuerySpec querySpec = new QuerySpec();
+    QueryCondition condition = new QueryCondition("sourceSystem.code", EQUALS, "BRAHMS");
+    querySpec.addCondition(condition);
+    assertEquals("02", 1L, dao.countDistinctValues(field, querySpec));
+	  
+    // Test with nested path
+    field = "identifications.scientificName.genusOrMonomial";
+    assertEquals("03", 4L, dao.countDistinctValues(field, null));
+    querySpec = new QuerySpec();
+    condition = new QueryCondition("sourceSystem.code", EQUALS, "CRS");
+    querySpec.addCondition(condition);
+    assertEquals("04", 3L, dao.countDistinctValues(field, querySpec));
+	}
+	
+	/*
 	 * Test getDistinctValues with simple field an no QuerySpec
 	 */
 	@Test
@@ -412,7 +448,7 @@ public class SpecimenDaoTest_Miscellaneous {
 		SpecimenDao dao = new SpecimenDao();
 		
 		Map<String, Long> result = dao.getDistinctValues("recordBasis", null);
-		logger.info(JsonUtil.toPrettyJson(result));
+		// logger.info(JsonUtil.toPrettyJson(result));
 		assertEquals("01", 3, result.size());
 		Iterator<Map.Entry<String, Long>> entries = result.entrySet().iterator();
 		Map.Entry<String, Long> entry = entries.next();
@@ -424,7 +460,6 @@ public class SpecimenDaoTest_Miscellaneous {
     entry = entries.next();
     assertEquals("06", "FossileSpecimen", entry.getKey());
     assertEquals("07", new Long(1), entry.getValue());
-
 	}
 
 	/*
@@ -440,4 +475,6 @@ public class SpecimenDaoTest_Miscellaneous {
 		assertEquals("01", 4, result.size());
 	}
 
+
+	
 }

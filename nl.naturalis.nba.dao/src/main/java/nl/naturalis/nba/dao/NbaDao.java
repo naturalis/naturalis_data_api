@@ -124,57 +124,43 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
     if (logger.isDebugEnabled()) {
       logger.debug(printCall("count", querySpec));
     }
-    SearchRequestBuilder request;
-    if (querySpec == null) {
-      request = newSearchRequest(dt);
-    } else {
-      QuerySpecTranslator translator = new QuerySpecTranslator(querySpec, dt);
-      request = translator.translate();
-    }
-    request.setSize(0);
     
+    SearchRequestBuilder request = createSearchRequest(querySpec);
     SearchResponse response = executeSearchRequest(request);
     return response.getHits().totalHits();
   }
 
-  public long countDistinctValues(String field, QuerySpec querySpec) throws InvalidQueryException {
+  public long countDistinctValues(String forField, QuerySpec querySpec) throws InvalidQueryException {
     if (logger.isDebugEnabled()) {
-      logger.debug(printCall("countDistinctValues", field, querySpec));
-    }
-    SearchRequestBuilder request;
-    if (querySpec == null) {
-      request = newSearchRequest(dt);
-    } else {
-      QuerySpecTranslator translator = new QuerySpecTranslator(querySpec, dt);
-      request = translator.translate();
-    }
-    request.setSize(0);
-
-    MappingInfo<T> mappingInfo = new MappingInfo<>(dt.getMapping());
-    String nestedPath;
-    try {
-      nestedPath = mappingInfo.getNestedPath(field);
-    } catch (NoSuchFieldException e) {
-      throw new InvalidQueryException(e.getMessage());
-    }
-    if (nestedPath != null) {
-      AggregationBuilder agg = AggregationBuilders.nested("NESTED", nestedPath);
-      AggregationBuilder card = AggregationBuilders.cardinality("CARDINALITY").field(field);
-      agg.subAggregation(card);
-      request.addAggregation(agg);
-    } else {
-      AggregationBuilder agg = AggregationBuilders.cardinality("CARDINALITY").field(field);
-      request.addAggregation(agg);
+      logger.debug(printCall("countDistinctValues", forField, querySpec));
     }
 
-    SearchResponse response = executeSearchRequest(request);
+    SearchRequestBuilder request = createSearchRequest(querySpec);
+    String nestedPath = getNestedPath(forField);
+    long result = 0L;
+    
     if (nestedPath != null) {
+      AggregationBuilder nested = AggregationBuilders.nested("NESTED", nestedPath);
+      AggregationBuilder agg = AggregationBuilders.cardinality("CARDINALITY").field(forField);
+      nested.subAggregation(agg);
+      request.addAggregation(nested);
+      
+      SearchResponse response = executeSearchRequest(request);
+      
       Nested nestedDocs = response.getAggregations().get("NESTED");
-      Cardinality card = nestedDocs.getAggregations().get("CARDINALITY");
-      return card.getValue();
+      Cardinality cardinality = nestedDocs.getAggregations().get("CARDINALITY");
+      result = cardinality.getValue();
+      
+    } else {
+      AggregationBuilder agg = AggregationBuilders.cardinality("CARDINALITY").field(forField);
+      request.addAggregation(agg);
+      
+      SearchResponse response = executeSearchRequest(request);  
+      
+      Cardinality cardinality = response.getAggregations().get("CARDINALITY");
+      result = cardinality.getValue();
     }
-    Cardinality card = response.getAggregations().get("CARDINALITY");
-    return card.getValue();
+    return result;
   }
 
   public List<Map<String, Object>> countDistinctValuesPerGroup(String forField, String forGroup,
@@ -182,56 +168,14 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
     if (logger.isDebugEnabled()) {
       logger.debug(printCall("countDistinctValuesPerGroup", forField, forGroup, querySpec));
     }
-    SearchRequestBuilder request;
-    if (querySpec == null) {
-      request = newSearchRequest(dt);
-    } else {
-      QuerySpecTranslator translator = new QuerySpecTranslator(querySpec, dt);
-      request = translator.translate();
-    }
-    request.setSize(0);
     
-    // Aggregation Size: The value of the size parameter from the queryspec is used 
-    // to set the value of the aggregation size.    
-    int aggSize = 10000;
-    if (querySpec != null && querySpec.getSize() != null && querySpec.getSize() > 0) {
-      aggSize = querySpec.getSize();
-    }
-
-    // Sorting: if the group is included as a sortField in the querySpec, then 
-    // it is also used to order the aggregation result by the group terms. 
-    // Otherwise, the aggregation will be ordered by descending document count.
-    Order groupOrder = Terms.Order.count(true);
-    if (querySpec != null && querySpec.getSortFields() != null) {
-      for (SortField sortField : querySpec.getSortFields()) {
-        if (sortField.getPath().equals(new SortField(forGroup).getPath())) {
-          if (sortField.isAscending())
-            groupOrder = Terms.Order.term(true);
-          else
-            groupOrder = Terms.Order.term(false);
-        }
-      }
-    }
-
-    // Map field and group to query path
-    MappingInfo<T> mappingInfo = new MappingInfo<>(dt.getMapping());
-    
-    String pathToNestedField;
-    try {
-      pathToNestedField = mappingInfo.getNestedPath(forField);
-    } catch (NoSuchFieldException e) {
-      throw new InvalidQueryException(e.getMessage());
-    }
-
-    String pathToNestedGroup;
-    try {
-      pathToNestedGroup = mappingInfo.getNestedPath(forGroup);
-    } catch (NoSuchFieldException e) {
-      throw new InvalidQueryException(e.getMessage());
-    }
+    SearchRequestBuilder request = createSearchRequest(querySpec);
+    String pathToNestedField = getNestedPath(forField);
+    String pathToNestedGroup = getNestedPath(forGroup);
+    int aggSize = getAggregationSize(querySpec);
+    Order groupOrder = setOrdering(forGroup, querySpec);
     
     List<Map<String, Object>> result = new LinkedList<>();
-    Terms groupTerms;
 
     // Based on the query mapping, use the correct aggregation builder
     if (pathToNestedField == null && pathToNestedGroup == null) {
@@ -239,11 +183,11 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
       CardinalityAggregationBuilder fieldAgg = AggregationBuilders.cardinality("DISTINCT_VALUES").field(forField);
       AggregationBuilder groupAgg = AggregationBuilders.terms("GROUP").field(forGroup).size(aggSize).order(groupOrder);
       groupAgg.subAggregation(fieldAgg);
-
       request.addAggregation(groupAgg);
+      
       SearchResponse response = executeSearchRequest(request);
 
-      groupTerms = response.getAggregations().get("GROUP");
+      Terms groupTerms = response.getAggregations().get("GROUP");
       List<Bucket> buckets = groupTerms.getBuckets();
       for (Bucket bucket : buckets) {
         InternalCardinality cardinality = bucket.getAggregations().get("DISTINCT_VALUES");
@@ -259,11 +203,11 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
       fieldAgg.subAggregation(cardinalityField);
       AggregationBuilder groupAgg = AggregationBuilders.terms("GROUP").field(forGroup).size(aggSize).order(groupOrder);
       groupAgg.subAggregation(fieldAgg);
-
       request.addAggregation(groupAgg);
+      
       SearchResponse response = executeSearchRequest(request);
 
-      groupTerms = response.getAggregations().get("GROUP");
+     Terms groupTerms = response.getAggregations().get("GROUP");
       List<Bucket> buckets = groupTerms.getBuckets();
       for (Bucket bucket : buckets) {
         InternalNested fields = bucket.getAggregations().get("FIELD");
@@ -283,12 +227,12 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
       AggregationBuilder groupTerm = AggregationBuilders.terms("GROUP").field(forGroup).size(aggSize).order(groupOrder);
       groupTerm.subAggregation(fieldAgg);
       groupAgg.subAggregation(groupTerm);
-
       request.addAggregation(groupAgg);
+      
       SearchResponse response = executeSearchRequest(request);
 
       InternalNested nestedGroup = response.getAggregations().get("NESTED_GROUP");
-      groupTerms = nestedGroup.getAggregations().get("GROUP");
+      Terms groupTerms = nestedGroup.getAggregations().get("GROUP");
       List<Bucket> buckets = groupTerms.getBuckets();
       for (Bucket bucket : buckets) {
         InternalReverseNested fields = bucket.getAggregations().get("REVERSE_NESTED_FIELD");
@@ -309,12 +253,12 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
       AggregationBuilder groupTerm = AggregationBuilders.terms("GROUP").field(forGroup).size(aggSize).order(groupOrder);
       groupTerm.subAggregation(fieldAgg);
       groupAgg.subAggregation(groupTerm);
-
       request.addAggregation(groupAgg);
+      
       SearchResponse response = executeSearchRequest(request);
 
       InternalNested nestedGroup = response.getAggregations().get("NESTED_GROUP");
-      groupTerms = nestedGroup.getAggregations().get("GROUP");
+      Terms groupTerms = nestedGroup.getAggregations().get("GROUP");
       List<Bucket> buckets = groupTerms.getBuckets();
       for (Bucket bucket : buckets) {
         InternalReverseNested fields = bucket.getAggregations().get("REVERSE_NESTED_FIELD");
@@ -335,46 +279,11 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
     if (logger.isDebugEnabled()) {
       logger.debug(printCall("getDistinctValues", forField, querySpec));
     }
-    SearchRequestBuilder request;
-    if (querySpec == null) {
-      request = newSearchRequest(dt);
-    } else {
-      QuerySpecTranslator translator = new QuerySpecTranslator(querySpec, dt);
-      request = translator.translate();
-    }
-    request.setSize(0);
-
-    // Aggregation Size: The value of the size parameter from the queryspec is used 
-    // to set the value of the aggregation size.
-    int aggSize = 10000;
-    if (querySpec != null && querySpec.getSize() != null && querySpec.getSize() > 0) {
-      aggSize = querySpec.getSize();
-    }
-
-    // Sorting: If the field is included as a sortField in the querySpec, then it's 
-    // also used to order the aggregation result by the field terms. Otherwise, the 
-    // aggregation will be ordered by descending document count.
-    Order fieldOrder = Terms.Order.count(false);
-    if (querySpec != null && querySpec.getSortFields() != null) {
-      for (SortField sortField : querySpec.getSortFields()) {
-        if (sortField.getPath().equals(new SortField(forField).getPath())) {
-          if (sortField.isAscending())
-            fieldOrder = Terms.Order.term(true);
-          else
-            fieldOrder = Terms.Order.term(false);
-        }
-      }
-    }
+    SearchRequestBuilder request = createSearchRequest(querySpec);
+    String nestedPath = getNestedPath(forField);
+    int aggSize = getAggregationSize(querySpec);
+    Order fieldOrder = setOrdering(forField, querySpec);
     
-    // Map field to query path
-    MappingInfo<T> mappingInfo = new MappingInfo<>(dt.getMapping());
-    String nestedPath;
-    try {
-      nestedPath = mappingInfo.getNestedPath(forField);
-    } catch (NoSuchFieldException e) {
-      throw new InvalidQueryException(e.getMessage());
-    }
-
     TermsAggregationBuilder termsAggregation = terms("FIELD");
     termsAggregation.field(forField);
     termsAggregation.size(aggSize).order(fieldOrder);
@@ -404,60 +313,13 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
     if (logger.isDebugEnabled()) {
       logger.debug(printCall("getDistinctValuesPerGroup", forField, forGroup, querySpec));
     }
-    SearchRequestBuilder request;
-    if (querySpec == null) {
-      request = newSearchRequest(dt);
-    } else {
-      QuerySpecTranslator translator = new QuerySpecTranslator(querySpec, dt);
-      request = translator.translate();
-    }
-    request.setSize(0);
 
-    // Aggregation Size: The value of the size parameter from the queryspec is used 
-    // to set the value of the aggregation size.
-    int aggSize = 10000;
-    if (querySpec != null && querySpec.getSize() != null && querySpec.getSize() > 0) {
-      aggSize = querySpec.getSize();
-    }
-    
-    // Sorting: when field or group is included as a sortField in the querySpec, 
-    // it is also used to order the aggregation result. Otherwise, the aggregation 
-    // result will be ordered by descending document count.
-    Order fieldOrder = Terms.Order.count(false);
-    Order groupOrder = Terms.Order.count(false);
-    if (querySpec != null && querySpec.getSortFields() != null) {
-      for (SortField sortField : querySpec.getSortFields()) {
-        if (sortField.getPath().equals(new SortField(forField).getPath())) {
-          if (sortField.isAscending())
-            fieldOrder = Terms.Order.term(true);
-          else
-            fieldOrder = Terms.Order.term(false);
-        }
-        if (sortField.getPath().equals(new SortField(forGroup).getPath())) {
-          if (sortField.isAscending())
-            groupOrder = Terms.Order.term(true);
-          else
-            groupOrder = Terms.Order.term(false);
-        }
-      }
-    }
-
-    // Map field and group to its query path
-    MappingInfo<T> mappingInfo = new MappingInfo<>(dt.getMapping());
-    
-    String pathToNestedGroup;
-    try {
-      pathToNestedGroup = mappingInfo.getNestedPath(forGroup);
-    } catch (NoSuchFieldException e) {
-      throw new InvalidQueryException(e.getMessage());
-    }
-
-    String pathToNestedField;
-    try {
-      pathToNestedField = mappingInfo.getNestedPath(forField);
-    } catch (NoSuchFieldException e) {
-      throw new InvalidQueryException(e.getMessage());
-    }
+    SearchRequestBuilder request = createSearchRequest(querySpec);
+    String pathToNestedField = getNestedPath(forField);
+    String pathToNestedGroup = getNestedPath(forGroup);
+    int aggSize = getAggregationSize(querySpec);
+    Order fieldOrder = setOrdering(forField, querySpec);
+    Order groupOrder = setOrdering(forGroup, querySpec);
 
     List<Map<String, Object>> result = new LinkedList<>();
     Terms groupTerms;
@@ -650,23 +512,18 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
     return processQueryResponse(response);
   }
 
-  private QueryResult<T> createSearchResult(SearchRequestBuilder request) {
-    SearchResponse response = executeSearchRequest(request);
-    QueryResult<T> result = new QueryResult<>();
-    result.setTotalSize(response.getHits().totalHits());
-    result.setResultSet(createItems(response));
-    return result;
-  }
-
-  private T[] processQueryResponse(SearchResponse response) {
-    SearchHit[] hits = response.getHits().getHits();
-    T[] documentObjects = createDocumentObjectArray(hits.length);
-    for (int i = 0; i < hits.length; ++i) {
-      documentObjects[i] = toDocumentObject(hits[i], dt);
+  private SearchRequestBuilder createSearchRequest(QuerySpec querySpec) throws InvalidQueryException {
+    SearchRequestBuilder request;
+    if (querySpec == null) {
+      request = newSearchRequest(dt);
+    } else {
+      QuerySpecTranslator translator = new QuerySpecTranslator(querySpec, dt);
+      request = translator.translate();
     }
-    return documentObjects;
+    request.setSize(0);
+    return request;
   }
-
+  
   private List<QueryResultItem<T>> createItems(SearchResponse response) {
     if (logger.isDebugEnabled()) {
       String type = dt.getJavaType().getSimpleName();
@@ -680,5 +537,81 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
     }
     return items;
   }
+
+  private QueryResult<T> createSearchResult(SearchRequestBuilder request) {
+    SearchResponse response = executeSearchRequest(request);
+    QueryResult<T> result = new QueryResult<>();
+    result.setTotalSize(response.getHits().totalHits());
+    result.setResultSet(createItems(response));
+    return result;
+  }
+  
+  /**
+   * Aggregation Size: the value of the size parameter from the queryspec is used to set 
+   * the value of the aggregation size.
+   * 
+   * @param querySpec
+   * @return
+   */
+  private static int getAggregationSize(QuerySpec querySpec) {
+    int aggSize = 10000;
+    if (querySpec != null && querySpec.getSize() != null && querySpec.getSize() > 0) {
+      aggSize = querySpec.getSize();
+    }
+    return aggSize;
+  }
+  
+  /**
+   * Return the nested path needed for the Elasticsearch query.
+   * 
+   * @param field
+   * @return nestedPath
+   * @throws InvalidQueryException
+   */
+  private String getNestedPath(String field) throws InvalidQueryException {
+    MappingInfo<T> mappingInfo = new MappingInfo<>(dt.getMapping());
+    String nestedPath = null;
+    try {
+      nestedPath = mappingInfo.getNestedPath(field);
+    } catch (NoSuchFieldException e) {
+      throw new InvalidQueryException(e.getMessage());
+    }
+    return nestedPath;    
+  }
+
+  private T[] processQueryResponse(SearchResponse response) {
+    SearchHit[] hits = response.getHits().getHits();
+    T[] documentObjects = createDocumentObjectArray(hits.length);
+    for (int i = 0; i < hits.length; ++i) {
+      documentObjects[i] = toDocumentObject(hits[i], dt);
+    }
+    return documentObjects;
+  }
+  
+  /**
+   * Sorting: if the field (or group) is included as a sortField in the querySpec, 
+   * then it is also used to order the aggregation result by the group terms. 
+   * Otherwise, the aggregation will be ordered by descending document count.
+   * 
+   * @param fieldName
+   * @param querySpec
+   * @return order
+   */
+  private static Order setOrdering(String fieldName, QuerySpec querySpec) {
+    Order order = Terms.Order.count(false);
+    if (querySpec != null && querySpec.getSortFields() != null) {
+      for (SortField sortField : querySpec.getSortFields()) {
+        if (sortField.getPath().equals(new SortField(fieldName).getPath())) {
+          if (sortField.isAscending())
+            order = Terms.Order.term(true);
+          else
+            order = Terms.Order.term(false);
+        }
+      }
+    }
+    return order;
+  }
+
+
 
 }

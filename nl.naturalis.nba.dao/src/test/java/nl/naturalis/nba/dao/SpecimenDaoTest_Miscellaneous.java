@@ -448,7 +448,6 @@ public class SpecimenDaoTest_Miscellaneous {
 		SpecimenDao dao = new SpecimenDao();
 		
 		Map<String, Long> result = dao.getDistinctValues("recordBasis", null);
-		// logger.info(JsonUtil.toPrettyJson(result));
 		assertEquals("01", 3, result.size());
 		Iterator<Map.Entry<String, Long>> entries = result.entrySet().iterator();
 		Map.Entry<String, Long> entry = entries.next();

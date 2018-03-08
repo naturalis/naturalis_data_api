@@ -11,6 +11,7 @@ import static nl.naturalis.nba.dao.util.es.ESUtil.deleteIndex;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import org.apache.logging.log4j.Logger;
 import org.junit.After;
@@ -474,6 +475,16 @@ public class SpecimenDaoTest_Miscellaneous {
 		assertEquals("01", 4, result.size());
 	}
 
+  @Test
+  public void testGetDistinctValuesPerGroup() throws InvalidQueryException
+  {
+    SpecimenDao dao = new SpecimenDao();
+    String field = "collectionType";
+    String group = "sourceSystem.code";
+    List<Map<String, Object>> result = dao.getDistinctValuesPerGroup(field, group, null);
+    logger.info(result);
+    // assertEquals("01", 4, result.size());
+  }
 
 	
 }

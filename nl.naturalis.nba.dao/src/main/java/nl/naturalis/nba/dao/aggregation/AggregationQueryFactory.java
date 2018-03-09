@@ -1,10 +1,9 @@
 package nl.naturalis.nba.dao.aggregation;
 
+import static nl.naturalis.nba.dao.aggregation.AggregationQueryUtils.getNestedPath;
 import nl.naturalis.nba.api.InvalidQueryException;
-import nl.naturalis.nba.api.NoSuchFieldException;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.IDocumentObject;
-import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.dao.DocumentType;
 
 public abstract class AggregationQueryFactory<T> {
@@ -60,27 +59,6 @@ public abstract class AggregationQueryFactory<T> {
               querySpec);
     }
     return null;
-  }
-
-  /**
-   * Return the nested path needed for the Elasticsearch query.
-   * 
-   * @param dt
-   * @param field
-   * @return nestedPath
-   * @throws InvalidQueryException
-   */
-  private static String getNestedPath(DocumentType<?> dt, String path)
-      throws InvalidQueryException {
-    MappingInfo<?> mappingInfo = new MappingInfo<>(dt.getMapping());
-
-    String nestedPath = null;
-    try {
-      nestedPath = mappingInfo.getNestedPath(path);
-    } catch (NoSuchFieldException e) {
-      throw new InvalidQueryException(e.getMessage());
-    }
-    return nestedPath;
   }
 
 }

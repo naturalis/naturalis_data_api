@@ -106,7 +106,7 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
     }
     AggregationQuery<T, ?> aggregationQuery =
         createAggregationQuery("count", dt, null, null, querySpec);
-    return (long) aggregationQuery.getResult();
+    return Long.parseLong(aggregationQuery.getResult().toString());
   }
 
   @Override
@@ -117,7 +117,7 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
     }
     AggregationQuery<T, ?> aggregationQuery =
         createAggregationQuery("countDistinctValues", dt, forField, null, querySpec);
-    return (long) aggregationQuery.getResult();
+    return Long.parseLong(aggregationQuery.getResult().toString());
   }
 
   @SuppressWarnings("unchecked")

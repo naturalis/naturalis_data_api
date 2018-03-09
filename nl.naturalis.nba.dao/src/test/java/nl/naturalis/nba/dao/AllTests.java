@@ -42,6 +42,7 @@ import nl.naturalis.nba.dao.util.es.ESUtilTest;
 	LikeConditionTranslatorTest.class,
 	MatchesConditionTranslatorTest.class,
 	ShapeInShapeConditionTranslatorTest.class,
+	SpecimenDaoTest_Aggregations.class,
 	SpecimenDaoTest_Between.class,
 	SpecimenDaoTest_Equals.class,
 	SpecimenDaoTest_GeoQueries.class,

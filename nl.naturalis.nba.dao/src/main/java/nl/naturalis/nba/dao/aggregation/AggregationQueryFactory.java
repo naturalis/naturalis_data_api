@@ -24,11 +24,6 @@ public abstract class AggregationQueryFactory<T> {
       case "count":
         return new CountAggregation<>(dt, querySpec);
 
-      case "getDistinctValues":
-        if (pathToNestedField == null)
-          return new GetDistinctValuesFieldAggregation<>(dt, field, querySpec);
-        return new GetDistinctValuesNestedFieldAggregation<>(dt, field, querySpec);
-
       case "countDistinctValues":
         if (pathToNestedField == null)
           return new CountDistinctValuesFieldAggregation<>(dt, field, querySpec);
@@ -47,6 +42,11 @@ public abstract class AggregationQueryFactory<T> {
           return new CountDistinctValuesNestedFieldPerNestedGroupAggregation<>(dt, field, group,
               querySpec);
 
+      case "getDistinctValues":
+        if (pathToNestedField == null)
+          return new GetDistinctValuesFieldAggregation<>(dt, field, querySpec);
+        return new GetDistinctValuesNestedFieldAggregation<>(dt, field, querySpec);
+        
       case "getDistinctValuesPerGroup":
         if (pathToNestedField == null && pathToNestedGroup == null)
           return new GetDistinctValuesFieldPerGroupAggregation<>(dt, field, group, querySpec);

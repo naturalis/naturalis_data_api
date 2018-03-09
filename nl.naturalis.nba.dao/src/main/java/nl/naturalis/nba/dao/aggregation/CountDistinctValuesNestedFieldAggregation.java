@@ -1,7 +1,10 @@
 package nl.naturalis.nba.dao.aggregation;
 
-import static nl.naturalis.nba.dao.util.es.ESUtil.executeSearchRequest;
+import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static nl.naturalis.nba.dao.aggregation.AggregationQueryUtils.getNestedPath;
+import static nl.naturalis.nba.dao.util.es.ESUtil.executeSearchRequest;
+import static nl.naturalis.nba.utils.debug.DebugUtil.printCall;
+import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
@@ -13,14 +16,20 @@ import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.dao.DocumentType;
 
-public class CountDistinctValuesNestedFieldAggregation<T extends IDocumentObject, U> extends CountDistinctValuesAggregation<T, Long> {
+public class CountDistinctValuesNestedFieldAggregation<T extends IDocumentObject, U>
+    extends CountDistinctValuesAggregation<T, Long> {
+
+  private static final Logger logger = getLogger(CountDistinctValuesNestedFieldAggregation.class);
 
   CountDistinctValuesNestedFieldAggregation(DocumentType<T> dt, String field, QuerySpec querySpec) {
     super(dt, field, querySpec);
   }
 
   @Override
-  public SearchResponse executeQuery() throws InvalidQueryException {
+  SearchResponse executeQuery() throws InvalidQueryException {
+    if (logger.isDebugEnabled()) {
+      logger.debug(printCall("Executing AggregationQuery with: ", field, querySpec));
+    }
     SearchRequestBuilder request = createSearchRequest(querySpec);
     String nestedPath = getNestedPath(dt, field);
     AggregationBuilder nested = AggregationBuilders.nested("NESTED", nestedPath);

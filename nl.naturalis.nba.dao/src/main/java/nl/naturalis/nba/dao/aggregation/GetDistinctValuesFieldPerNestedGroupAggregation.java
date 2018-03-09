@@ -5,6 +5,7 @@ import static nl.naturalis.nba.dao.aggregation.AggregationQueryUtils.getAggregat
 import static nl.naturalis.nba.dao.aggregation.AggregationQueryUtils.getNestedPath;
 import static nl.naturalis.nba.dao.aggregation.AggregationQueryUtils.getOrdering;
 import static nl.naturalis.nba.dao.util.es.ESUtil.executeSearchRequest;
+import static nl.naturalis.nba.utils.debug.DebugUtil.printCall;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -38,8 +39,10 @@ public class GetDistinctValuesFieldPerNestedGroupAggregation<T extends IDocument
   }
 
   @Override
-  public SearchResponse executeQuery() throws InvalidQueryException {
-
+  SearchResponse executeQuery() throws InvalidQueryException {
+    if (logger.isDebugEnabled()) {
+      logger.debug(printCall("Executing AggregationQuery with: ", field, group, querySpec));
+    }
     SearchRequestBuilder request = createSearchRequest(querySpec);
     String pathToNestedGroup = getNestedPath(dt, group);
     int aggSize = getAggregationSize(querySpec);

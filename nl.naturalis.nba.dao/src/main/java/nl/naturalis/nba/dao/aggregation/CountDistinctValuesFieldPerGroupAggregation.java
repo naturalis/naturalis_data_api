@@ -23,12 +23,11 @@ import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.dao.DocumentType;
-import nl.naturalis.nba.dao.NbaDao;
 
 public class CountDistinctValuesFieldPerGroupAggregation<T extends IDocumentObject, U>
     extends CountDistinctValuesPerGroupAggregation<T, List<Map<String, Object>>> {
 
-  private static final Logger logger = getLogger(NbaDao.class);
+  private static final Logger logger = getLogger(CountDistinctValuesFieldPerGroupAggregation.class);
 
   CountDistinctValuesFieldPerGroupAggregation(DocumentType<T> dt, String field, String group,
       QuerySpec querySpec) {
@@ -36,18 +35,18 @@ public class CountDistinctValuesFieldPerGroupAggregation<T extends IDocumentObje
   }
 
   @Override
-  public SearchResponse executeQuery() throws InvalidQueryException {
+  SearchResponse executeQuery() throws InvalidQueryException {
     if (logger.isDebugEnabled()) {
-      logger
-          .debug(printCall("CountDistinctValuesFieldPerGroupAggregation", field, group, querySpec));
+      logger.debug(printCall("Executing AggregationQuery with: ", field, group, querySpec));
     }
-
     SearchRequestBuilder request = createSearchRequest(querySpec);
     int aggSize = getAggregationSize(querySpec);
     Order groupOrder = getOrdering(group, querySpec);
 
-    AggregationBuilder groupAgg = AggregationBuilders.terms("GROUP").field(group).size(aggSize).order(groupOrder);
-    CardinalityAggregationBuilder fieldAgg = AggregationBuilders.cardinality("DISTINCT_VALUES").field(field);
+    AggregationBuilder groupAgg =
+        AggregationBuilders.terms("GROUP").field(group).size(aggSize).order(groupOrder);
+    CardinalityAggregationBuilder fieldAgg =
+        AggregationBuilders.cardinality("DISTINCT_VALUES").field(field);
     groupAgg.subAggregation(fieldAgg);
     request.addAggregation(groupAgg);
 

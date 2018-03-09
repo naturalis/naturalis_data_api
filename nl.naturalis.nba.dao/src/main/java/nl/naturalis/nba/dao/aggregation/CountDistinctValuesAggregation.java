@@ -11,7 +11,6 @@ public abstract class CountDistinctValuesAggregation<T extends IDocumentObject, 
   CountDistinctValuesAggregation(DocumentType<T> dt, String field, QuerySpec querySpec) {
     super(dt, querySpec);
     this.field = field;
-
   }
 
 }

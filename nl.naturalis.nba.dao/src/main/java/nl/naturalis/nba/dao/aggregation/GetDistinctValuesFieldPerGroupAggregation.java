@@ -4,6 +4,7 @@ import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static nl.naturalis.nba.dao.aggregation.AggregationQueryUtils.getAggregationSize;
 import static nl.naturalis.nba.dao.aggregation.AggregationQueryUtils.getOrdering;
 import static nl.naturalis.nba.dao.util.es.ESUtil.executeSearchRequest;
+import static nl.naturalis.nba.utils.debug.DebugUtil.printCall;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -21,22 +22,21 @@ import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.dao.DocumentType;
-import nl.naturalis.nba.dao.NbaDao;
 
 public class GetDistinctValuesFieldPerGroupAggregation<T extends IDocumentObject, U>
     extends GetDistinctValuesPerGroupAggregation<T, List<Map<String, Object>>> {
 
-  private static final Logger logger = getLogger(NbaDao.class);
+  private static final Logger logger = getLogger(GetDistinctValuesFieldPerGroupAggregation.class);
 
   GetDistinctValuesFieldPerGroupAggregation(DocumentType<T> dt, String field, String group,
       QuerySpec querySpec) {
     super(dt, field, group, querySpec);
   }
 
-  public SearchResponse executeQuery() throws InvalidQueryException {
-
-    logger.info(">>> Field: " + field + " >>> Group: " + group);
-
+  SearchResponse executeQuery() throws InvalidQueryException {
+    if (logger.isDebugEnabled()) {
+      logger.debug(printCall("Executing AggregationQuery with: ", field, group, querySpec));
+    }
     SearchRequestBuilder request = createSearchRequest(querySpec);
     int aggSize = getAggregationSize(querySpec);
     Order fieldOrder = getOrdering(field, querySpec);

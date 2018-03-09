@@ -1,5 +1,7 @@
 package nl.naturalis.nba.dao.aggregation;
 
+import static nl.naturalis.nba.dao.aggregation.AggregationQueryUtils.getAggregationSize;
+import static nl.naturalis.nba.dao.aggregation.AggregationQueryUtils.getOrdering;
 import static nl.naturalis.nba.dao.util.es.ESUtil.executeSearchRequest;
 import static org.elasticsearch.search.aggregations.AggregationBuilders.terms;
 import java.util.LinkedHashMap;
@@ -28,7 +30,7 @@ public class GetDistinctValuesFieldAggregation<T extends IDocumentObject, U>
     SearchRequestBuilder request = createSearchRequest(querySpec);
 
     int aggSize = getAggregationSize(querySpec);
-    Order fieldOrder = setOrdering(field, querySpec);
+    Order fieldOrder = getOrdering(field, querySpec);
 
     TermsAggregationBuilder termsAggregation = terms("FIELD");
     termsAggregation.field(field);

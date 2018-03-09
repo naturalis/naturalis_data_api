@@ -1,6 +1,9 @@
 package nl.naturalis.nba.dao.aggregation;
 
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
+import static nl.naturalis.nba.dao.aggregation.AggregationQueryUtils.getAggregationSize;
+import static nl.naturalis.nba.dao.aggregation.AggregationQueryUtils.getNestedPath;
+import static nl.naturalis.nba.dao.aggregation.AggregationQueryUtils.getOrdering;
 import static nl.naturalis.nba.dao.util.es.ESUtil.executeSearchRequest;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -38,10 +41,10 @@ public class GetDistinctValuesFieldPerNestedGroupAggregation<T extends IDocument
   public SearchResponse executeQuery() throws InvalidQueryException {
 
     SearchRequestBuilder request = createSearchRequest(querySpec);
-    String pathToNestedGroup = getNestedPath(group);
+    String pathToNestedGroup = getNestedPath(dt, group);
     int aggSize = getAggregationSize(querySpec);
-    Order fieldOrder = setOrdering(field, querySpec);
-    Order groupOrder = setOrdering(group, querySpec);
+    Order fieldOrder = getOrdering(field, querySpec);
+    Order groupOrder = getOrdering(group, querySpec);
 
     AggregationBuilder fieldAgg =
         AggregationBuilders.terms("FIELD").field(field).size(aggSize).order(fieldOrder);

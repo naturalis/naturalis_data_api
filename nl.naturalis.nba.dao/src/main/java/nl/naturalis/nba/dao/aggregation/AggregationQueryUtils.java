@@ -56,7 +56,7 @@ public final class AggregationQueryUtils {
    * @param querySpec
    * @return order
    */
-  public static Order setOrdering(String fieldName, QuerySpec querySpec) {
+  public static Order getOrdering(String fieldName, QuerySpec querySpec) {
     Order order = Terms.Order.count(false);
     if (querySpec != null && querySpec.getSortFields() != null) {
       for (SortField sortField : querySpec.getSortFields()) {

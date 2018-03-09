@@ -1,6 +1,7 @@
 package nl.naturalis.nba.dao.aggregation;
 
 import static nl.naturalis.nba.dao.util.es.ESUtil.executeSearchRequest;
+import static nl.naturalis.nba.dao.aggregation.AggregationQueryUtils.getNestedPath;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
@@ -21,7 +22,7 @@ public class CountDistinctValuesNestedFieldAggregation<T extends IDocumentObject
   @Override
   public SearchResponse executeQuery() throws InvalidQueryException {
     SearchRequestBuilder request = createSearchRequest(querySpec);
-    String nestedPath = getNestedPath(field);
+    String nestedPath = getNestedPath(dt, field);
     AggregationBuilder nested = AggregationBuilders.nested("NESTED", nestedPath);
     AggregationBuilder agg = AggregationBuilders.cardinality("CARDINALITY").field(field);
     nested.subAggregation(agg);

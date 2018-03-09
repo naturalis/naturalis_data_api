@@ -1,5 +1,8 @@
 package nl.naturalis.nba.dao.aggregation;
 
+import static nl.naturalis.nba.dao.aggregation.AggregationQueryUtils.getAggregationSize;
+import static nl.naturalis.nba.dao.aggregation.AggregationQueryUtils.getNestedPath;
+import static nl.naturalis.nba.dao.aggregation.AggregationQueryUtils.getOrdering;
 import static nl.naturalis.nba.dao.util.es.ESUtil.executeSearchRequest;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -33,10 +36,10 @@ public class CountDistinctValuesNestedFieldPerNestedGroupAggregation<T extends I
   public SearchResponse executeQuery() throws InvalidQueryException {
 
     SearchRequestBuilder request = createSearchRequest(querySpec);
-    String pathToNestedField = getNestedPath(field);
-    String pathToNestedGroup = getNestedPath(group);
+    String pathToNestedField = getNestedPath(dt, field);
+    String pathToNestedGroup = getNestedPath(dt, group);
     int aggSize = getAggregationSize(querySpec);
-    Order groupOrder = setOrdering(group, querySpec);
+    Order groupOrder = getOrdering(group, querySpec);
 
     AggregationBuilder fieldAgg = AggregationBuilders.reverseNested("REVERSE_NESTED_FIELD");
     AggregationBuilder fieldNested = AggregationBuilders.nested(field, pathToNestedField);

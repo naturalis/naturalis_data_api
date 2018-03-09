@@ -1,5 +1,8 @@
 package nl.naturalis.nba.dao.aggregation;
 
+import static nl.naturalis.nba.dao.aggregation.AggregationQueryUtils.getAggregationSize;
+import static nl.naturalis.nba.dao.aggregation.AggregationQueryUtils.getNestedPath;
+import static nl.naturalis.nba.dao.aggregation.AggregationQueryUtils.getOrdering;
 import static nl.naturalis.nba.dao.util.es.ESUtil.executeSearchRequest;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -31,9 +34,9 @@ public class CountDistinctValuesNestedFieldPerGroupAggregation<T extends IDocume
   public SearchResponse executeQuery() throws InvalidQueryException {
 
     SearchRequestBuilder request = createSearchRequest(querySpec);
-    String pathToNestedField = getNestedPath(field);
+    String pathToNestedField = getNestedPath(dt, field);
     int aggSize = getAggregationSize(querySpec);
-    Order groupOrder = setOrdering(group, querySpec);
+    Order groupOrder = getOrdering(group, querySpec);
 
     AggregationBuilder fieldAgg = AggregationBuilders.nested("FIELD", pathToNestedField);
     CardinalityAggregationBuilder cardinalityField = AggregationBuilders.cardinality("DISTINCT_VALUES").field(field);

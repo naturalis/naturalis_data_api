@@ -1,6 +1,8 @@
 package nl.naturalis.nba.dao.aggregation;
 
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
+import static nl.naturalis.nba.dao.aggregation.AggregationQueryUtils.getAggregationSize;
+import static nl.naturalis.nba.dao.aggregation.AggregationQueryUtils.getOrdering;
 import static nl.naturalis.nba.dao.util.es.ESUtil.executeSearchRequest;
 import static nl.naturalis.nba.utils.debug.DebugUtil.printCall;
 import java.util.LinkedHashMap;
@@ -42,7 +44,7 @@ public class CountDistinctValuesFieldPerGroupAggregation<T extends IDocumentObje
 
     SearchRequestBuilder request = createSearchRequest(querySpec);
     int aggSize = getAggregationSize(querySpec);
-    Order groupOrder = setOrdering(group, querySpec);
+    Order groupOrder = getOrdering(group, querySpec);
 
     AggregationBuilder groupAgg = AggregationBuilders.terms("GROUP").field(group).size(aggSize).order(groupOrder);
     CardinalityAggregationBuilder fieldAgg = AggregationBuilders.cardinality("DISTINCT_VALUES").field(field);

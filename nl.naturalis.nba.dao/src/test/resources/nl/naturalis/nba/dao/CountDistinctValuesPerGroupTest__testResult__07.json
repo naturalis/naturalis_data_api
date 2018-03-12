@@ -1,0 +1,30 @@
+[
+  {
+    "sourceSystem.code": "BRAHMS",
+    "count": 6,
+    "values": [
+      {
+        "collectionType": "Botany",
+        "count": 6
+      }
+    ]
+  },
+  {
+    "sourceSystem.code": "CRS",
+    "count": 6,
+    "values": [
+      {
+        "collectionType": "Mollusca",
+        "count": 3
+      },
+      {
+        "collectionType": "Mineralogy",
+        "count": 2
+      },
+      {
+        "collectionType": "Hymenoptera",
+        "count": 1
+      }
+    ]
+  }
+]

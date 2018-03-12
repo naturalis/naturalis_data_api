@@ -1,0 +1,34 @@
+[
+  {
+    "sourceSystem.code": "BRAHMS",
+    "count": 6,
+    "values": [
+      {
+        "identifications.defaultClassification.className": "Magnoliopsida",
+        "count": 6
+      }
+    ]
+  },
+  {
+    "sourceSystem.code": "CRS",
+    "count": 6,
+    "values": [
+      {
+        "identifications.defaultClassification.className": "Bivalvia",
+        "count": 1
+      },
+      {
+        "identifications.defaultClassification.className": "Insecta",
+        "count": 1
+      },
+      {
+        "identifications.defaultClassification.className": "Gastropoda",
+        "count": 1
+      },
+      {
+        "identifications.defaultClassification.className": "Cephalopoda",
+        "count": 1
+      }
+    ]
+  }
+]

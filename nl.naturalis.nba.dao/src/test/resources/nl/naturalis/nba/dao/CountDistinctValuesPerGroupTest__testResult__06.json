@@ -1,0 +1,18 @@
+[
+  {
+    "identifications.defaultClassification.className": "Bivalvia",
+    "sourceSystem.code": 1
+  },
+  {
+    "identifications.defaultClassification.className": "Cephalopoda",
+    "sourceSystem.code": 1
+  },
+  {
+    "identifications.defaultClassification.className": "Gastropoda",
+    "sourceSystem.code": 1
+  },
+  {
+    "identifications.defaultClassification.className": "Insecta",
+    "sourceSystem.code": 1
+  }
+]

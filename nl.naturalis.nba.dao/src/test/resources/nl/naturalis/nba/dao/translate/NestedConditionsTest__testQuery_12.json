@@ -1,0 +1,95 @@
+{
+  "from" : 0,
+  "size" : 10,
+  "query" : {
+    "bool" : {
+      "should" : [
+        {
+          "nested" : {
+            "query" : {
+              "term" : {
+                "identifications.scientificName.fullScientificName" : {
+                  "value" : "Larus f. fuscus",
+                  "boost" : 1.0
+                }
+              }
+            },
+            "path" : "identifications",
+            "ignore_unmapped" : false,
+            "score_mode" : "avg",
+            "boost" : 1.0
+          }
+        },
+        {
+          "nested" : {
+            "query" : {
+              "bool" : {
+                "should" : [
+                  {
+                    "term" : {
+                      "identifications.scientificName.fullScientificName" : {
+                        "value" : "Malus sylvestris",
+                        "boost" : 1.0
+                      }
+                    }
+                  }
+                ],
+                "disable_coord" : false,
+                "adjust_pure_negative" : true,
+                "boost" : 1.0
+              }
+            },
+            "path" : "identifications",
+            "ignore_unmapped" : false,
+            "score_mode" : "avg",
+            "boost" : 1.0
+          }
+        }
+      ],
+      "disable_coord" : false,
+      "adjust_pure_negative" : true,
+      "boost" : 1.0
+    }
+  },
+  "sort" : [
+    {
+      "identifications.scientificName.fullScientificName" : {
+        "order" : "desc",
+        "mode" : "max",
+        "nested_filter" : {
+          "bool" : {
+            "should" : [
+              {
+                "term" : {
+                  "identifications.scientificName.fullScientificName" : {
+                    "value" : "Larus f. fuscus",
+                    "boost" : 1.0
+                  }
+                }
+              },
+              {
+                "term" : {
+                  "identifications.scientificName.fullScientificName" : {
+                    "value" : "Malus sylvestris",
+                    "boost" : 1.0
+                  }
+                }
+              }
+            ],
+            "disable_coord" : false,
+            "adjust_pure_negative" : true,
+            "boost" : 1.0
+          }
+        },
+        "nested_path" : "identifications"
+      }
+    },
+    {
+      "unitID" : {
+        "order" : "asc",
+        "mode" : "min"
+      }
+    }
+  ],
+  "ext" : { }
+}

@@ -1,0 +1,147 @@
+{
+  "from" : 0,
+  "size" : 10,
+  "query" : {
+    "bool" : {
+      "must" : [
+        {
+          "nested" : {
+            "query" : {
+              "bool" : {
+                "must" : [
+                  {
+                    "term" : {
+                      "identifications.scientificName.genusOrMonomial" : {
+                        "value" : "Conus",
+                        "boost" : 1.0
+                      }
+                    }
+                  }
+                ],
+                "disable_coord" : false,
+                "adjust_pure_negative" : true,
+                "boost" : 1.0
+              }
+            },
+            "path" : "identifications",
+            "ignore_unmapped" : false,
+            "score_mode" : "avg",
+            "boost" : 1.0
+          }
+        },
+        {
+          "bool" : {
+            "must" : [
+              {
+                "exists" : {
+                  "field" : "unitID",
+                  "boost" : 1.0
+                }
+              },
+              {
+                "bool" : {
+                  "must" : [
+                    {
+                      "nested" : {
+                        "query" : {
+                          "bool" : {
+                            "must" : [
+                              {
+                                "term" : {
+                                  "gatheringEvent.gatheringPersons.fullName" : {
+                                    "value" : "Hoenselaar, H.J.",
+                                    "boost" : 1.0
+                                  }
+                                }
+                              }
+                            ],
+                            "disable_coord" : false,
+                            "adjust_pure_negative" : true,
+                            "boost" : 1.0
+                          }
+                        },
+                        "path" : "gatheringEvent.gatheringPersons",
+                        "ignore_unmapped" : false,
+                        "score_mode" : "avg",
+                        "boost" : 1.0
+                      }
+                    },
+                    {
+                      "bool" : {
+                        "must" : [
+                          {
+                            "nested" : {
+                              "query" : {
+                                "bool" : {
+                                  "must" : [
+                                    {
+                                      "term" : {
+                                        "identifications.defaultClassification.phylum" : {
+                                          "value" : "Mollusca",
+                                          "boost" : 1.0
+                                        }
+                                      }
+                                    }
+                                  ],
+                                  "disable_coord" : false,
+                                  "adjust_pure_negative" : true,
+                                  "boost" : 1.0
+                                }
+                              },
+                              "path" : "identifications",
+                              "ignore_unmapped" : false,
+                              "score_mode" : "avg",
+                              "boost" : 1.0
+                            }
+                          },
+                          {
+                            "bool" : {
+                              "should" : [
+                                {
+                                  "term" : {
+                                    "gatheringEvent.country" : {
+                                      "value" : "Spain",
+                                      "boost" : 1.0
+                                    }
+                                  }
+                                },
+                                {
+                                  "term" : {
+                                    "gatheringEvent.country" : {
+                                      "value" : "Portugal",
+                                      "boost" : 1.0
+                                    }
+                                  }
+                                }
+                              ],
+                              "disable_coord" : false,
+                              "adjust_pure_negative" : true,
+                              "boost" : 1.0
+                            }
+                          }
+                        ],
+                        "disable_coord" : false,
+                        "adjust_pure_negative" : true,
+                        "boost" : 1.0
+                      }
+                    }
+                  ],
+                  "disable_coord" : false,
+                  "adjust_pure_negative" : true,
+                  "boost" : 1.0
+                }
+              }
+            ],
+            "disable_coord" : false,
+            "adjust_pure_negative" : true,
+            "boost" : 1.0
+          }
+        }
+      ],
+      "disable_coord" : false,
+      "adjust_pure_negative" : true,
+      "boost" : 1.0
+    }
+  },
+  "ext" : { }
+}

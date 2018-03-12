@@ -25,12 +25,9 @@
 
 	<properties>
 
-		<!--
-			Both dao and etl module unit tests must be started with -Dnba.v2.conf.dir,
-			pointing to a directory containg nba.properties and log4j2.xml. We use
-			src/test/resources/conf in the dao module to cater for both dao unit tests
-			and etl unit tests.
-		-->
+		<!-- Both dao and etl module unit tests must be started with -Dnba.v2.conf.dir, 
+			pointing to a directory containg nba.properties and log4j2.xml. We use src/test/resources/conf 
+			in the dao module to cater for both dao unit tests and etl unit tests. -->
 		<test.conf.dir>${project.basedir}/../nl.naturalis.nba.dao/target/test-classes/conf</test.conf.dir>
 
 
@@ -72,7 +69,13 @@
 
 
 		<junit.version>4.12</junit.version>
-		<hamcrest.version>1.3</hamcrest.version>
+		<hamcrest-core.version>1.3</hamcrest-core.version>
+		<hamcrest-all.version>1.3</hamcrest-all.version>
+		<mockito-core.version>2.8.9</mockito-core.version>
+		<mockito-all.version>1.10.19</mockito-all.version>
+		<powermock-module-junit4.version>1.7.1</powermock-module-junit4.version>
+		<powermock-core.version>1.7.1</powermock-core.version>
+		<powermock-api-mockito.version>1.7.1</powermock-api-mockito.version>
 
 
 		<!-- Maven plugin versions. Check for available updates: mvn versions:display-plugin-updates -->
@@ -306,7 +309,37 @@
 			<dependency>
 				<groupId>org.hamcrest</groupId>
 				<artifactId>hamcrest-core</artifactId>
-				<version>${hamcrest.version}</version>
+				<version>${hamcrest-core.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.hamcrest</groupId>
+				<artifactId>hamcrest-all</artifactId>
+				<version>${hamcrest-all.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.powermock</groupId>
+				<artifactId>powermock-core</artifactId>
+				<version>${powermock-core.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.mockito</groupId>
+				<artifactId>mockito-core</artifactId>
+				<version>${mockito-core.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.mockito</groupId>
+				<artifactId>mockito-all</artifactId>
+				<version>${mockito-all.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.powermock</groupId>
+				<artifactId>powermock-module-junit4</artifactId>
+				<version>${powermock-module-junit4.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.powermock</groupId>
+				<artifactId>powermock-api-mockito</artifactId>
+				<version>${powermock-api-mockito.version}</version>
 			</dependency>
 
 		</dependencies>

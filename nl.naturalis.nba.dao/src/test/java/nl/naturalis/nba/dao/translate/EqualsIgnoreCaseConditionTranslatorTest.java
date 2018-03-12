@@ -36,12 +36,13 @@ public class EqualsIgnoreCaseConditionTranslatorTest {
 	@Test
 	public void testTranslateWithNestedField_01() throws InvalidConditionException
 	{
-		QueryCondition condition = new QueryCondition("addressBook.street", EQUALS_IC,
-				"Market street");
+		QueryCondition condition = new QueryCondition("addressBook.street", EQUALS_IC, "Market street");
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
-		QueryBuilder query = ct.translate();
-		//System.out.println(query);
+
+		QueryBuilder query = ct.singleCondition().translate();  // true, since this query has only one condition.
+
 		assertTrue("01", query instanceof NestedQueryBuilder);
+		
 		String file = "translate/search/EqualsIgnoreCaseConditionTranslatorTest__testTranslateWithNestedField_01.json";
 		assertTrue("02", queryEquals(query, file));
 	}

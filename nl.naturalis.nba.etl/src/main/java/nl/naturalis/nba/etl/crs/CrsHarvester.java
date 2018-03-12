@@ -165,7 +165,7 @@ public class CrsHarvester {
 	{
 		StringBuilder sb = new StringBuilder(100);
 		ConfigObject cfg = DaoRegistry.getInstance().getConfiguration();
-		String dir = cfg.getDirectory("crs.data_dir").getAbsolutePath();
+		String dir = cfg.getDirectory("crs.data.dir").getAbsolutePath();
 		sb.append(dir).append('/').append(type).append('.');
 		if (fromDate == null)
 			sb.append("00000000000000");

@@ -1,3 +1,15 @@
+RELEASE NOTES v 2.12
+
+* Fix of know issue (see v 2.11.4). Conditions 
+  directed at fields in nested documents, are now
+  related to other conditions in the same nested
+  documents. Query results are now as expected.
+
+* Rigigorous testing methods have been added to the
+  ETL module. These tests ensure consistency of data
+  imports over code changes in both the ETL module 
+  itself, as in other modules as well.
+
 RELEASE NOTES v 2.11.4
 
 * KNOWN ISSUE The implementation for nested queries 

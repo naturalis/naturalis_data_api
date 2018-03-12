@@ -1,0 +1,2 @@
+taxonID	vernacularName	language	countryCode	locality	transliteration
+6931870	pinhead spot	English US	USA		

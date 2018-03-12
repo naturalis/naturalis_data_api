@@ -1,26 +1,30 @@
 package nl.naturalis.nba.dao.translate;
 
 import static nl.naturalis.nba.api.ComparisonOperator.NOT_BETWEEN;
-import static nl.naturalis.nba.api.ComparisonOperator.NOT_IN;
 import static nl.naturalis.nba.api.ComparisonOperator.NOT_CONTAINS;
+import static nl.naturalis.nba.api.ComparisonOperator.NOT_IN;
 import static nl.naturalis.nba.api.ComparisonOperator.NOT_MATCHES;
 import static nl.naturalis.nba.api.ComparisonOperator.NOT_STARTS_WITH;
 import static nl.naturalis.nba.api.ComparisonOperator.NOT_STARTS_WITH_IC;
+import static nl.naturalis.nba.api.LogicalOperator.AND;
+import static nl.naturalis.nba.api.LogicalOperator.OR;
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static nl.naturalis.nba.dao.translate.TranslatorUtil.getNestedPath;
-import static nl.naturalis.nba.dao.translate.TranslatorUtil.*;
+import static nl.naturalis.nba.dao.translate.TranslatorUtil.isFalseCondition;
+import static nl.naturalis.nba.dao.translate.TranslatorUtil.isTrueCondition;
 import static nl.naturalis.nba.utils.CollectionUtil.hasElements;
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.constantScoreQuery;
 import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
-
+import java.util.ArrayList;
 import java.util.EnumSet;
-
+import java.util.LinkedHashMap;
+import java.util.Map.Entry;
 import org.apache.logging.log4j.Logger;
 import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.NestedQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
-
 import nl.naturalis.nba.api.ComparisonOperator;
 import nl.naturalis.nba.api.InvalidConditionException;
 import nl.naturalis.nba.api.QueryCondition;
@@ -59,6 +63,13 @@ abstract class ConditionTranslator {
 
 	QueryCondition condition;
 	MappingInfo<?> mappingInfo;
+	
+	/*
+	 * Dealing with conditions, there is one special case: the single condition.
+	 * We have to mark this condition, because it needs a special treatment
+	 * during translation.  
+	 */
+	private boolean singleCondition = false;
 
 	/*
 	 * Whether or not to translate this condition for a "nested_filter" block
@@ -75,12 +86,22 @@ abstract class ConditionTranslator {
 		this.mappingInfo = mappingInfo;
 	}
 
+	ConditionTranslator singleCondition()
+	{
+	  this.singleCondition = true;
+	  return this;
+	}
+	
+	boolean isSingleCondition() {
+	  return singleCondition;
+	}
+	
 	ConditionTranslator forSortField()
 	{
 		this.forSortField = true;
 		return this;
 	}
-
+	
 	/**
 	 * Converts the {@link QueryCondition} passed in through the
 	 * {@link #ConditionTranslator(QueryCondition) constructor} to an
@@ -106,13 +127,23 @@ abstract class ConditionTranslator {
 		else if (hasElements(condition.getOr())) {
 			query = generateOrSiblings(query);
 		}
+		else if ( isSingleCondition() ) {
+		  String nestedPath = getNestedPath(condition.getField(), mappingInfo);
+		  if (nestedPath != null) {
+		    query = nestedQuery(nestedPath, query, ScoreMode.Avg);
+		  }
+		  if (getClass() == IsNullConditionTranslator.class) {
+		    BoolQueryBuilder bq = boolQuery();
+		    query = bq.mustNot(query);
+		  }
+		}
 		if (condition.isNegated()) {
 			query = not(query);
 		}
 		query.boost(condition.getBoost());
 		return query;
 	}
-
+	
 	/*
 	 * Implement any up-front/fail-fast checks you can think of. Subclasses
 	 * should throw an InvalidConditionException if the condition is deemed
@@ -138,10 +169,6 @@ abstract class ConditionTranslator {
 	QueryBuilder postprocess(QueryBuilder query)
 	{
 		if (!isTrueCondition(condition) && !isFalseCondition(condition)) {
-			String nestedPath = getNestedPath(condition.getField(), mappingInfo);
-			if (nestedPath != null) {
-				query = nestedQuery(nestedPath, query, ScoreMode.Avg);
-			}
 			if (hasNegativeOperator()) {
 				query = not(query);
 			}
@@ -160,28 +187,82 @@ abstract class ConditionTranslator {
 		return query;
 	}
 
-	private BoolQueryBuilder generateAndSiblings(QueryBuilder firstSibling)
-			throws InvalidConditionException
-	{
-		BoolQueryBuilder query = boolQuery();
-		query.must(firstSibling);
-		for (QueryCondition c : condition.getAnd()) {
-			query.must(getTranslator(c, mappingInfo).translate());
-		}
-		return query;
-	}
+  private BoolQueryBuilder generateAndSiblings(QueryBuilder firstSibling) throws InvalidConditionException {
+
+    ConditionCollector collector = new ConditionCollector(condition, mappingInfo);
+    LinkedHashMap<String, ArrayList<QueryCondition>> conditionsMap = collector.createConditionsMap(AND);
+    BoolQueryBuilder bq = boolQuery();
+    for (Entry<String, ArrayList<QueryCondition>> entry : conditionsMap.entrySet()) {
+      String nestedPath = entry.getKey();
+      if (forSortField || nestedPath == null) {
+        for (QueryCondition qc : entry.getValue()) {
+          if (qc == condition) {
+            bq.must(firstSibling);
+          } 
+          else {
+            bq.must(getTranslator(qc, mappingInfo).translate());
+          }
+        }
+      }
+      else {
+        BoolQueryBuilder innerBool = boolQuery();
+        for (QueryCondition qc : entry.getValue()) {
+          if (qc == condition) {
+            innerBool.must(firstSibling);
+          }
+          else {
+            innerBool.must(getTranslator(qc, mappingInfo).translate());
+          }
+        }
+        NestedQueryBuilder nestedQuery = nestedQuery(nestedPath, innerBool, ScoreMode.Avg);
+        bq.must(nestedQuery);        
+      }
+    }
+    return bq;
+  }
 
 	private BoolQueryBuilder generateOrSiblings(QueryBuilder firstSibling)
 			throws InvalidConditionException
 	{
-		BoolQueryBuilder query = boolQuery();
-		query.should(firstSibling);
-		for (QueryCondition c : condition.getOr()) {
-			query.should(getTranslator(c, mappingInfo).translate());
-		}
-		return query;
+	  
+	  ConditionCollector collector = new ConditionCollector(condition, mappingInfo);
+	  LinkedHashMap<String, ArrayList<QueryCondition>> conditionsMap = collector.createConditionsMap(OR);
+    BoolQueryBuilder bq = boolQuery();
+    for (Entry<String, ArrayList<QueryCondition>> entry : conditionsMap.entrySet()) {
+      String nestedPath = entry.getKey();
+      if (forSortField || nestedPath == null) {
+        for (QueryCondition qc : entry.getValue()) {
+          if (qc == condition) {
+            bq.should(firstSibling);
+          } 
+          else {
+            bq.should(getTranslator(qc, mappingInfo).translate());
+          }
+        }
+      }
+      else {
+        for (QueryCondition qc : entry.getValue()) {
+          if (qc == condition) {
+            if (hasElements(condition.getAnd())) {
+              bq.should(firstSibling);              
+            }
+            else {
+              NestedQueryBuilder nestedQuery = nestedQuery(nestedPath, firstSibling, ScoreMode.Avg);
+              bq.should(nestedQuery);
+            }
+          }
+          else {
+            BoolQueryBuilder innerBool = boolQuery();
+            innerBool.should(getTranslator(qc, mappingInfo).translate());
+            NestedQueryBuilder nestedQuery = nestedQuery(nestedPath, innerBool, ScoreMode.Avg);
+            bq.should(nestedQuery);        
+          }
+        }
+      }
+    }
+    return bq;
 	}
-
+	
 	/*
 	 * Whether or not the condition translated by this translator instance uses
 	 * a negating operator.

@@ -13,6 +13,7 @@ import org.elasticsearch.index.query.QueryBuilder;
 
 import nl.naturalis.nba.api.model.GeoArea;
 import nl.naturalis.nba.api.model.IDocumentObject;
+import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.util.es.ESUtil;
@@ -96,6 +97,20 @@ public class DaoTestUtil {
 			specimen.setId(id);
 		}
 	}
+	
+	 public static void saveMultiMediaObject(MultiMediaObject mmo, boolean refreshIndex)
+	  {
+	    if (mmo.getId() == null) {
+	      String id = mmo.getUnitID() + "@" + mmo.getSourceSystem().getCode();
+	      saveObject(id, null, mmo, refreshIndex);
+	    }
+	    else {
+	      String id = mmo.getId();
+	      mmo.setId(null);
+	      saveObject(id, null, mmo, refreshIndex);
+	      mmo.setId(id);
+	    }
+	  }
 
 	public static void saveGeoAreas(GeoArea... areas)
 	{

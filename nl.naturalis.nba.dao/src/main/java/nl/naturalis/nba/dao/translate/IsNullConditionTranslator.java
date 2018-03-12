@@ -54,6 +54,13 @@ class IsNullConditionTranslator extends ConditionTranslator {
 	@Override
 	boolean hasNegativeOperator()
 	{
+	  /* If the original queryspec contains just one condition, we need to 
+	   * to wrap the exists query just after it has been wrapped  (only when
+	   * needed) as a nested path query during translate().
+	   */
+	  if ( isSingleCondition() ) {
+	    return false;
+	  }
 		return true;
 	}
 

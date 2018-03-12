@@ -9,7 +9,7 @@ import nl.naturalis.nba.dao.DocumentType;
 public abstract class AggregationQueryFactory<T> {
 
   public static <T extends IDocumentObject> AggregationQuery<T, ?> createAggregationQuery(
-      String type, DocumentType<T> dt, String field, String group, QuerySpec querySpec)
+      AggregationType type, DocumentType<T> dt, String field, String group, QuerySpec querySpec)
       throws InvalidQueryException {
 
     String pathToNestedField = null;
@@ -21,15 +21,15 @@ public abstract class AggregationQueryFactory<T> {
       pathToNestedGroup = getNestedPath(dt, group);
 
     switch (type) {
-      case "count":
+      case COUNT:
         return new CountAggregation<>(dt, querySpec);
 
-      case "countDistinctValues":
+      case COUNT_DISTINCT_VALUES:
         if (pathToNestedField == null)
           return new CountDistinctValuesFieldAggregation<>(dt, field, querySpec);
         return new CountDistinctValuesNestedFieldAggregation<>(dt, field, querySpec);
 
-      case "countDistinctValuesPerGroup":
+      case COUNT_DISTINCT_VALUES_PER_GROUP:
         if (pathToNestedField == null && pathToNestedGroup == null)
           return new CountDistinctValuesFieldPerGroupAggregation<>(dt, field, group, querySpec);
         else if (pathToNestedField != null && pathToNestedGroup == null)
@@ -42,12 +42,12 @@ public abstract class AggregationQueryFactory<T> {
           return new CountDistinctValuesNestedFieldPerNestedGroupAggregation<>(dt, field, group,
               querySpec);
 
-      case "getDistinctValues":
+      case GET_DISTINCT_VALUES:
         if (pathToNestedField == null)
           return new GetDistinctValuesFieldAggregation<>(dt, field, querySpec);
         return new GetDistinctValuesNestedFieldAggregation<>(dt, field, querySpec);
         
-      case "getDistinctValuesPerGroup":
+      case GET_DISTINCT_VALUES_PER_GROUP:
         if (pathToNestedField == null && pathToNestedGroup == null)
           return new GetDistinctValuesFieldPerGroupAggregation<>(dt, field, group, querySpec);
         else if (pathToNestedField != null && pathToNestedGroup == null)

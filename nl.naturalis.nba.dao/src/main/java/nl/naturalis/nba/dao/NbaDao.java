@@ -6,6 +6,7 @@ import static nl.naturalis.nba.dao.util.es.ESUtil.executeSearchRequest;
 import static nl.naturalis.nba.dao.util.es.ESUtil.newSearchRequest;
 import static nl.naturalis.nba.dao.util.es.ESUtil.toDocumentObject;
 import static nl.naturalis.nba.utils.debug.DebugUtil.printCall;
+import static nl.naturalis.nba.dao.aggregation.AggregationType.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -105,7 +106,7 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
       logger.debug(printCall("count", querySpec));
     }
     AggregationQuery<T, ?> aggregationQuery =
-        createAggregationQuery("count", dt, null, null, querySpec);
+        createAggregationQuery(COUNT, dt, null, null, querySpec);
     return Long.parseLong(aggregationQuery.getResult().toString());
   }
 
@@ -116,7 +117,7 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
       logger.debug(printCall("countDistinctValues", forField, querySpec));
     }
     AggregationQuery<T, ?> aggregationQuery =
-        createAggregationQuery("countDistinctValues", dt, forField, null, querySpec);
+        createAggregationQuery(COUNT_DISTINCT_VALUES, dt, forField, null, querySpec);
     return Long.parseLong(aggregationQuery.getResult().toString());
   }
 
@@ -128,7 +129,7 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
       logger.debug(printCall("countDistinctValuesPerGroup", forField, forGroup, querySpec));
     }
     AggregationQuery<T, ?> aggregationQuery =
-        createAggregationQuery("countDistinctValuesPerGroup", dt, forField, forGroup, querySpec);
+        createAggregationQuery(COUNT_DISTINCT_VALUES_PER_GROUP, dt, forField, forGroup, querySpec);
     return (List<Map<String, Object>>) aggregationQuery.getResult();
   }
 
@@ -140,7 +141,7 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
       logger.debug(printCall("getDistinctValues", forField, querySpec));
     }
     AggregationQuery<T, ?> aggregationQuery =
-        createAggregationQuery("getDistinctValues", dt, forField, null, querySpec);
+        createAggregationQuery(GET_DISTINCT_VALUES, dt, forField, null, querySpec);
     return (Map<String, Long>) aggregationQuery.getResult();
   }
 
@@ -152,7 +153,7 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
       logger.debug(printCall("getDistinctValuesPerGroup", forField, forGroup, querySpec));
     }
     AggregationQuery<T, ?> aggregationQuery =
-        createAggregationQuery("getDistinctValuesPerGroup", dt, forField, forGroup, querySpec);
+        createAggregationQuery(GET_DISTINCT_VALUES_PER_GROUP, dt, forField, forGroup, querySpec);
     return (List<Map<String, Object>>) aggregationQuery.getResult();
   }
 

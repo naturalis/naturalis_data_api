@@ -64,6 +64,23 @@ public class ClientUtil {
 		}
 	}
 
+	 /**
+   * Extracts and returns a long from a JSON server response.
+   * 
+   * @param response
+   * @return
+   */
+  public static long getLong(byte[] response)
+  {
+    try {
+      ObjectMapper om = oml.getObjectMapper(long.class);
+      return om.readValue(response, long.class);
+    }
+    catch (IOException e) {
+      throw new ClientException(e);
+    }
+  }
+	
 	/**
 	 * Extracts and returns a boolean value from a JSON server response.
 	 * 

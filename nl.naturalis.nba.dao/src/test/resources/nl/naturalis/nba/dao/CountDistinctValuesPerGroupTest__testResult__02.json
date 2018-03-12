@@ -1,0 +1,10 @@
+[
+  {
+    "sourceSystem.code": "BRAHMS",
+    "identifications.defaultClassification.className": 1
+  },
+  {
+    "sourceSystem.code": "CRS",
+    "identifications.defaultClassification.className": 3
+  }
+]

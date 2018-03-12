@@ -1,6 +1,7 @@
 package nl.naturalis.nba.rest.resource;
 
 import static nl.naturalis.nba.rest.util.ResourceUtil.handleError;
+import java.util.List;
 import java.util.Map;
 import javax.ejb.EJB;
 import javax.ws.rs.core.MultivaluedMap;
@@ -98,6 +99,58 @@ public abstract class NbaResource<T extends IDocumentObject, U extends NbaDao<T>
     }
   }
 
+  public long countDistinctValuesHttpGet(String field, UriInfo uriInfo) {
+    try {
+      QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
+      return dao.countDistinctValues(field, qs);
+    } catch (Throwable t) {
+      throw handleError(uriInfo, t);
+    }
+  }
+
+  public Long countDistinctValuesHttpPostForm(String field, MultivaluedMap<String, String> form, UriInfo uriInfo) {
+    try {
+      QuerySpec qs = new HttpQuerySpecBuilder(form, uriInfo).build();
+      return dao.countDistinctValues(field, qs);
+    } catch (Throwable t) {
+      throw handleError(uriInfo, t);
+    }
+  }
+
+  public Long countDistinctValuesHttpPostJson(String field, QuerySpec qs, UriInfo uriInfo) {
+    try {
+      return dao.countDistinctValues(field, qs);
+    } catch (Throwable t) {
+      throw handleError(uriInfo, t);
+    }
+  }
+
+  public List<Map<String, Object>> countDistinctValuesPerGroupHttpGet(String field, String group, UriInfo uriInfo) {
+    try {
+      QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
+      return dao.countDistinctValuesPerGroup(field, group, qs);
+    } catch (Throwable t) {
+      throw handleError(uriInfo, t);
+    }
+  }
+
+  public List<Map<String, Object>> countDistinctValuesPerGroupHttpPostForm(String field, String group, MultivaluedMap<String, String> form, UriInfo uriInfo) {
+    try {
+      QuerySpec qs = new HttpQuerySpecBuilder(form, uriInfo).build();
+      return dao.countDistinctValuesPerGroup(field, group, qs);
+    } catch (Throwable t) {
+      throw handleError(uriInfo, t);
+    }
+  }
+
+  public List<Map<String, Object>> countDistinctValuesPerGroupHttpPostJson(String field, String group, QuerySpec qs, UriInfo uriInfo) {
+    try {
+      return dao.countDistinctValuesPerGroup(field, group, qs);
+    } catch (Throwable t) {
+      throw handleError(uriInfo, t);
+    }
+  }
+  
   public Map<String, Long> getDistinctValuesHttpGet(String field, UriInfo uriInfo) {
     try {
       QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
@@ -107,8 +160,7 @@ public abstract class NbaResource<T extends IDocumentObject, U extends NbaDao<T>
     }
   }
 
-  public Map<String, Long> getDistinctValuesHttpPostForm(String field,
-      MultivaluedMap<String, String> form, UriInfo uriInfo) {
+  public Map<String, Long> getDistinctValuesHttpPostForm(String field, MultivaluedMap<String, String> form, UriInfo uriInfo) {
     try {
       QuerySpec qs = new HttpQuerySpecBuilder(form, uriInfo).build();
       return dao.getDistinctValues(field, qs);
@@ -117,10 +169,35 @@ public abstract class NbaResource<T extends IDocumentObject, U extends NbaDao<T>
     }
   }
 
-  public Map<String, Long> getDistinctValuesHttpPostJson(String field, QuerySpec qs,
-      UriInfo uriInfo) {
+  public Map<String, Long> getDistinctValuesHttpPostJson(String field, QuerySpec qs, UriInfo uriInfo) {
     try {
       return dao.getDistinctValues(field, qs);
+    } catch (Throwable t) {
+      throw handleError(uriInfo, t);
+    }
+  }
+
+  public List<Map<String, Object>> getDistinctValuesPerGroupHttpGet(String field, String group, UriInfo uriInfo) {
+    try {
+      QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
+      return dao.getDistinctValuesPerGroup(field, group, qs);
+    } catch (Throwable t) {
+      throw handleError(uriInfo, t);
+    }
+  }
+
+  public List<Map<String, Object>> getDistinctValuesPerGroupHttpPost(String field, String group, MultivaluedMap<String, String> form, UriInfo uriInfo) {
+    try {
+      QuerySpec qs = new HttpQuerySpecBuilder(form, uriInfo).build();
+      return dao.getDistinctValuesPerGroup(field, group, qs);
+    } catch (Throwable t) {
+      throw handleError(uriInfo, t);
+    }
+  }
+
+  public List<Map<String, Object>> getDistinctValuesPerGroupHttpJson(String field, String group, QuerySpec qs, UriInfo uriInfo) {
+    try {
+      return dao.getDistinctValuesPerGroup(field, group, qs);
     } catch (Throwable t) {
       throw handleError(uriInfo, t);
     }

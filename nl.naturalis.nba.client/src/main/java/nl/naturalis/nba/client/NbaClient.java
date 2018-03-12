@@ -6,7 +6,7 @@ import static nl.naturalis.nba.client.ClientUtil.sendRequest;
 import static nl.naturalis.nba.client.ServerException.newServerException;
 import static nl.naturalis.nba.utils.ArrayUtil.implode;
 import static nl.naturalis.nba.utils.http.SimpleHttpRequest.*;
-
+import java.util.List;
 import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
@@ -96,8 +96,44 @@ abstract class NbaClient<T extends IDocumentObject> extends Client implements IN
 			}
 			throw exception;
 		}
-		return ClientUtil.getObject(request.getResponseBody(), Long.class);
+		return ClientUtil.getLong(request.getResponseBody());
 	}
+	
+  @Override
+  public long countDistinctValues(String forField, QuerySpec querySpec) throws InvalidQueryException {
+    String path = "countDistinctValues/" + forField;
+    SimpleHttpRequest request = newQuerySpecRequest(path, querySpec);
+    sendRequest(request);
+    int status = request.getStatus();
+    if (status != HTTP_OK) {
+      byte[] response = request.getResponseBody();
+      ServerException exception = newServerException(status, response);
+      if (exception.was(InvalidQueryException.class)) {
+        throw invalidQueryException(exception);
+      }
+      throw exception;
+    }
+    return ClientUtil.getLong(request.getResponseBody());
+  }
+  
+  @Override
+  public List<Map<String, Object>> countDistinctValuesPerGroup(String forField, String forGroup, QuerySpec querySpec) throws InvalidQueryException 
+  {
+    String path = "countDistinctValuesPerGroup/" + forField + "/" + forGroup;
+    SimpleHttpRequest request = newQuerySpecRequest(path, querySpec);
+    sendRequest(request);
+    int status = request.getStatus();
+    if (status != HTTP_OK) {
+      byte[] response = request.getResponseBody();
+      ServerException exception = newServerException(status, response);
+      if (exception.was(InvalidQueryException.class)) {
+        throw invalidQueryException(exception);
+      }
+      throw exception;
+    }
+    TypeReference<List<Map<String, Object>>> typeRef = new TypeReference<List<Map<String, Object>>>() {};
+    return getObject(request.getResponseBody(), typeRef);
+  }  
 
 	@Override
 	public Map<String, Long> getDistinctValues(String forField, QuerySpec querySpec)
@@ -119,6 +155,25 @@ abstract class NbaClient<T extends IDocumentObject> extends Client implements IN
 		return getObject(request.getResponseBody(), typeRef);
 	}
 
+  @Override
+  public List<Map<String, Object>> getDistinctValuesPerGroup(String forField, String forGroup, QuerySpec querySpec) throws InvalidQueryException
+  {
+    String path = "getDistinctValuesPerGroup/" + forField + "/" + forGroup;
+    SimpleHttpRequest request = newQuerySpecRequest(path, querySpec);
+    sendRequest(request);
+    int status = request.getStatus();
+    if (status != HTTP_OK) {
+      byte[] response = request.getResponseBody();
+      ServerException exception = newServerException(status, response);
+      if (exception.was(InvalidQueryException.class)) {
+        throw invalidQueryException(exception);
+      }
+      throw exception;
+    }
+    TypeReference<List<Map<String, Object>>> typeRef = new TypeReference<List<Map<String, Object>>>() {};
+    return getObject(request.getResponseBody(), typeRef);
+  }
+	
 	abstract Class<T> documentObjectClass();
 
 	abstract Class<T[]> documentObjectArrayClass();

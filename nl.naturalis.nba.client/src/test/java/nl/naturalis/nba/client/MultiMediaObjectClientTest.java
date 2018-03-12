@@ -6,23 +6,19 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import nl.naturalis.nba.api.GroupByScientificNameQuerySpec;
 import nl.naturalis.nba.api.InvalidQueryException;
-import nl.naturalis.nba.api.NoSuchDataSetException;
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.common.json.JsonUtil;
-import nl.naturalis.nba.utils.debug.DevNullOutputStream;
 
 /**
- * @author Hannes Hettling
  * @author Tom Gilissen
  *
  */
-public class SpecimenClientTest {
+public class MultiMediaObjectClientTest {
 
   private String baseUrl = "http://localhost:8080/v2";
-  private SpecimenClient client;
+  private MultiMediaObjectClient client;
 
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {}
@@ -36,59 +32,11 @@ public class SpecimenClientTest {
     config.setBaseUrl(baseUrl);
     config.setPreferGET(true);
     NbaSession session = new NbaSession(config);
-    client = session.getSpecimenClient();
+    client = session.getMultiMediaObjectClient();
   }
 
   @After
   public void tearDown() throws Exception {}
-
-  /*
-   * Test with valid field & value.
-   */
-  @Test
-  public void test_dwcaQuery01() throws InvalidQueryException {
-    QuerySpec query = new QuerySpec();
-    String field = "identifications.defaultClassification.genus";
-    query.addCondition(new QueryCondition(field, "=", "Parus"));
-    client.dwcaQuery(query, new DevNullOutputStream());
-  }
-
-  /*
-   * Test with non-existent field
-   */
-  @Test(expected = InvalidQueryException.class)
-  public void test_dwcaQuery02() throws InvalidQueryException {
-    QuerySpec query = new QuerySpec();
-    query.addCondition(new QueryCondition("FOO", "=", "BAR"));
-    client.dwcaQuery(query, new DevNullOutputStream());
-  }
-
-  /*
-   * Test with non-existent dataset.
-   */
-  @Test(expected = NoSuchDataSetException.class)
-  public void test_dwcaGetDataSet01() throws NoSuchDataSetException {
-    client.dwcaGetDataSet("FOO", new DevNullOutputStream());
-  }
-
-  /*
-   * Test with valid dataset.
-   */
-  @Test
-  public void test_dwcaGetDataSet02() throws NoSuchDataSetException {
-    client.dwcaGetDataSet("collembola", new DevNullOutputStream());
-  }
-
-  /*
-   * Test with non-existent dataset.
-   */
-  @Test
-  public void test_groupByScientificName01() throws InvalidQueryException {
-    GroupByScientificNameQuerySpec query = new GroupByScientificNameQuerySpec();
-    String field = "identifications.defaultClassification.genus";
-    query.addCondition(new QueryCondition(field, "=", "Parus"));
-    client.groupByScientificName(query);
-  }
 
   /*
    * Tests of the aggregation services
@@ -96,7 +44,7 @@ public class SpecimenClientTest {
   @Test
   public void test_count() throws InvalidQueryException {
     QuerySpec qs = new QuerySpec();
-    qs.addCondition(new QueryCondition("sourceSystem.code", "=", "CRS"));
+    qs.addCondition(new QueryCondition("sourceSystem.code", "=", "BRAHMS"));
     String output = JsonUtil.toPrettyJson(client.count(qs));
     Long result = Long.parseLong(output);
     Assert.assertTrue(result >= 0);
@@ -120,7 +68,7 @@ public class SpecimenClientTest {
     qs.addCondition(new QueryCondition("unitID", "!=", null));
     System.out.println(JsonUtil.toPrettyJson(client.countDistinctValuesPerGroup(field, group, qs)));
   }
-
+  
   @Test
   public void test_getDistinctValues() throws InvalidQueryException {
     String field = "sourceSystem.code";
@@ -134,9 +82,10 @@ public class SpecimenClientTest {
     String field = "sourceSystem.code";
     String group = "collectionType";
     QuerySpec qs = new QuerySpec();
-    qs.addCondition(new QueryCondition("unitID", "!=", null));
+    qs.addCondition(new QueryCondition("sourceSystem.code", "=", "CRS"));
     System.out.println(JsonUtil.toPrettyJson(client.getDistinctValuesPerGroup(field, group, qs)));
   }
+
   
-  
+
 }

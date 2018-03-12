@@ -1,6 +1,7 @@
 package nl.naturalis.nba.api;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import nl.naturalis.nba.api.model.IDocumentObject;
@@ -147,20 +148,56 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
 	 * @throws InvalidQueryException
 	 */
 	long count(QuerySpec querySpec) throws InvalidQueryException;
+	
+	/**
+	 * <p>
+	 * Returns ...
+	 * </p>
+	 * 
+	 * @param field
+	 * @param querySpec
+	 * @return
+	 * @throws InvalidQueryException
+	 */
+	long countDistinctValues(String field, QuerySpec querySpec) throws InvalidQueryException;
+
+	/**
+   * <p>
+   * Returns ...
+   * </p>
+   * 
+   * @param forField
+   * @param forGroup
+   * @param querySpec
+   * @return
+   * @throws InvalidQueryException
+ 
+	 */
+	List<Map<String, Object>> countDistinctValuesPerGroup(String forField, String forGroup, QuerySpec querySpec)
+	    throws InvalidQueryException;
 
 	/**
 	 * <p>
 	 * Returns the unique values of the specified field. The result is returned
-	 * as a {@link Map} with the each key specifying one of the unique values
-	 * and the value specifying a document count (the number of documents for
-	 * which the specified field has that value). Note that if the specified
-	 * field is an {@link Collection} or array, the sum of the document counts
-	 * may add up to more than the total number of documents in the index. You
-	 * may specify {@code null} for the {@code querySpec} argument if you simply
-	 * want a total document count. Otherwise you should only set the query
-	 * conditions and (possibly) the {@link LogicalOperator logical operator} on
-	 * the {@code QuerySpec}. Setting anything else on the {@code QuerySpec} has
-	 * no effect.
+	 * as a {@link Map} with each key specifying one of the unique values and 
+	 * its value the document count (the number of documents for which the 
+	 * specified field has that value).<p>
+	 * 
+   * <p>You may specify {@code null} for the {@code querySpec} argument if you 
+   * simply want a total document count. Otherwise you should only set the query
+   * conditions and (possibly) the {@link LogicalOperator logical operator} on
+   * the {@code QuerySpec}.</p> 
+	 * 
+	 * <p>By default, the result will be sorted descending by document count. You
+	 * can choose to sort the result by the value of the field name by including
+	 * that as sort field in the {@code querySpec}:
+	 * <pre>"sortFields" : [ { "path" : "[<i>forField</i>]", "sortOrder" : "ASC|DESC" } ]</pre>
+	 * </p>
+	 *    
+	 * <p>Note that if the specified field is a {@link Collection} or an array, 
+	 * the sum of the document counts may add up to more than the total number 
+	 * of documents in the index.</p> 
+	 * 
 	 * </p>
 	 * <h5>REST API</h5>
 	 * <p>
@@ -172,9 +209,7 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
 	 * http://api.biodiversitydata.nl/v2/&lt;document-type&gt;/getDistinctValues/{forField}
 	 * </code>
 	 * </p>
-	 * <p>
-	 * For example:
-	 * </p>
+	 * <p>For example:</p>
 	 * <p>
 	 * <code>
 	 * http://api.biodiversitydata.nl/v2/specimen/getDistinctValues/recordBasis<br>
@@ -193,6 +228,20 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
 	Map<String, Long> getDistinctValues(String forField, QuerySpec querySpec)
 			throws InvalidQueryException;
 
+	
+	/**
+	 * <p>
+	 * ...
+	 * </p>
+	 * 
+	 * @param forField
+	 * @param forGroup
+	 * @param querySpec
+	 * @return
+	 * @throws InvalidQueryException
+	 */
+	List<Map<String, Object>> getDistinctValuesPerGroup(String forField, String forGroup, QuerySpec querySpec) throws InvalidQueryException;
+	
 //	/**
 //	 * <p>
 //	 * Returns the unique values of the specified field, given the value of
@@ -240,7 +289,7 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
 //	 */
 //	Map<Object, Set<Object>> getDistinctValuesPerGroup(String groupField, String valuesField,
 //			QueryCondition... conditions) throws InvalidQueryException;
-//
+	
 //	/**
 //	 * 
 //	 * @param groupByField

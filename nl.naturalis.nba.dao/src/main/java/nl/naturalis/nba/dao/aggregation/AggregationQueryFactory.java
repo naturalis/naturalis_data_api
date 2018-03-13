@@ -6,7 +6,7 @@ import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.dao.DocumentType;
 
-public abstract class AggregationQueryFactory<T> {
+public abstract class AggregationQueryFactory {
 
   public static <T extends IDocumentObject> AggregationQuery<T, ?> createAggregationQuery(
       AggregationType type, DocumentType<T> dt, String field, String group, QuerySpec querySpec)

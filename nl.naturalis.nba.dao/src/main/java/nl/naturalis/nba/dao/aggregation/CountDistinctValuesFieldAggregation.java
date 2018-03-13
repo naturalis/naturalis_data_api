@@ -36,11 +36,11 @@ public class CountDistinctValuesFieldAggregation<T extends IDocumentObject, U>
 
   @Override
   public Long getResult() throws InvalidQueryException {
-    long result = 0;
+    Long result = 0L;
     SearchResponse response = executeQuery();
     Cardinality cardinality = response.getAggregations().get("CARDINALITY");
     result = cardinality.getValue();
-    return new Long(result);
+    return result;
   }
 
 }

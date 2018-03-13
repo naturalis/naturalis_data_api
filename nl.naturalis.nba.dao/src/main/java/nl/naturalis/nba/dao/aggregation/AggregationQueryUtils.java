@@ -61,10 +61,11 @@ public final class AggregationQueryUtils {
     if (querySpec != null && querySpec.getSortFields() != null) {
       for (SortField sortField : querySpec.getSortFields()) {
         if (sortField.getPath().equals(new SortField(fieldName).getPath())) {
-          if (sortField.isAscending())
+          if (sortField.isAscending()) {
             order = Terms.Order.term(true);
-          else
+          } else {
             order = Terms.Order.term(false);
+          }
         }
       }
     }

@@ -36,6 +36,7 @@ public class GetDistinctValuesNestedFieldPerGroupAggregation<T extends IDocument
     super(dt, field, group, querySpec);
   }
 
+  @Override
   SearchResponse executeQuery() throws InvalidQueryException {
     if (logger.isDebugEnabled()) {
       logger.debug(printCall("Executing AggregationQuery with: ", field, group, querySpec));
@@ -59,6 +60,7 @@ public class GetDistinctValuesNestedFieldPerGroupAggregation<T extends IDocument
     return executeSearchRequest(request);
   }
 
+  @Override
   public List<Map<String, Object>> getResult() throws InvalidQueryException {
 
     logger.info("Preparing aggregation query");

@@ -69,6 +69,7 @@ public class GetDistinctValuesNestedFieldPerNestedGroupAggregation<T extends IDo
     return executeSearchRequest(request);
   }
 
+  @Override
   public List<Map<String, Object>> getResult() throws InvalidQueryException {
 
     logger.info("Preparing aggregation query");

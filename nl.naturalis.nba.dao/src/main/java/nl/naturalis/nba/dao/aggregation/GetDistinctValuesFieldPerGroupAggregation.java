@@ -33,6 +33,7 @@ public class GetDistinctValuesFieldPerGroupAggregation<T extends IDocumentObject
     super(dt, field, group, querySpec);
   }
 
+  @Override
   SearchResponse executeQuery() throws InvalidQueryException {
     if (logger.isDebugEnabled()) {
       logger.debug(printCall("Executing AggregationQuery with: ", field, group, querySpec));
@@ -52,6 +53,7 @@ public class GetDistinctValuesFieldPerGroupAggregation<T extends IDocumentObject
     return executeSearchRequest(request);
   }
 
+  @Override
   public List<Map<String, Object>> getResult() throws InvalidQueryException {
 
     logger.info("Preparing aggregation query");

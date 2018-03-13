@@ -65,6 +65,7 @@ public class GetDistinctValuesFieldPerNestedGroupAggregation<T extends IDocument
     return executeSearchRequest(request);
   }
 
+  @Override
   public List<Map<String, Object>> getResult() throws InvalidQueryException {
 
     logger.info("Preparing aggregation query");

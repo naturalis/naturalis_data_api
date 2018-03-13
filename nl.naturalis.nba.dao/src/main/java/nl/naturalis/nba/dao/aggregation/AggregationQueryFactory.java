@@ -13,50 +13,56 @@ public abstract class AggregationQueryFactory {
       throws InvalidQueryException {
 
     String pathToNestedField = null;
-    if (field != null)
+    if (field != null) {
       pathToNestedField = getNestedPath(dt, field);
+    }
 
     String pathToNestedGroup = null;
-    if (group != null)
+    if (group != null) {
       pathToNestedGroup = getNestedPath(dt, group);
+    }
 
     switch (type) {
       case COUNT:
         return new CountAggregation<>(dt, querySpec);
 
       case COUNT_DISTINCT_VALUES:
-        if (pathToNestedField == null)
+        if (pathToNestedField == null) {
           return new CountDistinctValuesFieldAggregation<>(dt, field, querySpec);
+        }
         return new CountDistinctValuesNestedFieldAggregation<>(dt, field, querySpec);
 
       case COUNT_DISTINCT_VALUES_PER_GROUP:
-        if (pathToNestedField == null && pathToNestedGroup == null)
+        if (pathToNestedField == null && pathToNestedGroup == null) {
           return new CountDistinctValuesFieldPerGroupAggregation<>(dt, field, group, querySpec);
-        else if (pathToNestedField != null && pathToNestedGroup == null)
+        } else if (pathToNestedField != null && pathToNestedGroup == null) {
           return new CountDistinctValuesNestedFieldPerGroupAggregation<>(dt, field, group,
               querySpec);
-        else if (pathToNestedField == null && pathToNestedGroup != null)
+        } else if (pathToNestedField == null && pathToNestedGroup != null) {
           return new CountDistinctValuesFieldPerNestedGroupAggregation<>(dt, field, group,
               querySpec);
-        else
+        } else {
           return new CountDistinctValuesNestedFieldPerNestedGroupAggregation<>(dt, field, group,
               querySpec);
+        }
 
       case GET_DISTINCT_VALUES:
-        if (pathToNestedField == null)
+        if (pathToNestedField == null) {
           return new GetDistinctValuesFieldAggregation<>(dt, field, querySpec);
+        }
         return new GetDistinctValuesNestedFieldAggregation<>(dt, field, querySpec);
-        
+
       case GET_DISTINCT_VALUES_PER_GROUP:
-        if (pathToNestedField == null && pathToNestedGroup == null)
+        if (pathToNestedField == null && pathToNestedGroup == null) {
           return new GetDistinctValuesFieldPerGroupAggregation<>(dt, field, group, querySpec);
-        else if (pathToNestedField != null && pathToNestedGroup == null)
+        } else if (pathToNestedField != null && pathToNestedGroup == null) {
           return new GetDistinctValuesNestedFieldPerGroupAggregation<>(dt, field, group, querySpec);
-        else if (pathToNestedField == null && pathToNestedGroup != null)
+        } else if (pathToNestedField == null && pathToNestedGroup != null) {
           return new GetDistinctValuesFieldPerNestedGroupAggregation<>(dt, field, group, querySpec);
-        else
+        } else {
           return new GetDistinctValuesNestedFieldPerNestedGroupAggregation<>(dt, field, group,
               querySpec);
+        }
     }
     return null;
   }

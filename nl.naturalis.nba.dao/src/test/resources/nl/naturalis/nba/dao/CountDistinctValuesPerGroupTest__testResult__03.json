@@ -1,6 +1,6 @@
 [
   {
-    "identifications.defaultClassification.className": "Magnoliopsida",
+    "identifications.defaultClassification.className": "Cephalopoda",
     "sourceSystem.code": 1
   },
   {
@@ -8,15 +8,15 @@
     "sourceSystem.code": 1
   },
   {
-    "identifications.defaultClassification.className": "Bivalvia",
-    "sourceSystem.code": 1
-  },
-  {
     "identifications.defaultClassification.className": "Gastropoda",
     "sourceSystem.code": 1
   },
   {
-    "identifications.defaultClassification.className": "Cephalopoda",
+    "identifications.defaultClassification.className": "Bivalvia",
+    "sourceSystem.code": 1
+  },
+  {
+    "identifications.defaultClassification.className": "Magnoliopsida",
     "sourceSystem.code": 1
   }
 ]

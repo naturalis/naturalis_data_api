@@ -189,8 +189,8 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
    * 
    * <pre>
    * [
-   *   {"&lt;<i>forGroup</i>&gt;":"&lt;<i>distinct value 1</i>&gt;","&lt;<i>forField</i>&gt;":&lt;<i>distinct count 1</i>&gt;},
-   *   {"&lt;<i>forGroup</i>&gt;":"&lt;<i>distinct value 2</i>&gt;","&lt;<i>forField</i>&gt;":&lt;<i>distinct count 2</i>&gt;},
+   *   {"&lt;<i>forGroup</i>&gt;":"&lt;<i>distinct value a</i>&gt;","&lt;<i>forField</i>&gt;":&lt;<i>distinct count 1</i>&gt;},
+   *   {"&lt;<i>forGroup</i>&gt;":"&lt;<i>distinct value b</i>&gt;","&lt;<i>forField</i>&gt;":&lt;<i>distinct count 2</i>&gt;},
    *   [...]
    *   {"&lt;<i>forGroup</i>&gt;":"&lt;<i>distinct value z</i>&gt;","&lt;<i>forField</i>&gt;":&lt;<i>distinct count n</i>&gt;}
    * ]
@@ -309,48 +309,48 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
    * grouped by a second specified field (<i>forGroup</i>). The result is returned as a {@code List}
    * of {@code Map}s. Each {@code List} item contains 3 {@code Map}s. The first map has as key the
    * name of the field used to group the result, and its value as value; the second has as key the
-   * label "count", and the document count as value; the final map has as key the label values, and
-   * as value a {@code List} containing the distinct values and their document counts. The structure
-   * of the latter {@code List} is similar to that of the {@code List} returned by a
+   * label "count", and the document count as value; the final map has as key the label "values",
+   * and as value a {@code List} containing the distinct values and their document counts. The
+   * structure of the latter {@code List} is similar to that of the {@code List} returned by a
    * {@code countDistinctValuesPerGroup()}: each list item consists of 2 {@code Map}s. The first map
-   * has the forField as key, and a distinct value as value; the second map, the label "count" as
-   * key, and the document count as value.
+   * has the <i>forField</i> as key, and a distinct value as its value; the second map, the label
+   * "count" as key, and the document count as value.
    * </p>
    * 
    * <pre>
    * [
    *  {
-   *   "&lt;<i>forGroup</i>&gt;":"&lt;<i>distinct group value 1</i>&gt;",
+   *   "&lt;<i>forGroup</i>&gt;":"&lt;<i>distinct group value A</i>&gt;",
    *   "count": &lt;<i>distinct group count 1</i>&gt;,
    *   "values": [
    *      {
-   *        "&lt;<i>forField</i>&gt;":"&lt;<i>distinct value 1</i>&gt;",
+   *        "&lt;<i>forField</i>&gt;":"&lt;<i>distinct value a</i>&gt;",
    *        "count": &lt;<i>distinct count 1</i>&gt;
    *      },
    *      {
-   *        "&lt;<i>forField</i>&gt;":"&lt;<i>distinct value 2</i>&gt;",
+   *        "&lt;<i>forField</i>&gt;":"&lt;<i>distinct value b</i>&gt;",
    *        "count": &lt;<i>distinct count 2</i>&gt;
    *      },
    *      [...]
    *      {
-   *        "&lt;<i>forField</i>&gt;":"&lt;<i>distinct value n</i>&gt;",
+   *        "&lt;<i>forField</i>&gt;":"&lt;<i>distinct value z</i>&gt;",
    *        "count": &lt;<i>distinct count n</i>&gt;
    *      },
    *   ],
-   *   "&lt;<i>forGroup</i>&gt;":"&lt;<i>distinct group value 2</i>&gt;",
+   *   "&lt;<i>forGroup</i>&gt;":"&lt;<i>distinct group value B</i>&gt;",
    *   "count": &lt;<i>distinct group count 2</i>&gt;,
    *   "values": [
    *      {
-   *        "&lt;<i>forField</i>&gt;":"&lt;<i>distinct value 1</i>&gt;",
+   *        "&lt;<i>forField</i>&gt;":"&lt;<i>distinct value a</i>&gt;",
    *        "count": &lt;<i>distinct count 1</i>&gt;
    *      },
    *      {
-   *        "&lt;<i>forField</i>&gt;":"&lt;<i>distinct value 2</i>&gt;",
+   *        "&lt;<i>forField</i>&gt;":"&lt;<i>distinct value b</i>&gt;",
    *        "count": &lt;<i>distinct count 2</i>&gt;
    *      },
    *      [...]
    *      {
-   *        "&lt;<i>forField</i>&gt;":"&lt;<i>distinct value n</i>&gt;",
+   *        "&lt;<i>forField</i>&gt;":"&lt;<i>distinct value z</i>&gt;",
    *        "count": &lt;<i>distinct count n</i>&gt;
    *      } 
    *   ],

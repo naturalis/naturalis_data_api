@@ -72,7 +72,7 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
    * </code>
    * </p>
    * 
-   * @param id The NBA system IDs of the requested data model objects
+   * @param id  The NBA system IDs of the requested data model objects
    * @return
    */
   DOCUMENT_OBJECT[] findByIds(String[] ids);
@@ -206,11 +206,11 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
    * By default, the result will be sorted descending by the distinct field value count. You can
    * choose to change the sorting by including the field you're using to group the results, as the
    * sort field in the {@code querySpec}:
+   * </p>
    * 
    * <pre>
    * "sortFields" : [ { "path" : "[<i>forGroup</i>]", "sortOrder" : "ASC|DESC" } ]
    * </pre>
-   * </p>
    * 
    * <h5>REST API</h5>
    * <p>
@@ -261,22 +261,24 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
    * <p>
    * By default, the result will be sorted descending by document count. You can choose to sort the
    * result by the value of the field name by including that as sort field in the {@code querySpec}:
+   * </p>
    * 
    * <pre>
    * "sortFields" : [ { "path" : "[<i>forField</i>]", "sortOrder" : "ASC|DESC" } ]
    * </pre>
-   * </p>
    * 
    * <p>
    * Note that if the specified field is a {@link Collection} or an array, the sum of the document
    * counts may add up to more than the total number of documents in the index.
    * </p>
    * 
-   * </p>
+
    * <h5>REST API</h5>
+   * 
    * <p>
    * The NBA REST API exposes this method through a GET request with the following endpoint:
    * </p>
+   * 
    * <p>
    * <code>
    * http://api.biodiversitydata.nl/v2/&lt;document-type&gt;/getDistinctValues/{forField}
@@ -368,11 +370,11 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
    * By default, the result will be sorted descending by the distinct field value count. You can
    * choose to change the sorting by including the <i>forField</i> and/or the <i>forGroup</i> as
    * sort field(s) in the {@code querySpec}:
-   * 
+   * </p>
+   *  
    * <pre>
    * "sortFields" : [ { "path" : "[<i>forGroup</i>]", "sortOrder" : "ASC|DESC" } ]
    * </pre>
-   * </p>
    * 
    * <h5>REST API</h5>
    * <p>

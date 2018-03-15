@@ -149,11 +149,39 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
 	 */
 	long count(QuerySpec querySpec) throws InvalidQueryException;
 	
-	/**
-	 * <p>
-	 * Returns ...
-	 * </p>
-	 * 
+  /**
+   * <p>
+   * Returns the distinct number of values for the given field. You may specify 
+   * a {@code querySpec} argument if you're interested in just the distinct 
+   * values of a (limited) set of documents. You may specify {@code null} for 
+   * the {@code querySpec} argument if you simply want a total document count. 
+   * Otherwise you should only set the query conditions and (possibly) the 
+   * {@link LogicalOperator logical operator} on the {@code QuerySpec}. Setting 
+   * anything else on the {@code QuerySpec} has no effect.
+   * </p>
+   * <h5>REST API</h5>
+   * <p>
+   * The NBA REST API exposes this method through a GET or POST request with
+   * the following endpoint:
+   * </p>
+   * <p>
+   * <code>
+   * http://api.biodiversitydata.nl/v2/&lt;document-type&gt;/countDistinctValues/{forField}
+   * </code>
+   * </p>
+   * <p>
+   * For example:
+   * </p>
+   * <p>
+   * <code>
+   * http://api.biodiversitydata.nl/v2/taxon/countDistinctValues/defaultClassification.genus<br>
+   * http://api.biodiversitydata.nl/v2/specimen/countDistinctValues/collectionType/?sourceSystem.code=CRS
+   * </code>
+   * </p>
+   * <p>
+   * See {@link QuerySpec} for an explanation of how to encode the
+   * {@code QuerySpec} object in the request.
+   * </p> 
 	 * @param field
 	 * @param querySpec
 	 * @return
@@ -161,10 +189,56 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
 	 */
 	long countDistinctValues(String field, QuerySpec querySpec) throws InvalidQueryException;
 
-	/**
+  /**
    * <p>
-   * Returns ...
+   * Returns the distinct number of values for the given field (<i>forField</i>, grouped by 
+   * the second field (<i>forGroup</i>) you have specified. The result is a {@link List} of 
+   * which each item consists of 2 {@link HashMap}s: the first of which, contains the group 
+   * name and the distinct group value; the second, the field name and the number of distinct 
+   * values for this field, in this group.</p>
+   * 
+   * <pre>
+   * [
+   *   {"&lt;forGroup&gt;":"&lt;distinct value 1&gt;","&lt;forField&gt;":&lt;distinct count 1&gt;},
+   *   {"&lt;forGroup&gt;":"&lt;distinct value 2&gt;","&lt;forField&gt;":&lt;distinct count 2&gt;},
+   *   [...]
+   *   {"&lt;forGroup&gt;":"&lt;distinct value z&gt;","&lt;forField&gt;":&lt;distinct count n&gt;}
+   * ]
+   * </pre>
+   * 
+   * <p>You may specify a {@code querySpec} argument if you're interested in just the distinct 
+   * values of a (limited) set of documents. Specify {@code null} as {@code querySpec} argument 
+   * when you simply want a summary of all documents.</p>
+   *   
+   * <p>By default, the result will be sorted descending by the distinct field value count. You
+   * can choose to change the sorting by including the field you're using to group the results, 
+   * as the sort field in the {@code querySpec}:
+   * <pre>"sortFields" : [ { "path" : "[<i>forGroup</i>]", "sortOrder" : "ASC|DESC" } ]</pre>
    * </p>
+
+   * <h5>REST API</h5>
+   * <p>
+   * The NBA REST API exposes this method through a GET or POST request with
+   * the following endpoint:
+   * </p>
+   * <p>
+   * <code>
+   * http://api.biodiversitydata.nl/v2/&lt;document-type&gt;/countDistinctValues/{forField}
+   * </code>
+   * </p>
+   * <p>
+   * For example:
+   * </p>
+   * <p>
+   * <code>
+   * http://api.biodiversitydata.nl/v2/taxon/countDistinctValuesPerGroup/.../...<br>
+   * http://api.biodiversitydata.nl/v2/specimen/countDistinctValuesPerGroup/collectionType/sourceSystem.code
+   * </code>
+   * </p>
+   * <p>
+   * See {@link QuerySpec} for an explanation of how to encode the
+   * {@code QuerySpec} object in the request.
+   * </p> 
    * 
    * @param forField
    * @param forGroup

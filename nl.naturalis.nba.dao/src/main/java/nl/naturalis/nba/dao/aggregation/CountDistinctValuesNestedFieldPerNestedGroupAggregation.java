@@ -47,6 +47,10 @@ public class CountDistinctValuesNestedFieldPerNestedGroupAggregation<T extends I
     String pathToNestedGroup = getNestedPath(dt, group);
     int aggSize = getAggregationSize(querySpec);
     Order groupOrder = getOrdering(group, querySpec);
+    // Default sorting should be descending on count
+    if ( groupOrder.equals(Order.count(false))) {
+      groupOrder = Terms.Order.count(true);
+    }
 
     AggregationBuilder fieldAgg = AggregationBuilders.reverseNested("REVERSE_NESTED_FIELD");
     AggregationBuilder fieldNested = AggregationBuilders.nested(field, pathToNestedField);

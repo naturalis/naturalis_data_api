@@ -42,7 +42,11 @@ public class CountDistinctValuesFieldPerGroupAggregation<T extends IDocumentObje
     SearchRequestBuilder request = createSearchRequest(querySpec);
     int aggSize = getAggregationSize(querySpec);
     Order groupOrder = getOrdering(group, querySpec);
-
+    // Default sorting should be descending on count
+    if ( groupOrder.equals(Order.count(false))) {
+      groupOrder = Terms.Order.count(true);
+    }
+    
     AggregationBuilder groupAgg =
         AggregationBuilders.terms("GROUP").field(group).size(aggSize).order(groupOrder);
     CardinalityAggregationBuilder fieldAgg =

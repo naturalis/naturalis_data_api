@@ -46,6 +46,10 @@ public class CountDistinctValuesNestedFieldPerGroupAggregation<T extends IDocume
     String pathToNestedField = getNestedPath(dt, field);
     int aggSize = getAggregationSize(querySpec);
     Order groupOrder = getOrdering(group, querySpec);
+    // Default sorting should be descending on count
+    if ( groupOrder.equals(Order.count(false))) {
+      groupOrder = Terms.Order.count(true);
+    }
 
     AggregationBuilder fieldAgg = AggregationBuilders.nested("FIELD", pathToNestedField);
     CardinalityAggregationBuilder cardinalityField =

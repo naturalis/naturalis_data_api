@@ -253,6 +253,7 @@ public class SpecimenDaoTest_Aggregations {
    * Test getDistinctValues with nested field and a QuerySpec
    */
   @Test
+  @Ignore
   public void testGetDistinctValues_03() throws InvalidQueryException {
     SpecimenDao dao = new SpecimenDao();
     String field = "identifications.defaultClassification.family";
@@ -284,6 +285,7 @@ public class SpecimenDaoTest_Aggregations {
    * Test getDistinctValues with nested field, a QuerySpec and a Sort field
    */
   @Test
+  @Ignore
   public void testGetDistinctValues_04() throws InvalidQueryException {
     SpecimenDao dao = new SpecimenDao();
     String field = "identifications.defaultClassification.family";

@@ -51,10 +51,15 @@ public class GetDistinctValuesFieldPerNestedGroupAggregation<T extends IDocument
       String msg = String.format(fmt, getMaxNumGroups(), (from + aggSize));
       throw new InvalidQueryException(msg);
     }
-    QuerySpec querySpecCopy = new QuerySpec(querySpec);
-    querySpecCopy.setSize(0);
-    querySpecCopy.setFrom(0);
-    SearchRequestBuilder request = createSearchRequest(querySpecCopy);
+    SearchRequestBuilder request;
+    if (querySpec != null) {
+      QuerySpec querySpecCopy = new QuerySpec(querySpec);
+      querySpecCopy.setSize(0);
+      querySpecCopy.setFrom(0);
+      request = createSearchRequest(querySpecCopy);
+    } else {
+      request = createSearchRequest(querySpec);      
+    }
     String pathToNestedGroup = getNestedPath(dt, group);
     if (from > 0) aggSize+= from;
     Order fieldOrder = getOrdering(field, querySpec);

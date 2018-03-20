@@ -47,10 +47,15 @@ public class CountDistinctValuesFieldPerGroupAggregation<T extends IDocumentObje
       String msg = String.format(fmt, getMaxNumGroups(), (from + aggSize));
       throw new InvalidQueryException(msg);
     }
-    QuerySpec querySpecCopy = new QuerySpec(querySpec);
-    querySpecCopy.setSize(0);
-    querySpecCopy.setFrom(0);
-    SearchRequestBuilder request = createSearchRequest(querySpecCopy);
+    SearchRequestBuilder request;
+    if (querySpec != null) {
+      QuerySpec querySpecCopy = new QuerySpec(querySpec);
+      querySpecCopy.setSize(0);
+      querySpecCopy.setFrom(0);
+      request = createSearchRequest(querySpecCopy);
+    } else {
+      request = createSearchRequest(querySpec);      
+    }
     if (from > 0) aggSize+= from;
     Order groupOrder = getOrdering(group, querySpec);
     // Default sorting should be descending on count

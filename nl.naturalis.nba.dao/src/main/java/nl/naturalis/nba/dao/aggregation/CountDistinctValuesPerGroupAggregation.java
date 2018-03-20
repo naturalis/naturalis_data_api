@@ -9,6 +9,8 @@ import nl.naturalis.nba.dao.DocumentType;
 public abstract class CountDistinctValuesPerGroupAggregation<T extends IDocumentObject, U> extends CountDistinctValuesAggregation<T, List<Map<String, Object>>> {
 
   String group;
+  int aggSize;
+  int from;
   
   CountDistinctValuesPerGroupAggregation(DocumentType<T> dt, String field, String group, QuerySpec querySpec) {
     super(dt, field, querySpec);

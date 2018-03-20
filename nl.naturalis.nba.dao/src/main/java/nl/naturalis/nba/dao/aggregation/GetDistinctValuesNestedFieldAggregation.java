@@ -1,6 +1,7 @@
 package nl.naturalis.nba.dao.aggregation;
 
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
+import static nl.naturalis.nba.dao.aggregation.AggregationQueryUtils.getAggregationFrom;
 import static nl.naturalis.nba.dao.aggregation.AggregationQueryUtils.getAggregationSize;
 import static nl.naturalis.nba.dao.aggregation.AggregationQueryUtils.getNestedPath;
 import static nl.naturalis.nba.dao.aggregation.AggregationQueryUtils.getOrdering;
@@ -31,6 +32,8 @@ public class GetDistinctValuesNestedFieldAggregation<T extends IDocumentObject, 
 
   GetDistinctValuesNestedFieldAggregation(DocumentType<T> dt, String field, QuerySpec querySpec) {
     super(dt, field, querySpec);
+    aggSize = getAggregationSize(querySpec);
+    from = getAggregationFrom(querySpec);
   }
 
   @Override
@@ -38,9 +41,17 @@ public class GetDistinctValuesNestedFieldAggregation<T extends IDocumentObject, 
     if (logger.isDebugEnabled()) {
       logger.debug(printCall("Executing AggregationQuery with: ", field, querySpec));
     }
-    SearchRequestBuilder request = createSearchRequest(querySpec);
+    if ((from + aggSize) > getMaxNumGroups()) {
+      String fmt = "Too many groups requested. from + size must not exceed " + "%s (was %s)";
+      String msg = String.format(fmt, getMaxNumGroups(), (from + aggSize));
+      throw new InvalidQueryException(msg);
+    }
+    QuerySpec querySpecCopy = new QuerySpec(querySpec);
+    querySpecCopy.setSize(0);
+    querySpecCopy.setFrom(0);
+    SearchRequestBuilder request = createSearchRequest(querySpecCopy);
+    if (from > 0) aggSize += from;
     String nestedPath = getNestedPath(dt, field);
-    int aggSize = getAggregationSize(querySpec);
     Order fieldOrder = getOrdering(field, querySpec);
 
     TermsAggregationBuilder termsAggregation = terms("FIELD");
@@ -59,8 +70,10 @@ public class GetDistinctValuesNestedFieldAggregation<T extends IDocumentObject, 
     Nested nested = response.getAggregations().get("NESTED_FIELD");
     Terms terms = nested.getAggregations().get("FIELD");
 
+    int counter = 0;
     Map<String, Long> result = new LinkedHashMap<>(terms.getBuckets().size());
     for (Bucket bucket : terms.getBuckets()) {
+      if (from > 0 && counter++ < from) continue;
       result.put(bucket.getKeyAsString(), bucket.getDocCount());
     }
     return result;

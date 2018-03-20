@@ -15,6 +15,7 @@ import java.util.Map;
 import org.apache.logging.log4j.Logger;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -129,6 +130,7 @@ public class SpecimenDaoTest_Aggregations {
   /*
    * Test countDistinctValuesPerGroup
    */
+  @Ignore
   @Test
   public void testCountDistinctValuesPerGroup()
       throws JsonParseException, JsonMappingException, IOException, InvalidQueryException {
@@ -195,6 +197,7 @@ public class SpecimenDaoTest_Aggregations {
    * Test getDistinctValues with simple field and without QuerySpec
    */
   @Test
+  @Ignore
   public void testGetDistinctValues_01() throws InvalidQueryException {
     SpecimenDao dao = new SpecimenDao();
     Map<String, Long> result = dao.getDistinctValues("recordBasis", null);
@@ -222,6 +225,7 @@ public class SpecimenDaoTest_Aggregations {
    * Test getDistinctValues with nested field and without QuerySpec
    */
   @Test
+  @Ignore
   public void testGetDistinctValues_02() throws InvalidQueryException {
     SpecimenDao dao = new SpecimenDao();
     String field = "identifications.defaultClassification.family";
@@ -314,6 +318,7 @@ public class SpecimenDaoTest_Aggregations {
   /*
    * Test getDistinctValuesPerGroup
    */
+  @Ignore
   @Test
   public void testGetDistinctValuesPerGroup()
       throws JsonParseException, JsonMappingException, IOException, InvalidQueryException {

@@ -19,11 +19,19 @@ public final class AggregationQueryUtils {
    * @return
    */
   public static int getAggregationSize(QuerySpec querySpec) {
-    int aggSize = 10000;
+    int aggSize = 10;
     if (querySpec != null && querySpec.getSize() != null && querySpec.getSize() > 0) {
       aggSize = querySpec.getSize();
     }
     return aggSize;
+  }
+  
+  public static int getAggregationFrom(QuerySpec querySpec) {
+    int from = 0;
+    if (querySpec != null && querySpec.getFrom() != null && querySpec.getFrom() > 0) {
+      from = querySpec.getFrom();
+    }
+    return from;
   }
 
   /**

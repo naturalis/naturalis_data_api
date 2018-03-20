@@ -1,6 +1,7 @@
 package nl.naturalis.nba.dao.aggregation;
 
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
+import static nl.naturalis.nba.dao.aggregation.AggregationQueryUtils.getAggregationFrom;
 import static nl.naturalis.nba.dao.aggregation.AggregationQueryUtils.getAggregationSize;
 import static nl.naturalis.nba.dao.aggregation.AggregationQueryUtils.getOrdering;
 import static nl.naturalis.nba.dao.util.es.ESUtil.executeSearchRequest;
@@ -31,6 +32,8 @@ public class GetDistinctValuesFieldPerGroupAggregation<T extends IDocumentObject
   GetDistinctValuesFieldPerGroupAggregation(DocumentType<T> dt, String field, String group,
       QuerySpec querySpec) {
     super(dt, field, group, querySpec);
+    aggSize = getAggregationSize(querySpec);
+    from = getAggregationFrom(querySpec);
   }
 
   @Override
@@ -38,8 +41,16 @@ public class GetDistinctValuesFieldPerGroupAggregation<T extends IDocumentObject
     if (logger.isDebugEnabled()) {
       logger.debug(printCall("Executing AggregationQuery with: ", field, group, querySpec));
     }
-    SearchRequestBuilder request = createSearchRequest(querySpec);
-    int aggSize = getAggregationSize(querySpec);
+    if ((from + aggSize) > getMaxNumGroups()) {
+      String fmt = "Too many groups requested. from + size must not exceed " + "%s (was %s)";
+      String msg = String.format(fmt, getMaxNumGroups(), (from + aggSize));
+      throw new InvalidQueryException(msg);
+    }
+    QuerySpec querySpecCopy = new QuerySpec(querySpec);
+    querySpecCopy.setSize(0);
+    querySpecCopy.setFrom(0);
+    SearchRequestBuilder request = createSearchRequest(querySpecCopy);
+    if (from > 0) aggSize+= from;
     Order fieldOrder = getOrdering(field, querySpec);
     Order groupOrder = getOrdering(group, querySpec);
 
@@ -62,7 +73,9 @@ public class GetDistinctValuesFieldPerGroupAggregation<T extends IDocumentObject
 
     Terms groupTerms = response.getAggregations().get("GROUP");
     List<Bucket> buckets = groupTerms.getBuckets();
+    int counter = 0;
     for (Bucket bucket : buckets) {
+      if (from > 0 && counter++ < from) continue;
       StringTerms fieldTerms = bucket.getAggregations().get("FIELD");
       List<StringTerms.Bucket> innerBuckets = fieldTerms.getBucketsInternal();
       List<Map<String, Object>> fieldTermsList = new LinkedList<>();

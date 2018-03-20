@@ -6,8 +6,10 @@ import org.elasticsearch.action.search.SearchResponse;
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.IDocumentObject;
+import nl.naturalis.nba.dao.DaoRegistry;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.translate.QuerySpecTranslator;
+import nl.naturalis.nba.utils.ConfigObject;
 
 /**
  * <p>
@@ -85,5 +87,13 @@ public abstract class AggregationQuery<T extends IDocumentObject, U> {
     request.setSize(0);
     return request;
   }
+  
+  protected static int getMaxNumGroups()
+  {
+    ConfigObject config = DaoRegistry.getInstance().getConfiguration();
+    String property = "nl.naturalis.nba.aggregations.maxNumGroups";
+    return config.required(property, int.class);
+  }
+
 
 }

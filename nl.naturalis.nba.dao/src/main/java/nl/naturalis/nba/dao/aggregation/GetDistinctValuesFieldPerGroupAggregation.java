@@ -78,7 +78,18 @@ public class GetDistinctValuesFieldPerGroupAggregation<T extends IDocumentObject
 
     Terms groupTerms = response.getAggregations().get("GROUP");
     List<Bucket> buckets = groupTerms.getBuckets();
-    int counter = 0;
+    
+    // If there are no groupTerms, we'll return a map with "null"-results
+    if (buckets.size() == 0) {
+      Map<String, Object> hashMap = new LinkedHashMap<>(2);
+      hashMap.put(group, null);
+      hashMap.put("count", 0);
+      hashMap.put("values", new LinkedList<>());
+      result.add(hashMap);
+      return result;
+    }
+
+    int counter = 0; // The offset
     for (Bucket bucket : buckets) {
       if (from > 0 && counter++ < from) continue;
       StringTerms fieldTerms = bucket.getAggregations().get("FIELD");
@@ -95,9 +106,7 @@ public class GetDistinctValuesFieldPerGroupAggregation<T extends IDocumentObject
       Map<String, Object> hashMap = new LinkedHashMap<>(2);
       hashMap.put(group, bucket.getKeyAsString());
       hashMap.put("count", bucket.getDocCount());
-      if (fieldTermsList.size() > 0) {
-        hashMap.put("values", fieldTermsList);
-      }
+      hashMap.put("values", fieldTermsList);
       result.add(hashMap);
     }
     return result;

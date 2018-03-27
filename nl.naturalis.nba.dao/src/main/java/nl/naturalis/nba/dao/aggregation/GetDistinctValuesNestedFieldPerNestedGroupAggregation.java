@@ -7,6 +7,7 @@ import static nl.naturalis.nba.dao.aggregation.AggregationQueryUtils.getNestedPa
 import static nl.naturalis.nba.dao.aggregation.AggregationQueryUtils.getOrdering;
 import static nl.naturalis.nba.dao.util.es.ESUtil.executeSearchRequest;
 import static nl.naturalis.nba.utils.debug.DebugUtil.printCall;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -19,10 +20,12 @@ import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.nested.InternalReverseNested;
 import org.elasticsearch.search.aggregations.bucket.nested.Nested;
 import org.elasticsearch.search.aggregations.bucket.nested.ReverseNestedAggregationBuilder;
+import org.elasticsearch.search.aggregations.bucket.terms.LongTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.StringTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms.Order;
+import org.elasticsearch.search.aggregations.bucket.terms.UnmappedTerms;
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.IDocumentObject;
@@ -91,33 +94,50 @@ public class GetDistinctValuesNestedFieldPerNestedGroupAggregation<T extends IDo
     logger.info("Preparing aggregation query");
     List<Map<String, Object>> result = new LinkedList<>();
     SearchResponse response = executeQuery();
-
+    
     Nested nestedGroup = response.getAggregations().get("NESTED_GROUP");
     Terms groupTerms = nestedGroup.getAggregations().get("GROUP");
     List<Bucket> buckets = groupTerms.getBuckets();
-    int counter = 0;
+    
+    // If there are no groupTerms, we'll return a map with "null"-results
+    if (buckets.size() == 0) {
+      Map<String, Object> hashMap = new LinkedHashMap<>(2);
+      hashMap.put(group, null);
+      hashMap.put("count", 0);
+      hashMap.put("values", new LinkedList<>());
+      result.add(hashMap);
+      return result;
+    }
+    
+    int counter = 0; // The offsett
     for (Bucket bucket : buckets) {
       if (from > 0 && counter++ < from) continue;
       InternalReverseNested reverseNestedField =
           bucket.getAggregations().get("REVERSE_NESTED_FIELD");
       Nested nestedField = reverseNestedField.getAggregations().get("NESTED_FIELD");
-      StringTerms fieldTerms = nestedField.getAggregations().get("FIELD");
-      List<Bucket> innerBuckets = fieldTerms.getBuckets();
+      List<Bucket> innerBuckets;
+      if (nestedField.getAggregations().get("FIELD") instanceof StringTerms) {
+        StringTerms fieldTerms = nestedField.getAggregations().get("FIELD");
+        innerBuckets = fieldTerms.getBuckets();
+      } else if (nestedField.getAggregations().get("FIELD") instanceof LongTerms) {
+        LongTerms fieldTerms = nestedField.getAggregations().get("FIELD");
+        innerBuckets = fieldTerms.getBuckets();
+      } else {
+        UnmappedTerms fieldTerms = nestedField.getAggregations().get("FIELD");
+        innerBuckets = fieldTerms.getBuckets();
+      }
+      
       List<Map<String, Object>> fieldTermsList = new LinkedList<>();
       for (Bucket innerBucket : innerBuckets) {
         Map<String, Object> aggregate = new LinkedHashMap<>(2);
         aggregate.put(field, innerBucket.getKeyAsString());
         aggregate.put("count", innerBucket.getDocCount());
-        if (innerBucket.getDocCount() > 0) {
-          fieldTermsList.add(aggregate);
-        }
+        fieldTermsList.add(aggregate);
       }
       Map<String, Object> hashMap = new LinkedHashMap<>(2);
       hashMap.put(group, bucket.getKeyAsString());
       hashMap.put("count", bucket.getDocCount());
-      if (fieldTermsList.size() > 0) {
-        hashMap.put("values", fieldTermsList);
-      }
+      hashMap.put("values", fieldTermsList);
       result.add(hashMap);
     }
     return result;

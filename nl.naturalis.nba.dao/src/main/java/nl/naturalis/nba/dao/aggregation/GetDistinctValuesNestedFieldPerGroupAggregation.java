@@ -17,6 +17,7 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.nested.Nested;
+import org.elasticsearch.search.aggregations.bucket.terms.LongTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.StringTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
@@ -85,12 +86,31 @@ public class GetDistinctValuesNestedFieldPerGroupAggregation<T extends IDocument
 
     Terms groupTerms = response.getAggregations().get("GROUP");
     List<Bucket> buckets = groupTerms.getBuckets();
-    int counter = 0;
+
+    // If there are no groupTerms, we'll return a map with "null"-results
+    if (buckets.size() == 0) {
+      Map<String, Object> hashMap = new LinkedHashMap<>(2);
+      hashMap.put(group, null);
+      hashMap.put("count", 0);
+      hashMap.put("values", new LinkedList<>());
+      result.add(hashMap);
+      return result;
+    }
+    
+    int counter = 0; // The offsett
     for (Bucket bucket : buckets) {
       if (from > 0 && counter++ < from) continue;
       Nested nestedField = bucket.getAggregations().get("NESTED_FIELD");
-      StringTerms fieldTerms = nestedField.getAggregations().get("FIELD");
-      List<Bucket> innerBuckets = fieldTerms.getBuckets();
+      
+      List<Bucket> innerBuckets;
+      if (nestedField.getAggregations().get("FIELD") instanceof StringTerms) {
+        StringTerms fieldTerms = nestedField.getAggregations().get("FIELD");
+        innerBuckets = fieldTerms.getBuckets();
+      } else {
+        LongTerms fieldTerms = nestedField.getAggregations().get("FIELD");
+        innerBuckets = fieldTerms.getBuckets();
+      }
+
       List<Map<String, Object>> fieldTermsList = new LinkedList<>();
       for (Bucket innerBucket : innerBuckets) {
         Map<String, Object> aggregate = new LinkedHashMap<>(2);
@@ -103,9 +123,7 @@ public class GetDistinctValuesNestedFieldPerGroupAggregation<T extends IDocument
       Map<String, Object> hashMap = new LinkedHashMap<>(2);
       hashMap.put(group, bucket.getKeyAsString());
       hashMap.put("count", bucket.getDocCount());
-      if (fieldTermsList.size() > 0) {
-        hashMap.put("values", fieldTermsList);
-      }
+      hashMap.put("values", fieldTermsList);
       result.add(hashMap);
     }
     return result;

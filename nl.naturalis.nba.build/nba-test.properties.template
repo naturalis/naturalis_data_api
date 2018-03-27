@@ -34,10 +34,10 @@ nl.naturalis.nba.taxon.groupByScientificName.cacheTreshold=3000
 # ************************************************ #
 # ********************* CRS ********************** #
 # ************************************************ #
-crs.specimens.url.initial=http\://crs.naturalis.nl/atlantispubliek/oai.axd?verb\=ListRecords&metadataprefix\=oai_crs_object
-crs.specimens.url.resume=http\://crs.naturalis.nl/atlantispubliek/oai.axd?verb\=ListRecords&resumptionToken\=%s
-crs.multimedia.url.initial=http\://crs.naturalis.nl/atlantispubliek/oai.axd?verb\=ListRecords&metadataprefix\=oai_crs
-crs.multimedia.url.resume=http\://crs.naturalis.nl/atlantispubliek/oai.axd?verb\=ListRecords&resumptionToken\=%s
+crs.specimens.url.initial=https\://crs.naturalis.nl/atlantispubliek/oai.axd?verb\=ListRecords&set\=Object&metadataprefix\=oai_crs_object
+crs.specimens.url.resume=https\://crs.naturalis.nl/atlantispubliek/oai.axd?verb\=ListRecords&resumptionToken\=%s
+crs.multimedia.url.initial=https\://crs.naturalis.nl/atlantispubliek/oai.axd?verb\=ListRecords&metadataprefix\=oai_crs
+crs.multimedia.url.resume=https\://crs.naturalis.nl/atlantispubliek/oai.axd?verb\=ListRecords&resumptionToken\=%s
 # Whether or not to use the pre-harvested, locally
 # stored XML files in stead of calling live calls to
 # the CRS OAIPMH service

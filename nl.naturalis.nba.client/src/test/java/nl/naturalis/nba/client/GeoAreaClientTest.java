@@ -85,7 +85,7 @@ public class GeoAreaClientTest {
     String group = "locality";
     QuerySpec qs = new QuerySpec();
     qs.addCondition(new QueryCondition("areaType", "!=", "Nature"));
-    System.out.println(JsonUtil.toPrettyJson(client.countDistinctValuesPerGroup(field, group, qs)));
+    System.out.println(JsonUtil.toPrettyJson(client.countDistinctValuesPerGroup(group, field, qs)));
   }
   
   @Test
@@ -102,7 +102,7 @@ public class GeoAreaClientTest {
     String group = "locality";
     QuerySpec qs = new QuerySpec();
     qs.addCondition(new QueryCondition("areaType", "!=", "Nature"));
-    System.out.println(JsonUtil.toPrettyJson(client.getDistinctValuesPerGroup(field, group, qs)));
+    System.out.println(JsonUtil.toPrettyJson(client.getDistinctValuesPerGroup(group, field, qs)));
   }
 
 }

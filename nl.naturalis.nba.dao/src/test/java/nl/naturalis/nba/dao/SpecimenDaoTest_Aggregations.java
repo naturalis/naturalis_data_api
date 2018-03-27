@@ -145,7 +145,7 @@ public class SpecimenDaoTest_Aggregations {
     querySpec = null;
     field = "collectionType";
     group = "sourceSystem.code";
-    actual = dao.countDistinctValuesPerGroup(field, group, querySpec);
+    actual = dao.countDistinctValuesPerGroup(group, field, querySpec);
     jsonFile = "CountDistinctValuesPerGroupTest__testResult__01.json";
     assertTrue("01", jsonListEquals(this.getClass(), actual.toString(), jsonFile));
 
@@ -153,7 +153,7 @@ public class SpecimenDaoTest_Aggregations {
     querySpec = null;
     field = "identifications.defaultClassification.className";
     group = "sourceSystem.code";
-    actual = dao.countDistinctValuesPerGroup(field, group, querySpec);
+    actual = dao.countDistinctValuesPerGroup(group, field, querySpec);
     jsonFile = "CountDistinctValuesPerGroupTest__testResult__02.json";
     assertTrue("02", jsonListEquals(this.getClass(), actual.toString(), jsonFile));
 
@@ -161,7 +161,7 @@ public class SpecimenDaoTest_Aggregations {
     querySpec = null;
     field = "sourceSystem.code";
     group = "identifications.defaultClassification.className";
-    actual = dao.countDistinctValuesPerGroup(field, group, querySpec);
+    actual = dao.countDistinctValuesPerGroup(group, field, querySpec);
     jsonFile = "CountDistinctValuesPerGroupTest__testResult__03.json";
     assertTrue("03", jsonListEquals(this.getClass(), actual.toString(), jsonFile));
 
@@ -169,7 +169,7 @@ public class SpecimenDaoTest_Aggregations {
     querySpec = null;
     field = "identifications.scientificName.genusOrMonomial";
     group = "identifications.defaultClassification.className";
-    actual = dao.countDistinctValuesPerGroup(field, group, querySpec);
+    actual = dao.countDistinctValuesPerGroup(group, field, querySpec);
     jsonFile = "CountDistinctValuesPerGroupTest__testResult__04.json";
     assertTrue("04", jsonListEquals(this.getClass(), actual.toString(), jsonFile));
 
@@ -179,7 +179,7 @@ public class SpecimenDaoTest_Aggregations {
     querySpec.addCondition(condition);
     field = "sourceSystem.code";
     group = "identifications.defaultClassification.className";
-    actual = dao.countDistinctValuesPerGroup(field, group, querySpec);
+    actual = dao.countDistinctValuesPerGroup(group, field, querySpec);
     jsonFile = "CountDistinctValuesPerGroupTest__testResult__05.json";
     assertTrue("05", jsonListEquals(this.getClass(), actual.toString(), jsonFile));
 
@@ -188,7 +188,7 @@ public class SpecimenDaoTest_Aggregations {
     List<SortField> sortFields = new ArrayList<>();
     sortFields.add(sortField);
     querySpec.setSortFields(sortFields);
-    actual = dao.countDistinctValuesPerGroup(field, group, querySpec);
+    actual = dao.countDistinctValuesPerGroup(group, field, querySpec);
     jsonFile = "CountDistinctValuesPerGroupTest__testResult__06.json";
     assertTrue("06", jsonListEquals(this.getClass(), actual.toString(), jsonFile));
   }
@@ -330,7 +330,7 @@ public class SpecimenDaoTest_Aggregations {
     querySpec = null;
     field = "collectionType";
     group = "sourceSystem.code";
-    result = dao.getDistinctValuesPerGroup(field, group, querySpec);
+    result = dao.getDistinctValuesPerGroup(group, field, querySpec);
     jsonFile = "CountDistinctValuesPerGroupTest__testResult__07.json";
     assertTrue("01", jsonListEquals(this.getClass(), result.toString(), jsonFile));
 
@@ -338,7 +338,7 @@ public class SpecimenDaoTest_Aggregations {
     querySpec = null;
     field = "identifications.defaultClassification.className";
     group = "sourceSystem.code";
-    result = dao.getDistinctValuesPerGroup(field, group, querySpec);
+    result = dao.getDistinctValuesPerGroup(group, field, querySpec);
     jsonFile = "CountDistinctValuesPerGroupTest__testResult__08.json";
     assertTrue("02", jsonListEquals(this.getClass(), result.toString(), jsonFile));
 
@@ -346,7 +346,7 @@ public class SpecimenDaoTest_Aggregations {
     querySpec = null;
     field = "sourceSystem.code";
     group = "identifications.defaultClassification.className";
-    result = dao.getDistinctValuesPerGroup(field, group, querySpec);
+    result = dao.getDistinctValuesPerGroup(group, field, querySpec);
     jsonFile = "CountDistinctValuesPerGroupTest__testResult__09.json";
     assertTrue("01", jsonListEquals(this.getClass(), result.toString(), jsonFile));
 
@@ -354,7 +354,7 @@ public class SpecimenDaoTest_Aggregations {
     querySpec = null;
     field = "identifications.scientificName.genusOrMonomial";
     group = "identifications.defaultClassification.className";
-    result = dao.getDistinctValuesPerGroup(field, group, querySpec);
+    result = dao.getDistinctValuesPerGroup(group, field, querySpec);
     jsonFile = "CountDistinctValuesPerGroupTest__testResult__10.json";
     assertTrue("01", jsonListEquals(this.getClass(), result.toString(), jsonFile));
 
@@ -370,7 +370,7 @@ public class SpecimenDaoTest_Aggregations {
     sortFields.add(sortField1);
     sortFields.add(sortField2);
     querySpec.setSortFields(sortFields);
-    result = dao.getDistinctValuesPerGroup(field, group, querySpec);
+    result = dao.getDistinctValuesPerGroup(group, field, querySpec);
     jsonFile = "CountDistinctValuesPerGroupTest__testResult__11.json";
     assertTrue("05", jsonListEquals(this.getClass(), result.toString(), jsonFile));
   }

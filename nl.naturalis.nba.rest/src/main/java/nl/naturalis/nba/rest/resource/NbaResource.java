@@ -125,27 +125,27 @@ public abstract class NbaResource<T extends IDocumentObject, U extends NbaDao<T>
     }
   }
 
-  public List<Map<String, Object>> countDistinctValuesPerGroupHttpGet(String field, String group, UriInfo uriInfo) {
+  public List<Map<String, Object>> countDistinctValuesPerGroupHttpGet(String group, String field, UriInfo uriInfo) {
     try {
       QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
-      return dao.countDistinctValuesPerGroup(field, group, qs);
+      return dao.countDistinctValuesPerGroup(group, field, qs);
     } catch (Throwable t) {
       throw handleError(uriInfo, t);
     }
   }
 
-  public List<Map<String, Object>> countDistinctValuesPerGroupHttpPostForm(String field, String group, MultivaluedMap<String, String> form, UriInfo uriInfo) {
+  public List<Map<String, Object>> countDistinctValuesPerGroupHttpPostForm(String group, String field, MultivaluedMap<String, String> form, UriInfo uriInfo) {
     try {
       QuerySpec qs = new HttpQuerySpecBuilder(form, uriInfo).build();
-      return dao.countDistinctValuesPerGroup(field, group, qs);
+      return dao.countDistinctValuesPerGroup(group, field, qs);
     } catch (Throwable t) {
       throw handleError(uriInfo, t);
     }
   }
 
-  public List<Map<String, Object>> countDistinctValuesPerGroupHttpPostJson(String field, String group, QuerySpec qs, UriInfo uriInfo) {
+  public List<Map<String, Object>> countDistinctValuesPerGroupHttpPostJson(String group, String field, QuerySpec qs, UriInfo uriInfo) {
     try {
-      return dao.countDistinctValuesPerGroup(field, group, qs);
+      return dao.countDistinctValuesPerGroup(group, field, qs);
     } catch (Throwable t) {
       throw handleError(uriInfo, t);
     }
@@ -177,27 +177,27 @@ public abstract class NbaResource<T extends IDocumentObject, U extends NbaDao<T>
     }
   }
 
-  public List<Map<String, Object>> getDistinctValuesPerGroupHttpGet(String field, String group, UriInfo uriInfo) {
+  public List<Map<String, Object>> getDistinctValuesPerGroupHttpGet(String group, String field, UriInfo uriInfo) {
     try {
       QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
-      return dao.getDistinctValuesPerGroup(field, group, qs);
+      return dao.getDistinctValuesPerGroup(group, field, qs);
     } catch (Throwable t) {
       throw handleError(uriInfo, t);
     }
   }
 
-  public List<Map<String, Object>> getDistinctValuesPerGroupHttpPost(String field, String group, MultivaluedMap<String, String> form, UriInfo uriInfo) {
+  public List<Map<String, Object>> getDistinctValuesPerGroupHttpPost(String group, String field, MultivaluedMap<String, String> form, UriInfo uriInfo) {
     try {
       QuerySpec qs = new HttpQuerySpecBuilder(form, uriInfo).build();
-      return dao.getDistinctValuesPerGroup(field, group, qs);
+      return dao.getDistinctValuesPerGroup(group, field, qs);
     } catch (Throwable t) {
       throw handleError(uriInfo, t);
     }
   }
 
-  public List<Map<String, Object>> getDistinctValuesPerGroupHttpJson(String field, String group, QuerySpec qs, UriInfo uriInfo) {
+  public List<Map<String, Object>> getDistinctValuesPerGroupHttpJson(String group, String field, QuerySpec qs, UriInfo uriInfo) {
     try {
-      return dao.getDistinctValuesPerGroup(field, group, qs);
+      return dao.getDistinctValuesPerGroup(group, field, qs);
     } catch (Throwable t) {
       throw handleError(uriInfo, t);
     }

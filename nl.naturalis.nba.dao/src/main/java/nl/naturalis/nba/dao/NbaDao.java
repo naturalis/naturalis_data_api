@@ -125,8 +125,8 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
 
   @SuppressWarnings("unchecked")
   @Override
-  public List<Map<String, Object>> countDistinctValuesPerGroup(String forField, String forGroup,
-      QuerySpec querySpec) throws InvalidQueryException {
+  public List<Map<String, Object>> countDistinctValuesPerGroup(String forGroup, String forField, 
+     QuerySpec querySpec) throws InvalidQueryException {
     if (logger.isDebugEnabled()) {
       logger.debug(printCall("countDistinctValuesPerGroup", forField, forGroup, querySpec));
     }
@@ -149,7 +149,7 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
 
   @SuppressWarnings("unchecked")
   @Override
-  public List<Map<String, Object>> getDistinctValuesPerGroup(String forField, String forGroup,
+  public List<Map<String, Object>> getDistinctValuesPerGroup(String forGroup, String forField,
       QuerySpec querySpec) throws InvalidQueryException {
     if (logger.isDebugEnabled()) {
       logger.debug(printCall("getDistinctValuesPerGroup", forField, forGroup, querySpec));

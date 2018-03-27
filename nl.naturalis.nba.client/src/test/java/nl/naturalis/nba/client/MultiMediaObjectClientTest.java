@@ -66,7 +66,7 @@ public class MultiMediaObjectClientTest {
     String group = "collectionType";
     QuerySpec qs = new QuerySpec();
     qs.addCondition(new QueryCondition("unitID", "!=", null));
-    System.out.println(JsonUtil.toPrettyJson(client.countDistinctValuesPerGroup(field, group, qs)));
+    System.out.println(JsonUtil.toPrettyJson(client.countDistinctValuesPerGroup(group, field, qs)));
   }
   
   @Test
@@ -83,7 +83,7 @@ public class MultiMediaObjectClientTest {
     String group = "collectionType";
     QuerySpec qs = new QuerySpec();
     qs.addCondition(new QueryCondition("sourceSystem.code", "=", "CRS"));
-    System.out.println(JsonUtil.toPrettyJson(client.getDistinctValuesPerGroup(field, group, qs)));
+    System.out.println(JsonUtil.toPrettyJson(client.getDistinctValuesPerGroup(group, field, qs)));
   }
 
   

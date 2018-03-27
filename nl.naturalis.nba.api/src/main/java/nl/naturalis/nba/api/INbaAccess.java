@@ -235,14 +235,14 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
    * request.
    * </p>
    * 
-   * @param forField
    * @param forGroup
+   * @param forField
    * @param querySpec
    * @return
    * @throws InvalidQueryException
    * 
    */
-  List<Map<String, Object>> countDistinctValuesPerGroup(String forField, String forGroup,
+  List<Map<String, Object>> countDistinctValuesPerGroup(String forGroup, String forField,
       QuerySpec querySpec) throws InvalidQueryException;
 
   /**
@@ -398,13 +398,13 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
    * request.
    * </p>
    * 
-   * @param forField
    * @param forGroup
+   * @param forField
    * @param querySpec
    * @return
    * @throws InvalidQueryException
    */
-  List<Map<String, Object>> getDistinctValuesPerGroup(String forField, String forGroup,
+  List<Map<String, Object>> getDistinctValuesPerGroup(String forGroup, String forField,
       QuerySpec querySpec) throws InvalidQueryException;
 
 }

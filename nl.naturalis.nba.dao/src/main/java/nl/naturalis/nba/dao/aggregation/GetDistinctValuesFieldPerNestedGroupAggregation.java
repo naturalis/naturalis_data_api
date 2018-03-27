@@ -22,6 +22,7 @@ import org.elasticsearch.search.aggregations.bucket.nested.ReverseNestedAggregat
 import org.elasticsearch.search.aggregations.bucket.terms.LongTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.StringTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
+import org.elasticsearch.search.aggregations.bucket.terms.UnmappedTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms.Order;
 import nl.naturalis.nba.api.InvalidQueryException;
@@ -112,8 +113,11 @@ public class GetDistinctValuesFieldPerNestedGroupAggregation<T extends IDocument
       if (nestedField.getAggregations().get("FIELD") instanceof StringTerms) {
         StringTerms fieldTerms = nestedField.getAggregations().get("FIELD");
         innerBuckets = fieldTerms.getBuckets();
-      } else {
+      } else if (nestedField.getAggregations().get("FIELD") instanceof LongTerms) {
         LongTerms fieldTerms = nestedField.getAggregations().get("FIELD");
+        innerBuckets = fieldTerms.getBuckets();
+      } else {
+        UnmappedTerms fieldTerms = nestedField.getAggregations().get("FIELD");
         innerBuckets = fieldTerms.getBuckets();
       }
       

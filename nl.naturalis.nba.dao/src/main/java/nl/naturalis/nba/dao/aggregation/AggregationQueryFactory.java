@@ -1,13 +1,10 @@
 package nl.naturalis.nba.dao.aggregation;
 
 import static nl.naturalis.nba.dao.aggregation.AggregationQueryUtils.getNestedPath;
+import static nl.naturalis.nba.dao.aggregation.AggregationQueryUtils.isSimpleField;
 import nl.naturalis.nba.api.InvalidQueryException;
-import nl.naturalis.nba.api.NoSuchFieldException;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.IDocumentObject;
-import nl.naturalis.nba.common.es.map.ESField;
-import nl.naturalis.nba.common.es.map.MappingInfo;
-import nl.naturalis.nba.common.es.map.SimpleField;
 import nl.naturalis.nba.dao.DocumentType;
 
 public abstract class AggregationQueryFactory {
@@ -16,19 +13,16 @@ public abstract class AggregationQueryFactory {
       AggregationType type, DocumentType<T> dt, String field, String group, QuerySpec querySpec)
       throws InvalidQueryException {
     
-    checkField(dt, field);
-    checkField(dt, group);
-    
     String pathToNestedField = null;
-    if (field != null) {
+    if (isSimpleField(dt, field)) {
       pathToNestedField = getNestedPath(dt, field);
     }
 
     String pathToNestedGroup = null;
-    if (group != null) {
+    if (isSimpleField(dt, group)) {
       pathToNestedGroup = getNestedPath(dt, group);
     }
-
+    
     switch (type) {
       case COUNT:
         return new CountAggregation<>(dt, querySpec);
@@ -74,20 +68,4 @@ public abstract class AggregationQueryFactory {
     return null;
   }
   
-  private static void checkField(DocumentType<?> dt, String searchField) throws InvalidQueryException {
-    if (searchField == null) return;
-    MappingInfo<?> info = new MappingInfo<>(dt.getMapping());
-    ESField field;
-    try {
-       field = info.getField(searchField);
-    } catch (NoSuchFieldException e) {
-      throw new InvalidQueryException(e);
-    }
-    if (!(field instanceof SimpleField)) {
-      String fmt = "Field %s cannot be queried: field is an object";
-      String msg = String.format(fmt, searchField);
-      throw new InvalidQueryException(msg);
-    }
-  }
-
 }

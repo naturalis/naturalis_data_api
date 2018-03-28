@@ -15,6 +15,7 @@ import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.bucket.terms.LongTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.StringTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
@@ -53,9 +54,10 @@ public class GetDistinctValuesFieldPerGroupAggregation<T extends IDocumentObject
       querySpecCopy.setFrom(0);
       request = createSearchRequest(querySpecCopy);
     } else {
-      request = createSearchRequest(querySpec);      
+      request = createSearchRequest(querySpec);
     }
-    if (from > 0) aggSize+= from;
+    if (from > 0)
+      aggSize += from;
     Order fieldOrder = getOrdering(field, querySpec);
     Order groupOrder = getOrdering(group, querySpec);
 
@@ -78,7 +80,7 @@ public class GetDistinctValuesFieldPerGroupAggregation<T extends IDocumentObject
 
     Terms groupTerms = response.getAggregations().get("GROUP");
     List<Bucket> buckets = groupTerms.getBuckets();
-    
+
     // If there are no groupTerms, we'll return a map with "null"-results
     if (buckets.size() == 0) {
       Map<String, Object> hashMap = new LinkedHashMap<>(2);
@@ -91,18 +93,34 @@ public class GetDistinctValuesFieldPerGroupAggregation<T extends IDocumentObject
 
     int counter = 0; // The offset
     for (Bucket bucket : buckets) {
-      if (from > 0 && counter++ < from) continue;
-      StringTerms fieldTerms = bucket.getAggregations().get("FIELD");
-      List<StringTerms.Bucket> innerBuckets = fieldTerms.getBucketsInternal();
+      if (from > 0 && counter++ < from)
+        continue;
+
       List<Map<String, Object>> fieldTermsList = new LinkedList<>();
-      for (Bucket innerBucket : innerBuckets) {
-        Map<String, Object> aggregate = new LinkedHashMap<>(2);
-        aggregate.put(field, innerBucket.getKeyAsString());
-        aggregate.put("count", innerBucket.getDocCount());
-        if (innerBucket.getDocCount() > 0) {
-          fieldTermsList.add(aggregate);
+      if (bucket.getAggregations().get("FIELD") instanceof StringTerms) {
+        StringTerms fieldTerms = bucket.getAggregations().get("FIELD");
+        List<StringTerms.Bucket> innerBuckets = fieldTerms.getBucketsInternal();
+        for (Bucket innerBucket : innerBuckets) {
+          Map<String, Object> aggregate = new LinkedHashMap<>(2);
+          aggregate.put(field, innerBucket.getKeyAsString());
+          aggregate.put("count", innerBucket.getDocCount());
+          if (innerBucket.getDocCount() > 0) {
+            fieldTermsList.add(aggregate);
+          }
+        }
+      } else {
+        LongTerms fieldTerms = bucket.getAggregations().get("FIELD");
+        List<LongTerms.Bucket> innerBuckets = fieldTerms.getBucketsInternal();
+        for (Bucket innerBucket : innerBuckets) {
+          Map<String, Object> aggregate = new LinkedHashMap<>(2);
+          aggregate.put(field, innerBucket.getKeyAsString());
+          aggregate.put("count", innerBucket.getDocCount());
+          if (innerBucket.getDocCount() > 0) {
+            fieldTermsList.add(aggregate);
+          }
         }
       }
+
       Map<String, Object> hashMap = new LinkedHashMap<>(2);
       hashMap.put(group, bucket.getKeyAsString());
       hashMap.put("count", bucket.getDocCount());

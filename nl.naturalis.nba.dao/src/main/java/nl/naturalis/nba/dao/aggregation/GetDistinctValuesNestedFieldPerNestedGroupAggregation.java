@@ -19,6 +19,7 @@ import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.nested.InternalReverseNested;
 import org.elasticsearch.search.aggregations.bucket.nested.Nested;
 import org.elasticsearch.search.aggregations.bucket.nested.ReverseNestedAggregationBuilder;
+import org.elasticsearch.search.aggregations.bucket.terms.DoubleTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.LongTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.StringTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
@@ -60,11 +61,12 @@ public class GetDistinctValuesNestedFieldPerNestedGroupAggregation<T extends IDo
       querySpecCopy.setFrom(0);
       request = createSearchRequest(querySpecCopy);
     } else {
-      request = createSearchRequest(querySpec);      
+      request = createSearchRequest(querySpec);
     }
     String pathToNestedField = getNestedPath(dt, field);
     String pathToNestedGroup = getNestedPath(dt, group);
-    if (from > 0) aggSize+= from;
+    if (from > 0)
+      aggSize += from;
     Order fieldOrder = getOrdering(field, querySpec);
     Order groupOrder = getOrdering(group, querySpec);
 
@@ -93,11 +95,11 @@ public class GetDistinctValuesNestedFieldPerNestedGroupAggregation<T extends IDo
     logger.info("Preparing aggregation query");
     List<Map<String, Object>> result = new LinkedList<>();
     SearchResponse response = executeQuery();
-    
+
     Nested nestedGroup = response.getAggregations().get("NESTED_GROUP");
     Terms groupTerms = nestedGroup.getAggregations().get("GROUP");
     List<Bucket> buckets = groupTerms.getBuckets();
-    
+
     // If there are no groupTerms, we'll return a map with "null"-results
     if (buckets.size() == 0) {
       Map<String, Object> hashMap = new LinkedHashMap<>(2);
@@ -107,10 +109,11 @@ public class GetDistinctValuesNestedFieldPerNestedGroupAggregation<T extends IDo
       result.add(hashMap);
       return result;
     }
-    
+
     int counter = 0; // The offsett
     for (Bucket bucket : buckets) {
-      if (from > 0 && counter++ < from) continue;
+      if (from > 0 && counter++ < from)
+        continue;
       InternalReverseNested reverseNestedField =
           bucket.getAggregations().get("REVERSE_NESTED_FIELD");
       Nested nestedField = reverseNestedField.getAggregations().get("NESTED_FIELD");
@@ -121,11 +124,14 @@ public class GetDistinctValuesNestedFieldPerNestedGroupAggregation<T extends IDo
       } else if (nestedField.getAggregations().get("FIELD") instanceof LongTerms) {
         LongTerms fieldTerms = nestedField.getAggregations().get("FIELD");
         innerBuckets = fieldTerms.getBuckets();
+      } else if (nestedField.getAggregations().get("FIELD") instanceof DoubleTerms) {
+        DoubleTerms fieldTerms = nestedField.getAggregations().get("FIELD");
+        innerBuckets = fieldTerms.getBuckets();
       } else {
         UnmappedTerms fieldTerms = nestedField.getAggregations().get("FIELD");
         innerBuckets = fieldTerms.getBuckets();
       }
-      
+
       List<Map<String, Object>> fieldTermsList = new LinkedList<>();
       for (Bucket innerBucket : innerBuckets) {
         Map<String, Object> aggregate = new LinkedHashMap<>(2);

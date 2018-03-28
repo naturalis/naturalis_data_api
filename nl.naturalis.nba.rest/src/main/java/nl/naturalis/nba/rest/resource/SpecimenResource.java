@@ -263,7 +263,7 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
   }
 
   @GET
-  @Path("/countDistinctValuesPerGroup/{field}/{group}")
+  @Path("/countDistinctValuesPerGroup/{group}/{field}")
   @ApiOperation(
       value = "Count the distinct number of group values that exist per the given field",
       response = List.class, 
@@ -273,12 +273,12 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
       @ApiParam(value = "Name of field in the specimen object", required = true, defaultValue = "identifications.typeStatus") @PathParam("field") String field,
       @ApiParam(value = "Name of group in the specimen object", required = true, defaultValue = "collectionType") @PathParam("group") String group, 
       @Context UriInfo uriInfo) {
-    logger.info("countDistinctValuesPerGroup/" + field + "/" + group);
-    return super.countDistinctValuesPerGroupHttpGet(field, group, uriInfo);
+    logger.info("countDistinctValuesPerGroup/" + group + "/" + field);
+    return super.countDistinctValuesPerGroupHttpGet(group, field, uriInfo);
   }
 
   @POST
-  @Path("/countDistinctValuesPerGroup/{field}/{group}")
+  @Path("/countDistinctValuesPerGroup/{group}/{field}")
   @ApiOperation(
       value = "Count the distinct number of group values that exist per the given field", 
       response = List.class, 
@@ -290,12 +290,12 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
       @ApiParam(value = "Name of group in the specimen object", required = true, defaultValue = "collectionType") @PathParam("group") String group, 
       @ApiParam(value = "Query object in POST form", required = false) MultivaluedMap<String, String> form,
       @Context UriInfo uriInfo) {
-    logger.info("countDistinctValuesPerGroup/" + field + "/" + group);
-    return super.countDistinctValuesPerGroupHttpPostForm(field, group, form, uriInfo);
+    logger.info("countDistinctValuesPerGroup/" + group + "/" + field);
+    return super.countDistinctValuesPerGroupHttpPostForm(group, field, form, uriInfo);
   }
 
   @POST
-  @Path("/countDistinctValuesPerGroup/{field}/{group}")
+  @Path("/countDistinctValuesPerGroup/{group}/{field}")
   @ApiOperation(
       value = "Count the distinct number of group values that exist per the given field", 
       response = List.class, 
@@ -307,8 +307,8 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
       @ApiParam(value = "Name of group in the specimen object", required = true, defaultValue = "collectionType") @PathParam("group") String group,
       @ApiParam(value = "QuerySpec in JSON form", required = false) QuerySpec qs,
       @Context UriInfo uriInfo) {
-    logger.info("countDistinctValuesPerGroup/" + field + "/" + group);
-    return super.countDistinctValuesPerGroupHttpPostJson(field, group, qs, uriInfo);
+    logger.info("countDistinctValuesPerGroup/" + group + "/" + field);
+    return super.countDistinctValuesPerGroupHttpPostJson(group, field, qs, uriInfo);
   }
 
   @GET
@@ -355,7 +355,7 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
   }
 
   @GET
-  @Path("/getDistinctValuesPerGroup/{field}/{group}")
+  @Path("/getDistinctValuesPerGroup/{group}/{field}")
   @ApiOperation(
       value = "Count the distinct number of group values that exist per the given field", 
       response = List.class, 
@@ -365,12 +365,12 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
       @ApiParam(value = "Name of field in the specimen object", required = true, defaultValue = "identifications.typeStatus") @PathParam("field") String field,
       @ApiParam(value = "Name of group in the specimen object", required = true, defaultValue = "collectionType") @PathParam("group") String group, 
       @Context UriInfo uriInfo) {
-    logger.info("getDistinctValuesPerGroup/" + field + "/" + group);
-    return super.getDistinctValuesPerGroupHttpGet(field, group, uriInfo);
+    logger.info("getDistinctValuesPerGroup/" + group + "/" + field);
+    return super.getDistinctValuesPerGroupHttpGet(group, field, uriInfo);
   }
   
   @POST
-  @Path("/getDistinctValuesPerGroup/{field}/{group}")
+  @Path("/getDistinctValuesPerGroup/{group}/{field}")
   @ApiOperation(
       value = "Count the distinct number of group values that exist per the given field", 
       response = List.class, 
@@ -382,12 +382,12 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
       @ApiParam(value = "Name of group in the specimen object", required = true, defaultValue = "collectionType") @PathParam("group") String group, 
       @ApiParam(value = "Query object in POST form", required = false) MultivaluedMap<String, String> form,
       @Context UriInfo uriInfo) {
-    logger.info("getDistinctValuesPerGroup/" + field + "/" + group);
-    return super.getDistinctValuesPerGroupHttpPost(field, group, form, uriInfo);
+    logger.info("getDistinctValuesPerGroup/" + group + "/" + field);
+    return super.getDistinctValuesPerGroupHttpPost(group, field, form, uriInfo);
   }
   
   @POST
-  @Path("/getDistinctValuesPerGroup/{field}/{group}")
+  @Path("/getDistinctValuesPerGroup/{group}/{field}")
   @ApiOperation(
       value = "Count the distinct number of group values that exist per the given field", 
       response = List.class, 
@@ -399,8 +399,8 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
       @ApiParam(value = "Name of group in the specimen object", required = true, defaultValue = "collectionType") @PathParam("group") String group,
       @ApiParam(value = "QuerySpec JSON", required = false) QuerySpec qs,
       @Context UriInfo uriInfo) {
-    logger.info("getDistinctValuesPerGroup/" + field + "/" + group);
-    return super.getDistinctValuesPerGroupHttpJson(field, group, qs, uriInfo);
+    logger.info("getDistinctValuesPerGroup/" + group + "/" + field);
+    return super.getDistinctValuesPerGroupHttpJson(group, field, qs, uriInfo);
   }
   
   @GET

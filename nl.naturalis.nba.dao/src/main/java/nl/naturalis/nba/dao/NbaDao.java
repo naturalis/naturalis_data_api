@@ -47,6 +47,10 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
   NbaDao(DocumentType<T> dt) {
     this.dt = dt;
   }
+  
+  public static void ping() {
+    ESUtil.esClient();
+  }
 
   @Override
   public T find(String id) {

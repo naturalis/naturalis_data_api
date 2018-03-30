@@ -173,7 +173,7 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
   @GET
   @Path("/count")
   @ApiOperation(
-      value = "Get the number of specimens matching a condition", 
+      value = "Get the number of specimens matching a given condition", 
       response = long.class, 
       notes = "Conditions given as query parameters or a querySpec JSON")
   @Produces(TEXT_CONTENT_TYPE)
@@ -187,7 +187,7 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
   @Path("/count")
   @ApiOperation(
       hidden = true, 
-      value = "Get the number of specimens matching a condition",
+      value = "Get the number of specimens matching a given condition",
       response = long.class, 
       notes = "Conditions given as query parameters or a querySpec JSON")
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -201,7 +201,7 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
   @POST
   @Path("/count")
   @ApiOperation(
-      value = "Get the number of specimens matching a condition", 
+      value = "Get the number of specimens matching a given condition", 
       response = long.class, 
       notes = "Conditions given as query parameters or a querySpec JSON")
   @Consumes(JSON_CONTENT_TYPE)
@@ -265,13 +265,13 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
   @GET
   @Path("/countDistinctValuesPerGroup/{group}/{field}")
   @ApiOperation(
-      value = "Count the distinct number of group values that exist per the given field",
+      value = "Count the distinct number of field values that exist per the given field to group by",
       response = List.class, 
       notes = "")
   @Produces(JSON_CONTENT_TYPE)
   public List<Map<String, Object>> countDistinctValuesPerGroupHttpGet(
+      @ApiParam(value = "Name of field in the specimen object you want to group by", required = true, defaultValue = "collectionType") @PathParam("group") String group, 
       @ApiParam(value = "Name of field in the specimen object", required = true, defaultValue = "identifications.typeStatus") @PathParam("field") String field,
-      @ApiParam(value = "Name of group in the specimen object", required = true, defaultValue = "collectionType") @PathParam("group") String group, 
       @Context UriInfo uriInfo) {
     logger.info("countDistinctValuesPerGroup/" + group + "/" + field);
     return super.countDistinctValuesPerGroupHttpGet(group, field, uriInfo);
@@ -280,14 +280,14 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
   @POST
   @Path("/countDistinctValuesPerGroup/{group}/{field}")
   @ApiOperation(
-      value = "Count the distinct number of group values that exist per the given field", 
+      value = "Count the distinct number of field values that exist per the given field to group by", 
       response = List.class, 
       notes = "")
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
   @Produces(JSON_CONTENT_TYPE)
   public List<Map<String, Object>> countDistinctValuesPerGroupHttpPostForm(
+      @ApiParam(value = "Name of field in the specimen object you want to group by", required = true, defaultValue = "collectionType") @PathParam("group") String group, 
       @ApiParam(value = "Name of field in the specimen object", required = true, defaultValue = "identifications.typeStatus") @PathParam("field") String field,
-      @ApiParam(value = "Name of group in the specimen object", required = true, defaultValue = "collectionType") @PathParam("group") String group, 
       @ApiParam(value = "Query object in POST form", required = false) MultivaluedMap<String, String> form,
       @Context UriInfo uriInfo) {
     logger.info("countDistinctValuesPerGroup/" + group + "/" + field);
@@ -297,14 +297,14 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
   @POST
   @Path("/countDistinctValuesPerGroup/{group}/{field}")
   @ApiOperation(
-      value = "Count the distinct number of group values that exist per the given field", 
+      value = "Count the distinct number of field values that exist per the given field to group by", 
       response = List.class, 
       notes = "")
   @Consumes(JSON_CONTENT_TYPE)
   @Produces(JSON_CONTENT_TYPE)
   public List<Map<String, Object>> countDistinctValuesPerGroupHttpPostJson(
+      @ApiParam(value = "Name of field in the specimen object you want to group by", required = true, defaultValue = "collectionType") @PathParam("group") String group,
       @ApiParam(value = "Name of field in the specimen object", required = true, defaultValue = "identifications.typeStatus") @PathParam("field") String field,
-      @ApiParam(value = "Name of group in the specimen object", required = true, defaultValue = "collectionType") @PathParam("group") String group,
       @ApiParam(value = "QuerySpec in JSON form", required = false) QuerySpec qs,
       @Context UriInfo uriInfo) {
     logger.info("countDistinctValuesPerGroup/" + group + "/" + field);
@@ -357,13 +357,13 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
   @GET
   @Path("/getDistinctValuesPerGroup/{group}/{field}")
   @ApiOperation(
-      value = "Count the distinct number of group values that exist per the given field", 
+      value = "Get all distinct values (and their document count) for the field given divided per distinct value of the field to group by", 
       response = List.class, 
       notes = "")
   @Produces(JSON_CONTENT_TYPE)
   public List<Map<String, Object>> getDistinctValuesPerGroupHttpGet(
+      @ApiParam(value = "Name of field in the specimen object you want to group by", required = true, defaultValue = "collectionType") @PathParam("group") String group, 
       @ApiParam(value = "Name of field in the specimen object", required = true, defaultValue = "identifications.typeStatus") @PathParam("field") String field,
-      @ApiParam(value = "Name of group in the specimen object", required = true, defaultValue = "collectionType") @PathParam("group") String group, 
       @Context UriInfo uriInfo) {
     logger.info("getDistinctValuesPerGroup/" + group + "/" + field);
     return super.getDistinctValuesPerGroupHttpGet(group, field, uriInfo);
@@ -372,14 +372,14 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
   @POST
   @Path("/getDistinctValuesPerGroup/{group}/{field}")
   @ApiOperation(
-      value = "Count the distinct number of group values that exist per the given field", 
+      value = "Get all distinct values (and their document count) for the field given divided per distinct value of the field to group by", 
       response = List.class, 
       notes = "")
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
   @Produces(JSON_CONTENT_TYPE)
   public List<Map<String, Object>> getDistinctValuesPerGroupHttpPostForm(
+      @ApiParam(value = "Name of field in the specimen object you want to group by", required = true, defaultValue = "collectionType") @PathParam("group") String group, 
       @ApiParam(value = "Name of field in the specimen object", required = true, defaultValue = "identifications.typeStatus") @PathParam("field") String field,
-      @ApiParam(value = "Name of group in the specimen object", required = true, defaultValue = "collectionType") @PathParam("group") String group, 
       @ApiParam(value = "Query object in POST form", required = false) MultivaluedMap<String, String> form,
       @Context UriInfo uriInfo) {
     logger.info("getDistinctValuesPerGroup/" + group + "/" + field);
@@ -389,14 +389,14 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
   @POST
   @Path("/getDistinctValuesPerGroup/{group}/{field}")
   @ApiOperation(
-      value = "Count the distinct number of group values that exist per the given field", 
+      value = "Get all distinct values (and their document count) for the field given divided per distinct value of the field to group by", 
       response = List.class, 
       notes = "")
   @Consumes(JSON_CONTENT_TYPE)
   @Produces(JSON_CONTENT_TYPE)
   public List<Map<String, Object>> getDistinctValuesPerGroup(
+      @ApiParam(value = "Name of field in the specimen object you want to group by", required = true, defaultValue = "collectionType") @PathParam("group") String group,
       @ApiParam(value = "Name of field in the specimen object", required = true, defaultValue = "identifications.typeStatus") @PathParam("field") String field,
-      @ApiParam(value = "Name of group in the specimen object", required = true, defaultValue = "collectionType") @PathParam("group") String group,
       @ApiParam(value = "QuerySpec JSON", required = false) QuerySpec qs,
       @Context UriInfo uriInfo) {
     logger.info("getDistinctValuesPerGroup/" + group + "/" + field);

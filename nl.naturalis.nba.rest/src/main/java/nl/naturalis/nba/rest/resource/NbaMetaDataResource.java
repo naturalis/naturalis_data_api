@@ -60,12 +60,20 @@ public class NbaMetaDataResource {
 	@EJB
 	Registry registry;
 
+  //@formatter:off
 	@GET
 	@Path("/getSetting/{name}")
-	@ApiOperation(value = "Get the value of an NBA setting", response = Object.class, notes = "All settings can be queried with /metadata/getSettings")
+	@ApiOperation(
+	    value = "Get the value of an NBA setting", 
+	    response = Object.class, 
+	    notes = "All settings can be queried with /metadata/getSettings")
 	@Produces(JSON_CONTENT_TYPE)
 	public Object getSetting(
-			@ApiParam(value = "name of setting", required = true, defaultValue = "operator.CONTAINS.min_term_length") @PathParam("name") String name,
+			@ApiParam(
+			    value = "name of setting", 
+			    required = true, 
+			    defaultValue = "operator.CONTAINS.min_term_length") 
+			@PathParam("name") String name,
 			@Context UriInfo uriInfo)
 	{
 		try {
@@ -78,7 +86,10 @@ public class NbaMetaDataResource {
 
 	@GET
 	@Path("/getSettings")
-	@ApiOperation(value = "List all publicly available configuration settings for the NBA", response = Map.class, notes = "The value of a specific setting can be queried with metadata/getSetting/{name}")
+	@ApiOperation(
+	    value = "List all publicly available configuration settings for the NBA", 
+	    response = Map.class, 
+	    notes = "The value of a specific setting can be queried with metadata/getSetting/{name}")
 	@Produces(JSON_CONTENT_TYPE)
 	public Map<NbaSetting, Object> getSettings(@Context UriInfo uriInfo)
 	{
@@ -91,7 +102,10 @@ public class NbaMetaDataResource {
 
 	@GET
 	@Path("/getSourceSystems")
-	@ApiOperation(value = "Get the data sources from which the data was retrieved", response = SourceSystem[].class, notes = "Returns code and name of all source systems")
+	@ApiOperation(
+	    value = "Get the data sources from which the data was retrieved", 
+	    response = SourceSystem[].class, 
+	    notes = "Returns code and name of all source systems")
 	@Produces(JSON_CONTENT_TYPE)
 	public SourceSystem[] getSourceSystems(@Context UriInfo uriInfo)
 	{
@@ -104,7 +118,10 @@ public class NbaMetaDataResource {
 
 	@GET
 	@Path("/getControlledLists")
-	@ApiOperation(value = "Get the names of fields for which a controlled vocabulary exists", response = String[].class, notes = "Possible values for fields with controlled vocabularies can be queried with metadata/getControlledList/{field}")
+	@ApiOperation(
+	    value = "Get the names of fields for which a controlled vocabulary exists", 
+	    response = String[].class, 
+	    notes = "Possible values for fields with controlled vocabularies can be queried with metadata/getControlledList/{field}")
 	@Produces(JSON_CONTENT_TYPE)
 	public String[] getControlledLists(@Context UriInfo uriInfo)
 	{
@@ -117,7 +134,10 @@ public class NbaMetaDataResource {
 
 	@GET
 	@Path("/getControlledList/Sex")
-	@ApiOperation(value = "Get allowed values for the field 'Sex' in a specimen document", response = Sex[].class, notes = "")
+	@ApiOperation(
+	    value = "Get allowed values for the field 'Sex' in a specimen document", 
+	    response = Sex[].class, 
+	    notes = "")
 	@Produces(JSON_CONTENT_TYPE)
 	public Sex[] getControlledListSex(@Context UriInfo uriInfo)
 	{
@@ -130,7 +150,10 @@ public class NbaMetaDataResource {
 
 	@GET
 	@Path("/getControlledList/PhaseOrStage")
-	@ApiOperation(value = "Get allowed values for the field 'PhaseOrStage' in a specimen document", response = PhaseOrStage[].class, notes = "")
+	@ApiOperation(
+	    value = "Get allowed values for the field 'PhaseOrStage' in a specimen document", 
+	    response = PhaseOrStage[].class, 
+	    notes = "")
 	@Produces(JSON_CONTENT_TYPE)
 	public PhaseOrStage[] getControlledListPhaseOrStage(@Context UriInfo uriInfo)
 	{
@@ -143,7 +166,10 @@ public class NbaMetaDataResource {
 
 	@GET
 	@Path("/getControlledList/TaxonomicStatus")
-	@ApiOperation(value = "Get allowed values for the field 'TaxonomicStatus' in specimen and taxon documents", response = TaxonomicStatus[].class, notes = "")
+	@ApiOperation(
+	    value = "Get allowed values for the field 'TaxonomicStatus' in specimen and taxon documents", 
+	    response = TaxonomicStatus[].class, 
+	    notes = "")
 	@Produces(JSON_CONTENT_TYPE)
 	public TaxonomicStatus[] getControlledListTaxonomicStatus(@Context UriInfo uriInfo)
 	{
@@ -156,7 +182,10 @@ public class NbaMetaDataResource {
 
 	@GET
 	@Path("/getControlledList/SpecimenTypeStatus")
-	@ApiOperation(value = "Get allowed values for the field 'SpecimenTypeStatus' in a specimen document", response = SpecimenTypeStatus[].class, notes = "")
+	@ApiOperation(
+	    value = "Get allowed values for the field 'SpecimenTypeStatus' in a specimen document", 
+	    response = SpecimenTypeStatus[].class, 
+	    notes = "")
 	@Produces(JSON_CONTENT_TYPE)
 	public SpecimenTypeStatus[] getControlledListSpecimenTypeStatus(@Context UriInfo uriInfo)
 	{
@@ -169,7 +198,10 @@ public class NbaMetaDataResource {
 
 	@GET
 	@Path("/getAllowedDateFormats")
-	@ApiOperation(value = "Get allowed values for dates in queries", response = String[].class, notes = "Queries with other formatted dates will result in a query error")
+	@ApiOperation(
+	    value = "Get allowed values for dates in queries", 
+	    response = String[].class, 
+	    notes = "Queries with other formatted dates will result in a query error")
 	@Produces(JSON_CONTENT_TYPE)
 	public String[] getAllowedDateFormats(@Context UriInfo uriInfo)
 	{
@@ -184,7 +216,10 @@ public class NbaMetaDataResource {
 
 	@GET
 	@Path("/getRestServices")
-	@ApiOperation(value = "List all available REST services and their parameters", response = RestService[].class, notes = "lists end point name, http method, response type, and URL")
+	@ApiOperation(
+	    value = "List all available REST services and their parameters", 
+	    response = RestService[].class, 
+	    notes = "Lists end point name, http method, response type, and URL")
 	@Produces(JSON_CONTENT_TYPE)
 	public RestService[] getRestServices(@Context UriInfo uriInfo)
 	{
@@ -246,5 +281,6 @@ public class NbaMetaDataResource {
 			throw handleError(uriInfo, t);
 		}
 	}
+  //@formatter:on
 
 }

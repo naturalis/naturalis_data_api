@@ -126,7 +126,7 @@ public class MultiMediaObjectResource extends NbaResource<MultiMediaObject, Mult
   @GET
   @Path("/count")
   @ApiOperation(
-      value = "Get the number of multimedia documents matching a condition", 
+      value = "Get the number of multimedia documents matching a given condition", 
       response = long.class, 
       notes = "Conditions given as query parameters or QuerySpec JSON")
   @Produces(JSON_CONTENT_TYPE)
@@ -146,7 +146,7 @@ public class MultiMediaObjectResource extends NbaResource<MultiMediaObject, Mult
   @Path("/count")
   @ApiOperation(
       hidden = true,
-      value = "Get the number of multimedia documents matching a condition", 
+      value = "Get the number of multimedia documents matching a given condition", 
       response = long.class,
       notes = "Conditions given as query parameters or QuerySpec JSON")
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -160,7 +160,7 @@ public class MultiMediaObjectResource extends NbaResource<MultiMediaObject, Mult
   @POST
   @Path("/count")
   @ApiOperation(
-      value = "Get the number of multimedia documents matching a condition",
+      value = "Get the number of multimedia documents matching a given condition",
       response = long.class, 
       notes = "Conditions given as query parameters or QuerySpec JSON")
   @Produces(JSON_CONTENT_TYPE)
@@ -221,13 +221,13 @@ public class MultiMediaObjectResource extends NbaResource<MultiMediaObject, Mult
   @GET
   @Path("/countDistinctValuesPerGroup/{group}/{field}")
   @ApiOperation(
-      value = "Count the distinct number of group values that exist per the given field",
+      value = "Count the distinct number of field values that exist per the given field to group by",
       response = Map.class, 
       notes = "")
   @Produces(JSON_CONTENT_TYPE)
   public List<Map<String, Object>> countDistinctValuesPerGroupHttpGet(
+      @ApiParam(value = "name of field in the multimedia object you want to group by", required = true, defaultValue = "collectionType") @PathParam("group") String group, 
       @ApiParam(value = "name of field in the multimedia object", required = true, defaultValue = "identifications.typeStatus") @PathParam("field") String field,
-      @ApiParam(value = "name of group in the multimedia object", required = true, defaultValue = "collectionType") @PathParam("group") String group, 
       @Context UriInfo uriInfo) {
     logger.info("countDistinctValuesPerGroup/" + group + "/" + field);
     return super.countDistinctValuesPerGroupHttpGet(group, field, uriInfo);
@@ -236,14 +236,14 @@ public class MultiMediaObjectResource extends NbaResource<MultiMediaObject, Mult
   @POST
   @Path("/countDistinctValuesPerGroup/{group}/{field}")
   @ApiOperation(
-      value = "Count the distinct number of group values that exist per the given field", 
+      value = "Count the distinct number of field values that exist per the given field to group by", 
       response = Map.class, 
       notes = "")
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
   @Produces(JSON_CONTENT_TYPE)
   public List<Map<String, Object>> countDistinctValuesPerGroupHttpPostForm(
+      @ApiParam(value = "name of field in the multimedia object you want to group by", required = true, defaultValue = "collectionType") @PathParam("group") String group, 
       @ApiParam(value = "name of field in the multimedia object", required = true, defaultValue = "identifications.typeStatus") @PathParam("field") String field,
-      @ApiParam(value = "name of group in the multimedia object", required = true, defaultValue = "collectionType") @PathParam("group") String group, 
       @ApiParam(value = "query object in POST form", required = false) MultivaluedMap<String, String> form,
       @Context UriInfo uriInfo) {
     logger.info("countDistinctValuesPerGroup/" + group + "/" + field);
@@ -253,14 +253,14 @@ public class MultiMediaObjectResource extends NbaResource<MultiMediaObject, Mult
   @POST
   @Path("/countDistinctValuesPerGroup/{group}/{field}")
   @ApiOperation(
-      value = "Count the distinct number of group values that exist per the given field", 
+      value = "Count the distinct number of field values that exist per the given field to group by", 
       response = Map.class, 
       notes = "")
   @Consumes(JSON_CONTENT_TYPE)
   @Produces(JSON_CONTENT_TYPE)
   public List<Map<String, Object>> countDistinctValuesPerGroupHttpPostJson(
+      @ApiParam(value = "name of field in the multimedia object you want to group by", required = true, defaultValue = "collectionType") @PathParam("group") String group,
       @ApiParam(value = "name of field in the multimedia object", required = true, defaultValue = "identifications.typeStatus") @PathParam("field") String field,
-      @ApiParam(value = "name of group in the multimedia object", required = true, defaultValue = "collectionType") @PathParam("group") String group,
       @ApiParam(value = "querySpec JSON", required = false) QuerySpec qs,
       @Context UriInfo uriInfo) {
     logger.info("countDistinctValuesPerGroup/" + group + "/" + field);
@@ -313,13 +313,13 @@ public class MultiMediaObjectResource extends NbaResource<MultiMediaObject, Mult
   @GET
   @Path("/getDistinctValuesPerGroup/{group}/{field}")
   @ApiOperation(
-      value = "Count the distinct number of group values that exist per the given field", 
+      value = "Get all distinct values (and their document count) for the field given divided per distinct value of the field to group by", 
       response = List.class, 
       notes = "")
   @Produces(JSON_CONTENT_TYPE)
   public List<Map<String, Object>> getDistinctValuesPerGroupHttpGet(
+      @ApiParam(value = "name of field in the multimedia object you want to group by", required = true, defaultValue = "identifications.scientificName.genusOrMonomial") @PathParam("group") String group, 
       @ApiParam(value = "name of field in the multimedia object", required = true, defaultValue = "collectionType") @PathParam("field") String field,
-      @ApiParam(value = "name of group in the multimedia object", required = true, defaultValue = "identifications.scientificName.genusOrMonomial") @PathParam("group") String group, 
       @Context UriInfo uriInfo) {
     logger.info("getDistinctValuesPerGroup/" + group + "/" + field);
     return super.getDistinctValuesPerGroupHttpGet(group, field, uriInfo);
@@ -328,14 +328,14 @@ public class MultiMediaObjectResource extends NbaResource<MultiMediaObject, Mult
   @POST
   @Path("/getDistinctValuesPerGroup/{group}/{field}")
   @ApiOperation(
-      value = "Count the distinct number of group values that exist per the given field", 
+      value = "Get all distinct values (and their document count) for the field given divided per distinct value of the field to group by", 
       response = List.class, 
       notes = "")
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
   @Produces(JSON_CONTENT_TYPE)
   public List<Map<String, Object>> getDistinctValuesPerGroupHttpPostForm(
+      @ApiParam(value = "name of field in the multimedia object you want to group by", required = true, defaultValue = "identifications.scientificName.genusOrMonomial") @PathParam("group") String group, 
       @ApiParam(value = "name of field in the multimedia object", required = true, defaultValue = "collectionType") @PathParam("field") String field,
-      @ApiParam(value = "name of group in the multimedia object", required = true, defaultValue = "identifications.scientificName.genusOrMonomial") @PathParam("group") String group, 
       @ApiParam(value = "query object in POST form", required = false) MultivaluedMap<String, String> form,
       @Context UriInfo uriInfo) {
     logger.info("getDistinctValuesPerGroup/" + group + "/" + field);
@@ -345,14 +345,14 @@ public class MultiMediaObjectResource extends NbaResource<MultiMediaObject, Mult
   @POST
   @Path("/getDistinctValuesPerGroup/{group}/{field}")
   @ApiOperation(
-      value = "Count the distinct number of group values that exist per the given field", 
+      value = "Get all distinct values (and their document count) for the field given divided per distinct value of the field to group by", 
       response = List.class, 
       notes = "")
   @Consumes(JSON_CONTENT_TYPE)
   @Produces(JSON_CONTENT_TYPE)
   public List<Map<String, Object>> getDistinctValuesPerGroup(
+      @ApiParam(value = "name of field in the multimedia object you want to group by", required = true, defaultValue = "identifications.scientificName.genusOrMonomial") @PathParam("group") String group,
       @ApiParam(value = "name of field in the multimedia object", required = true, defaultValue = "collectionType") @PathParam("field") String field,
-      @ApiParam(value = "name of group in the multimedia object", required = true, defaultValue = "identifications.scientificName.genusOrMonomial") @PathParam("group") String group,
       @ApiParam(value = "querySpec JSON", required = false) QuerySpec qs,
       @Context UriInfo uriInfo) {
     logger.info("getDistinctValuesPerGroup/" + group + "/" + field);

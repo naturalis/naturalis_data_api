@@ -1,3 +1,18 @@
+RELEASE NOTES v 2.13
+
+* Main improvement of this release is the modification
+  of exisiting and the creation of new aggregation 
+  services. These services can be used, not to retrieve 
+  documents (like specimen documents, or taxon documents)
+  from the document store, but summary data about sets 
+  of documents. Like, how many documents are there?, 
+  or what are distinct values being used in that field? 
+  - count
+  - countDistinctValues
+  - countDistinctValuesPerGroup
+  - getDistinctValues
+  - getDistinctValuesPerGroup
+
 RELEASE NOTES v 2.12
 
 * Fix of know issue (see v 2.11.4). Conditions 

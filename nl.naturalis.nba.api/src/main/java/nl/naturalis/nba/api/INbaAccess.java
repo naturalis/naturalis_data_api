@@ -1,5 +1,6 @@
 package nl.naturalis.nba.api;
 
+import java.io.OutputStream;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -102,6 +103,33 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
    */
   QueryResult<DOCUMENT_OBJECT> query(QuerySpec querySpec) throws InvalidQueryException;
 
+  /**
+   * <p>
+   * Writes the output satisfying the specified query
+   * specification to the specified output stream.
+   * </p>
+   * <h5>REST API</h5>
+   * <p>
+   * The NBA REST API exposes this method through a GET and POST request with
+   * the following end point:
+   * </p>
+   * <p>
+   * <code>
+   * http://api.biodiversitydata.nl/v2/&lt;document-type&gt;/download
+   * </code>
+   * </p>
+   * <p>
+   * See {@link QuerySpec} for an explanation of how to encode the
+   * {@code QuerySpec} object in the request.
+   * </p>
+   * 
+   * @param querySpec
+   * @param out
+   * @throws InvalidQueryException
+   */
+  void downloadQuery(QuerySpec querySpec, OutputStream out) throws InvalidQueryException;
+  
+  
   /**
    * <p>
    * Returns the number of documents conforming to the provided query specification. You may specify

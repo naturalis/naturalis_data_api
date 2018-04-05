@@ -1,8 +1,11 @@
 package nl.naturalis.nba.client;
 
+import java.io.OutputStream;
 import com.fasterxml.jackson.core.type.TypeReference;
 import nl.naturalis.nba.api.IMultiMediaObjectAccess;
+import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.QueryResult;
+import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.MultiMediaObject;
 
 /**
@@ -39,5 +42,11 @@ public class MultiMediaObjectClient extends NbaClient<MultiMediaObject>
 	{
 		return new TypeReference<QueryResult<MultiMediaObject>>() {};
 	}
+
+  @Override
+  public void downloadQuery(QuerySpec querySpec, OutputStream out) throws InvalidQueryException {
+    // TODO Auto-generated method stub
+    
+  }
 
 }

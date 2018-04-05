@@ -139,4 +139,10 @@ public class TaxonClient extends NbaClient<Taxon> implements ITaxonAccess {
 		return new TypeReference<QueryResult<Taxon>>() {};
 	}
 
+  @Override
+  public void downloadQuery(QuerySpec querySpec, OutputStream out) throws InvalidQueryException {
+    // TODO Auto-generated method stub
+    
+  }
+
 }

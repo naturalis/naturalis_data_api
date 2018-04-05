@@ -61,6 +61,25 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
 
   //@formatter:off
   @GET
+  @Path("/download")
+  @ApiOperation(
+      value = "Dynamic download service: Query for specimens and return result as a stream ...",
+      response = Response.class,
+      notes = "Query with query parameters or querySpec JSON. ...")
+  @Produces(MediaType.APPLICATION_OCTET_STREAM)
+  @ApiImplicitParams({@ApiImplicitParam(
+      name = "collectionType", 
+      value = "Example query param",
+      dataType = "string", 
+      paramType = "query", 
+      defaultValue = "Crustacea", 
+      required = false)})
+  public Response downloadQueryHttpGet(@Context UriInfo uriInfo) {
+    return super.downloadQueryHttpGet(uriInfo);
+  }
+
+  
+  @GET
   @Path("/find/{id}")
   @ApiOperation(
       value = "Find a specimen by id", 

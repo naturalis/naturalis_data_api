@@ -184,5 +184,11 @@ public class SpecimenClient extends NbaClient<Specimen> implements ISpecimenAcce
 	{
 		return new TypeReference<QueryResult<Specimen>>() {};
 	}
+
+  @Override
+  public void downloadQuery(QuerySpec querySpec, OutputStream out) throws InvalidQueryException {
+    // TODO Auto-generated method stub
+    
+  }
 	
 }

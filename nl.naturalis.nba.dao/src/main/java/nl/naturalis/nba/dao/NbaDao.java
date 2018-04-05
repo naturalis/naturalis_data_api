@@ -11,6 +11,11 @@ import static nl.naturalis.nba.dao.util.es.ESUtil.executeSearchRequest;
 import static nl.naturalis.nba.dao.util.es.ESUtil.newSearchRequest;
 import static nl.naturalis.nba.dao.util.es.ESUtil.toDocumentObject;
 import static nl.naturalis.nba.utils.debug.DebugUtil.printCall;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -39,7 +44,13 @@ import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.aggregation.AggregationQuery;
 import nl.naturalis.nba.dao.exception.DaoException;
+import nl.naturalis.nba.dao.format.DataSetConfigurationException;
+import nl.naturalis.nba.dao.format.DataSetWriteException;
+import nl.naturalis.nba.dao.format.dwca.DwcaConfig;
+import nl.naturalis.nba.dao.format.dwca.DwcaDataSetType;
+import nl.naturalis.nba.dao.format.dwca.IDwcaWriter;
 import nl.naturalis.nba.dao.translate.QuerySpecTranslator;
+import nl.naturalis.nba.dao.util.es.DirtyDocumentIterator;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 
 public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
@@ -203,6 +214,27 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
       rrb.execute().actionGet();
     }
     return response.getResult() == Result.DELETED;
+  }
+  
+  public void downloadQuery(QuerySpec querySpec, OutputStream out) throws InvalidQueryException
+  {
+    if (logger.isDebugEnabled()) {
+      logger.debug(printCall("downloadQuery", querySpec, out));
+    }
+    querySpec.setSize(100);
+    DirtyDocumentIterator<T> iterator = new DirtyDocumentIterator<>(dt, querySpec);
+    
+    Writer writer = new BufferedWriter(new OutputStreamWriter(out));
+    while (iterator.hasNext()) {
+      try {
+        writer.write( JsonUtil.toPrettyJson(iterator.next()) );
+        writer.flush();
+      } catch (IOException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+    }
+    
   }
 
   abstract T[] createDocumentObjectArray(int length);

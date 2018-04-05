@@ -149,7 +149,7 @@ public class HomeResource {
   }
 
   @GET
-  @Path("/import-data")
+  @Path("/import-files")
   @Produces(MediaType.APPLICATION_JSON)
   public Map<String, Object> importData() {
     return getNbaMetadata();

@@ -216,25 +216,32 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
     return response.getResult() == Result.DELETED;
   }
   
-  public void downloadQuery(QuerySpec querySpec, OutputStream out) throws InvalidQueryException
+  public void downloadQuery(QuerySpec querySpec, OutputStream out) throws InvalidQueryException, IOException
   {
     if (logger.isDebugEnabled()) {
       logger.debug(printCall("downloadQuery", querySpec, out));
     }
+
     querySpec.setSize(100);
     DirtyDocumentIterator<T> iterator = new DirtyDocumentIterator<>(dt, querySpec);
-    
     Writer writer = new BufferedWriter(new OutputStreamWriter(out));
+    
+    boolean begin = true;    
     while (iterator.hasNext()) {
       try {
-        writer.write( JsonUtil.toPrettyJson(iterator.next()) );
+        if(begin) {
+          writer.write("[");
+          begin = false;
+        }
+        writer.write( JsonUtil.toJson(iterator.next()) );
+        if(iterator.hasNext()) writer.write(",");
+        else writer.write("]");
         writer.flush();
       } catch (IOException e) {
-        // TODO Auto-generated catch block
         e.printStackTrace();
+        throw new IOException();
       }
     }
-    
   }
 
   abstract T[] createDocumentObjectArray(int length);

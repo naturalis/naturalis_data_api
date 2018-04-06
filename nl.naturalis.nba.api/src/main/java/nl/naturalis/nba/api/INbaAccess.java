@@ -1,5 +1,6 @@
 package nl.naturalis.nba.api;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Collection;
 import java.util.List;
@@ -126,8 +127,9 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
    * @param querySpec
    * @param out
    * @throws InvalidQueryException
+   * @throws IOException 
    */
-  void downloadQuery(QuerySpec querySpec, OutputStream out) throws InvalidQueryException;
+  void downloadQuery(QuerySpec querySpec, OutputStream out) throws InvalidQueryException, IOException;
   
   
   /**

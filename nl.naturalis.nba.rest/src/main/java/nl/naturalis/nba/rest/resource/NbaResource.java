@@ -57,6 +57,54 @@ public abstract class NbaResource<T extends IDocumentObject, U extends NbaDao<T>
     }
   }
 
+  public Response downloadQueryHttpPostForm(MultivaluedMap<String, String> form, UriInfo uriInfo) {
+    try {
+      QuerySpec qs = new HttpQuerySpecBuilder(form, uriInfo).build();
+      StreamingOutput stream = new StreamingOutput() {
+        public void write(OutputStream out) throws IOException {
+
+          try {
+            dao.downloadQuery(qs, out);
+          } catch (Throwable e) {
+            throw new RESTException(uriInfo, e);
+          }
+        }
+        
+      };
+
+      ResponseBuilder response = Response.ok(stream);
+      response.type(JSON_CONTENT_TYPE);
+      response.header("Accept-Encoding", "gzip, deflate");
+      return response.build();
+    } catch (Throwable t) {
+      throw handleError(uriInfo, t);
+    }
+  }
+
+  public Response downloadQueryHttpPostJson(QuerySpec qs, UriInfo uriInfo) {
+    try {
+      StreamingOutput stream = new StreamingOutput() {
+        public void write(OutputStream out) throws IOException {
+
+          try {
+            dao.downloadQuery(qs, out);
+          } catch (Throwable e) {
+            throw new RESTException(uriInfo, e);
+          }
+        }
+        
+      };
+
+      ResponseBuilder response = Response.ok(stream);
+      response.type(JSON_CONTENT_TYPE);
+      response.header("Accept-Encoding", "gzip, deflate");
+      return response.build();
+    } catch (Throwable t) {
+      throw handleError(uriInfo, t);
+    }
+  }
+
+  
   public T find(String id, UriInfo uriInfo) {
     try {
       T result = dao.find(id);

@@ -78,6 +78,45 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
     return super.downloadQueryHttpGet(uriInfo);
   }
 
+  @POST
+  @Path("/download")
+  @ApiOperation(
+      value = "Dynamic download service: Query for specimens and return result as a stream ...",
+      response = Response.class,
+      notes = "Query with query parameters or querySpec JSON. ...")
+  @Produces(MediaType.APPLICATION_OCTET_STREAM)
+  @ApiImplicitParams({@ApiImplicitParam(
+      name = "collectionType", 
+      value = "Example query param",
+      dataType = "string", 
+      paramType = "query", 
+      defaultValue = "Crustacea", 
+      required = false)})
+  public Response downloadQueryHttpPostForm(
+    @ApiParam(value = "POST payload", required = false) MultivaluedMap<String, String> form,
+    @Context UriInfo uriInfo) {
+    return super.downloadQueryHttpPostForm(form, uriInfo);
+  }
+
+  @POST
+  @Path("/download")
+  @ApiOperation(
+      value = "Dynamic download service: Query for specimens and return result as a stream ...",
+      response = Response.class,
+      notes = "Query with query parameters or querySpec JSON. ...")
+  @Produces(MediaType.APPLICATION_OCTET_STREAM)
+  @ApiImplicitParams({@ApiImplicitParam(
+      name = "collectionType", 
+      value = "Example query param",
+      dataType = "string", 
+      paramType = "query", 
+      defaultValue = "Crustacea", 
+      required = false)})
+  public Response downloadQueryHttpPostJson(
+      @ApiParam(value = "querySpec", required = false) QuerySpec qs, 
+      @Context UriInfo uriInfo) {
+    return super.downloadQueryHttpPostJson(qs, uriInfo);
+  }
   
   @GET
   @Path("/find/{id}")

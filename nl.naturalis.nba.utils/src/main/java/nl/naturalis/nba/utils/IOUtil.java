@@ -82,7 +82,7 @@ public class IOUtil {
 			int n = is2.read(data, 0, data.length);
 			while (n != -1) {
 				baos.write(data, 0, n);
-				n = is.read(data, 0, data.length);
+				n = is2.read(data, 0, data.length);
 			}
 			return baos.toByteArray();
 		}

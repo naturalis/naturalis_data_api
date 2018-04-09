@@ -1,26 +1,21 @@
   package nl.naturalis.nba.dao.mock;
 
   import static nl.naturalis.nba.api.model.PhaseOrStage.ADULT;
-  import static nl.naturalis.nba.api.model.PhaseOrStage.EGG;
-  import static nl.naturalis.nba.api.model.PhaseOrStage.JUVENILE;
-  import static nl.naturalis.nba.api.model.Sex.FEMALE;
-  import static nl.naturalis.nba.api.model.Sex.MALE;
-  import static nl.naturalis.nba.api.model.SourceSystem.BRAHMS;
-  import static nl.naturalis.nba.api.model.SourceSystem.CRS;
-  
-  import java.util.ArrayList;
-  import java.util.Arrays;
-  import java.util.List;
-
-  import nl.naturalis.nba.api.model.DefaultClassification;
-  import nl.naturalis.nba.api.model.GatheringEvent;
-  import nl.naturalis.nba.api.model.GatheringSiteCoordinates;
-  import nl.naturalis.nba.api.model.Monomial;
-  import nl.naturalis.nba.api.model.Person;
-  import nl.naturalis.nba.api.model.ScientificName;
-  import nl.naturalis.nba.api.model.Specimen;
-  import nl.naturalis.nba.api.model.SpecimenIdentification;
-  import nl.naturalis.nba.common.es.ESDateInput;
+import static nl.naturalis.nba.api.model.PhaseOrStage.EGG;
+import static nl.naturalis.nba.api.model.PhaseOrStage.JUVENILE;
+import static nl.naturalis.nba.api.model.Sex.FEMALE;
+import static nl.naturalis.nba.api.model.Sex.MALE;
+import static nl.naturalis.nba.api.model.SourceSystem.BRAHMS;
+import static nl.naturalis.nba.api.model.SourceSystem.CRS;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import nl.naturalis.nba.api.model.DefaultClassification;
+import nl.naturalis.nba.api.model.Monomial;
+import nl.naturalis.nba.api.model.Person;
+import nl.naturalis.nba.api.model.ScientificName;
+import nl.naturalis.nba.api.model.Specimen;
+import nl.naturalis.nba.api.model.SpecimenIdentification;
 
   /**
    * Generates specimen objects used for testing the Aggregation Services
@@ -33,52 +28,44 @@
       specimen.setUnitID("ZMA.MAM.100");
       specimen.setSourceSystem(CRS);
       specimen.setCollectionType("Mollusca");
+      String[] collections = new String[] { "Weekdieren" };
+      specimen.setTheme(Arrays.asList(collections));
       specimen.setPhaseOrStage(ADULT);
       specimen.setSex(MALE);
-      specimen.setRecordBasis("Preserved specimen");
+      specimen.setRecordBasis("PreservedSpecimen");
       specimen.setNumberOfSpecimen(0);
-//      GatheringEvent gathering = new GatheringEvent();
-//      gathering.setProjectTitle("Vogels der Lage Landen");
-//      gathering.setLocalityText("Duinen, nabij Uitgeest");
-//      gathering.setCountry("Netherlands");
-//      gathering.setCity("Uitgeest");
-//      gathering.setDateTimeBegin(new ESDateInput("2010-04-03 13:04").parse());
-//      gathering.setGatheringPersons(Arrays.asList(ruudAltenBurg()));
-//
-//      GatheringSiteCoordinates uitgeestCoordinates;
-//      uitgeestCoordinates = new GatheringSiteCoordinates(52.531713, 4.705922);
-//      gathering.setSiteCoordinates(Arrays.asList(uitgeestCoordinates));
 
       DefaultClassification classification = new DefaultClassification();
       classification.setKingdom("Animalia");
-      classification.setPhylum("Chordata");
+      classification.setPhylum("Mollusca");
       classification.setClassName("Gastropoda");
-      classification.setOrder("Passeriformes");
-      classification.setFamily("Paridae");
-      classification.setGenus("Parus");
-      classification.setSpecificEpithet("major");
+      classification.setOrder("Littorinimorpha");
+      classification.setFamily("Naticidae");
+      classification.setGenus("Tectonatica");
+      classification.setSpecificEpithet("suffusa");
 
       List<Monomial> systemClassification = new ArrayList<>();
       systemClassification.add(new Monomial("kingdom", "Animalia"));
-      systemClassification.add(new Monomial("phylum", "Chordata"));
-      systemClassification.add(new Monomial("class", "Aves"));
-      systemClassification.add(new Monomial("order", "Passeriformes"));
-      systemClassification.add(new Monomial("family", "Paridae"));
-      systemClassification.add(new Monomial("genus", "Parus"));
-      systemClassification.add(new Monomial("species", "major"));
+      systemClassification.add(new Monomial("phylum", "Mollusca"));
+      systemClassification.add(new Monomial("class", "Gastropoda"));
+      systemClassification.add(new Monomial("order", "Littorinimorpha"));
+      systemClassification.add(new Monomial("superfamily", "Naticoidea"));
+      systemClassification.add(new Monomial("family", "Naticidae"));
+      systemClassification.add(new Monomial("genus", "Tectonatica"));
+      systemClassification.add(new Monomial("species", "suffusa"));
 
       ScientificName scientificName = new ScientificName();
-      scientificName.setFullScientificName("Parus major");
-      scientificName.setGenusOrMonomial("Parus");
-      scientificName.setSpecificEpithet("major");
-      scientificName.setAuthorshipVerbatim("Linnaeus, 1752");
+      scientificName.setFullScientificName("Tectonatica suffusa (Reeve, 1855)");
+      scientificName.setGenusOrMonomial("Tectonatica");
+      scientificName.setSpecificEpithet("suffusa");
+      scientificName.setAuthorshipVerbatim("Reeve, 1855");
 
       SpecimenIdentification identification = new SpecimenIdentification();
+      identification.setTaxonRank("species");
       identification.setDefaultClassification(classification);
       identification.setSystemClassification(systemClassification);
       identification.setScientificName(scientificName);
 
-//      specimen.setGatheringEvent(gathering);
       specimen.setIdentifications(Arrays.asList(identification));
 
       return specimen;
@@ -90,56 +77,44 @@
       specimen.setUnitID("ZMA.MAM.101");
       specimen.setSourceSystem(CRS);
       specimen.setCollectionType("Mollusca");
-      String[] collections = new String[] { "Altenburg", "Living Dinos" };
+      String[] collections = new String[] { "Weekdieren" };
       specimen.setTheme(Arrays.asList(collections));
       specimen.setPhaseOrStage(JUVENILE);
       specimen.setSex(MALE);
-      specimen.setRecordBasis("Preserved specimen");
+      specimen.setRecordBasis("PreservedSpecimen");
       specimen.setNumberOfSpecimen(1);
-//      GatheringEvent gathering = new GatheringEvent();
-//      gathering.setProjectTitle("Vogels der Lage Landen");
-//      gathering.setLocalityText("In de bossen nabij Aalten");
-//      gathering.setCountry("Netherlands");
-//      gathering.setCity("Aalten");
-//      gathering.setDateTimeBegin(new ESDateInput("2009-04-03 13:04").parse());
-//      gathering.setGatheringPersons(Arrays.asList(ruudAltenBurg()));
-//
-//      GatheringSiteCoordinates aaltenCoordinates;
-//      aaltenCoordinates = new GatheringSiteCoordinates(51.9266666, 6.5806785);
-//      gathering.setSiteCoordinates(Arrays.asList(aaltenCoordinates));
 
       DefaultClassification classification = new DefaultClassification();
       classification.setKingdom("Animalia");
-      classification.setPhylum("Chordata");
+      classification.setPhylum("Mollusca");
       classification.setClassName("Bivalvia");
-      classification.setOrder("Charadriiformes");
-      classification.setFamily("Laridae");
-      classification.setGenus("Larus");
-      classification.setSpecificEpithet("fuscus");
-      classification.setInfraspecificEpithet("fuscus");
+      classification.setOrder("Mytilida");
+      classification.setFamily("Mytilidae");
+      classification.setGenus("Musculus");
+      classification.setSpecificEpithet("koreanus");
 
       List<Monomial> systemClassification = new ArrayList<>();
       systemClassification.add(new Monomial("kingdom", "Animalia"));
-      systemClassification.add(new Monomial("phylum", "Chordata"));
-      systemClassification.add(new Monomial("class", "Aves"));
-      systemClassification.add(new Monomial("order", "Charadriiformes"));
-      systemClassification.add(new Monomial("family", "Laridae"));
-      systemClassification.add(new Monomial("genus", "Larus"));
-      systemClassification.add(new Monomial("species", "fuscus"));
-      systemClassification.add(new Monomial("subspecies", "fuscus"));
+      systemClassification.add(new Monomial("phylum", "Mollusca"));
+      systemClassification.add(new Monomial("class", "Bivalvia"));
+      systemClassification.add(new Monomial("order", "Mytilida"));
+      systemClassification.add(new Monomial("superfamily", "Mytiloidea"));
+      systemClassification.add(new Monomial("family", "Mytilidae"));
+      systemClassification.add(new Monomial("genus", "Musculus"));
+      systemClassification.add(new Monomial("species", "koreanus"));
 
       ScientificName scientificName = new ScientificName();
-      scientificName.setFullScientificName("Larus f. fuscus");
-      scientificName.setGenusOrMonomial("Larus");
-      scientificName.setSpecificEpithet("fuscus");
-      scientificName.setAuthorshipVerbatim("Linnaeus, 1752");
+      scientificName.setFullScientificName("Musculus koreanus Ockelmann, 1983");
+      scientificName.setGenusOrMonomial("Musculus");
+      scientificName.setSpecificEpithet("koreanus");
+      scientificName.setAuthorshipVerbatim("Ockelmann, 1983");
 
       SpecimenIdentification identification = new SpecimenIdentification();
+      identification.setTaxonRank("species");
       identification.setDefaultClassification(classification);
       identification.setSystemClassification(systemClassification);
       identification.setScientificName(scientificName);
 
-//      specimen.setGatheringEvent(gathering);
       specimen.setIdentifications(Arrays.asList(identification));
 
       return specimen;
@@ -151,51 +126,43 @@
       specimen.setUnitID("ZMA.MAM.102");
       specimen.setSourceSystem(CRS);
       specimen.setCollectionType("Mollusca");
+      String[] collections = new String[] { "Weekdieren" };
+      specimen.setTheme(Arrays.asList(collections));
       specimen.setPhaseOrStage(EGG);
+      specimen.setRecordBasis("PreservedSpecimen");
       specimen.setNumberOfSpecimen(4);
-
-//      GatheringEvent gathering = new GatheringEvent();
-//      gathering.setCountry("Netherlands");
-//      gathering.setCity("Uitgeest");
-//      gathering.setDateTimeBegin(new ESDateInput("2008-04-03 13:04").parse());
-//      gathering.setGatheringPersons(Arrays.asList(ruudAltenBurg(), vonSiebold()));
-//
-//      GatheringSiteCoordinates uitgeestCoordinates;
-//      uitgeestCoordinates = new GatheringSiteCoordinates(52.531713, 4.705922);
-//      gathering.setSiteCoordinates(Arrays.asList(uitgeestCoordinates));
 
       DefaultClassification classification = new DefaultClassification();
       classification.setKingdom("Animalia");
-      classification.setPhylum("Chordata");
+      classification.setPhylum("Mollusca");
       classification.setClassName("Cephalopoda");
-      classification.setOrder("Charadriiformes");
-      classification.setFamily("Laridae");
-      classification.setGenus("Larus");
-      classification.setSpecificEpithet("fuscus");
-      classification.setInfraspecificEpithet("fuscus");
+      classification.setOrder("Ammonoidea");
+      classification.setFamily("Ussuritidae");
+      classification.setGenus("Ussurites");
+      classification.setSpecificEpithet("mansfeldi");
 
       List<Monomial> systemClassification = new ArrayList<>();
       systemClassification.add(new Monomial("kingdom", "Animalia"));
-      systemClassification.add(new Monomial("phylum", "Chordata"));
-      systemClassification.add(new Monomial("class", "Aves"));
-      systemClassification.add(new Monomial("order", "Charadriiformes"));
-      systemClassification.add(new Monomial("family", "Laridae"));
-      systemClassification.add(new Monomial("genus", "Larus"));
-      systemClassification.add(new Monomial("species", "fuscus"));
-      systemClassification.add(new Monomial("subspecies", "fuscus"));
+      systemClassification.add(new Monomial("phylum", "Mollusca"));
+      systemClassification.add(new Monomial("class", "Cephalopoda"));
+      systemClassification.add(new Monomial("order", "Ammonoidea"));
+      systemClassification.add(new Monomial("superfamily", "Phyllocerataceae"));
+      systemClassification.add(new Monomial("family", "Ussuritidae"));
+      systemClassification.add(new Monomial("genus", "Ussurites"));
+      systemClassification.add(new Monomial("species", "mansfeldi"));
 
       ScientificName scientificName = new ScientificName();
-      scientificName.setFullScientificName("Larus f. fuscus");
-      scientificName.setGenusOrMonomial("Larus");
-      scientificName.setSpecificEpithet("fuscus");
-      scientificName.setAuthorshipVerbatim("Linnaeus, 1752");
+      scientificName.setFullScientificName("Ussurites mansfeldi Kummel 1969");
+      scientificName.setGenusOrMonomial("Ussurites");
+      scientificName.setSpecificEpithet("mansfeldi");
+      scientificName.setAuthorshipVerbatim("Kummel 1969");
 
       SpecimenIdentification identification = new SpecimenIdentification();
+      identification.setTaxonRank("species");
       identification.setDefaultClassification(classification);
       identification.setSystemClassification(systemClassification);
       identification.setScientificName(scientificName);
 
-//      specimen.setGatheringEvent(gathering);
       specimen.setIdentifications(Arrays.asList(identification));
 
       return specimen;
@@ -207,10 +174,10 @@
       specimen.setUnitID("RMNH.100");
       specimen.setSourceSystem(CRS);
       specimen.setCollectionType("Hymenoptera");
-      specimen.setTheme(Arrays.asList("Living Dinos"));
+      specimen.setTheme(Arrays.asList("Bijen en Hommels"));
       specimen.setPhaseOrStage(ADULT);
       specimen.setSex(FEMALE);
-      specimen.setRecordBasis("FossileSpecimen");
+      specimen.setRecordBasis("FossilSpecimen");
 
 //      GatheringEvent gathering = new GatheringEvent();
 //      gathering.setProjectTitle("Project T. Rex");
@@ -225,30 +192,32 @@
 
       DefaultClassification classification = new DefaultClassification();
       classification.setKingdom("Animalia");
-      classification.setPhylum("Chordata");
-      classification.setOrder("Saurischia");
-      classification.setFamily("Tyrannosauridae");
-      classification.setGenus("Tyrannosaurus");
-      classification.setSpecificEpithet("rex");
+      classification.setPhylum("Arthropoda");
+      classification.setClassName("Insecta");
+      classification.setOrder("Hymenoptera");
+      classification.setFamily("Apidae");
+      classification.setGenus("Bombus");
+      classification.setSpecificEpithet("terrestris");
 
       List<Monomial> systemClassification = new ArrayList<>();
       systemClassification.add(new Monomial("kingdom", "Animalia"));
-      systemClassification.add(new Monomial("phylum", "Chordata"));
+      systemClassification.add(new Monomial("phylum", "Arthropoda"));
       systemClassification.add(new Monomial("clade", "Dinosauria"));
-      systemClassification.add(new Monomial("order", "Saurischia"));
+      systemClassification.add(new Monomial("order", "Hymenoptera"));
       systemClassification.add(new Monomial("suborder", "Theropoda"));
-      systemClassification.add(new Monomial("family", "Tyrannosauridae"));
-      systemClassification.add(new Monomial("subfamily", "Tyrannosaurinae"));
-      systemClassification.add(new Monomial("genus", "Tyrannosaurus"));
-      systemClassification.add(new Monomial("species", "rex"));
+      systemClassification.add(new Monomial("superfamily", "Apoidea"));
+      systemClassification.add(new Monomial("family", "Apidae"));
+      systemClassification.add(new Monomial("genus", "Bombus"));
+      systemClassification.add(new Monomial("species", "terrestris"));
 
       ScientificName scientificName = new ScientificName();
-      scientificName.setFullScientificName("Tyrannosaurus rex");
-      scientificName.setGenusOrMonomial("Tyrannosaurus");
-      scientificName.setSpecificEpithet("rex");
-      scientificName.setAuthorshipVerbatim("Osborn, 1905");
+      scientificName.setFullScientificName("Bombus terrestris (Linnaeus, 1758)");
+      scientificName.setGenusOrMonomial("Bombus");
+      scientificName.setSpecificEpithet("terrestris");
+      scientificName.setAuthorshipVerbatim("Linnaeus, 1758");
 
       SpecimenIdentification identification = new SpecimenIdentification();
+      identification.setTaxonRank("species");
       identification.setDefaultClassification(classification);
       identification.setSystemClassification(systemClassification);
       identification.setScientificName(scientificName);
@@ -261,12 +230,10 @@
     public static Specimen specimen05()
     {
       Specimen specimen = new Specimen();
-      specimen.setUnitID("RMNH.101");
+      specimen.setUnitID("RGM.853698");
       specimen.setSourceSystem(CRS);
       specimen.setCollectionType("Mineralogy");
-      specimen.setPhaseOrStage(ADULT);
-      specimen.setSex(FEMALE);
-      specimen.setRecordBasis("Preserved specimen");
+      specimen.setRecordBasis("OtherSpecimen");
 
 //      GatheringEvent gathering = new GatheringEvent();
 //      gathering.setLocalityText("Dorchester, U.K.");
@@ -274,25 +241,13 @@
 //      gathering.setDateTimeBegin(null);
 //      gathering.setGatheringPersons(Arrays.asList(nathanielWallich()));
 
-
-      List<Monomial> systemClassification = new ArrayList<>();
-      systemClassification.add(new Monomial("kingdom", "Plantae"));
-      systemClassification.add(new Monomial("Angiosperms"));
-      systemClassification.add(new Monomial("Eudicots"));
-      systemClassification.add(new Monomial("Rosids"));
-      systemClassification.add(new Monomial("order", "Rosales"));
-      systemClassification.add(new Monomial("family", "Rosaceae"));
-      systemClassification.add(new Monomial("genus", "Malus"));
-      systemClassification.add(new Monomial("species", "sylvestris"));
-
       ScientificName scientificName = new ScientificName();
-      scientificName.setFullScientificName("Malus sylvestris");
-      scientificName.setGenusOrMonomial("Malus");
-      scientificName.setSpecificEpithet("sylvestris");
-      scientificName.setAuthorshipVerbatim("(L.) Mill.");
+      scientificName.setFullScientificName("Calciet");
+      scientificName.setGenusOrMonomial("Calciet");
+     
 
-      SpecimenIdentification identification = new SpecimenIdentification();      
-      identification.setSystemClassification(systemClassification);
+      SpecimenIdentification identification = new SpecimenIdentification();
+      identification.setTaxonRank("genus");
       identification.setScientificName(scientificName);
 
 //      specimen.setGatheringEvent(gathering);
@@ -303,9 +258,40 @@
     public static Specimen specimen06()
     {
       Specimen specimen = new Specimen();
+      specimen.setUnitID("RGM.853699");
+      specimen.setSourceSystem(CRS);
+      specimen.setCollectionType("Mineralogy");
+      specimen.setRecordBasis("OtherSpecimen");
+
+//      GatheringEvent gathering = new GatheringEvent();
+//      gathering.setLocalityText("Dorchester, U.K.");
+//      gathering.setCountry("United Kingdom");
+//      gathering.setDateTimeBegin(null);
+//      gathering.setGatheringPersons(Arrays.asList(nathanielWallich()));
+
+      ScientificName scientificName = new ScientificName();
+      scientificName.setFullScientificName("Magnetite");
+      scientificName.setGenusOrMonomial("Magnetite");
+     
+
+      SpecimenIdentification identification = new SpecimenIdentification();
+      identification.setTaxonRank("genus");
+      identification.setScientificName(scientificName);
+
+//      specimen.setGatheringEvent(gathering);
+      specimen.setIdentifications(Arrays.asList(identification));
+      return specimen;
+    }
+
+    
+    public static Specimen specimen07()
+    {
+      Specimen specimen = new Specimen();
       specimen.setUnitID("L.100");
       specimen.setSourceSystem(BRAHMS);
       specimen.setCollectionType("Botany");
+      String[] collections = new String[] { "Plants" };
+      specimen.setTheme(Arrays.asList(collections));
       specimen.setPhaseOrStage(ADULT);
       specimen.setSex(MALE);
       specimen.setRecordBasis("Herbarium sheet");
@@ -325,88 +311,30 @@
 
       DefaultClassification classification = new DefaultClassification();
       classification.setKingdom("Plantae");
-      classification.setClassName("Magnoliopsidae");
+      classification.setPhylum("Tracheophyta");
+      classification.setClassName("Magnoliopsida");
       classification.setOrder("Asterales");
       classification.setFamily("Compositae");
       classification.setGenus("Taraxacum");
       classification.setSpecificEpithet("tortilobum");
 
       List<Monomial> systemClassification = new ArrayList<>();
-      systemClassification.add(new Monomial("kingdom", "Animalia"));
-      systemClassification.add(new Monomial("phylum", "Chordata"));
-      systemClassification.add(new Monomial("class", "Aves"));
-      systemClassification.add(new Monomial("order", "Passeriformes"));
-      systemClassification.add(new Monomial("family", "Paridae"));
-      systemClassification.add(new Monomial("genus", "Parus"));
-      systemClassification.add(new Monomial("species", "major"));
+      systemClassification.add(new Monomial("kingdom", "Plantae"));
+      systemClassification.add(new Monomial("phylum", "Tracheophyta"));
+      systemClassification.add(new Monomial("class", "Magnoliopsida"));
+      systemClassification.add(new Monomial("order", "Asterales"));
+      systemClassification.add(new Monomial("family", "Compositae"));
+      systemClassification.add(new Monomial("genus", "Taraxacum"));
+      systemClassification.add(new Monomial("species", "tortilobum"));
 
       ScientificName scientificName = new ScientificName();
-      scientificName.setFullScientificName("Parus major");
-      scientificName.setGenusOrMonomial("Parus");
-      scientificName.setSpecificEpithet("major");
-      scientificName.setAuthorshipVerbatim("Linnaeus, 1752");
+      scientificName.setFullScientificName("Taraxacum tortilobum Florström");
+      scientificName.setGenusOrMonomial("Taraxacum");
+      scientificName.setSpecificEpithet("tortilobum");
+      scientificName.setAuthorshipVerbatim("Florström");
 
       SpecimenIdentification identification = new SpecimenIdentification();
-      identification.setDefaultClassification(classification);
-      identification.setSystemClassification(systemClassification);
-      identification.setScientificName(scientificName);
-
-//      specimen.setGatheringEvent(gathering);
-      specimen.setIdentifications(Arrays.asList(identification));
-
-      return specimen;
-    }
-
-    public static Specimen specimen07()
-    {
-      Specimen specimen = new Specimen();
-      specimen.setUnitID("L.101");
-      specimen.setSourceSystem(BRAHMS);
-      specimen.setCollectionType("Botany");
-      String[] collections = new String[] { "Altenburg", "Living Dinos" };
-      specimen.setTheme(Arrays.asList(collections));
-      specimen.setPhaseOrStage(JUVENILE);
-      specimen.setSex(MALE);
-      specimen.setRecordBasis("Herbarium sheet");
-      specimen.setNumberOfSpecimen(1);
-
-//      GatheringEvent gathering = new GatheringEvent();
-//      gathering.setProjectTitle("Vogels der Lage Landen");
-//      gathering.setLocalityText("In de bossen nabij Aalten");
-//      gathering.setCountry("Netherlands");
-//      gathering.setCity("Aalten");
-//      gathering.setDateTimeBegin(new ESDateInput("2009-04-03 13:04").parse());
-//      gathering.setGatheringPersons(Arrays.asList(ruudAltenBurg()));
-//
-//      GatheringSiteCoordinates aaltenCoordinates;
-//      aaltenCoordinates = new GatheringSiteCoordinates(51.9266666, 6.5806785);
-//      gathering.setSiteCoordinates(Arrays.asList(aaltenCoordinates));
-
-      DefaultClassification classification = new DefaultClassification();
-      classification.setKingdom("Plantae");
-      classification.setClassName("Magnoliopsidae");
-      classification.setOrder("Asterales");
-      classification.setFamily("Compositae");
-      classification.setGenus("Taraxacum");
-      classification.setSpecificEpithet("lacistophyllum");
-
-      List<Monomial> systemClassification = new ArrayList<>();
-      systemClassification.add(new Monomial("kingdom", "Animalia"));
-      systemClassification.add(new Monomial("phylum", "Chordata"));
-      systemClassification.add(new Monomial("class", "Aves"));
-      systemClassification.add(new Monomial("order", "Charadriiformes"));
-      systemClassification.add(new Monomial("family", "Laridae"));
-      systemClassification.add(new Monomial("genus", "Larus"));
-      systemClassification.add(new Monomial("species", "fuscus"));
-      systemClassification.add(new Monomial("subspecies", "fuscus"));
-
-      ScientificName scientificName = new ScientificName();
-      scientificName.setFullScientificName("Larus f. fuscus");
-      scientificName.setGenusOrMonomial("Larus");
-      scientificName.setSpecificEpithet("fuscus");
-      scientificName.setAuthorshipVerbatim("Linnaeus, 1752");
-
-      SpecimenIdentification identification = new SpecimenIdentification();
+      identification.setTaxonRank("genus");
       identification.setDefaultClassification(classification);
       identification.setSystemClassification(systemClassification);
       identification.setScientificName(scientificName);
@@ -420,11 +348,74 @@
     public static Specimen specimen08()
     {
       Specimen specimen = new Specimen();
+      specimen.setUnitID("L.101");
+      specimen.setSourceSystem(BRAHMS);
+      specimen.setCollectionType("Botany");
+      String[] collections = new String[] { "Plants" };
+      specimen.setTheme(Arrays.asList(collections));
+      specimen.setPhaseOrStage(JUVENILE);
+      specimen.setSex(MALE);
+      specimen.setRecordBasis("Herbarium sheet");
+      specimen.setNumberOfSpecimen(1);
+
+//      GatheringEvent gathering = new GatheringEvent();
+//      gathering.setProjectTitle("Vogels der Lage Landen");
+//      gathering.setLocalityText("In de bossen nabij Aalten");
+//      gathering.setCountry("Netherlands");
+//      gathering.setCity("Aalten");
+//      gathering.setDateTimeBegin(new ESDateInput("2009-04-03 13:04").parse());
+//      gathering.setGatheringPersons(Arrays.asList(ruudAltenBurg()));
+//
+//      GatheringSiteCoordinates aaltenCoordinates;
+//      aaltenCoordinates = new GatheringSiteCoordinates(51.9266666, 6.5806785);
+//      gathering.setSiteCoordinates(Arrays.asList(aaltenCoordinates));
+
+      DefaultClassification classification = new DefaultClassification();
+      classification.setKingdom("Plantae");
+      classification.setPhylum("Tracheophyta");
+      classification.setClassName("Magnoliopsida");
+      classification.setOrder("Asterales");
+      classification.setFamily("Compositae");
+      classification.setGenus("Taraxacum");
+      classification.setSpecificEpithet("lacistophyllum");
+
+      List<Monomial> systemClassification = new ArrayList<>();
+      systemClassification.add(new Monomial("kingdom", "Plantae"));
+      systemClassification.add(new Monomial("phylum", "Tracheophyta"));
+      systemClassification.add(new Monomial("class", "Magnoliopsida"));
+      systemClassification.add(new Monomial("order", "Asterales"));
+      systemClassification.add(new Monomial("family", "Compositae"));
+      systemClassification.add(new Monomial("genus", "Taraxacum"));
+      systemClassification.add(new Monomial("species", "lacistophyllum"));
+
+      ScientificName scientificName = new ScientificName();
+      scientificName.setFullScientificName("Taraxacum lacistophyllum (Dahlst.) Raunk.");
+      scientificName.setGenusOrMonomial("Taraxacum");
+      scientificName.setSpecificEpithet("lacistophyllum");
+      scientificName.setAuthorshipVerbatim("(Dahlst.) Raunk.");
+
+      SpecimenIdentification identification = new SpecimenIdentification();
+      identification.setTaxonRank("genus");
+      identification.setDefaultClassification(classification);
+      identification.setSystemClassification(systemClassification);
+      identification.setScientificName(scientificName);
+
+//      specimen.setGatheringEvent(gathering);
+      specimen.setIdentifications(Arrays.asList(identification));
+
+      return specimen;
+    }
+
+    public static Specimen specimen09()
+    {
+      Specimen specimen = new Specimen();
       specimen.setUnitID("L.102");
       specimen.setSourceSystem(BRAHMS);
       specimen.setCollectionType("Botany");
+      String[] collections = new String[] { "Plants" };
+      specimen.setTheme(Arrays.asList(collections));
       specimen.setPhaseOrStage(EGG);
-      specimen.setRecordBasis("Preserved Specimen");
+      specimen.setRecordBasis("PreservedSpecimen");
       specimen.setNumberOfSpecimen(4);
 
 //      GatheringEvent gathering = new GatheringEvent();
@@ -439,29 +430,29 @@
 
       DefaultClassification classification = new DefaultClassification();
       classification.setKingdom("Plantae");
-      classification.setClassName("Magnoliopsidae");
+      classification.setClassName("Magnoliopsida");
       classification.setOrder("Asterales");
       classification.setFamily("Compositae");
       classification.setGenus("Taraxacum");
       classification.setSpecificEpithet("officinale");
 
       List<Monomial> systemClassification = new ArrayList<>();
-      systemClassification.add(new Monomial("kingdom", "Animalia"));
-      systemClassification.add(new Monomial("phylum", "Chordata"));
-      systemClassification.add(new Monomial("class", "Aves"));
-      systemClassification.add(new Monomial("order", "Charadriiformes"));
-      systemClassification.add(new Monomial("family", "Laridae"));
-      systemClassification.add(new Monomial("genus", "Larus"));
-      systemClassification.add(new Monomial("species", "fuscus"));
-      systemClassification.add(new Monomial("subspecies", "fuscus"));
+      systemClassification.add(new Monomial("kingdom", "Plantae"));
+      systemClassification.add(new Monomial("phylum", "Tracheophyta"));
+      systemClassification.add(new Monomial("class", "Magnoliopsida"));
+      systemClassification.add(new Monomial("order", "Asterales"));
+      systemClassification.add(new Monomial("family", "Compositae"));
+      systemClassification.add(new Monomial("genus", "Taraxacum"));
+      systemClassification.add(new Monomial("species", "officinale"));
 
       ScientificName scientificName = new ScientificName();
-      scientificName.setFullScientificName("Larus f. fuscus");
-      scientificName.setGenusOrMonomial("Larus");
-      scientificName.setSpecificEpithet("fuscus");
-      scientificName.setAuthorshipVerbatim("Linnaeus, 1752");
+      scientificName.setFullScientificName("Taraxacum officinale F.H.Wigg.");
+      scientificName.setGenusOrMonomial("Taraxacum");
+      scientificName.setSpecificEpithet("officinale");
+      scientificName.setAuthorshipVerbatim("F.H.Wigg.");
 
       SpecimenIdentification identification = new SpecimenIdentification();
+      identification.setTaxonRank("genus");
       identification.setDefaultClassification(classification);
       identification.setSystemClassification(systemClassification);
       identification.setScientificName(scientificName);
@@ -472,7 +463,7 @@
       return specimen;
     }
 
-    public static Specimen specimen09()
+    public static Specimen specimen10()
     {
       Specimen specimen = new Specimen();
       specimen.setUnitID("L.103");
@@ -481,7 +472,7 @@
       specimen.setTheme(Arrays.asList("Living Dinos"));
       specimen.setPhaseOrStage(ADULT);
       specimen.setSex(FEMALE);
-      specimen.setRecordBasis("Preserved Specimen");
+      specimen.setRecordBasis("PreservedSpecimen");
 
 //      GatheringEvent gathering = new GatheringEvent();
 //      gathering.setProjectTitle("Project T. Rex");
@@ -496,30 +487,30 @@
 
       DefaultClassification classification = new DefaultClassification();
       classification.setKingdom("Plantae");
-      classification.setClassName("Magnoliopsidae");
+      classification.setClassName("Magnoliopsida");
       classification.setOrder("Asterales");
       classification.setFamily("Compositae");
       classification.setGenus("Filago");
       classification.setSpecificEpithet("lutescens");
 
       List<Monomial> systemClassification = new ArrayList<>();
-      systemClassification.add(new Monomial("kingdom", "Animalia"));
-      systemClassification.add(new Monomial("phylum", "Chordata"));
-      systemClassification.add(new Monomial("clade", "Dinosauria"));
-      systemClassification.add(new Monomial("order", "Saurischia"));
-      systemClassification.add(new Monomial("suborder", "Theropoda"));
-      systemClassification.add(new Monomial("family", "Tyrannosauridae"));
-      systemClassification.add(new Monomial("subfamily", "Tyrannosaurinae"));
-      systemClassification.add(new Monomial("genus", "Tyrannosaurus"));
-      systemClassification.add(new Monomial("species", "rex"));
+      systemClassification.add(new Monomial("kingdom", "Plantae"));
+      systemClassification.add(new Monomial("phylum", "Tracheophyta"));
+      systemClassification.add(new Monomial("class", "Magnoliopsida"));
+      systemClassification.add(new Monomial("order", "Asterales"));
+      systemClassification.add(new Monomial("family", "Compositae"));
+      systemClassification.add(new Monomial("genus", "Taraxacum"));
+      systemClassification.add(new Monomial("species", "lutescens"));
+      systemClassification.add(new Monomial("subspecies", "lutescens"));
 
       ScientificName scientificName = new ScientificName();
-      scientificName.setFullScientificName("Tyrannosaurus rex");
-      scientificName.setGenusOrMonomial("Tyrannosaurus");
-      scientificName.setSpecificEpithet("rex");
-      scientificName.setAuthorshipVerbatim("Osborn, 1905");
+      scientificName.setFullScientificName("Filago lutescens lutescens");
+      scientificName.setGenusOrMonomial("Filago");
+      scientificName.setSpecificEpithet("lutescens");
+      scientificName.setInfraspecificEpithet("lutescens");
 
       SpecimenIdentification identification = new SpecimenIdentification();
+      identification.setTaxonRank("species");
       identification.setDefaultClassification(classification);
       identification.setSystemClassification(systemClassification);
       identification.setScientificName(scientificName);
@@ -529,7 +520,7 @@
       return specimen;
     }
 
-    public static Specimen specimen10()
+    public static Specimen specimen11()
     {
       Specimen specimen = new Specimen();
       specimen.setUnitID("L   100");
@@ -549,7 +540,7 @@
 
       DefaultClassification classification = new DefaultClassification();
       classification.setKingdom("Plantae");
-      classification.setClassName("Magnoliopsidae");
+      classification.setClassName("Magnoliopsida");
       classification.setOrder("Asterales");
       classification.setFamily("Compositae");
       classification.setGenus("Stevia");
@@ -557,21 +548,21 @@
 
       List<Monomial> systemClassification = new ArrayList<>();
       systemClassification.add(new Monomial("kingdom", "Plantae"));
-      systemClassification.add(new Monomial("Angiosperms"));
-      systemClassification.add(new Monomial("Eudicots"));
-      systemClassification.add(new Monomial("Rosids"));
-      systemClassification.add(new Monomial("order", "Rosales"));
-      systemClassification.add(new Monomial("family", "Rosaceae"));
-      systemClassification.add(new Monomial("genus", "Malus"));
-      systemClassification.add(new Monomial("species", "sylvestris"));
+      systemClassification.add(new Monomial("phylum", "Tracheophyta"));
+      systemClassification.add(new Monomial("class", "Magnoliopsida"));
+      systemClassification.add(new Monomial("order", "Asterales"));
+      systemClassification.add(new Monomial("family", "Compositae"));
+      systemClassification.add(new Monomial("genus", "Stevia"));
+      systemClassification.add(new Monomial("species", "lucida"));
 
       ScientificName scientificName = new ScientificName();
-      scientificName.setFullScientificName("Malus sylvestris");
-      scientificName.setGenusOrMonomial("Malus");
-      scientificName.setSpecificEpithet("sylvestris");
-      scientificName.setAuthorshipVerbatim("(L.) Mill.");
+      scientificName.setFullScientificName("Stevia lucida Lag.");
+      scientificName.setGenusOrMonomial("Stevia");
+      scientificName.setSpecificEpithet("lucida");
+      scientificName.setAuthorshipVerbatim("Lag.");
 
       SpecimenIdentification identification = new SpecimenIdentification();
+      identification.setTaxonRank("species");
       identification.setDefaultClassification(classification);
       identification.setSystemClassification(systemClassification);
       identification.setScientificName(scientificName);
@@ -580,21 +571,60 @@
       specimen.setIdentifications(Arrays.asList(identification));
       return specimen;
     }
+
+    public static Specimen specimen12()
+    {
+      Specimen specimen = new Specimen();
+      specimen.setUnitID("L.123456");
+      specimen.setSourceSystem(BRAHMS);
+      specimen.setCollectionType("Botany");
+      String[] collections = new String[] { "Strange Plants" };
+      specimen.setTheme(Arrays.asList(collections));
+      specimen.setPhaseOrStage(ADULT);
+      specimen.setSex(FEMALE);
+      specimen.setRecordBasis("Wood sample");
+      
+//      GatheringEvent gathering = new GatheringEvent();
+//      gathering.setLocalityText("Dorchester, U.K.");
+//      gathering.setCountry("United Kingdom");
+//      gathering.setDateTimeBegin(null);
+//      gathering.setGatheringPersons(Arrays.asList(nathanielWallich()));
+
+      DefaultClassification classification = new DefaultClassification();
+      classification.setKingdom("Plantae");
+      classification.setClassName("Magnoliopsida");
+      classification.setOrder("Asterales");
+      classification.setFamily("Compositae");
+      classification.setGenus("Stevia");
+      classification.setSpecificEpithet("trifida");
+
+      List<Monomial> systemClassification = new ArrayList<>();
+      systemClassification.add(new Monomial("kingdom", "Plantae"));
+      systemClassification.add(new Monomial("phylum", "Tracheophyta"));
+      systemClassification.add(new Monomial("class", "Magnoliopsida"));
+      systemClassification.add(new Monomial("order", "Asterales"));
+      systemClassification.add(new Monomial("family", "Compositae"));
+      systemClassification.add(new Monomial("genus", "Stevia"));
+      systemClassification.add(new Monomial("species", "trifida"));
+
+      ScientificName scientificName = new ScientificName();
+      scientificName.setFullScientificName("Stevia trifida Lag.");
+      scientificName.setGenusOrMonomial("Stevia");
+      scientificName.setSpecificEpithet("trifida");
+      scientificName.setAuthorshipVerbatim("Lag.");
+
+      SpecimenIdentification identification = new SpecimenIdentification();
+      identification.setTaxonRank("species");
+      identification.setDefaultClassification(classification);
+      identification.setSystemClassification(systemClassification);
+      identification.setScientificName(scientificName);
+
+//      specimen.setGatheringEvent(gathering);
+      specimen.setIdentifications(Arrays.asList(identification));
+      return specimen;
+    }
+
     
-    public static Person ruudAltenBurg()
-    {
-      Person person = new Person("Altenburg, R.");
-      person.setAgentText("Also likes David Bowie");
-      return person;
-    }
-
-    public static Person edwinVanHuis()
-    {
-      Person person = new Person("E. van Huis");
-      person.setAgentText("Director of NBC Naturalis");
-      return person;
-    }
-
     public static Person vonSiebold()
     {
       Person person = new Person("Philipp Franz von Siebold");
@@ -615,13 +645,6 @@
           + "en fauna in het Japan van de negentiende eeuw maar "
           + "ook van de toewijding van Von Siebold aan zijn "
           + "onderzoek en zijn enorme verzameldrang.");
-      return person;
-    }
-
-    public static Person nathanielWallich()
-    {
-      Person person = new Person("Nathaniel Wallich");
-      person.setAgentText(null);
       return person;
     }
 

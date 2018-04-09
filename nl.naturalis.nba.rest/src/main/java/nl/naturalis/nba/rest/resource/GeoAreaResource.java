@@ -41,16 +41,18 @@ import nl.naturalis.nba.rest.exception.HTTP404Exception;
 @SuppressWarnings("static-method")
 public class GeoAreaResource extends NbaResource<GeoArea, GeoAreaDao> {
 
-  @SuppressWarnings("unused")
   private static final Logger logger = LogManager.getLogger(GeoAreaResource.class);
 
   GeoAreaResource() {
     super(new GeoAreaDao());
   }
 
+  //@formatter:off
   @GET
   @Path("/find/{id}")
-  @ApiOperation(value = "Find a GEO area by id", response = GeoArea.class,
+  @ApiOperation(
+      value = "Find a GEO area by id", 
+      response = GeoArea.class,
       notes = "Returns a GEO object containing a GEO json polygon")
   @ApiResponses(value = {@ApiResponse(code = 404, message = "id not found")})
   @Produces(JSON_CONTENT_TYPE)
@@ -61,7 +63,9 @@ public class GeoAreaResource extends NbaResource<GeoArea, GeoAreaDao> {
 
   @GET
   @Path("/findByIds/{ids}")
-  @ApiOperation(value = "Find geo areas by ids", response = GeoArea[].class,
+  @ApiOperation(
+      value = "Find geo areas by ids", 
+      response = GeoArea[].class,
       notes = "Given multiple ids, returns a list of geo area objects")
   @Produces(JSON_CONTENT_TYPE)
   public GeoArea[] findByIds(@ApiParam(value = "ids of multiple geo areas, separated by comma",
@@ -72,7 +76,9 @@ public class GeoAreaResource extends NbaResource<GeoArea, GeoAreaDao> {
 
   @GET
   @Path("/query")
-  @ApiOperation(value = "Query for geo areas", response = QueryResult.class,
+  @ApiOperation(
+      value = "Query for geo areas", 
+      response = QueryResult.class,
       notes = "Query on searchable fields to retrieve matching geo areas")
   @Produces(JSON_CONTENT_TYPE)
   @ApiImplicitParams({@ApiImplicitParam(name = "locality", value = "Example query param",
@@ -83,7 +89,9 @@ public class GeoAreaResource extends NbaResource<GeoArea, GeoAreaDao> {
 
   @POST
   @Path("/query")
-  @ApiOperation(value = "Query for geo areas", response = QueryResult.class,
+  @ApiOperation(
+      value = "Query for geo areas", 
+      response = QueryResult.class,
       notes = "Query on searchable fields to retrieve matching geo areas")
   @Produces(JSON_CONTENT_TYPE)
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -97,7 +105,9 @@ public class GeoAreaResource extends NbaResource<GeoArea, GeoAreaDao> {
 
   @POST
   @Path("/query")
-  @ApiOperation(value = "Query for geo areas", response = QueryResult.class,
+  @ApiOperation(
+      value = "Query for geo areas", 
+      response = QueryResult.class,
       notes = "Query on searchable fields to retrieve matching geo areas")
   @Produces(JSON_CONTENT_TYPE)
   @Consumes(JSON_CONTENT_TYPE)
@@ -110,7 +120,9 @@ public class GeoAreaResource extends NbaResource<GeoArea, GeoAreaDao> {
 
   @GET
   @Path("/count")
-  @ApiOperation(value = "Get the number of geo areas matching a condition", response = long.class,
+  @ApiOperation(
+      value = "Get the number of geo areas matching a given condition", 
+      response = long.class,
       notes = "Conditions given as query string")
   @Produces(TEXT_CONTENT_TYPE)
   @ApiImplicitParams({@ApiImplicitParam(name = "areaType", value = "Example query param",
@@ -121,8 +133,10 @@ public class GeoAreaResource extends NbaResource<GeoArea, GeoAreaDao> {
 
   @POST
   @Path("/count")
-  @ApiOperation(hidden = true, value = "Get the number of geo areas matching a condition",
-      response = long.class, notes = "Conditions given in POST body")
+  @ApiOperation(
+      value = "Get the number of geo areas matching a given condition",
+      response = long.class, 
+      notes = "Conditions given in POST body")
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
   @Produces(TEXT_CONTENT_TYPE)
   public long countHttpPostForm(@ApiParam(value = "query object in POST form",
@@ -132,7 +146,9 @@ public class GeoAreaResource extends NbaResource<GeoArea, GeoAreaDao> {
 
   @POST
   @Path("/count")
-  @ApiOperation(value = "Get the number of geo areas matching a condition", response = long.class,
+  @ApiOperation(
+      value = "Get the number of geo areas matching a given condition", 
+      response = long.class,
       notes = "Conditions given as querySpec JSON")
   @Consumes(JSON_CONTENT_TYPE)
   @Produces(TEXT_CONTENT_TYPE)
@@ -144,8 +160,10 @@ public class GeoAreaResource extends NbaResource<GeoArea, GeoAreaDao> {
 
   @GET
   @Path("/countDistinctValues/{field}")
-  @ApiOperation(value = "Count the distinct number of values that exist for a given field",
-      response = Map.class, notes = "")
+  @ApiOperation(
+      value = "Count the distinct number of values that exist for a given field",
+      response = Map.class, 
+      notes = "")
   @Produces(TEXT_CONTENT_TYPE)
   public long countDistinctValuesHttpGet(
       @ApiParam(value = "name of field in taxon object", required = true, defaultValue = "defaultClassification.family") 
@@ -157,7 +175,10 @@ public class GeoAreaResource extends NbaResource<GeoArea, GeoAreaDao> {
 
   @POST
   @Path("/countDistinctValues/{field}")
-  @ApiOperation(value = "Count the distinct number of values that exist for a given field", response = Map.class, notes = "")
+  @ApiOperation(
+      value = "Count the distinct number of values that exist for a given field", 
+      response = Map.class, 
+      notes = "")
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
   @Produces(TEXT_CONTENT_TYPE)
   public Long countDistinctValuesHttpPost(
@@ -170,7 +191,10 @@ public class GeoAreaResource extends NbaResource<GeoArea, GeoAreaDao> {
 
   @POST
   @Path("/countDistinctValues/{field}")
-  @ApiOperation(value = "Count the distinct number of values that exist for a given field", response = Map.class, notes = "")
+  @ApiOperation(
+      value = "Count the distinct number of values that exist for a given field", 
+      response = Map.class, 
+      notes = "")
   @Consumes(JSON_CONTENT_TYPE)
   @Produces(TEXT_CONTENT_TYPE)
   public Long countDistinctValuesHttpJson(
@@ -182,49 +206,59 @@ public class GeoAreaResource extends NbaResource<GeoArea, GeoAreaDao> {
   }
 
   @GET
-  @Path("/countDistinctValuesPerGroup/{field}/{group}")
-  @ApiOperation(value = "Count the distinct number of group values that exist per the given field",
-      response = Map.class, notes = "")
+  @Path("/countDistinctValuesPerGroup/{group}/{field}")
+  @ApiOperation(
+      value = "Count the distinct number of field values that exist per the given field to group by",
+      response = Map.class, 
+      notes = "")
   @Produces(JSON_CONTENT_TYPE)
   public List<Map<String, Object>> countDistinctValuesPerGroupHttpGet(
+      @ApiParam(value = "name of field in the geo area object to group by", required = true, defaultValue = "locality") @PathParam("group") String group, 
       @ApiParam(value = "name of field in the geo area object", required = true, defaultValue = "areaType") @PathParam("field") String field,
-      @ApiParam(value = "name of group in the geo area object", required = true, defaultValue = "locality") @PathParam("group") String group, 
       @Context UriInfo uriInfo) {
-    logger.info("countDistinctValuesPerGroup/" + field + "/" + group);
-    return super.countDistinctValuesPerGroupHttpGet(field, group, uriInfo);
+    logger.info("countDistinctValuesPerGroup/" + group + "/" + field);
+    return super.countDistinctValuesPerGroupHttpGet(group, field, uriInfo);
   }
 
   @POST
-  @Path("/countDistinctValuesPerGroup/{field}/{group}")
-  @ApiOperation(value = "Count the distinct number of group values that exist per the given field", response = Map.class, notes = "")
+  @Path("/countDistinctValuesPerGroup/{group}/{field}")
+  @ApiOperation(
+      value = "Count the distinct number of field values that exist per the given field to group by", 
+      response = Map.class, 
+      notes = "")
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
   @Produces(JSON_CONTENT_TYPE)
   public List<Map<String, Object>> countDistinctValuesPerGroupHttpPostForm(
+      @ApiParam(value = "name of field in the geo area object to group by", required = true, defaultValue = "locality") @PathParam("group") String group, 
       @ApiParam(value = "name of field in the geo area object", required = true, defaultValue = "areaType") @PathParam("field") String field,
-      @ApiParam(value = "name of group in the geo area object", required = true, defaultValue = "locality") @PathParam("group") String group, 
       @ApiParam(value = "query object in POST form", required = false) MultivaluedMap<String, String> form,
       @Context UriInfo uriInfo) {
-    logger.info("countDistinctValuesPerGroup/" + field + "/" + group);
-    return super.countDistinctValuesPerGroupHttpPostForm(field, group, form, uriInfo);
+    logger.info("countDistinctValuesPerGroup/" + group + "/" + field);
+    return super.countDistinctValuesPerGroupHttpPostForm(group, field, form, uriInfo);
   }
 
   @POST
-  @Path("/countDistinctValuesPerGroup/{field}/{group}")
-  @ApiOperation(value = "Count the distinct number of group values that exist per the given field", response = Map.class, notes = "")
+  @Path("/countDistinctValuesPerGroup/{group}/{field}")
+  @ApiOperation(
+      value = "Count the distinct number of field values that exist per the given field to group by", 
+      response = Map.class, 
+      notes = "")
   @Consumes(JSON_CONTENT_TYPE)
   @Produces(JSON_CONTENT_TYPE)
   public List<Map<String, Object>> countDistinctValuesPerGroupHttpPostJson(
+      @ApiParam(value = "name of field in the geo area object to group by", required = true, defaultValue = "locality") @PathParam("group") String group,
       @ApiParam(value = "name of field in the geo area object", required = true, defaultValue = "areaType") @PathParam("field") String field,
-      @ApiParam(value = "name of group in the geo area object", required = true, defaultValue = "locality") @PathParam("group") String group,
       @ApiParam(value = "querySpec JSON", required = false) QuerySpec qs,
       @Context UriInfo uriInfo) {
-    logger.info("countDistinctValuesPerGroup/" + field + "/" + group);
-    return super.countDistinctValuesPerGroupHttpPostJson(field, group, qs, uriInfo);
+    logger.info("countDistinctValuesPerGroup/" + group + "/" + field);
+    return super.countDistinctValuesPerGroupHttpPostJson(group, field, qs, uriInfo);
   }
 
   @GET
   @Path("/getDistinctValues/{field}")
-  @ApiOperation(value = "Get all different values that exist for a field", response = Map.class,
+  @ApiOperation(
+      value = "Get all different values that exist for a field", 
+      response = Map.class,
       notes = "A list of all fields for geo area documents can be retrieved with /metadata/getFieldInfo")
   @Produces(JSON_CONTENT_TYPE)
   public Map<String, Long> getDistinctValuesHttpGet(
@@ -235,7 +269,9 @@ public class GeoAreaResource extends NbaResource<GeoArea, GeoAreaDao> {
 
   @POST
   @Path("/getDistinctValues/{field}")
-  @ApiOperation(value = "Get all different values that exist for a field", response = Map.class,
+  @ApiOperation(
+      value = "Get all different values that exist for a field", 
+      response = Map.class,
       notes = "A list of all fields for geo area documents can be retrieved with /metadata/getFieldInfo")
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
   @Produces(JSON_CONTENT_TYPE)
@@ -248,7 +284,9 @@ public class GeoAreaResource extends NbaResource<GeoArea, GeoAreaDao> {
 
   @POST
   @Path("/getDistinctValues/{field}")
-  @ApiOperation(value = "Get all different values that exist for a field", response = Map.class,
+  @ApiOperation(
+      value = "Get all different values that exist for a field", 
+      response = Map.class,
       notes = "A list of all fields for geo area documents can be retrieved with /metadata/getFieldInfo")
   @Consumes(JSON_CONTENT_TYPE)
   @Produces(JSON_CONTENT_TYPE)
@@ -260,57 +298,60 @@ public class GeoAreaResource extends NbaResource<GeoArea, GeoAreaDao> {
   }
   
   @GET
-  @Path("/getDistinctValuesPerGroup/{field}/{group}")
+  @Path("/getDistinctValuesPerGroup/{group}/{field}")
   @ApiOperation(
-      value = "Count the distinct number of group values that exist per the given field", 
+      value = "Get all distinct values (and their document count) for the field given divided per distinct value of the field to group by", 
       response = List.class, 
       notes = "")
   @Produces(JSON_CONTENT_TYPE)
   public List<Map<String, Object>> getDistinctValuesPerGroupHttpGet(
+      @ApiParam(value = "name of field in the geo area object to group by", required = true, defaultValue = "locality") @PathParam("group") String group, 
       @ApiParam(value = "name of field in the geo area object", required = true, defaultValue = "areaType") @PathParam("field") String field,
-      @ApiParam(value = "name of group in the geo area object", required = true, defaultValue = "locality") @PathParam("group") String group, 
       @Context UriInfo uriInfo) {
-    logger.info("getDistinctValuesPerGroup/" + field + "/" + group);
-    return super.getDistinctValuesPerGroupHttpGet(field, group, uriInfo);
+    logger.info("getDistinctValuesPerGroup/" + group + "/" + field);
+    return super.getDistinctValuesPerGroupHttpGet(group, field, uriInfo);
   }
   
   @POST
-  @Path("/getDistinctValuesPerGroup/{field}/{group}")
+  @Path("/getDistinctValuesPerGroup/{group}/{field}")
   @ApiOperation(
-      value = "Count the distinct number of group values that exist per the given field", 
+      value = "Get all distinct values (and their document count) for the field given divided per distinct value of the field to group by", 
       response = List.class, 
       notes = "")
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
   @Produces(JSON_CONTENT_TYPE)
   public List<Map<String, Object>> getDistinctValuesPerGroupHttpPostForm(
+      @ApiParam(value = "name of field in the geo area object to group by", required = true, defaultValue = "locality") @PathParam("group") String group, 
       @ApiParam(value = "name of field in the geo area object", required = true, defaultValue = "areaType") @PathParam("field") String field,
-      @ApiParam(value = "name of group in the geo area object", required = true, defaultValue = "locality") @PathParam("group") String group, 
       @ApiParam(value = "query object in POST form", required = false) MultivaluedMap<String, String> form,
       @Context UriInfo uriInfo) {
-    logger.info("getDistinctValuesPerGroup/" + field + "/" + group);
-    return super.getDistinctValuesPerGroupHttpPost(field, group, form, uriInfo);
+    logger.info("getDistinctValuesPerGroup/" + group + "/" + field);
+    return super.getDistinctValuesPerGroupHttpPost(group, field, form, uriInfo);
   }
   
   @POST
-  @Path("/getDistinctValuesPerGroup/{field}/{group}")
+  @Path("/getDistinctValuesPerGroup/{group}/{field}")
   @ApiOperation(
-      value = "Count the distinct number of group values that exist per the given field", 
+      value = "Get all distinct values (and their document count) for the field given divided per distinct value of the field to group by", 
       response = List.class, 
       notes = "")
   @Consumes(JSON_CONTENT_TYPE)
   @Produces(JSON_CONTENT_TYPE)
   public List<Map<String, Object>> getDistinctValuesPerGroup(
+      @ApiParam(value = "name of field in the geo area object to group by", required = true, defaultValue = "locality") @PathParam("group") String group,
       @ApiParam(value = "name of field in the geo area object", required = true, defaultValue = "areaType") @PathParam("field") String field,
-      @ApiParam(value = "name of group in the geo area object", required = true, defaultValue = "locality") @PathParam("group") String group,
       @ApiParam(value = "querySpec JSON", required = false) QuerySpec qs,
       @Context UriInfo uriInfo) {
-    logger.info("getDistinctValuesPerGroup/" + field + "/" + group);
-    return super.getDistinctValuesPerGroupHttpJson(field, group, qs, uriInfo);
+    logger.info("getDistinctValuesPerGroup/" + group + "/" + field);
+    return super.getDistinctValuesPerGroupHttpJson(group, field, qs, uriInfo);
   }
   
   @GET
   @Path("/getGeoJsonForLocality/{locality}")
-  @ApiOperation(value = "Retrieve a GeoJson object for a given locality", response = GeoArea.class, notes = "Returns a GeoJson polygon")
+  @ApiOperation(
+      value = "Retrieve a GeoJson object for a given locality", 
+      response = GeoArea.class, 
+      notes = "Returns a GeoJson polygon")
   @ApiResponses(value = {@ApiResponse(code = 404, message = "locality not found")})
   @Produces(JSON_CONTENT_TYPE)
   public GeoJsonObject getGeoJsonForLocality(
@@ -328,5 +369,6 @@ public class GeoAreaResource extends NbaResource<GeoArea, GeoAreaDao> {
       throw handleError(uriInfo, t);
     }
   }
+  //@formatter:on
 
 }

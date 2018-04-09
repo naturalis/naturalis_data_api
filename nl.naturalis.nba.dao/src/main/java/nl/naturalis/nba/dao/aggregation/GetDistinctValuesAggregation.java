@@ -7,6 +7,9 @@ import nl.naturalis.nba.dao.DocumentType;
 public abstract class GetDistinctValuesAggregation<T extends IDocumentObject, U> extends AggregationQuery<T, U> {
   
   String field;
+  int aggSize;
+  int from;
+
   
   GetDistinctValuesAggregation(DocumentType<T> dt, String field, QuerySpec querySpec) {
     super(dt, querySpec);

@@ -1,6 +1,7 @@
 package nl.naturalis.nba.dao.aggregation;
 
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
+import static nl.naturalis.nba.dao.aggregation.AggregationQueryUtils.getAggregationFrom;
 import static nl.naturalis.nba.dao.aggregation.AggregationQueryUtils.getAggregationSize;
 import static nl.naturalis.nba.dao.aggregation.AggregationQueryUtils.getOrdering;
 import static nl.naturalis.nba.dao.util.es.ESUtil.executeSearchRequest;
@@ -27,6 +28,8 @@ public class GetDistinctValuesFieldAggregation<T extends IDocumentObject, U>
 
   GetDistinctValuesFieldAggregation(DocumentType<T> dt, String field, QuerySpec querySpec) {
     super(dt, field, querySpec);
+    aggSize = getAggregationSize(querySpec);
+    from = getAggregationFrom(querySpec);
   }
 
   @Override
@@ -34,8 +37,21 @@ public class GetDistinctValuesFieldAggregation<T extends IDocumentObject, U>
     if (logger.isDebugEnabled()) {
       logger.debug(printCall("Executing AggregationQuery with: ", field, querySpec));
     }
-    SearchRequestBuilder request = createSearchRequest(querySpec);
-    int aggSize = getAggregationSize(querySpec);
+    if ((from + aggSize) > getMaxNumGroups()) {
+      String fmt = "Too many groups requested. from + size must not exceed " + "%s (was %s)";
+      String msg = String.format(fmt, getMaxNumGroups(), (from + aggSize));
+      throw new InvalidQueryException(msg);
+    }
+    SearchRequestBuilder request;
+    if (querySpec != null) {
+      QuerySpec querySpecCopy = new QuerySpec(querySpec);
+      querySpecCopy.setSize(0);
+      querySpecCopy.setFrom(0);
+      request = createSearchRequest(querySpecCopy);
+    } else {
+      request = createSearchRequest(querySpec);      
+    }
+    if (from > 0) aggSize += from;
     Order fieldOrder = getOrdering(field, querySpec);
 
     TermsAggregationBuilder termsAggregation = terms("FIELD");
@@ -52,7 +68,9 @@ public class GetDistinctValuesFieldAggregation<T extends IDocumentObject, U>
     Terms terms = response.getAggregations().get("FIELD");
 
     Map<String, Long> result = new LinkedHashMap<>(terms.getBuckets().size());
+    int counter = 0;
     for (Bucket bucket : terms.getBuckets()) {
+      if (from > 0 && counter++ < from) continue;
       result.put(bucket.getKeyAsString(), bucket.getDocCount());
     }
     return result;

@@ -1,6 +1,7 @@
 package nl.naturalis.nba.dao.aggregation;
 
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
+import static nl.naturalis.nba.dao.aggregation.AggregationQueryUtils.getAggregationFrom;
 import static nl.naturalis.nba.dao.aggregation.AggregationQueryUtils.getAggregationSize;
 import static nl.naturalis.nba.dao.aggregation.AggregationQueryUtils.getNestedPath;
 import static nl.naturalis.nba.dao.aggregation.AggregationQueryUtils.getOrdering;
@@ -18,10 +19,13 @@ import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.nested.InternalReverseNested;
 import org.elasticsearch.search.aggregations.bucket.nested.Nested;
 import org.elasticsearch.search.aggregations.bucket.nested.ReverseNestedAggregationBuilder;
+import org.elasticsearch.search.aggregations.bucket.terms.DoubleTerms;
+import org.elasticsearch.search.aggregations.bucket.terms.LongTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.StringTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms.Order;
+import org.elasticsearch.search.aggregations.bucket.terms.UnmappedTerms;
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.IDocumentObject;
@@ -36,6 +40,8 @@ public class GetDistinctValuesNestedFieldPerNestedGroupAggregation<T extends IDo
   public GetDistinctValuesNestedFieldPerNestedGroupAggregation(DocumentType<T> dt, String field,
       String group, QuerySpec querySpec) {
     super(dt, field, group, querySpec);
+    aggSize = getAggregationSize(querySpec);
+    from = getAggregationFrom(querySpec);
   }
 
   @Override
@@ -43,10 +49,24 @@ public class GetDistinctValuesNestedFieldPerNestedGroupAggregation<T extends IDo
     if (logger.isDebugEnabled()) {
       logger.debug(printCall("Executing AggregationQuery with: ", field, group, querySpec));
     }
-    SearchRequestBuilder request = createSearchRequest(querySpec);
+    if ((from + aggSize) > getMaxNumGroups()) {
+      String fmt = "Too many groups requested. from + size must not exceed " + "%s (was %s)";
+      String msg = String.format(fmt, getMaxNumGroups(), (from + aggSize));
+      throw new InvalidQueryException(msg);
+    }
+    SearchRequestBuilder request;
+    if (querySpec != null) {
+      QuerySpec querySpecCopy = new QuerySpec(querySpec);
+      querySpecCopy.setSize(0);
+      querySpecCopy.setFrom(0);
+      request = createSearchRequest(querySpecCopy);
+    } else {
+      request = createSearchRequest(querySpec);
+    }
     String pathToNestedField = getNestedPath(dt, field);
     String pathToNestedGroup = getNestedPath(dt, group);
-    int aggSize = getAggregationSize(querySpec);
+    if (from > 0)
+      aggSize += from;
     Order fieldOrder = getOrdering(field, querySpec);
     Order groupOrder = getOrdering(group, querySpec);
 
@@ -69,6 +89,7 @@ public class GetDistinctValuesNestedFieldPerNestedGroupAggregation<T extends IDo
     return executeSearchRequest(request);
   }
 
+  @Override
   public List<Map<String, Object>> getResult() throws InvalidQueryException {
 
     logger.info("Preparing aggregation query");
@@ -78,27 +99,50 @@ public class GetDistinctValuesNestedFieldPerNestedGroupAggregation<T extends IDo
     Nested nestedGroup = response.getAggregations().get("NESTED_GROUP");
     Terms groupTerms = nestedGroup.getAggregations().get("GROUP");
     List<Bucket> buckets = groupTerms.getBuckets();
+
+    // If there are no groupTerms, we'll return a map with "null"-results
+    if (buckets.size() == 0) {
+      Map<String, Object> hashMap = new LinkedHashMap<>(2);
+      hashMap.put(group, null);
+      hashMap.put("count", 0);
+      hashMap.put("values", new LinkedList<>());
+      result.add(hashMap);
+      return result;
+    }
+
+    int counter = 0; // The offsett
     for (Bucket bucket : buckets) {
+      if (from > 0 && counter++ < from)
+        continue;
       InternalReverseNested reverseNestedField =
           bucket.getAggregations().get("REVERSE_NESTED_FIELD");
       Nested nestedField = reverseNestedField.getAggregations().get("NESTED_FIELD");
-      StringTerms fieldTerms = nestedField.getAggregations().get("FIELD");
-      List<Bucket> innerBuckets = fieldTerms.getBuckets();
+      List<Bucket> innerBuckets;
+      if (nestedField.getAggregations().get("FIELD") instanceof StringTerms) {
+        StringTerms fieldTerms = nestedField.getAggregations().get("FIELD");
+        innerBuckets = fieldTerms.getBuckets();
+      } else if (nestedField.getAggregations().get("FIELD") instanceof LongTerms) {
+        LongTerms fieldTerms = nestedField.getAggregations().get("FIELD");
+        innerBuckets = fieldTerms.getBuckets();
+      } else if (nestedField.getAggregations().get("FIELD") instanceof DoubleTerms) {
+        DoubleTerms fieldTerms = nestedField.getAggregations().get("FIELD");
+        innerBuckets = fieldTerms.getBuckets();
+      } else {
+        UnmappedTerms fieldTerms = nestedField.getAggregations().get("FIELD");
+        innerBuckets = fieldTerms.getBuckets();
+      }
+
       List<Map<String, Object>> fieldTermsList = new LinkedList<>();
       for (Bucket innerBucket : innerBuckets) {
         Map<String, Object> aggregate = new LinkedHashMap<>(2);
         aggregate.put(field, innerBucket.getKeyAsString());
         aggregate.put("count", innerBucket.getDocCount());
-        if (innerBucket.getDocCount() > 0) {
-          fieldTermsList.add(aggregate);
-        }
+        fieldTermsList.add(aggregate);
       }
       Map<String, Object> hashMap = new LinkedHashMap<>(2);
       hashMap.put(group, bucket.getKeyAsString());
       hashMap.put("count", bucket.getDocCount());
-      if (fieldTermsList.size() > 0) {
-        hashMap.put("values", fieldTermsList);
-      }
+      hashMap.put("values", fieldTermsList);
       result.add(hashMap);
     }
     return result;

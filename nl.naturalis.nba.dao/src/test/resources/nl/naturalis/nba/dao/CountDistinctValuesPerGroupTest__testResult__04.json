@@ -1,0 +1,22 @@
+[
+  {
+    "identifications.defaultClassification.className": "Cephalopoda",
+    "identifications.scientificName.genusOrMonomial": 1
+  },
+  {
+    "identifications.defaultClassification.className": "Insecta",
+    "identifications.scientificName.genusOrMonomial": 1
+  },
+  {
+    "identifications.defaultClassification.className": "Gastropoda",
+    "identifications.scientificName.genusOrMonomial": 1
+  },
+  {
+    "identifications.defaultClassification.className": "Bivalvia",
+    "identifications.scientificName.genusOrMonomial": 1
+  },
+  {
+    "identifications.defaultClassification.className": "Magnoliopsida",
+    "identifications.scientificName.genusOrMonomial": 3
+  }
+]

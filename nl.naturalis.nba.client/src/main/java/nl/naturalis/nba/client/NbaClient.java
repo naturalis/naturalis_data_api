@@ -117,9 +117,9 @@ abstract class NbaClient<T extends IDocumentObject> extends Client implements IN
   }
   
   @Override
-  public List<Map<String, Object>> countDistinctValuesPerGroup(String forField, String forGroup, QuerySpec querySpec) throws InvalidQueryException 
+  public List<Map<String, Object>> countDistinctValuesPerGroup(String forGroup, String forField, QuerySpec querySpec) throws InvalidQueryException 
   {
-    String path = "countDistinctValuesPerGroup/" + forField + "/" + forGroup;
+    String path = "countDistinctValuesPerGroup/" + forGroup + "/" + forField;
     SimpleHttpRequest request = newQuerySpecRequest(path, querySpec);
     sendRequest(request);
     int status = request.getStatus();
@@ -156,9 +156,9 @@ abstract class NbaClient<T extends IDocumentObject> extends Client implements IN
 	}
 
   @Override
-  public List<Map<String, Object>> getDistinctValuesPerGroup(String forField, String forGroup, QuerySpec querySpec) throws InvalidQueryException
+  public List<Map<String, Object>> getDistinctValuesPerGroup(String forGroup, String forField, QuerySpec querySpec) throws InvalidQueryException
   {
-    String path = "getDistinctValuesPerGroup/" + forField + "/" + forGroup;
+    String path = "getDistinctValuesPerGroup/" + forGroup + "/" + forField;
     SimpleHttpRequest request = newQuerySpecRequest(path, querySpec);
     sendRequest(request);
     int status = request.getStatus();

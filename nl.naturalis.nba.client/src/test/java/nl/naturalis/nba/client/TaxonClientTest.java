@@ -110,7 +110,7 @@ public class TaxonClientTest {
     String group = "taxonRank";
     QuerySpec qs = new QuerySpec();
     qs.addCondition(new QueryCondition("sourceSystemId", "!=", null));
-    System.out.println(JsonUtil.toPrettyJson(client.countDistinctValuesPerGroup(field, group, qs)));
+    System.out.println(JsonUtil.toPrettyJson(client.countDistinctValuesPerGroup(group, field, qs)));
   }
 
   @Test
@@ -127,7 +127,7 @@ public class TaxonClientTest {
     String group = "taxonRank";
     QuerySpec qs = new QuerySpec();
     qs.addCondition(new QueryCondition("sourceSystemId", "!=", null));
-    System.out.println(JsonUtil.toPrettyJson(client.getDistinctValuesPerGroup(field, group, qs)));
+    System.out.println(JsonUtil.toPrettyJson(client.getDistinctValuesPerGroup(group, field, qs)));
   }
 
 }

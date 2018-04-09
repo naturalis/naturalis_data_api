@@ -2,6 +2,11 @@ package nl.naturalis.nba.dao;
 
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static nl.naturalis.nba.dao.aggregation.AggregationQueryFactory.createAggregationQuery;
+import static nl.naturalis.nba.dao.aggregation.AggregationType.COUNT;
+import static nl.naturalis.nba.dao.aggregation.AggregationType.COUNT_DISTINCT_VALUES;
+import static nl.naturalis.nba.dao.aggregation.AggregationType.COUNT_DISTINCT_VALUES_PER_GROUP;
+import static nl.naturalis.nba.dao.aggregation.AggregationType.GET_DISTINCT_VALUES;
+import static nl.naturalis.nba.dao.aggregation.AggregationType.GET_DISTINCT_VALUES_PER_GROUP;
 import static nl.naturalis.nba.dao.util.es.ESUtil.executeSearchRequest;
 import static nl.naturalis.nba.dao.util.es.ESUtil.newSearchRequest;
 import static nl.naturalis.nba.dao.util.es.ESUtil.toDocumentObject;
@@ -45,6 +50,10 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
 
   NbaDao(DocumentType<T> dt) {
     this.dt = dt;
+  }
+
+  public static void ping() {
+    ESUtil.esClient();
   }
 
   @Override
@@ -104,32 +113,36 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
     if (logger.isDebugEnabled()) {
       logger.debug(printCall("count", querySpec));
     }
-    AggregationQuery<T, ?> aggregationQuery =
-        createAggregationQuery("count", dt, null, null, querySpec);
-    return Long.parseLong(aggregationQuery.getResult().toString());
+    @SuppressWarnings("unchecked")
+    AggregationQuery<T, Long> aggregationQuery =
+        (AggregationQuery<T, Long>) createAggregationQuery(COUNT, dt, null, null, querySpec);
+    return aggregationQuery.getResult().longValue();
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public long countDistinctValues(String forField, QuerySpec querySpec)
       throws InvalidQueryException {
     if (logger.isDebugEnabled()) {
       logger.debug(printCall("countDistinctValues", forField, querySpec));
     }
-    AggregationQuery<T, ?> aggregationQuery =
-        createAggregationQuery("countDistinctValues", dt, forField, null, querySpec);
-    return Long.parseLong(aggregationQuery.getResult().toString());
+    AggregationQuery<T, Long> aggregationQuery =
+        (AggregationQuery<T, Long>) createAggregationQuery(COUNT_DISTINCT_VALUES, dt, forField,
+            null, querySpec);
+    return aggregationQuery.getResult().longValue();
   }
 
   @SuppressWarnings("unchecked")
   @Override
-  public List<Map<String, Object>> countDistinctValuesPerGroup(String forField, String forGroup,
+  public List<Map<String, Object>> countDistinctValuesPerGroup(String forGroup, String forField,
       QuerySpec querySpec) throws InvalidQueryException {
     if (logger.isDebugEnabled()) {
       logger.debug(printCall("countDistinctValuesPerGroup", forField, forGroup, querySpec));
     }
-    AggregationQuery<T, ?> aggregationQuery =
-        createAggregationQuery("countDistinctValuesPerGroup", dt, forField, forGroup, querySpec);
-    return (List<Map<String, Object>>) aggregationQuery.getResult();
+    AggregationQuery<T, List<Map<String, Object>>> aggregationQuery =
+        (AggregationQuery<T, List<Map<String, Object>>>) createAggregationQuery(
+            COUNT_DISTINCT_VALUES_PER_GROUP, dt, forField, forGroup, querySpec);
+    return aggregationQuery.getResult();
   }
 
   @SuppressWarnings("unchecked")
@@ -139,21 +152,23 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
     if (logger.isDebugEnabled()) {
       logger.debug(printCall("getDistinctValues", forField, querySpec));
     }
-    AggregationQuery<T, ?> aggregationQuery =
-        createAggregationQuery("getDistinctValues", dt, forField, null, querySpec);
-    return (Map<String, Long>) aggregationQuery.getResult();
+    AggregationQuery<T, Map<String, Long>> aggregationQuery =
+        (AggregationQuery<T, Map<String, Long>>) createAggregationQuery(GET_DISTINCT_VALUES, dt,
+            forField, null, querySpec);
+    return aggregationQuery.getResult();
   }
 
   @SuppressWarnings("unchecked")
   @Override
-  public List<Map<String, Object>> getDistinctValuesPerGroup(String forField, String forGroup,
+  public List<Map<String, Object>> getDistinctValuesPerGroup(String forGroup, String forField,
       QuerySpec querySpec) throws InvalidQueryException {
     if (logger.isDebugEnabled()) {
       logger.debug(printCall("getDistinctValuesPerGroup", forField, forGroup, querySpec));
     }
-    AggregationQuery<T, ?> aggregationQuery =
-        createAggregationQuery("getDistinctValuesPerGroup", dt, forField, forGroup, querySpec);
-    return (List<Map<String, Object>>) aggregationQuery.getResult();
+    AggregationQuery<T, List<Map<String, Object>>> aggregationQuery =
+        (AggregationQuery<T, List<Map<String, Object>>>) createAggregationQuery(
+            GET_DISTINCT_VALUES_PER_GROUP, dt, forField, forGroup, querySpec);
+    return aggregationQuery.getResult();
   }
 
   public String save(T apiObject, boolean immediate) {

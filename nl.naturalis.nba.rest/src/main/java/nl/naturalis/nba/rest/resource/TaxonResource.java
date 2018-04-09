@@ -53,16 +53,18 @@ import nl.naturalis.nba.rest.util.HttpQuerySpecBuilder;
 @SuppressWarnings("static-method")
 public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
 
-  @SuppressWarnings("unused")
   private static final Logger logger = LogManager.getLogger(TaxonResource.class);
 
   TaxonResource() {
     super(new TaxonDao());
   }
 
+  //@formatter:off
   @GET
   @Path("/find/{id}")
-  @ApiOperation(value = "Find a taxon by id", response = Taxon.class,
+  @ApiOperation(
+      value = "Find a taxon by id", 
+      response = Taxon.class,
       notes = "If found, returns a single taxon")
   @ApiResponses(value = {@ApiResponse(code = 404, message = "id not found")})
   @Produces(JSON_CONTENT_TYPE)
@@ -73,7 +75,9 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
 
   @GET
   @Path("/findByIds/{ids}")
-  @ApiOperation(value = "Find taxa by ids", response = Taxon[].class,
+  @ApiOperation(
+      value = "Find taxa by ids", 
+      response = Taxon[].class,
       notes = "Given multiple ids, returns a list of taxa")
   @Produces(JSON_CONTENT_TYPE)
   public Taxon[] findByIds(@ApiParam(value = "ids of multiple taxa, separated by comma",
@@ -84,7 +88,9 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
 
   @GET
   @Path("/query")
-  @ApiOperation(value = "Query for taxa", response = QueryResult.class,
+  @ApiOperation(
+      value = "Query for taxa", 
+      response = QueryResult.class,
       notes = "Search for taxa (GET) using query parameters or a querySpec JSON")
   @Produces(JSON_CONTENT_TYPE)
   @ApiImplicitParams({
@@ -96,7 +102,9 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
 
   @POST
   @Path("/query")
-  @ApiOperation(hidden = true, value = "Query for taxa", response = QueryResult.class,
+  @ApiOperation( 
+      value = "Query for taxa", 
+      response = QueryResult.class,
       notes = "Search for taxa (POST) using query parameters or a querySpec JSON")
   @Produces(JSON_CONTENT_TYPE)
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -108,7 +116,9 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
 
   @POST
   @Path("/query")
-  @ApiOperation(value = "Query for taxa", response = QueryResult.class,
+  @ApiOperation(
+      value = "Query for taxa", 
+      response = QueryResult.class,
       notes = "Search for taxa (POST) using query parameters or a querySpec JSON")
   @Produces(JSON_CONTENT_TYPE)
   @Consumes(JSON_CONTENT_TYPE)
@@ -119,7 +129,9 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
 
   @GET
   @Path("/count")
-  @ApiOperation(value = "Get the number of taxa matching a condition", response = long.class,
+  @ApiOperation(
+      value = "Get the number of taxa matching a given condition", 
+      response = long.class,
       notes = "Conditions given as query parameters or a querySpec JSON")
   @Produces(TEXT_CONTENT_TYPE)
   @ApiImplicitParams({@ApiImplicitParam(name = "sourceSystem.code", value = "Example query param",
@@ -130,8 +142,10 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
 
   @POST
   @Path("/count")
-  @ApiOperation(hidden = true, value = "Get the number of taxa matching a condition",
-      response = long.class, notes = "Conditions given as query parameters or a querySpec JSON")
+  @ApiOperation(
+      value = "Get the number of taxa matching a given condition",
+      response = long.class, 
+      notes = "Conditions given as query parameters or a querySpec JSON")
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
   @Produces(TEXT_CONTENT_TYPE)
   public long countHttpPostForm(
@@ -142,7 +156,9 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
 
   @POST
   @Path("/count")
-  @ApiOperation(value = "Get the number of taxa matching a condition", response = long.class,
+  @ApiOperation(
+      value = "Get the number of taxa matching a given condition", 
+      response = long.class,
       notes = "Conditions given as query parameters or a querySpec JSON")
   @Consumes(JSON_CONTENT_TYPE)
   @Produces(TEXT_CONTENT_TYPE)
@@ -154,7 +170,10 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
   
   @GET
   @Path("/countDistinctValues/{field}")
-  @ApiOperation(value = "Count the distinct number of values that exist for a given field", response = Map.class, notes = "")
+  @ApiOperation(
+      value = "Count the distinct number of values that exist for a given field", 
+      response = Map.class, 
+      notes = "")
   @Produces(TEXT_CONTENT_TYPE)
   public long countDistinctValuesHttpGet(
       @ApiParam(value = "name of field in the taxon object", required = true, defaultValue = "acceptedName.genusOrMonomial") @PathParam("field") String field,
@@ -165,7 +184,10 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
 
   @POST
   @Path("/countDistinctValues/{field}")
-  @ApiOperation(value = "Count the distinct number of values that exist for a given field", response = Map.class, notes = "")
+  @ApiOperation(
+      value = "Count the distinct number of values that exist for a given field", 
+      response = Map.class, 
+      notes = "")
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
   @Produces(TEXT_CONTENT_TYPE)
   public Long countDistinctValuesHttpPost(
@@ -178,7 +200,10 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
 
   @POST
   @Path("/countDistinctValues/{field}")
-  @ApiOperation(value = "Count the distinct number of values that exist for a given field", response = Map.class, notes = "")
+  @ApiOperation(
+      value = "Count the distinct number of values that exist for a given field", 
+      response = Map.class, 
+      notes = "")
   @Consumes(JSON_CONTENT_TYPE)
   @Produces(TEXT_CONTENT_TYPE)
   public Long countDistinctValuesHttpJson(
@@ -190,49 +215,58 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
   }
   
   @GET
-  @Path("/countDistinctValuesPerGroup/{field}/{group}")
-  @ApiOperation(value = "Count the distinct number of group values that exist per the given field",
-      response = Map.class, notes = "")
+  @Path("/countDistinctValuesPerGroup/{group}/{field}")
+  @ApiOperation(
+      value = "Count the distinct number of field values that exist per the given field to group by",
+      response = Map.class, 
+      notes = "")
   @Produces(JSON_CONTENT_TYPE)
   public List<Map<String, Object>> countDistinctValuesPerGroupHttpGet(
+      @ApiParam(value = "name of field in the taxon object you want to group by", required = true, defaultValue = "defaultClassification.genus") @PathParam("group") String group, 
       @ApiParam(value = "name of field in the taxon object", required = true, defaultValue = "sourceSystem.code") @PathParam("field") String field,
-      @ApiParam(value = "name of group in the taxon object", required = true, defaultValue = "defaultClassification.genus") @PathParam("group") String group, 
       @Context UriInfo uriInfo) {
-    logger.info("countDistinctValuesPerGroup/" + field + "/" + group);
-    return super.countDistinctValuesPerGroupHttpGet(field, group, uriInfo);
+    logger.info("countDistinctValuesPerGroup/" + group + "/" + field);
+    return super.countDistinctValuesPerGroupHttpGet(group, field, uriInfo);
   }
 
   @POST
-  @Path("/countDistinctValuesPerGroup/{field}/{group}")
-  @ApiOperation(value = "Count the distinct number of group values that exist per the given field", response = Map.class, notes = "")
+  @Path("/countDistinctValuesPerGroup/{group}/{field}")
+  @ApiOperation(
+      value = "Count the distinct number of field values that exist per the given field to group by", 
+      response = Map.class, 
+      notes = "")
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
   @Produces(JSON_CONTENT_TYPE)
   public List<Map<String, Object>> countDistinctValuesPerGroupHttpPostForm(
+      @ApiParam(value = "name of field in the taxon object you want to group by", required = true, defaultValue = "defaultClassification.genus") @PathParam("group") String group, 
       @ApiParam(value = "name of field in the taxon object", required = true, defaultValue = "sourceSystem.code") @PathParam("field") String field,
-      @ApiParam(value = "name of group in the taxon object", required = true, defaultValue = "defaultClassification.genus") @PathParam("group") String group, 
       @ApiParam(value = "query object in POST form", required = false) MultivaluedMap<String, String> form,
       @Context UriInfo uriInfo) {
-    logger.info("countDistinctValuesPerGroup/" + field + "/" + group);
-    return super.countDistinctValuesPerGroupHttpPostForm(field, group, form, uriInfo);
+    logger.info("countDistinctValuesPerGroup/" + group + "/" + field);
+    return super.countDistinctValuesPerGroupHttpPostForm(group, field, form, uriInfo);
   }
 
   @POST
-  @Path("/countDistinctValuesPerGroup/{field}/{group}")
-  @ApiOperation(value = "Count the distinct number of group values that exist per the given field", response = Map.class, notes = "")
+  @Path("/countDistinctValuesPerGroup/{group}/{field}")
+  @ApiOperation(
+      value = "Count the distinct number of field values that exist per the given field to group by", 
+      response = Map.class, 
+      notes = "")
   @Consumes(JSON_CONTENT_TYPE)
   @Produces(JSON_CONTENT_TYPE)
   public List<Map<String, Object>> countDistinctValuesPerGroupHttpPostJson(
+      @ApiParam(value = "name of field in the taxon object you want to group by", required = true, defaultValue = "defaultClassification.genus") @PathParam("group") String group,
       @ApiParam(value = "name of field in the taxon object", required = true, defaultValue = "sourceSystem.code") @PathParam("field") String field,
-      @ApiParam(value = "name of group in the taxon object", required = true, defaultValue = "defaultClassification.genus") @PathParam("group") String group,
       @ApiParam(value = "querySpec JSON", required = false) QuerySpec qs,
       @Context UriInfo uriInfo) {
-    logger.info("countDistinctValuesPerGroup/" + field + "/" + group);
-    return super.countDistinctValuesPerGroupHttpPostJson(field, group, qs, uriInfo);
+    logger.info("countDistinctValuesPerGroup/" + group + "/" + field);
+    return super.countDistinctValuesPerGroupHttpPostJson(group, field, qs, uriInfo);
   }
 
   @GET
   @Path("/getDistinctValues/{field}")
-  @ApiOperation(value = "Get all different values that can be found for one field",
+  @ApiOperation(
+      value = "Get all different values that can be found for one field",
       response = Map.class,
       notes = "A list of all fields for taxon documents can be retrieved with /metadata/getFieldInfo")
   @Produces(JSON_CONTENT_TYPE)
@@ -244,7 +278,9 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
 
   @POST
   @Path("/getDistinctValues/{field}")
-  @ApiOperation(value = "Get all different values that exist for a field", response = Map.class,
+  @ApiOperation(
+      value = "Get all different values that exist for a field", 
+      response = Map.class,
       notes = "A list of all fields for taxon documents can be retrieved with /metadata/getFieldInfo")
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
   @Produces(JSON_CONTENT_TYPE)
@@ -257,7 +293,9 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
 
   @POST
   @Path("/getDistinctValues/{field}")
-  @ApiOperation(value = "Get all different values that exist for a field", response = Map.class,
+  @ApiOperation(
+      value = "Get all different values that exist for a field", 
+      response = Map.class,
       notes = "A list of all fields for taxon documents can be retrieved with /metadata/getFieldInfo")
   @Consumes(JSON_CONTENT_TYPE)
   @Produces(JSON_CONTENT_TYPE)
@@ -271,52 +309,52 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
   
   
   @GET
-  @Path("/getDistinctValuesPerGroup/{field}/{group}")
+  @Path("/getDistinctValuesPerGroup/{group}/{field}")
   @ApiOperation(
-      value = "Count the distinct number of group values that exist per the given field", 
+      value = "Get all distinct values (and their document count) for the field given divided per distinct value of the field to group by", 
       response = List.class, 
       notes = "")
   @Produces(JSON_CONTENT_TYPE)
   public List<Map<String, Object>> getDistinctValuesPerGroupHttpGet(
+      @ApiParam(value = "name of field in the taxon object you want to group by", required = true, defaultValue = "defaultClassification.family") @PathParam("group") String group, 
       @ApiParam(value = "name of field in the taxon object", required = true, defaultValue = "sourceSystem.code") @PathParam("field") String field,
-      @ApiParam(value = "name of group in the taxon object", required = true, defaultValue = "defaultClassification.family") @PathParam("group") String group, 
       @Context UriInfo uriInfo) {
-    logger.info("getDistinctValuesPerGroup/" + field + "/" + group);
-    return super.getDistinctValuesPerGroupHttpGet(field, group, uriInfo);
+    logger.info("getDistinctValuesPerGroup/" + group + "/" + field);
+    return super.getDistinctValuesPerGroupHttpGet(group, field, uriInfo);
   }
   
   @POST
-  @Path("/getDistinctValuesPerGroup/{field}/{group}")
+  @Path("/getDistinctValuesPerGroup/{group}/{field}")
   @ApiOperation(
-      value = "Count the distinct number of group values that exist per the given field", 
+      value = "Get all distinct values (and their document count) for the field given divided per distinct value of the field to group by", 
       response = List.class, 
       notes = "")
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
   @Produces(JSON_CONTENT_TYPE)
   public List<Map<String, Object>> getDistinctValuesPerGroupHttpPostForm(
+      @ApiParam(value = "name of field in the taxon object you want to group by", required = true, defaultValue = "defaultClassification.family") @PathParam("group") String group, 
       @ApiParam(value = "name of field in the taxon object", required = true, defaultValue = "sourceSystem.code") @PathParam("field") String field,
-      @ApiParam(value = "name of group in the taxon object", required = true, defaultValue = "defaultClassification.family") @PathParam("group") String group, 
       @ApiParam(value = "query object in POST form", required = false) MultivaluedMap<String, String> form,
       @Context UriInfo uriInfo) {
-    logger.info("getDistinctValuesPerGroup/" + field + "/" + group);
-    return super.getDistinctValuesPerGroupHttpPost(field, group, form, uriInfo);
+    logger.info("getDistinctValuesPerGroup/" + group + "/" + field);
+    return super.getDistinctValuesPerGroupHttpPost(group, field, form, uriInfo);
   }
   
   @POST
-  @Path("/getDistinctValuesPerGroup/{field}/{group}")
+  @Path("/getDistinctValuesPerGroup/{group}/{field}")
   @ApiOperation(
-      value = "Count the distinct number of group values that exist per the given field", 
+      value = "Get all distinct values (and their document count) for the field given divided per distinct value of the field to group by", 
       response = List.class, 
       notes = "")
   @Consumes(JSON_CONTENT_TYPE)
   @Produces(JSON_CONTENT_TYPE)
   public List<Map<String, Object>> getDistinctValuesPerGroup(
+      @ApiParam(value = "name of field in the taxon object you want to group by", required = true, defaultValue = "defaultClassification.family") @PathParam("group") String group,
       @ApiParam(value = "name of field in the taxon object", required = true, defaultValue = "sourceSystem.code") @PathParam("field") String field,
-      @ApiParam(value = "name of group in the taxon object", required = true, defaultValue = "defaultClassification.family") @PathParam("group") String group,
       @ApiParam(value = "querySpec JSON", required = false) QuerySpec qs,
       @Context UriInfo uriInfo) {
-    logger.info("getDistinctValuesPerGroup/" + field + "/" + group);
-    return super.getDistinctValuesPerGroupHttpJson(field, group, qs, uriInfo);
+    logger.info("getDistinctValuesPerGroup/" + group + "/" + field);
+    return super.getDistinctValuesPerGroupHttpJson(group, field, qs, uriInfo);
   }
 
   @GET
@@ -420,7 +458,9 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
 
   @GET
   @Path("/dwca/getDataSet/{dataset}")
-  @ApiOperation(value = "Download dataset as Darwin Core Archive File", response = Response.class,
+  @ApiOperation(
+      value = "Download dataset as Darwin Core Archive File", 
+      response = Response.class,
       notes = "Available datasets can be queried with /taxon/dwca/getDataSetNames. Response saved to <datasetname>-<yyyymmdd>.dwca.zip")
   @Produces(ZIP_CONTENT_TYPE)
   public Response dwcaGetDataSet(@ApiParam(value = "name of dataset", required = true,
@@ -452,7 +492,9 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
 
   @GET
   @Path("/dwca/getDataSetNames")
-  @ApiOperation(value = "Retrieve the names of all available datasets", response = String[].class,
+  @ApiOperation(
+      value = "Retrieve the names of all available datasets", 
+      response = String[].class,
       notes = "Individual datasets can then be downloaded with /dwca/getDataSet/{dataset}")
   @Produces(JSON_CONTENT_TYPE)
   public String[] dwcaGetDataSetNames(@Context UriInfo uriInfo) {
@@ -524,5 +566,5 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
       throw handleError(uriInfo, t);
     }
   }
-
+  //@formatter:on
 }

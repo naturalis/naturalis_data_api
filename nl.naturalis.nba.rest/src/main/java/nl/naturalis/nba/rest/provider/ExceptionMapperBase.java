@@ -8,8 +8,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import nl.naturalis.nba.dao.exception.ConnectionFailureException;
 import nl.naturalis.nba.rest.exception.HTTP404Exception;
 import nl.naturalis.nba.rest.exception.RESTException;
@@ -19,7 +19,7 @@ import nl.naturalis.nba.rest.util.ResourceUtil;
 @Dependent
 public class ExceptionMapperBase implements ExceptionMapper<Throwable> {
 
-  private static final Logger logger = LoggerFactory.getLogger(ExceptionMapperBase.class);
+  private static final Logger logger = LogManager.getLogger(ExceptionMapperBase.class);
 
   @Override
   public Response toResponse(Throwable e) {

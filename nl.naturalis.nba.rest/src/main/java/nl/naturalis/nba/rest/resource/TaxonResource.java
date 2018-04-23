@@ -28,6 +28,7 @@ import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jboss.resteasy.annotations.GZIP;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -60,6 +61,7 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
   }
 
   //@formatter:off
+  @GZIP
   @GET
   @Path("/download")
   @ApiOperation(
@@ -78,6 +80,7 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
     return super.downloadQueryHttpGet(uriInfo);
   }
 
+  @GZIP
   @POST
   @Path("/download")
   @ApiOperation(
@@ -98,6 +101,7 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
     return super.downloadQueryHttpPostForm(form, uriInfo);
   }
 
+  @GZIP
   @POST
   @Path("/download")
   @ApiOperation(

@@ -61,14 +61,14 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
   }
 
   //@formatter:off
-  @GZIP
   @GET
+  @GZIP
   @Path("/download")
   @ApiOperation(
       value = "Dynamic download service: Query for specimens and return result as a stream ...",
       response = Response.class,
       notes = "Query with query parameters or querySpec JSON. ...")
-  @Produces(MediaType.APPLICATION_OCTET_STREAM)
+  @Produces(JSON_CONTENT_TYPE)
   @ApiImplicitParams({@ApiImplicitParam(
       name = "collectionType", 
       value = "Example query param",
@@ -80,14 +80,14 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
     return super.downloadQueryHttpGet(uriInfo);
   }
 
-  @GZIP
   @POST
+  @GZIP
   @Path("/download")
   @ApiOperation(
       value = "Dynamic download service: Query for specimens and return result as a stream ...",
       response = Response.class,
       notes = "Query with query parameters or querySpec JSON. ...")
-  @Produces(MediaType.APPLICATION_OCTET_STREAM)
+  @Produces(JSON_CONTENT_TYPE)
   @ApiImplicitParams({@ApiImplicitParam(
       name = "collectionType", 
       value = "Example query param",
@@ -101,14 +101,14 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
     return super.downloadQueryHttpPostForm(form, uriInfo);
   }
 
-  @GZIP
   @POST
+  @GZIP
   @Path("/download")
   @ApiOperation(
       value = "Dynamic download service: Query for specimens and return result as a stream ...",
       response = Response.class,
       notes = "Query with query parameters or querySpec JSON. ...")
-  @Produces(MediaType.APPLICATION_OCTET_STREAM)
+  @Produces(JSON_CONTENT_TYPE)
   @ApiImplicitParams({@ApiImplicitParam(
       name = "collectionType", 
       value = "Example query param",

@@ -6,20 +6,24 @@
         module="nl.naturalis.nba.rest"
         status="integration">
 	</info>
+	<configurations>
+		<conf name="build" description="Jars needed for compiling"/>
+	    <conf name="war" extends="build" description="Jars that needs to be in the WAR" />
+    </configurations>
 	<dependencies>
-		<dependency org="org.apache.logging.log4j" name="log4j-api" rev="2.7" />
-		<dependency org="org.apache.logging.log4j" name="log4j-core" rev="2.7" />
-		<dependency org="javax.servlet" name="javax.servlet-api" rev="3.1.0"/>
-		<dependency org="javax.enterprise" name="cdi-api" rev="1.2"/>
-		<dependency org="javax.ws.rs" name="javax.ws.rs-api" rev="2.0.1"/>
-		<dependency org="javax.ejb" name="javax.ejb-api" rev="3.2"/>
-		<dependency org="com.fasterxml.jackson.core" name="jackson-databind" rev="2.8.5"/>
-		<dependency org="de.grundid.opendatalab" name="geojson-jackson" rev="1.8"/>
-		<dependency org="org.apache.commons" name="commons-text" rev="1.1"/>
-		<dependency org="org.reflections" name="reflections" rev="0.9.11"/>
-		<dependency org="org.mockito" name="mockito-all" rev="1.10.19"/>
-		<dependency org="io.swagger" name="swagger-core" rev="1.5.0"/>                                                                                                                                                                                                         
-        <dependency org="io.swagger" name="swagger-jaxrs" rev="1.5.13"/>
-        <dependency org="org.jboss.resteasy" name="resteasy-jaxrs" rev="3.0.19.Final"/>
+		<dependency org="org.apache.logging.log4j" name="log4j-api" rev="2.7" conf="war->*,!sources,!javadoc"/>
+		<dependency org="org.apache.logging.log4j" name="log4j-core" rev="2.7" conf="war->*,!sources,!javadoc"/>
+		<dependency org="javax.servlet" name="javax.servlet-api" rev="3.1.0" conf="war->*,!sources,!javadoc"/>
+		<dependency org="javax.enterprise" name="cdi-api" rev="1.2" conf="war->*,!sources,!javadoc"/>
+		<dependency org="javax.ws.rs" name="javax.ws.rs-api" rev="2.0.1" conf="war->*,!sources,!javadoc"/>
+		<dependency org="javax.ejb" name="javax.ejb-api" rev="3.2" conf="war->*,!sources,!javadoc"/>
+		<dependency org="com.fasterxml.jackson.core" name="jackson-databind" rev="2.8.5" conf="war->*,!sources,!javadoc"/>
+		<dependency org="de.grundid.opendatalab" name="geojson-jackson" rev="1.8" conf="war->*,!sources,!javadoc"/>
+		<dependency org="org.apache.commons" name="commons-text" rev="1.1" conf="war->*,!sources,!javadoc"/>
+		<dependency org="org.reflections" name="reflections" rev="0.9.11" conf="war->*,!sources,!javadoc"/>
+		<dependency org="org.mockito" name="mockito-all" rev="1.10.19" conf="war->*,!sources,!javadoc"/>
+		<dependency org="io.swagger" name="swagger-core" rev="1.5.0" conf="war->*,!sources,!javadoc"/>                                                                                                                                                                                                         
+        <dependency org="io.swagger" name="swagger-jaxrs" rev="1.5.13" conf="war->*,!sources,!javadoc"/>
+        <dependency org="org.jboss.resteasy" name="resteasy-jaxrs" rev="3.0.19.Final" conf="build->*,!sources,!javadoc"/>
 	</dependencies>
 </ivy-module>

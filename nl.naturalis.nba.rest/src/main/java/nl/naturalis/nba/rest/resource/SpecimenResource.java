@@ -87,6 +87,7 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
       value = "Dynamic download service: Query for specimens and return result as a stream ...",
       response = Response.class,
       notes = "Query with query parameters or querySpec JSON. ...")
+  @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
   @Produces(JSON_CONTENT_TYPE)
   @ApiImplicitParams({@ApiImplicitParam(
       name = "collectionType", 
@@ -108,6 +109,7 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
       value = "Dynamic download service: Query for specimens and return result as a stream ...",
       response = Response.class,
       notes = "Query with query parameters or querySpec JSON. ...")
+  @Consumes(JSON_CONTENT_TYPE)
   @Produces(JSON_CONTENT_TYPE)
   @ApiImplicitParams({@ApiImplicitParam(
       name = "collectionType", 

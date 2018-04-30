@@ -70,7 +70,8 @@ public class MultiMediaObjectResource extends NbaResource<MultiMediaObject, Mult
       value = "Dynamic download service: Query for multimedia objects and return result as a stream ...",
       response = Response.class,
       notes = "Query with query parameters or querySpec JSON. ...")
-  @Produces(MediaType.APPLICATION_OCTET_STREAM)
+  @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+  @Produces(JSON_CONTENT_TYPE)
   @ApiImplicitParams({@ApiImplicitParam(
       name = "collectionType", 
       value = "Example query param",
@@ -91,7 +92,8 @@ public class MultiMediaObjectResource extends NbaResource<MultiMediaObject, Mult
       value = "Dynamic download service: Query for multimedia objects and return result as a stream ...",
       response = Response.class,
       notes = "Query with query parameters or querySpec JSON. ...")
-  @Produces(MediaType.APPLICATION_OCTET_STREAM)
+  @Consumes(JSON_CONTENT_TYPE)
+  @Produces(JSON_CONTENT_TYPE)
   @ApiImplicitParams({@ApiImplicitParam(
       name = "collectionType", 
       value = "Example query param",

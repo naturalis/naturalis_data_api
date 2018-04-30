@@ -87,7 +87,8 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
       value = "Dynamic download service: Query for taxa and return result as a stream ...",
       response = Response.class,
       notes = "Query with query parameters or querySpec JSON. ...")
-  @Produces(MediaType.APPLICATION_OCTET_STREAM)
+  @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+  @Produces(JSON_CONTENT_TYPE)
   @ApiImplicitParams({@ApiImplicitParam(
       name = "sourceSystem.code", 
       value = "Example query param",
@@ -108,7 +109,8 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
       value = "Dynamic download service: Query for taxa and return result as a stream ...",
       response = Response.class,
       notes = "Query with query parameters or querySpec JSON. ...")
-  @Produces(MediaType.APPLICATION_OCTET_STREAM)
+  @Consumes(JSON_CONTENT_TYPE)
+  @Produces(JSON_CONTENT_TYPE)
   @ApiImplicitParams({@ApiImplicitParam(
       name = "sourceSystem.code", 
       value = "Example query param",

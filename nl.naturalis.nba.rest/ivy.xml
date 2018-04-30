@@ -6,6 +6,11 @@
         module="nl.naturalis.nba.rest"
         status="integration">
 	</info>
+	
+	<publications>
+        <artifact type="war" ext="war"/>
+    </publications>
+	
 	<dependencies>
 		<dependency org="org.apache.logging.log4j" name="log4j-api" rev="2.7" />
 		<dependency org="org.apache.logging.log4j" name="log4j-core" rev="2.7" />
@@ -20,6 +25,8 @@
 		<dependency org="org.mockito" name="mockito-all" rev="1.10.19" />
 		<dependency org="io.swagger" name="swagger-core" rev="1.5.0" />                                                                                                                                                                                                         
         <dependency org="io.swagger" name="swagger-jaxrs" rev="1.5.13" />
+        
         <dependency org="org.jboss.resteasy" name="resteasy-jaxrs" rev="3.0.19.Final" />
+        
 	</dependencies>
 </ivy-module>

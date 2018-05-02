@@ -165,7 +165,7 @@
 		  
 		--> 
         <property environment="my_env" />
-        <echo level="warning">SKIP_TESTS: ${my_env.SKIP_TESTS}</echo>
+        <echo if:true="${my_env.SKIP_TESTS}" level="warning">SKIP_TESTS: ${my_env.SKIP_TESTS}</echo>
 		
 		<condition property="runTest" value="true" >
 			<and>

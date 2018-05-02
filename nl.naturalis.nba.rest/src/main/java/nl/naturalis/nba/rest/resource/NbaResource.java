@@ -49,7 +49,6 @@ public abstract class NbaResource<T extends IDocumentObject, U extends NbaDao<T>
       };
 
       ResponseBuilder response = Response.ok(stream);
-//      response.type(JSON_CONTENT_TYPE);
       return response.build();
     } catch (Throwable t) {
       throw handleError(uriInfo, t);
@@ -72,7 +71,6 @@ public abstract class NbaResource<T extends IDocumentObject, U extends NbaDao<T>
       };
 
       ResponseBuilder response = Response.ok(stream);
-//      response.type(JSON_CONTENT_TYPE);
       return response.build();
     } catch (Throwable t) {
       throw handleError(uriInfo, t);

@@ -44,11 +44,6 @@ import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.aggregation.AggregationQuery;
 import nl.naturalis.nba.dao.exception.DaoException;
-import nl.naturalis.nba.dao.format.DataSetConfigurationException;
-import nl.naturalis.nba.dao.format.DataSetWriteException;
-import nl.naturalis.nba.dao.format.dwca.DwcaConfig;
-import nl.naturalis.nba.dao.format.dwca.DwcaDataSetType;
-import nl.naturalis.nba.dao.format.dwca.IDwcaWriter;
 import nl.naturalis.nba.dao.translate.QuerySpecTranslator;
 import nl.naturalis.nba.dao.util.es.DirtyDocumentIterator;
 import nl.naturalis.nba.dao.util.es.ESUtil;
@@ -215,32 +210,31 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
     }
     return response.getResult() == Result.DELETED;
   }
-  
-  public void downloadQuery(QuerySpec querySpec, OutputStream out) throws InvalidQueryException, IOException
-  {
+
+  public void downloadQuery(QuerySpec querySpec, OutputStream out)
+      throws InvalidQueryException, IOException {
     if (logger.isDebugEnabled()) {
       logger.debug(printCall("downloadQuery", querySpec, out));
     }
 
     querySpec.setSize(100);
     DirtyDocumentIterator<T> iterator = new DirtyDocumentIterator<>(dt, querySpec);
-    Writer writer = new BufferedWriter(new OutputStreamWriter(out));
-    
-    boolean begin = true;    
-    while (iterator.hasNext()) {
-      try {
-        if(begin) {
-          writer.write("[");
-          begin = false;
+    Writer writer = new BufferedWriter(new OutputStreamWriter(out), 4096);
+
+    try {
+      writer.write("[");
+      while (iterator.hasNext()) {
+        writer.write(JsonUtil.toJson(iterator.next()));
+        if (iterator.hasNext()) {
+          writer.write(",");
         }
-        writer.write( JsonUtil.toJson(iterator.next()) );
-        if(iterator.hasNext()) writer.write(",");
-        else writer.write("]");
+        else {
+          writer.write("]");          
+        }
         writer.flush();
-      } catch (IOException e) {
-        e.printStackTrace();
-        throw new IOException();
       }
+    } catch (IOException e) {
+      throw new DaoException(e);
     }
   }
 

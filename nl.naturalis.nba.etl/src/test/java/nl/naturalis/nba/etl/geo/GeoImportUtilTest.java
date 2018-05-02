@@ -9,6 +9,7 @@ import java.io.File;
 import java.util.Arrays;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import nl.naturalis.nba.utils.reflect.ReflectionUtil;
 
@@ -20,6 +21,7 @@ import nl.naturalis.nba.utils.reflect.ReflectionUtil;
  *
  */
 @SuppressWarnings({"static-method"})
+@Ignore
 public class GeoImportUtilTest {
 
   /**

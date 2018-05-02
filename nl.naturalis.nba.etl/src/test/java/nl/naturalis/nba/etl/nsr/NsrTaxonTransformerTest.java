@@ -12,6 +12,7 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.w3c.dom.Element;
 import nl.naturalis.nba.api.model.ScientificName;
@@ -31,6 +32,7 @@ import nl.naturalis.nba.utils.xml.DOMUtil;
  *
  */
 @SuppressWarnings("unchecked")
+@Ignore
 public class NsrTaxonTransformerTest {
 
   URL nsrFileURL;

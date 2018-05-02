@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.w3c.dom.Element;
 import nl.naturalis.nba.api.model.GatheringEvent;
@@ -31,6 +32,7 @@ import nl.naturalis.nba.utils.reflect.ReflectionUtil;
  * Test class for CrsSpecimenTransformer.java
  */
 @SuppressWarnings("unchecked")
+@Ignore
 public class CrsMultiMediaTransformerTest {
 
   URL multimediaUrl;

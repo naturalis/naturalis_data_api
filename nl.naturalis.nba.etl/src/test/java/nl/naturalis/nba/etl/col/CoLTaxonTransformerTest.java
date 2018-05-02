@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.mockito.PowerMockito;
@@ -30,6 +31,7 @@ import nl.naturalis.nba.utils.reflect.ReflectionUtil;
 @PrepareForTest(CSVRecordInfo.class)
 @PowerMockIgnore("javax.management.*")
 @SuppressWarnings({"static-method", "unchecked"})
+@Ignore
 public class CoLTaxonTransformerTest {
 
   /**

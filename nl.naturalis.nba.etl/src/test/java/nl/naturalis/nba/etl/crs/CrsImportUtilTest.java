@@ -5,12 +5,14 @@ import static org.junit.Assert.assertTrue;
 import java.util.Date;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import nl.naturalis.nba.utils.reflect.ReflectionUtil;
 /**
  * Test class for CrsImportUtil.java
  */
 @SuppressWarnings({"static-method", "static-access", "cast", "deprecation"})
+@Ignore
 public class CrsImportUtilTest {
 
   /**

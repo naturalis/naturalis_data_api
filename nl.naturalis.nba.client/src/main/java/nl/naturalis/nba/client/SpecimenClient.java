@@ -41,7 +41,6 @@ public class SpecimenClient extends NbaClient<Specimen> implements ISpecimenAcce
 		super(cfg, rootPath);
 	}
 
-
   @Override
   public void downloadQuery(QuerySpec querySpec, OutputStream out) throws InvalidQueryException {
     SimpleHttpRequest request = newQuerySpecRequest("download/", querySpec);

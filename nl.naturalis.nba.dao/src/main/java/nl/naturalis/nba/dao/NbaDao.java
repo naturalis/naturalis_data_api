@@ -217,7 +217,7 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
       logger.debug(printCall("downloadQuery", querySpec, out));
     }
 
-    querySpec.setSize(100);
+    //querySpec.setSize(100);
     DirtyDocumentIterator<T> iterator = new DirtyDocumentIterator<>(dt, querySpec);
     Writer writer = new BufferedWriter(new OutputStreamWriter(out), 4096);
 

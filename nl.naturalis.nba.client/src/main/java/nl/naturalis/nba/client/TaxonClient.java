@@ -29,6 +29,7 @@ import nl.naturalis.nba.utils.http.SimpleHttpRequest;
  * @see NbaSession
  * 
  * @author Ayco Holleman
+ * @author Tom Gilissen
  *
  */
 public class TaxonClient extends NbaClient<Taxon> implements ITaxonAccess {
@@ -39,6 +40,32 @@ public class TaxonClient extends NbaClient<Taxon> implements ITaxonAccess {
 	{
 		super(config, rootPath);
 	}
+	
+  @Override
+  public void downloadQuery(QuerySpec querySpec, OutputStream out) throws InvalidQueryException {
+    SimpleHttpRequest request = newQuerySpecRequest("download/", querySpec);
+    request.setHeader("Accept-Encoding", "gzip");
+    sendRequest(request);
+    int status = request.getStatus();
+    if (status != HTTP_OK) {
+      byte[] response = request.getResponseBody();
+      ServerException exception = newServerException(status, response);
+      if (exception.was(InvalidQueryException.class)) {
+        throw invalidQueryException(exception);
+      }
+      throw exception;
+    }
+    InputStream in = null;
+    try {
+      logger.info("Downloading result");
+      in = request.getResponseBodyAsStream();
+      IOUtil.pipe(in, out, 4096);
+      logger.info("Download complete");
+    }
+    finally {
+      IOUtil.close(in);
+    }
+  }
 
 	@Override
 	public void dwcaQuery(QuerySpec querySpec, OutputStream out) throws InvalidQueryException
@@ -138,11 +165,5 @@ public class TaxonClient extends NbaClient<Taxon> implements ITaxonAccess {
 	{
 		return new TypeReference<QueryResult<Taxon>>() {};
 	}
-
-  @Override
-  public void downloadQuery(QuerySpec querySpec, OutputStream out) throws InvalidQueryException {
-    // TODO Auto-generated method stub
-    
-  }
 
 }

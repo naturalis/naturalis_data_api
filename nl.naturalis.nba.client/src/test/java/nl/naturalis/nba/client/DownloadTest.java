@@ -25,6 +25,7 @@ import nl.naturalis.nba.api.QuerySpec;
 /**
  * 
  * Unit tests for the download service
+ * 
  * @author Tom Gilissen
  * 
  */
@@ -32,7 +33,7 @@ public class DownloadTest {
 
   @Rule
   public TemporaryFolder testFolder = new TemporaryFolder();
-  
+
   private String baseUrl = "http://localhost:8080/v2";
   private SpecimenClient client;
 
@@ -71,7 +72,7 @@ public class DownloadTest {
       gzipOut = new GZIPOutputStream(out);
       client.downloadQuery(qs, gzipOut);
     } catch (FileNotFoundException e) {
-        e.printStackTrace();
+      e.printStackTrace();
     } finally {
       if (gzipOut != null)
         gzipOut.close();
@@ -89,14 +90,14 @@ public class DownloadTest {
     QuerySpec qs = new QuerySpec();
     qs.addCondition(new QueryCondition("collectionType", "=", "Pisces"));
     qs.addCondition(new QueryCondition("gatheringEvent.country", "=", "Nederland"));
-    
-    OutputStream out = null; 
+
+    OutputStream out = null;
     File tempFile = testFolder.newFile("test.json");
     try {
       out = new FileOutputStream(tempFile);
       client.downloadQuery(qs, out);
     } catch (FileNotFoundException e) {
-        e.printStackTrace();
+      e.printStackTrace();
     } finally {
       if (out != null)
         out.close();
@@ -105,15 +106,15 @@ public class DownloadTest {
   }
 
   /*
-   * Test with a ByteArrayOutputStream and comparison of the result with
-   * a download using the FileOutputStream
+   * Test with a ByteArrayOutputStream and comparison of the result with a download using the
+   * FileOutputStream
    */
   @Test
   public void test_download_byte_stream() throws InvalidQueryException, IOException {
     QuerySpec qs = new QuerySpec();
     qs.addCondition(new QueryCondition("collectionType", "=", "Pisces"));
     qs.addCondition(new QueryCondition("gatheringEvent.country", "=", "Nederland"));
-    
+
     ByteArrayOutputStream byteOut = null;
     byte[] result;
     try {
@@ -124,19 +125,19 @@ public class DownloadTest {
       if (byteOut != null)
         byteOut.close();
     }
-    
-    OutputStream fileOut = null; 
+
+    OutputStream fileOut = null;
     File tempFile = testFolder.newFile("test.json");
     try {
       fileOut = new FileOutputStream(tempFile);
       client.downloadQuery(qs, fileOut);
     } catch (FileNotFoundException e) {
-        e.printStackTrace();
+      e.printStackTrace();
     } finally {
       if (fileOut != null)
         fileOut.close();
     }
-    
+
     byte[] benchmark;
     FileInputStream fileIn = null;
     try {
@@ -146,8 +147,23 @@ public class DownloadTest {
       if (fileIn != null)
         fileIn.close();
     }
-    
-    Assert.assertTrue( Arrays.equals(result, benchmark) );
+
+    Assert.assertTrue(Arrays.equals(result, benchmark));
+  }
+
+  @Test(expected = NullPointerException.class)
+  public void test_no_outputstream() throws InvalidQueryException, IOException {
+    QuerySpec qs = new QuerySpec();
+    qs.addCondition(new QueryCondition("collectionType", "=", "Pisces"));
+    qs.addCondition(new QueryCondition("gatheringEvent.country", "=", "Nederland"));
+
+    OutputStream out = null;
+    try {
+      client.downloadQuery(qs, out);
+    } finally {
+      if (out != null)
+        out.close();
+    }
   }
 
 }

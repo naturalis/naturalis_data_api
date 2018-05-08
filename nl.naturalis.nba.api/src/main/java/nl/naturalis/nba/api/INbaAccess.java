@@ -116,7 +116,15 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
    * </p>
    * <p>
    * <code>
-   * http://api.biodiversitydata.nl/v2/&lt;document-type&gt;/download
+   * http://api.biodiversitydata.nl/v2/&lt;document-type&gt;/download/{querySpec}
+   * </code>
+   * </p>
+   * <p>
+   * For example:
+   * </p>
+   * <p>
+   * <code>
+   * http://api.biodiversitydata.nl/v2/specimen/download/?identifications.scientificName.fullScientificName=Limosa%20limosa
    * </code>
    * </p>
    * <p>
@@ -125,7 +133,7 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
    * </p>
    * 
    * @param querySpec
-   * @param out
+   * @param outputstream
    * @throws InvalidQueryException
    * @throws IOException 
    */

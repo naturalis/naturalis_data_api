@@ -28,6 +28,7 @@ import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jboss.resteasy.annotations.GZIP;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -60,6 +61,69 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
   }
 
   //@formatter:off
+  @GZIP
+  @GET
+  @Path("/download")
+  @ApiOperation(
+      value = "Dynamic download service: Query for taxa and return result as a stream ...",
+      response = Response.class,
+      notes = "Query with query parameters or querySpec JSON. ...")
+  @Produces(MediaType.APPLICATION_OCTET_STREAM)
+  @ApiImplicitParams({@ApiImplicitParam(
+      name = "sourceSystem.code", 
+      value = "Example query param",
+      dataType = "string", 
+      paramType = "query", 
+      defaultValue = "NSR", 
+      required = false)})
+  public Response downloadQueryHttpGet(@Context UriInfo uriInfo) {
+    return super.downloadQueryHttpGet(uriInfo);
+  }
+
+  @GZIP
+  @POST
+  @Path("/download")
+  @ApiOperation(
+      value = "Dynamic download service: Query for taxa and return result as a stream ...",
+      response = Response.class,
+      notes = "Query with query parameters or querySpec JSON. ...")
+  @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+  @Produces(JSON_CONTENT_TYPE)
+  @ApiImplicitParams({@ApiImplicitParam(
+      name = "sourceSystem.code", 
+      value = "Example query param",
+      dataType = "string", 
+      paramType = "query", 
+      defaultValue = "NSR", 
+      required = false)})
+  public Response downloadQueryHttpPostForm(
+    @ApiParam(value = "POST payload", required = false) MultivaluedMap<String, String> form,
+    @Context UriInfo uriInfo) {
+    return super.downloadQueryHttpPostForm(form, uriInfo);
+  }
+
+  @GZIP
+  @POST
+  @Path("/download")
+  @ApiOperation(
+      value = "Dynamic download service: Query for taxa and return result as a stream ...",
+      response = Response.class,
+      notes = "Query with query parameters or querySpec JSON. ...")
+  @Consumes(JSON_CONTENT_TYPE)
+  @Produces(JSON_CONTENT_TYPE)
+  @ApiImplicitParams({@ApiImplicitParam(
+      name = "sourceSystem.code", 
+      value = "Example query param",
+      dataType = "string", 
+      paramType = "query", 
+      defaultValue = "NSR", 
+      required = false)})
+  public Response downloadQueryHttpPostJson(
+      @ApiParam(value = "querySpec", required = false) QuerySpec qs, 
+      @Context UriInfo uriInfo) {
+    return super.downloadQueryHttpPostJson(qs, uriInfo);
+  }
+
   @GET
   @Path("/find/{id}")
   @ApiOperation(

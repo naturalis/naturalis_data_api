@@ -60,6 +60,16 @@
 			<fileset dir="${dao.module.location}/build/classpath" />
 			<fileset dir="${rest.module.location}/build/classpath" />
 		</copy>
+		<!--
+		  This is a temporary workaround for dealing with the restEASY 
+		  dependency. These jars are needed during compile time, but not
+		  - not in the war file at least - in the build, since wildfly
+		  itself already has them. A 'dirty' fix that will be solved by
+		  the transition to maven as build tool any time soon.
+		-->
+		<delete file="${war.lib.dir}/resteasy-jaxrs-3.0.19.Final.jar"/>
+		<delete file="${war.lib.dir}/resteasy-jaxrs-3.0.19.Final-sources.jar"/>
+		
 		<jar destfile="build/${rest.module.artifact}" basedir="${assembly.dir}" />
 	</target>
 

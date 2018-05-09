@@ -9,7 +9,7 @@ public class UnaryBooleanOperatorTest {
 
   @Test
   public void test_parse_01() {
-    assertNull("01", UnaryBooleanOperator.parse(null));
+    assertNull("01", UnaryBooleanOperator.parse(""));
   }
 
   @Test
@@ -21,7 +21,7 @@ public class UnaryBooleanOperatorTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void test_parse_03() {
-    UnaryBooleanOperator.parse("");
+    UnaryBooleanOperator.parse(null);
   }
 
   @Test(expected = IllegalArgumentException.class)

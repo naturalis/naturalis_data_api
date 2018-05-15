@@ -10,6 +10,7 @@ import static nl.naturalis.nba.etl.ETLConstants.SOURCE_INSTITUTION_ID;
 import static nl.naturalis.nba.etl.ETLUtil.getTestGenera;
 import static nl.naturalis.nba.etl.MimeTypeCache.MEDIALIB_URL_START;
 import static nl.naturalis.nba.etl.normalize.Normalizer.NOT_MAPPED;
+import static nl.naturalis.nba.etl.TransformUtil.getSystemClassification;
 import static nl.naturalis.nba.utils.StringUtil.rpad;
 import static nl.naturalis.nba.utils.xml.DOMUtil.getChild;
 import static nl.naturalis.nba.utils.xml.DOMUtil.getDescendant;
@@ -23,8 +24,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.w3c.dom.Element;
-
+import nl.naturalis.nba.api.model.DefaultClassification;
 import nl.naturalis.nba.api.model.GatheringSiteCoordinates;
+import nl.naturalis.nba.api.model.Monomial;
 import nl.naturalis.nba.api.model.MultiMediaContentIdentification;
 import nl.naturalis.nba.api.model.MultiMediaGatheringEvent;
 import nl.naturalis.nba.api.model.MultiMediaObject;
@@ -259,8 +261,13 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 			}
 			MultiMediaContentIdentification mmci = new MultiMediaContentIdentification();
 			mmci.setTypeStatus(getTypeStatus(ncrsDeterminationElem));
-			mmci.setScientificName(sn);
-			mmci.setDefaultClassification(TransformUtil.extractClassificiationFromName(sn));
+			mmci.setScientificName(sn);			
+			// mmci.setDefaultClassification(TransformUtil.extractClassificiationFromName(sn));
+			
+      List<Monomial> sc = getSystemClassification(ncrsDeterminationElem, mmci.getScientificName());
+      DefaultClassification dc = DefaultClassification.fromSystemClassification(sc);
+      mmci.setDefaultClassification(dc);
+      
 			mmci.setIdentificationQualifiers(getQualifiers(ncrsDeterminationElem));
 			mmci.setVernacularNames(getVernacularNames(ncrsDeterminationElem));
 			if (identifications == null) {
@@ -426,6 +433,13 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 			sb.append(sn.getSpecificEpithet()).append(' ');
 		if (sn.getInfraspecificEpithet() != null)
 			sb.append(sn.getInfraspecificEpithet()).append(' ');
+    if (sn.getAuthorshipVerbatim() != null) {
+      if (sn.getAuthorshipVerbatim().charAt(0) != '(')
+          sb.append('(');
+      sb.append(sn.getAuthorshipVerbatim());
+      if (sn.getAuthorshipVerbatim().charAt(sn.getAuthorshipVerbatim().length() - 1) != ')')
+          sb.append(')');
+      }
 		if (sb.length() > 0)
 			sn.setFullScientificName(sb.toString().trim());
 	}

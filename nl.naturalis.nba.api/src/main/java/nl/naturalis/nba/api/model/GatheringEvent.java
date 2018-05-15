@@ -42,6 +42,7 @@ public class GatheringEvent implements INbaModelObject {
 	private String areaName;
 	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private String associatedTaxa;
+	private String biotopeText;
 	private String depth;
 	private String depthUnitOfMeasurement;
 
@@ -266,6 +267,16 @@ public class GatheringEvent implements INbaModelObject {
 	public void setAssociatedTaxa(String associatedTaxa)
 	{
 	  this.associatedTaxa = associatedTaxa;
+	}
+	
+	public String getBiotopeText() 
+	{
+	  return biotopeText;
+	}
+	
+	public void setBiotopeText(String biotopeText)
+	{
+	  this.biotopeText = biotopeText;
 	}
 
 	public String getDepth()

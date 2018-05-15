@@ -37,6 +37,7 @@ public class Specimen extends NbaTraceableObject implements IDocumentObject {
 	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String notes;
 	private String preparationType;
+	private String previousUnitsText;
 	private Integer numberOfSpecimen;
 	private boolean fromCaptivity;
 	private boolean objectPublic;
@@ -251,6 +252,15 @@ public class Specimen extends NbaTraceableObject implements IDocumentObject {
 		this.preparationType = preparationType;
 	}
 
+	public String getPreviousUnitsText()
+	{
+	  return previousUnitsText;
+	}
+	
+	public void setPreviousUnitsText(String previousUnitsText)
+	{
+	  this.previousUnitsText = previousUnitsText;
+	}
 	public Integer getNumberOfSpecimen()
 	{
 		return numberOfSpecimen;

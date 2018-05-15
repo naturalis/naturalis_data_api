@@ -24,6 +24,7 @@ public class Specimen extends NbaTraceableObject implements IDocumentObject {
 	private String assemblageID;
 	private String sourceInstitutionID;
 	private String sourceID;
+	private String previousSourceID;
 	private String owner;
 	private String licenseType;
 	private String license;
@@ -128,6 +129,16 @@ public class Specimen extends NbaTraceableObject implements IDocumentObject {
 	public void setSourceID(String sourceID)
 	{
 		this.sourceID = sourceID;
+	}
+	
+	public String getPreviousSourceID()
+	{
+	  return previousSourceID;
+	}
+	
+	public void setPreviousSourceID(String previousSourceID)
+	{
+	  this.previousSourceID = previousSourceID;
 	}
 
 	public String getOwner()

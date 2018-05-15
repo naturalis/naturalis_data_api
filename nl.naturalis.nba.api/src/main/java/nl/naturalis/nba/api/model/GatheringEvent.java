@@ -38,6 +38,10 @@ public class GatheringEvent implements INbaModelObject {
 	private String method;
 	private String altitude;
 	private String altitudeUnifOfMeasurement;
+	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
+	private String areaName;
+	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
+	private String associatedTaxa;
 	private String depth;
 	private String depthUnitOfMeasurement;
 
@@ -52,7 +56,7 @@ public class GatheringEvent implements INbaModelObject {
 	public void addSiteCoordinates(GatheringSiteCoordinates coordinates)
 	{
 		if (siteCoordinates == null) {
-			siteCoordinates = new ArrayList<GatheringSiteCoordinates>();
+			siteCoordinates = new ArrayList<>();
 		}
 		siteCoordinates.add(coordinates);
 	}
@@ -242,6 +246,26 @@ public class GatheringEvent implements INbaModelObject {
 	public void setAltitudeUnifOfMeasurement(String altitudeUnifOfMeasurement)
 	{
 		this.altitudeUnifOfMeasurement = altitudeUnifOfMeasurement;
+	}
+	
+	public String getAreaName()
+	{
+	  return areaName;
+	}
+	
+	public void setAreaName(String areaName)
+	{
+	  this.areaName = areaName;
+	}
+	
+	public String getAssociatedTaxa()
+	{
+	  return associatedTaxa;
+	}
+	
+	public void setAssociatedTaxa(String associatedTaxa)
+	{
+	  this.associatedTaxa = associatedTaxa;
 	}
 
 	public String getDepth()

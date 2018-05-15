@@ -11,7 +11,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.apache.logging.log4j.Logger;
-
+import org.w3c.dom.Element;
 import nl.naturalis.nba.api.model.DefaultClassification;
 import nl.naturalis.nba.api.model.Monomial;
 import nl.naturalis.nba.api.model.MultiMediaContentIdentification;
@@ -23,6 +23,7 @@ import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.api.model.TaxonomicIdentification;
 import nl.naturalis.nba.utils.ObjectUtil;
 import nl.naturalis.nba.utils.StringUtil;
+import nl.naturalis.nba.utils.xml.DOMUtil;
 
 /**
  * Provides common functionality for the various {@link Transformer}
@@ -231,6 +232,28 @@ public class TransformUtil {
 					});
 		}
 	}
+	
+  public static List<Monomial> getSystemClassification(Element elem, ScientificName sn) {
+    List<Monomial> lowerClassification = TransformUtil.getMonomialsInName(sn);
+    List<Element> elems = DOMUtil.getChildren(elem, "ncrsHighername");
+    if (elems == null) {
+        return lowerClassification;
+    }
+    List<Monomial> classification = new ArrayList<>();
+    for (Element e : elems) {
+        String rank = DOMUtil.getValue(e, "abcd:HigherTaxonRank");
+        String name = DOMUtil.getValue(e, "ac:taxonCoverage");
+        classification.add(new Monomial(rank, name));
+    }
+    if (lowerClassification != null) {
+        classification.addAll(lowerClassification);
+    }
+    if (classification.size() == 0) {
+        return null;
+    }
+    return classification;
+  }
+
 
 	private static final String jpeg = "image/jpeg";
 

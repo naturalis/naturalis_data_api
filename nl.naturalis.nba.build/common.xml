@@ -152,8 +152,29 @@
 		The property must point to a junit suite class that
 		lists all individual test classes in the module
 	-->
+	<taskdef resource="net/sf/antcontrib/antcontrib.properties"/>
+	
 	<target name="run-tests" depends="compile-tests">
-		<antcall if:set="junit.suite.classname" target="-do-run-tests" />
+
+		<!-- 
+		  The workaround has been extended with the possibility
+		  to skip running the unit tests. To do so, you need to 
+		  set an evironment variable SKIP_TEST:
+		  
+    		  export SKIP_TESTS=true
+		  
+		--> 
+        <property environment="my_env" />
+        <echo if:true="${my_env.SKIP_TESTS}" level="warning">SKIP_TESTS: ${my_env.SKIP_TESTS}</echo>
+		
+		<condition property="runTest" value="true" >
+			<and>
+        		<isfalse value="${my_env.SKIP_TESTS}" />
+    			<isset property="junit.suite.classname" />
+			</and>
+		</condition>
+		<antcall if:true="${runTest}" target="-do-run-tests" />
+		
 	</target>
 
 	<target name="-do-run-tests">

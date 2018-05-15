@@ -4,13 +4,15 @@ import static nl.naturalis.nba.client.ClientUtil.getObject;
 import static nl.naturalis.nba.client.ServerException.newServerException;
 import static nl.naturalis.nba.utils.http.SimpleHttpRequest.HTTP_NOT_FOUND;
 import static nl.naturalis.nba.utils.http.SimpleHttpRequest.HTTP_OK;
-
+import java.io.OutputStream;
 import org.geojson.GeoJsonObject;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import nl.naturalis.nba.api.IGeoAreaAccess;
+import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.QueryResult;
+import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.GeoArea;
 import nl.naturalis.nba.utils.http.SimpleHttpRequest;
 
@@ -61,5 +63,11 @@ public class GeoAreaClient extends NbaClient<GeoArea> implements IGeoAreaAccess 
 	{
 		return new TypeReference<QueryResult<GeoArea>>() {};
 	}
+
+  @Override
+  public void downloadQuery(QuerySpec querySpec, OutputStream out) throws InvalidQueryException {
+    // TODO Auto-generated method stub
+    
+  }
 
 }

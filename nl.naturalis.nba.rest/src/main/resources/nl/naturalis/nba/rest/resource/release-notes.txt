@@ -1,3 +1,18 @@
+RELEASE NOTES v 2.14
+
+* NBAX-101 New feature in this release is a download 
+  service. Up until now, documents could be downloaded 
+  using the query service (limited to a maximum of 
+  10.000 documents) or the DWCA downloaded service 
+  (limited to a specific set of fields and/or the 
+  csv-output format). The new download service does 
+  not have these limitations. It instead allows
+  a user to define the set size and select fields 
+  according to the demand.
+  
+* Fix of some technical bugs (NBAX-9, NBAX-102, 
+  NBAX-129, NBAX-130)
+
 RELEASE NOTES v 2.13
 
 * Main improvement of this release is the modification

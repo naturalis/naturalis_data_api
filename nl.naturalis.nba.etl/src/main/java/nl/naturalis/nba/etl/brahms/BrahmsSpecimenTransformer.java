@@ -186,10 +186,10 @@ class BrahmsSpecimenTransformer extends BrahmsTransformer<Specimen> {
     String oldBarcode = rec.get(OLDBARCODE, true);
     String accession = rec.get(ACCESSION, true);
     String sep = "";
-    if (oldBarcode != null && oldBarcode.length() > 0) {
+    if (oldBarcode != null && oldBarcode.trim().length() > 0) {
       sep = " | ";
     }
-    if (accession != null && accession.length() > 0) {
+    if (accession != null && accession.trim().length() > 0) {
       if (sep.length() > 0) {
         return oldBarcode + sep + accession;
       }

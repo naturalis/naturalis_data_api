@@ -352,10 +352,10 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
       String areaClass = val(record, "abcd:AreaClass");
       String areaName = val(record, "abcd:AreaName");
       String sep = "";
-      if (areaClass != null && areaClass.length() > 0) {
+      if (areaClass != null && areaClass.trim().length() > 0) {
         sep = " | ";
       }
-      if (areaName != null && areaName.length() > 0) {
+      if (areaName != null && areaName.trim().length() > 0) {
         if (sep.length() > 0) {
           return areaClass + sep + areaName;
         }

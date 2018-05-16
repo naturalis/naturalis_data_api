@@ -15,7 +15,7 @@ public class SourceSystem implements INbaModelObject {
 	private static final String NAME_CRS = "Naturalis - Zoology and Geology catalogues";
 	private static final String NAME_BRAHMS = "Naturalis - Botany catalogues";
 	private static final String NAME_COL = "Species 2000 - Catalogue Of Life";
-	private static final String NAME_NSR = "Naturalis - Nederlands Soortenregister";
+	private static final String NAME_NSR = "Naturalis - Dutch Species Register";
 	private static final String NAME_GEO = "Naturalis - Geo Areas";
 	private static final String NAME_NDFF = "NDFF - Nationale Databank Flora en Fauna";
 

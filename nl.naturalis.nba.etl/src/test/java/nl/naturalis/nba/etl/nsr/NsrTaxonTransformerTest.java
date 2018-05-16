@@ -92,7 +92,7 @@ public class NsrTaxonTransformerTest {
     String expectedGenusOrMonomial = "Larus";
     String expectedScientificNameGroup = "larus argentatus argentatus";
     String recordUri = "http://nederlandsesoorten.nl/nsr/concept/0D3KF0JNQ0UA";
-    String sourceSystemName = "Naturalis - Nederlands Soortenregister";
+    String sourceSystemName = "Naturalis - Dutch Species Register";
 
     assertEquals(expectedId, actual.getId());
     assertEquals(expectedSourceSystemId, actual.getSourceSystemId());

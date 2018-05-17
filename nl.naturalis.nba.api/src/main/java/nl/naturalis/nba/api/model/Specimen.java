@@ -24,6 +24,7 @@ public class Specimen extends NbaTraceableObject implements IDocumentObject {
 	private String assemblageID;
 	private String sourceInstitutionID;
 	private String sourceID;
+	private String previousSourceID;
 	private String owner;
 	private String licenseType;
 	private String license;
@@ -36,6 +37,7 @@ public class Specimen extends NbaTraceableObject implements IDocumentObject {
 	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String notes;
 	private String preparationType;
+	private String previousUnitsText;
 	private Integer numberOfSpecimen;
 	private boolean fromCaptivity;
 	private boolean objectPublic;
@@ -128,6 +130,16 @@ public class Specimen extends NbaTraceableObject implements IDocumentObject {
 	public void setSourceID(String sourceID)
 	{
 		this.sourceID = sourceID;
+	}
+	
+	public String getPreviousSourceID()
+	{
+	  return previousSourceID;
+	}
+	
+	public void setPreviousSourceID(String previousSourceID)
+	{
+	  this.previousSourceID = previousSourceID;
 	}
 
 	public String getOwner()
@@ -240,6 +252,15 @@ public class Specimen extends NbaTraceableObject implements IDocumentObject {
 		this.preparationType = preparationType;
 	}
 
+	public String getPreviousUnitsText()
+	{
+	  return previousUnitsText;
+	}
+	
+	public void setPreviousUnitsText(String previousUnitsText)
+	{
+	  this.previousUnitsText = previousUnitsText;
+	}
 	public Integer getNumberOfSpecimen()
 	{
 		return numberOfSpecimen;

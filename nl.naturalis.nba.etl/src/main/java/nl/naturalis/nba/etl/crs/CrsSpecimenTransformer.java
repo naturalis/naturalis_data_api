@@ -156,6 +156,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
             specimen.setUnitGUID(ETLUtil.getSpecimenPurl(objectID));
             specimen.setCollectorsFieldNumber(val(record, "abcd:CollectorsFieldNumber"));
             specimen.setSourceInstitutionID(SOURCE_INSTITUTION_ID);
+            specimen.setPreviousSourceID(val(record, "abcd:PreviousSourceName"));
             specimen.setOwner(SOURCE_INSTITUTION_ID);
             specimen.setSourceID("CRS");
             specimen.setLicenseType(LICENCE_TYPE);
@@ -307,6 +308,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
         ge.setIsland(val(record, "abcd:Island"));
         ge.setLocality(val(record, "abcd:Locality"));
         ge.setLocalityText(val(record, "abcd:LocalityText"));
+        ge.setAreaName(getAreaName(record));
         ge.setDateTimeBegin(date(record, "abcd:CollectingStartDate"));
         ge.setDateTimeEnd(date(record, "abcd:CollectingEndDate"));
         String s = val(record, "abcd:GatheringAgent");
@@ -328,6 +330,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
         if (lat != null || lon != null) {
             ge.setSiteCoordinates(Arrays.asList(new GatheringSiteCoordinates(lat, lon)));
         }
+        ge.setAssociatedTaxa(val(record, "abcd:ScientificOrInformalName"));
         ge.setChronoStratigraphy(getChronoStratigraphyList());
         ge.setBioStratigraphy(getBioStratigraphyList());
         ge.setLithoStratigraphy(getLithoStratigraphyList());
@@ -343,6 +346,25 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
         }
 
         return null;
+    }
+
+    private String getAreaName(Element record) {
+      String areaClass = val(record, "abcd:AreaClass");
+      String areaName = val(record, "abcd:AreaName");
+      String sep = "";
+      if (areaClass != null && areaClass.trim().length() > 0) {
+        sep = " | ";
+      }
+      if (areaName != null && areaName.trim().length() > 0) {
+        if (sep.length() > 0) {
+          return areaClass + sep + areaName;
+        }
+        return areaName;
+      }
+      if (sep.length() > 0) {
+        return areaClass;
+      }
+      return null;
     }
 
     private List<ChronoStratigraphy> getChronoStratigraphyList() {

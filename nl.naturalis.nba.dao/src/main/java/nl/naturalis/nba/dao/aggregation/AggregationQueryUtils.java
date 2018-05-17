@@ -20,7 +20,7 @@ public final class AggregationQueryUtils {
    * @param querySpec
    * @return
    */
-  public static int getAggregationSize(QuerySpec querySpec) {
+  static int getAggregationSize(QuerySpec querySpec) {
     int aggSize = 10;
     if (querySpec != null && querySpec.getSize() != null && querySpec.getSize() > 0) {
       aggSize = querySpec.getSize();
@@ -28,7 +28,7 @@ public final class AggregationQueryUtils {
     return aggSize;
   }
   
-  public static int getAggregationFrom(QuerySpec querySpec) {
+  static int getAggregationFrom(QuerySpec querySpec) {
     int from = 0;
     if (querySpec != null && querySpec.getFrom() != null && querySpec.getFrom() > 0) {
       from = querySpec.getFrom();
@@ -44,7 +44,7 @@ public final class AggregationQueryUtils {
    * @return nestedPath
    * @throws InvalidQueryException
    */
-  public static String getNestedPath(DocumentType<?> dt, String path)
+  static String getNestedPath(DocumentType<?> dt, String path)
       throws InvalidQueryException {
     MappingInfo<?> mappingInfo = new MappingInfo<>(dt.getMapping());
 
@@ -66,7 +66,7 @@ public final class AggregationQueryUtils {
    * @param querySpec
    * @return order
    */
-  public static Order getOrdering(String fieldName, QuerySpec querySpec) {
+  static Order getOrdering(String fieldName, QuerySpec querySpec) {
     Order order = Terms.Order.count(false);
     if (querySpec != null && querySpec.getSortFields() != null) {
       for (SortField sortField : querySpec.getSortFields()) {

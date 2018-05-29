@@ -25,4 +25,5 @@ public class SpecimenMetaDataDao extends NbaDocumentMetaDataDao<Specimen> {
 		settings.put(NbaSetting.SPECIMEN_GROUP_BY_SCIENTIFIC_NAME_MAX_NUM_BUCKETS, value);
 		return settings;
 	}
+	
 }

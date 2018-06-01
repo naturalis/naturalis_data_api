@@ -299,6 +299,10 @@
                     http://crs.naturalis.nl/HttpHandler/icoon.ico?file=19507948</abcd:Url>
           <abcd:MultiMediaPublic>1</abcd:MultiMediaPublic>
           <abcd:fileuri />
+          <ncrsCollectionUnitHistory>
+            <abcd:PreviousSourceName>AAA</abcd:PreviousSourceName>
+            <abcd:PreviousSourceName>OOO</abcd:PreviousSourceName>
+          </ncrsCollectionUnitHistory>
           <abcd:ObjectPublic>1</abcd:ObjectPublic>
         </oai_dc:dc>
       </metadata>

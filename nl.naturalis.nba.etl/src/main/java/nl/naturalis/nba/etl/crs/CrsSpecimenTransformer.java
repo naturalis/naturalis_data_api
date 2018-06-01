@@ -156,7 +156,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
             specimen.setUnitGUID(ETLUtil.getSpecimenPurl(objectID));
             specimen.setCollectorsFieldNumber(val(record, "abcd:CollectorsFieldNumber"));
             specimen.setSourceInstitutionID(SOURCE_INSTITUTION_ID);
-            specimen.setPreviousSourceID(val(record, "abcd:PreviousSourceName"));
+            specimen.setPreviousSourceID(getPreviousSourceIds());
             specimen.setOwner(SOURCE_INSTITUTION_ID);
             specimen.setSourceID("CRS");
             specimen.setLicenseType(LICENCE_TYPE);
@@ -187,7 +187,22 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
             return null;
         }
     }
-
+    
+    private List<String> getPreviousSourceIds() {
+      Element record = input.getRecord();
+      List<Element> elems = DOMUtil.getDescendants(record, "abcd:PreviousSourceName");
+      if (elems == null) {
+          return null;
+      }
+      List<String> sourceIds = new ArrayList<>(elems.size());
+      for (Element e : elems) {
+        String id = e.getTextContent().trim();
+        if (id.length() > 0)
+          sourceIds.add(id);
+      }
+      return sourceIds;      
+    }
+    
     private SpecimenIdentification getIdentification(Element elem, String collectionType) {
 
         ScientificName sn = getScientificName(elem, collectionType);

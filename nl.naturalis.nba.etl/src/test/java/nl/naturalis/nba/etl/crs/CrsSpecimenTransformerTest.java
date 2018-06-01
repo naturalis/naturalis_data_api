@@ -90,6 +90,10 @@ public class CrsSpecimenTransformerTest {
       list = (List<Specimen>) returned;
       Specimen sp = list.get(0);
 
+      List<String> previousSourceIds = new ArrayList<>();
+      previousSourceIds.add("AAA");
+      previousSourceIds.add("OOO");
+      
       Specimen expectedSpecimen = new Specimen();
       expectedSpecimen.setSourceID("CRS");
       expectedSpecimen.setId("RMNH.MAM.TT.5@CRS");
@@ -99,6 +103,7 @@ public class CrsSpecimenTransformerTest {
       expectedSpecimen.setKindOfUnit("WholeOrganism");
       expectedSpecimen.setCollectionType("PreservedSpecimen");
       expectedSpecimen.setNumberOfSpecimen(1);
+      expectedSpecimen.setPreviousSourceID(previousSourceIds);
       
       assertNotNull("01",sp);
       assertEquals("02",expectedSpecimen.getSourceID(), sp.getSourceID());
@@ -109,7 +114,8 @@ public class CrsSpecimenTransformerTest {
       assertEquals("07",expectedSpecimen.getKindOfUnit(), sp.getKindOfUnit());
       assertEquals("08",expectedSpecimen.getCollectionType(), sp.getCollectionType());
       assertEquals("09",expectedSpecimen.getNumberOfSpecimen(), sp.getNumberOfSpecimen());
-
+      assertEquals("10",expectedSpecimen.getPreviousSourceID(), sp.getPreviousSourceID());
+      
     }
   }
 

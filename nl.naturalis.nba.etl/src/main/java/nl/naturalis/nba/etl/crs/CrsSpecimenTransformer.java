@@ -156,9 +156,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
             specimen.setUnitGUID(ETLUtil.getSpecimenPurl(objectID));
             specimen.setCollectorsFieldNumber(val(record, "abcd:CollectorsFieldNumber"));
             specimen.setSourceInstitutionID(SOURCE_INSTITUTION_ID);
-            if (getPreviousSourceIds() != null) {
-              specimen.setPreviousSourceID(getPreviousSourceIds());              
-            }
+            specimen.setPreviousSourceID(getPreviousSourceIds());
             specimen.setOwner(SOURCE_INSTITUTION_ID);
             specimen.setSourceID("CRS");
             specimen.setLicenseType(LICENCE_TYPE);

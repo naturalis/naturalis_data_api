@@ -156,7 +156,9 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
             specimen.setUnitGUID(ETLUtil.getSpecimenPurl(objectID));
             specimen.setCollectorsFieldNumber(val(record, "abcd:CollectorsFieldNumber"));
             specimen.setSourceInstitutionID(SOURCE_INSTITUTION_ID);
-            specimen.setPreviousSourceID(getPreviousSourceIds());
+            if (getPreviousSourceIds() != null) {
+              specimen.setPreviousSourceID(getPreviousSourceIds());              
+            }
             specimen.setOwner(SOURCE_INSTITUTION_ID);
             specimen.setSourceID("CRS");
             specimen.setLicenseType(LICENCE_TYPE);
@@ -200,7 +202,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
         if (id.length() > 0)
           sourceIds.add(id);
       }
-      return sourceIds;      
+      return (sourceIds.size() == 0) ? null : sourceIds;      
     }
     
     private SpecimenIdentification getIdentification(Element elem, String collectionType) {

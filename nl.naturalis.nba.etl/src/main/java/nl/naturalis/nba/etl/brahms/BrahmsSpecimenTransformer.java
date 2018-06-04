@@ -191,12 +191,12 @@ class BrahmsSpecimenTransformer extends BrahmsTransformer<Specimen> {
     }
     if (accession != null && accession.trim().length() > 0) {
       if (sep.length() > 0) {
-        return oldBarcode + sep + accession;
+        return oldBarcode.trim() + sep + accession;
       }
-      return accession;
+      return accession.trim();
     }
     if (sep.length() > 0) {
-      return oldBarcode;
+      return oldBarcode.trim();
     }
     return null;
   }

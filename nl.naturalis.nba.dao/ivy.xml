@@ -17,7 +17,10 @@
 		
 		<dependency org="com.fasterxml.jackson.core" name="jackson-databind" rev="2.8.5"/>
 		<dependency org="de.grundid.opendatalab" name="geojson-jackson" rev="1.8"/>
-		<dependency org="org.apache.commons" name="commons-text" rev="1.1"/>		
+		<dependency org="org.apache.commons" name="commons-text" rev="1.1"/>
+		
+		<dependency org="com.opencsv" name="opencsv" rev="4.2"/>
+				
 	</dependencies>
 	
 	

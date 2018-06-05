@@ -4,15 +4,24 @@ import static nl.naturalis.nba.common.json.JsonUtil.deserialize;
 import static nl.naturalis.nba.common.json.JsonUtil.readField;
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static nl.naturalis.nba.utils.debug.DebugUtil.printCall;
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringReader;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Scanner;
 import org.apache.logging.log4j.Logger;
 import nl.naturalis.nba.api.ComparisonOperator;
@@ -26,8 +35,16 @@ import nl.naturalis.nba.common.es.map.ESField;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.common.es.map.SimpleField;
 import nl.naturalis.nba.dao.exception.DaoException;
+import nl.naturalis.nba.dao.format.dwca.DwcaDataSetType;
 import nl.naturalis.nba.dao.translate.OperatorValidator;
+import nl.naturalis.nba.dao.SpecimenMetaDataDao;
+import nl.naturalis.nba.utils.FileUtil;
 import nl.naturalis.nba.utils.IOUtil;
+import com.opencsv.CSVParser;
+import com.opencsv.CSVParserBuilder;
+import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
+
 
 public abstract class NbaDocumentMetaDataDao<T extends IDocumentObject>
     implements INbaDocumentMetaData<T> {
@@ -108,37 +125,68 @@ public abstract class NbaDocumentMetaDataDao<T extends IDocumentObject>
 
   @Override
   public String[] getPaths(boolean sorted) {
-    logger.debug(">>> getPaths: " + dt.getName() + " - " + getMetaData());
-    return new MappingInfo<>(dt.getMapping()).getPathStrings(sorted);
+    Map<String, String> metadata = new HashMap<>();
+    try {
+      metadata = getMetaData();      
+    } catch (IOException e) {
+      metadata = null;
+    }
+    if (metadata == null) {
+      return new MappingInfo<>(dt.getMapping()).getPathStrings(sorted);
+    }
+    
+    String[] paths = new MappingInfo<>(dt.getMapping()).getPathStrings(sorted);
+    List<String> result = new ArrayList<>();
+    
+    for (String path : paths) {
+      if ( metadata.get(path) != null && metadata.get(path).length() > 0) {
+        result.add(path + " - " + metadata.get(path));        
+      } else {
+        result.add(path);
+      }
+    }
+    String[] resultArr = new String[result.size()];
+    return result.toArray(resultArr);
   }
 
-  public String getMetaData() {
-    InputStream is = null;
-    try {
-      String fileName = dt.getName().concat("-metadata.csv").toLowerCase();
-      is = getClass().getResourceAsStream(fileName);
-      if (is != null)
-        logger.debug("IO stream is OK");
+  public Map<String, String> getMetaData() throws IOException {
+    
+    Map<String, String> metadata = new HashMap<>();
+    
+    String fileName = "/" + dt.getName().concat("-metadata.csv").toLowerCase();
+    File dir = getMetadataDir();
+    File file = new File(dir, fileName);
+    
+    CSVParser parser =
+        new CSVParserBuilder()
+        .withSeparator(',')
+        .withIgnoreQuotations(true)
+        .build();
+
+    InputStream is = new FileInputStream(file);
+    
+    if (is != null) {
+      CSVReader reader =
+          new CSVReaderBuilder(new InputStreamReader(is))
+          .withSkipLines(1)
+          .withCSVParser(parser)
+          .build();
       
-//      Scanner scanner = null;
-//      
-//      try {
-//        scanner = new Scanner(is);
-//        scanner.useDelimiter(",");
-//        while(scanner.hasNext()){
-//          logger.debug(" >>> " + scanner.next());
-//        }
-//        return "OK";
-//      } finally {
-//        if (scanner != null)
-//          scanner.close();        
-//      }
-      
-    } finally {
-      if (is != null)
-        IOUtil.close(is);
+      String[] record = null;
+      while ((record = reader.readNext()) != null) {
+        if (record[0] != null)
+          metadata.put(record[0], record[1]);
+      }
+      is.close();
     }
-    return "Finished";
+    
+    return metadata;
+  }
+  
+  private static File getMetadataDir()
+  {
+    File root = DaoRegistry.getInstance().getConfigurationDirectory();
+    return FileUtil.newFile(root, "metadata/");
   }
 
 }

@@ -23,6 +23,7 @@ import nl.naturalis.nba.api.model.GatheringEvent;
 import nl.naturalis.nba.api.model.GatheringSiteCoordinates;
 import nl.naturalis.nba.api.model.LithoStratigraphy;
 import nl.naturalis.nba.api.model.Monomial;
+import nl.naturalis.nba.api.model.NamedArea;
 import nl.naturalis.nba.api.model.Person;
 import nl.naturalis.nba.api.model.PhaseOrStage;
 import nl.naturalis.nba.api.model.ScientificName;
@@ -323,7 +324,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
         ge.setIsland(val(record, "abcd:Island"));
         ge.setLocality(val(record, "abcd:Locality"));
         ge.setLocalityText(val(record, "abcd:LocalityText"));
-        ge.setAreaName(getAreaName(record));
+        ge.setNamedAreas(getNamedAreas());
         ge.setDateTimeBegin(date(record, "abcd:CollectingStartDate"));
         ge.setDateTimeEnd(date(record, "abcd:CollectingEndDate"));
         String s = val(record, "abcd:GatheringAgent");
@@ -363,23 +364,22 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
         return null;
     }
 
-    private String getAreaName(Element record) {
-      String areaClass = val(record, "abcd:AreaClass");
-      String areaName = val(record, "abcd:AreaName");
-      String sep = "";
-      if (areaClass != null && areaClass.trim().length() > 0) {
-        sep = " | ";
+    private List<NamedArea> getNamedAreas() {
+      Element record = input.getRecord();
+      List<Element> elems = DOMUtil.getDescendants(record, "ncrsNamedAreas");
+      if (elems == null) {
+          return null;
       }
-      if (areaName != null && areaName.trim().length() > 0) {
-        if (sep.length() > 0) {
-          return areaClass + sep + areaName;
+      List<NamedArea> namedAreas = new ArrayList<>();
+      for (Element e : elems) {
+        NamedArea namedArea = new NamedArea();
+        namedArea.setAreaClass(val(e, "abcd:AreaClass"));
+        namedArea.setAreaName(val(e, "abcd:AreaName"));
+        if (namedArea != null) {
+          namedAreas.add(namedArea);
         }
-        return areaName;
       }
-      if (sep.length() > 0) {
-        return areaClass;
-      }
-      return null;
+      return (namedAreas == null) ? null : namedAreas;
     }
 
     private List<ChronoStratigraphy> getChronoStratigraphyList() {

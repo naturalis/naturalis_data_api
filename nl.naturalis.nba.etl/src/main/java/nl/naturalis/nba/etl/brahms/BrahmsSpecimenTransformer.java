@@ -180,6 +180,10 @@ class BrahmsSpecimenTransformer extends BrahmsTransformer<Specimen> {
     return sb.toString();
   }
   
+  /*
+   * Returns the value from OLDBARCODE concatenated with the value of
+   * ACCESSION separated by ' | '. Empty values or null are excluded.
+   */
   private String getPreviousUnitsText()
   {
     CSVRecordInfo<BrahmsCsvField> rec = input;
@@ -191,14 +195,11 @@ class BrahmsSpecimenTransformer extends BrahmsTransformer<Specimen> {
     }
     if (accession != null && accession.trim().length() > 0) {
       if (sep.length() > 0) {
-        return oldBarcode.trim() + sep + accession;
+        return oldBarcode.trim() + sep + accession.trim();
       }
       return accession.trim();
     }
-    if (sep.length() > 0) {
-      return oldBarcode.trim();
-    }
-    return null;
+    return sep.length() > 0 ? oldBarcode.trim() : null;
   }
 
   private List<ServiceAccessPoint> getServiceAccessPoints()

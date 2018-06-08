@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.w3c.dom.Element;
+import nl.naturalis.nba.api.model.AreaClass;
 import nl.naturalis.nba.api.model.BioStratigraphy;
 import nl.naturalis.nba.api.model.ChronoStratigraphy;
 import nl.naturalis.nba.api.model.DefaultClassification;
@@ -372,14 +373,21 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
       }
       List<NamedArea> namedAreas = new ArrayList<>();
       for (Element e : elems) {
-        NamedArea namedArea = new NamedArea();
-        namedArea.setAreaClass(val(e, "abcd:AreaClass"));
-        namedArea.setAreaName(val(e, "abcd:AreaName"));
-        if (namedArea != null) {
-          namedAreas.add(namedArea);
+        AreaClass areaClass = null;
+        try {
+          areaClass = AreaClass.parse( val(e, "abcd:AreaClass") );          
+        } catch (IllegalArgumentException ex) {
+          if (!suppressErrors) {
+              warn(ex.getMessage());
+          }
+          continue;
+        }
+        String areaName = val(e, "abcd:AreaName");
+        if (areaClass != null) {          
+          namedAreas.add(new NamedArea(areaClass, areaName));
         }
       }
-      return (namedAreas == null) ? null : namedAreas;
+      return (namedAreas == null || namedAreas.size() == 0) ? null : namedAreas;
     }
 
     private List<ChronoStratigraphy> getChronoStratigraphyList() {

@@ -18,17 +18,20 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Element;
+import nl.naturalis.nba.api.model.AreaClass;
 import nl.naturalis.nba.api.model.BioStratigraphy;
 import nl.naturalis.nba.api.model.ChronoStratigraphy;
 import nl.naturalis.nba.api.model.GatheringEvent;
 import nl.naturalis.nba.api.model.LithoStratigraphy;
 import nl.naturalis.nba.api.model.Monomial;
+import nl.naturalis.nba.api.model.NamedArea;
 import nl.naturalis.nba.api.model.PhaseOrStage;
 import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.Sex;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.api.model.SpecimenTypeStatus;
+import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.etl.AbstractTransformer;
 import nl.naturalis.nba.etl.AllTests;
 import nl.naturalis.nba.etl.ETLStatistics;
@@ -717,5 +720,50 @@ public class CrsSpecimenTransformerTest {
     assertEquals("Male", val);
 
   }
+  
+  /**
+   * Test method for getNamedAreas()
+   * {@link nl.naturalis.nba.etl.crs.CrsSpecimenTransformer#getNamedAreas()}.
+   * 
+   * @throws Exception
+   * 
+   */
+  @Test
+  public void testGetNamedAreas() throws Exception {
 
+    ETLStatistics etlStatistics = new ETLStatistics();
+    
+    List<Element> elementList = new ArrayList<>();
+    CrsSpecimenTransformer crsSpecimenTransformer = new CrsSpecimenTransformer(etlStatistics);
+    CrsExtractor extractor = new CrsExtractor(specimenFile, etlStatistics);
+
+    for (XMLRecordInfo extracted : extractor) {
+      CommonReflectionUtil.setField(AbstractTransformer.class, crsSpecimenTransformer, "objectID", "RMNH.MAM.TT.5");
+      CommonReflectionUtil.setField(AbstractTransformer.class, crsSpecimenTransformer, "input", extracted);
+      Element element = extracted.getRecord();
+
+      List<Element> elems = DOMUtil.getDescendants(element, "ncrsNamedAreas");
+      for (Element e : elems) {
+        elementList.add(e);
+      }
+      assertNotNull(elementList);
+
+      Object returned = CommonReflectionUtil.callMethod(null, null, crsSpecimenTransformer, "getNamedAreas");
+      if (returned != null) {
+        List<NamedArea> namedAreas= (ArrayList<NamedArea>)returned;
+        assertEquals("01", 2, namedAreas.size());
+        
+        NamedArea actual = namedAreas.get(0);
+        NamedArea expected = new NamedArea(AreaClass.COUNTY, "Atewa Range FR");
+        assertTrue("02", JsonUtil.toPrettyJson(actual).equals( JsonUtil.toPrettyJson(expected) ));
+        
+        actual = namedAreas.get(1);
+        expected = new NamedArea(AreaClass.CONTINENT, "Africa");
+        assertTrue("03", JsonUtil.toPrettyJson(actual).equals( JsonUtil.toPrettyJson(expected) ));
+      } else {
+        assertTrue(false);
+      }      
+    }
+  }
+  
 }

@@ -181,6 +181,18 @@
             <abcd:Island />
             <abcd:LocalityText>Dutch</abcd:LocalityText>
             <abcd:SiteType />
+            <ncrsNamedAreas>
+              <abcd:AreaClass>county</abcd:AreaClass>
+              <abcd:AreaName>Atewa Range FR</abcd:AreaName>
+            </ncrsNamedAreas>
+            <ncrsNamedAreas>
+              <abcd:AreaClass>ContinenT</abcd:AreaClass>
+              <abcd:AreaName>Africa</abcd:AreaName>
+            </ncrsNamedAreas>
+            <ncrsNamedAreas>
+              <abcd:AreaClass>planet</abcd:AreaClass>
+              <abcd:AreaName>Earth</abcd:AreaName>
+            </ncrsNamedAreas>
           </ncrsGatheringSites>
           <ncrsChronoStratigraphy>
             <abcd:YoungRegionalSubstage>Test Regional Sub-Stage</abcd:YoungRegionalSubstage>

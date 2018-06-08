@@ -38,8 +38,6 @@ public class GatheringEvent implements INbaModelObject {
 	private String method;
 	private String altitude;
 	private String altitudeUnifOfMeasurement;
-	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
-	private String associatedTaxa;
 	private String biotopeText;
 	private String depth;
 	private String depthUnitOfMeasurement;
@@ -48,6 +46,7 @@ public class GatheringEvent implements INbaModelObject {
 	private List<Organization> gatheringOrganizations;
 	private List<GatheringSiteCoordinates> siteCoordinates;
 	private List<NamedArea> namedAreas;
+  private List<AssociatedTaxon> associatedTaxa;
 
 	private List<ChronoStratigraphy> chronoStratigraphy;
 	private List<BioStratigraphy> bioStratigraphy;
@@ -258,12 +257,12 @@ public class GatheringEvent implements INbaModelObject {
 	  this.namedAreas = namedAreas;
 	}
 	
-	public String getAssociatedTaxa()
+	public List<AssociatedTaxon> getAssociatedTaxa()
 	{
 	  return associatedTaxa;
 	}
 	
-	public void setAssociatedTaxa(String associatedTaxa)
+	public void setAssociatedTaxa(List<AssociatedTaxon> associatedTaxa)
 	{
 	  this.associatedTaxa = associatedTaxa;
 	}

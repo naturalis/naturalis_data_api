@@ -14,9 +14,12 @@ import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 import org.w3c.dom.Element;
 import nl.naturalis.nba.api.model.AreaClass;
+import nl.naturalis.nba.api.model.AssociatedTaxon;
 import nl.naturalis.nba.api.model.BioStratigraphy;
 import nl.naturalis.nba.api.model.ChronoStratigraphy;
 import nl.naturalis.nba.api.model.DefaultClassification;
@@ -32,6 +35,7 @@ import nl.naturalis.nba.api.model.Sex;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.api.model.SpecimenTypeStatus;
+import nl.naturalis.nba.api.model.TaxonRelationType;
 import nl.naturalis.nba.api.model.VernacularName;
 import nl.naturalis.nba.common.es.ESDateInput;
 import nl.naturalis.nba.etl.AbstractXMLTransformer;
@@ -347,7 +351,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
         if (lat != null || lon != null) {
             ge.setSiteCoordinates(Arrays.asList(new GatheringSiteCoordinates(lat, lon)));
         }
-        ge.setAssociatedTaxa(val(record, "abcd:ScientificOrInformalName"));
+        ge.setAssociatedTaxa(getAssociatedTaxa());
         ge.setChronoStratigraphy(getChronoStratigraphyList());
         ge.setBioStratigraphy(getBioStratigraphyList());
         ge.setLithoStratigraphy(getLithoStratigraphyList());
@@ -363,6 +367,42 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
         }
 
         return null;
+    }
+
+    private List<AssociatedTaxon> getAssociatedTaxa() {
+      Element record = input.getRecord();
+      List<Element> elements = DOMUtil.getDescendants(record, "ncrsSynecology");
+      if (elements == null) {
+          return null;
+      }
+      HashMap<TaxonRelationType, String> relationTypeMap= new HashMap<>();
+      for (Element element : elements) {
+        String resultRole = val(element, "abcd:ResultRole");
+        String scientificOrInformalName = val(element, "abcd:ScientificOrInformalName");
+        TaxonRelationType relationType = null;
+        try {
+          relationType = TaxonRelationType.parse(resultRole);
+          if (relationTypeMap.containsKey(relationType) && scientificOrInformalName != null) {
+            relationTypeMap.put(relationType, relationTypeMap.get(relationType).concat(" | " + scientificOrInformalName));
+          } 
+          else if (scientificOrInformalName != null) {
+            relationTypeMap.put(relationType, scientificOrInformalName);
+          }
+        } catch (IllegalArgumentException e){
+          if (!suppressErrors) {
+            warn(e.getMessage());
+            }
+          continue;
+        }
+      }
+      if (relationTypeMap == null || relationTypeMap.size() == 0) {
+        return null;        
+      }
+      ArrayList<AssociatedTaxon> associatedTaxa = new ArrayList<>();
+      for (Entry<TaxonRelationType, String> entry : relationTypeMap.entrySet()) {
+        associatedTaxa.add(new AssociatedTaxon(entry.getValue(), entry.getKey()));
+      }
+      return associatedTaxa;
     }
 
     private List<NamedArea> getNamedAreas() {

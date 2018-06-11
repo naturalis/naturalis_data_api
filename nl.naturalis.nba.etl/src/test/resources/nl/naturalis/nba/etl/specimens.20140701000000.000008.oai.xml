@@ -194,6 +194,26 @@
               <abcd:AreaName>Earth</abcd:AreaName>
             </ncrsNamedAreas>
           </ncrsGatheringSites>
+          <ncrsSynecology>
+            <abcd:ResultRole>Associated species</abcd:ResultRole>
+            <abcd:KindOfUnit/>
+            <abcd:PhaseOrStage/>
+            <abcd:ScientificOrInformalName>Achillea millefolium</abcd:ScientificOrInformalName>
+            <abcd:Sex/>
+          </ncrsSynecology>
+          <ncrsSynecology>
+            <abcd:ResultRole>Host</abcd:ResultRole>
+            <abcd:ScientificOrInformalName>Achillea centefolium</abcd:ScientificOrInformalName>
+            <abcd:Sex/>
+          </ncrsSynecology>
+          <ncrsSynecology>
+            <abcd:ResultRole>foo</abcd:ResultRole>
+            <abcd:ScientificOrInformalName>bar</abcd:ScientificOrInformalName>
+          </ncrsSynecology>
+          <ncrsSynecology>
+            <abcd:ResultRole>parasite</abcd:ResultRole>
+            <abcd:ScientificOrInformalName/>
+          </ncrsSynecology>
           <ncrsChronoStratigraphy>
             <abcd:YoungRegionalSubstage>Test Regional Sub-Stage</abcd:YoungRegionalSubstage>
             <abcd:YoungRegionalStage>Test Regional Stage</abcd:YoungRegionalStage>

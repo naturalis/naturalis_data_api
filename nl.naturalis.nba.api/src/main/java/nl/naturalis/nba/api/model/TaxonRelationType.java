@@ -44,6 +44,4 @@ public enum TaxonRelationType implements INbaModelObject {
     return name;
   }
 
-  
-  
 }

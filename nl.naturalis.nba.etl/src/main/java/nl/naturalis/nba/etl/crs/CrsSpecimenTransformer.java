@@ -47,6 +47,7 @@ import nl.naturalis.nba.etl.TransformUtil;
 import nl.naturalis.nba.etl.normalize.PhaseOrStageNormalizer;
 import nl.naturalis.nba.etl.normalize.SexNormalizer;
 import nl.naturalis.nba.etl.normalize.SpecimenTypeStatusNormalizer;
+import nl.naturalis.nba.etl.normalize.TaxonRelationTypeNormalizer;
 import nl.naturalis.nba.etl.normalize.UnmappedValueException;
 import nl.naturalis.nba.utils.xml.DOMUtil;
 
@@ -62,12 +63,14 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
     private static final SpecimenTypeStatusNormalizer tsNormalizer;
     private static final SexNormalizer sexNormalizer;
     private static final PhaseOrStageNormalizer posNormalizer;
+    private static final TaxonRelationTypeNormalizer trtNormalizer;
     private static final Field[] geFields;
 
     static {
         tsNormalizer = SpecimenTypeStatusNormalizer.getInstance();
         sexNormalizer = SexNormalizer.getInstance();
         posNormalizer = PhaseOrStageNormalizer.getInstance();
+        trtNormalizer = TaxonRelationTypeNormalizer.getInstance();
         geFields = GatheringEvent.class.getDeclaredFields();
         for (Field f : geFields) {
             f.setAccessible(true);
@@ -377,12 +380,14 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
       }
       HashMap<TaxonRelationType, String> relationTypeMap= new HashMap<>();
       for (Element element : elements) {
-        String resultRole = val(element, "abcd:ResultRole");
         String scientificOrInformalName = val(element, "abcd:ScientificOrInformalName");
         TaxonRelationType relationType = null;
         try {
-          relationType = TaxonRelationType.parse(resultRole);
-          if (relationTypeMap.containsKey(relationType) && scientificOrInformalName != null) {
+          relationType = getTaxonRelationType(element);
+          if (relationType == null) {
+            continue;
+          }
+          else if (relationTypeMap.containsKey(relationType) && scientificOrInformalName != null) {
             relationTypeMap.put(relationType, relationTypeMap.get(relationType).concat(" | " + scientificOrInformalName));
           } 
           else if (scientificOrInformalName != null) {
@@ -399,9 +404,11 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
         return null;        
       }
       ArrayList<AssociatedTaxon> associatedTaxa = new ArrayList<>();
+      
       for (Entry<TaxonRelationType, String> entry : relationTypeMap.entrySet()) {
         associatedTaxa.add(new AssociatedTaxon(entry.getValue(), entry.getKey()));
       }
+      
       return associatedTaxa;
     }
 
@@ -613,6 +620,24 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
             }
             return null;
         }
+    }
+    
+    private TaxonRelationType getTaxonRelationType(Element elem) {
+      String raw = val(elem, "abcd:ResultRole");
+      if (raw == null) {
+        if (logger.isDebugEnabled()) {
+          debug("Missing taxon relation type");
+        }
+        return null;
+      }
+      try {
+        return trtNormalizer.map(raw);
+      } catch (UnmappedValueException e) {
+        if (logger.isDebugEnabled()) {
+          debug(e.getMessage());
+        }
+        return null;
+      }
     }
 
     private static final String MSG_BAD_DATE = "Invalid date in element %s: \"%s\"";

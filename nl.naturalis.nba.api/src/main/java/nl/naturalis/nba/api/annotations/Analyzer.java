@@ -29,7 +29,13 @@ public enum Analyzer
 	 * {@link ComparisonOperator#LIKE LIKE} and
 	 * {@link ComparisonOperator#NOT_LIKE NOT_LIKE} operators.
 	 */
-	LIKE("like_analyzer", "like");
+	LIKE("like_analyzer", "like"),
+	/**
+	 * A "noop" analyzer. The entire string value serves as the keyword.
+	 * {@link ComparisonOperator#EQUALS_IC EQUALS_IC} and
+   * {@link ComparisonOperator#NOT_EQUALS_IC NOT_EQUALS_IC} operators can be used.
+	 */
+	KEYWORD("keyword", "ignoreCase");
 
 	private final String name;
 	private final String multiFieldName;

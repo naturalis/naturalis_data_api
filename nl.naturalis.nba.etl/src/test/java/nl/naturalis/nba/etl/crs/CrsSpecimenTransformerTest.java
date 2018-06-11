@@ -13,12 +13,14 @@ import java.io.File;
 import java.net.URL;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Element;
 import nl.naturalis.nba.api.model.AreaClass;
+import nl.naturalis.nba.api.model.AssociatedTaxon;
 import nl.naturalis.nba.api.model.BioStratigraphy;
 import nl.naturalis.nba.api.model.ChronoStratigraphy;
 import nl.naturalis.nba.api.model.GatheringEvent;
@@ -31,6 +33,7 @@ import nl.naturalis.nba.api.model.Sex;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.api.model.SpecimenTypeStatus;
+import nl.naturalis.nba.api.model.TaxonRelationType;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.etl.AbstractTransformer;
 import nl.naturalis.nba.etl.AllTests;
@@ -84,12 +87,9 @@ public class CrsSpecimenTransformerTest {
 
     for (XMLRecordInfo extracted : extractor) {
 
-      CommonReflectionUtil.setField(AbstractTransformer.class, crsSpecimenTransformer, "objectID",
-          "RMNH.MAM.TT.5");
-      CommonReflectionUtil.setField(AbstractTransformer.class, crsSpecimenTransformer, "input",
-          extracted);
-      Object returned =
-          CommonReflectionUtil.callMethod(null, null, crsSpecimenTransformer, "doTransform");
+      CommonReflectionUtil.setField(AbstractTransformer.class, crsSpecimenTransformer, "objectID", "RMNH.MAM.TT.5");
+      CommonReflectionUtil.setField(AbstractTransformer.class, crsSpecimenTransformer, "input", extracted);
+      Object returned = CommonReflectionUtil.callMethod(null, null, crsSpecimenTransformer, "doTransform");
       list = (List<Specimen>) returned;
       Specimen sp = list.get(0);
 
@@ -142,8 +142,7 @@ public class CrsSpecimenTransformerTest {
     outerloop: for (XMLRecordInfo extracted : extractor) {
       Element elemet = extracted.getRecord();
       List<Element> elems = DOMUtil.getDescendants(elemet, "ncrsDetermination");
-      Object obj = CommonReflectionUtil.callMethod(elems, List.class, crsSpecimenTransformer,
-          "hasTestGenus");
+      Object obj = CommonReflectionUtil.callMethod(elems, List.class, crsSpecimenTransformer, "hasTestGenus");
       boolean check = (boolean) obj;
       if (check) {
         for (Element element : elems) {
@@ -492,8 +491,7 @@ public class CrsSpecimenTransformerTest {
       Element elemet = extracted.getRecord();
       List<Element> elems = DOMUtil.getDescendants(elemet, "ncrsDetermination");
       for (Element element : elems) {
-        Object returned = CommonReflectionUtil.callMethod(element, Element.class,
-            crsSpecimenTransformer, "getTypeStatus");
+        Object returned = CommonReflectionUtil.callMethod(element, Element.class, crsSpecimenTransformer, "getTypeStatus");
         specimenTypeStatus = (SpecimenTypeStatus) returned;
         if (specimenTypeStatus != null)
           break;
@@ -687,7 +685,7 @@ public class CrsSpecimenTransformerTest {
 
   /**
    * Test method for
-   * {@link nl.naturalis.nba.etl.crs.CrsMultiMediaTransformer#val(Element element, String s)}.
+   * {@link nl.naturalis.nba.etl.crs.CrsSpecimenTransformer#val(Element element, String s)}.
    * 
    * @throws Exception
    * 
@@ -765,5 +763,81 @@ public class CrsSpecimenTransformerTest {
       }      
     }
   }
+  
+  /**
+   * Test method for {@link nl.naturalis.nba.etl.crs.CrsSpecimenTransformer#getRelationType()}.
+   * to verify whether it returns the expected {@link TaxonRelationType} object
+   * 
+   * @throws Exception
+   */
+  @Test
+  public void testGetTaxonRelationType() throws Exception {
+
+    ETLStatistics etlStatistics = new ETLStatistics();
+    CrsSpecimenTransformer crsSpecimenTransformer = new CrsSpecimenTransformer(etlStatistics);
+    CrsExtractor extractor = new CrsExtractor(specimenFile, etlStatistics);
+
+    List<TaxonRelationType> taxonRelationTypes = null;
+    for (XMLRecordInfo extracted : extractor) {
+      CommonReflectionUtil.setField(AbstractTransformer.class, crsSpecimenTransformer, "objectID", "RMNH.MAM.TT.5");
+      CommonReflectionUtil.setField(AbstractTransformer.class, crsSpecimenTransformer, "input", extracted);
+
+      Element element = extracted.getRecord();
+      List<Element> elements = DOMUtil.getDescendants(element, "ncrsSynecology");
+      taxonRelationTypes = new ArrayList<>();
+      
+      for (Element e : elements) {
+        Object returned = CommonReflectionUtil.callMethod(e, Element.class, crsSpecimenTransformer, "getTaxonRelationType");
+        if (returned != null) {
+          taxonRelationTypes.add((TaxonRelationType) returned);
+        }
+      }
+    }
+    
+    assertEquals("01", 3, taxonRelationTypes.size());
+
+    String[] expectedRelationTypes = {"in relation with", "has host", "has parasite"};
+    int n = 2;
+    for (TaxonRelationType relationType : taxonRelationTypes) {
+      assertTrue("0" + n++, Arrays.asList(expectedRelationTypes).contains(relationType.toString()));
+    }
+    
+  }
+  
+  /**
+   * Test method for
+   * {@link nl.naturalis.nba.etl.crs.CrsSpecimenTransformer#getAssociatedTaxa()}.
+   * to verify whether it returns the expected result
+   * 
+   * @throws Exception
+   * 
+   */
+  @Test
+  public void testGetAssociatedTaxa() throws Exception {
+
+    ETLStatistics etlStatistics = new ETLStatistics();
+    List<AssociatedTaxon> associatedTaxa = null;
+    int listSize = 0;
+    CrsSpecimenTransformer crsSpecimenTransformer = new CrsSpecimenTransformer(etlStatistics);
+    CrsExtractor extractor = new CrsExtractor(specimenFile, etlStatistics);
+
+    for (XMLRecordInfo extracted : extractor) {
+      CommonReflectionUtil.setField(AbstractTransformer.class, crsSpecimenTransformer, "objectID", "RMNH.MAM.TT.5");
+      CommonReflectionUtil.setField(AbstractTransformer.class, crsSpecimenTransformer, "input", extracted);
+
+      Object returned = CommonReflectionUtil.callMethod(null, null, crsSpecimenTransformer, "getAssociatedTaxa");
+      associatedTaxa = (List<AssociatedTaxon>) returned;
+      listSize = associatedTaxa.size();
+      if (listSize > 0)
+        break;
+    }
+    
+    AssociatedTaxon expectedAssociatedTaxon = new AssociatedTaxon( "Achillea millefolium", TaxonRelationType.parse("in relation with") );
+    assertEquals("01", 2, listSize);
+    assertEquals("02", expectedAssociatedTaxon.getName(), associatedTaxa.get(0).getName());
+    assertEquals("03", expectedAssociatedTaxon.getRelationType(), associatedTaxa.get(0).getRelationType());
+  }
+
+
   
 }

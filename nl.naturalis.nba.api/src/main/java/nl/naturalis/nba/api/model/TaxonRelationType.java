@@ -34,7 +34,7 @@ public enum TaxonRelationType implements INbaModelObject {
         return relationType;
       }
     }
-    throw new IllegalArgumentException("Invalid relationType: \"" + name + "\" (Associated Taxon))");
+    throw new IllegalArgumentException("Associated Taxon: Invalid relationType: \"" + name + "\"");
   }
 
   @JsonValue

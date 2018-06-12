@@ -833,11 +833,8 @@ public class CrsSpecimenTransformerTest {
     }
     
     AssociatedTaxon expectedAssociatedTaxon = new AssociatedTaxon( "Achillea millefolium", TaxonRelationType.parse("in relation with") );
-    assertEquals("01", 2, listSize);
-    assertEquals("02", expectedAssociatedTaxon.getName(), associatedTaxa.get(0).getName());
-    assertEquals("03", expectedAssociatedTaxon.getRelationType(), associatedTaxa.get(0).getRelationType());
+    assertEquals( "01", 2, listSize);
+    assertTrue("02", associatedTaxa.contains(expectedAssociatedTaxon));
   }
-
-
   
 }

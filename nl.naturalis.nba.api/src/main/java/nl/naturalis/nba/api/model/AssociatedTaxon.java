@@ -2,9 +2,8 @@ package nl.naturalis.nba.api.model;
 
 import static nl.naturalis.nba.api.annotations.Analyzer.CASE_INSENSITIVE;
 import static nl.naturalis.nba.api.annotations.Analyzer.DEFAULT;
-import static nl.naturalis.nba.api.annotations.Analyzer.LIKE;
 import static nl.naturalis.nba.api.annotations.Analyzer.KEYWORD;
-import java.util.Objects;
+import static nl.naturalis.nba.api.annotations.Analyzer.LIKE;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import nl.naturalis.nba.api.annotations.Analyzers;
@@ -19,8 +18,14 @@ public class AssociatedTaxon implements INbaModelObject {
   
   @JsonCreator
   public AssociatedTaxon(@JsonProperty("name") String name, @JsonProperty("relationType") TaxonRelationType relationType) {
-    this.name = Objects.requireNonNull(name, "Associated taxon name cannot be empty or null");
-    this.relationType = Objects.requireNonNull(relationType, "Associated taxon relationType cannot be empty or null");
+    if (name == null) {
+      throw new IllegalArgumentException("Name of AssociatedTaxon cannot be null");
+    }
+    this.name = name;
+    if (relationType == null) {
+      throw new IllegalArgumentException("TaxonRelationType of AssociatedTaxon cannot be null");
+    }
+    this.relationType = relationType;
   }
   
   public String getName() {
@@ -29,6 +34,22 @@ public class AssociatedTaxon implements INbaModelObject {
   
   public String getRelationType() {
     return relationType.toString();
+  }
+  
+  @Override
+  public boolean equals(Object obj) {
+    if (obj instanceof AssociatedTaxon) {
+      AssociatedTaxon other = (AssociatedTaxon) obj;
+      if (this.name.equals(other.getName()) && this.relationType.toString().equals(other.getRelationType().toString())) {
+        return true;        
+      }
+    }
+    return false;
+  }
+  
+  @Override
+  public int hashCode() {
+    return name.hashCode() + 7 * relationType.toString().hashCode();
   }
   
 }

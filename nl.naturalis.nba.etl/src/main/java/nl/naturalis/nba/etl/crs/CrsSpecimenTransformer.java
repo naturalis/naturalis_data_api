@@ -624,12 +624,6 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
     
     private TaxonRelationType getTaxonRelationType(Element elem) {
       String raw = val(elem, "abcd:ResultRole");
-      if (raw == null) {
-        if (logger.isDebugEnabled()) {
-          debug("Missing taxon relation type");
-        }
-        return null;
-      }
       try {
         return trtNormalizer.map(raw);
       } catch (UnmappedValueException e) {

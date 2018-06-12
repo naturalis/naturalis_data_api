@@ -44,6 +44,7 @@ import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.ETLUtil;
 import nl.naturalis.nba.etl.ThemeCache;
 import nl.naturalis.nba.etl.TransformUtil;
+import nl.naturalis.nba.etl.normalize.AreaClassNormalizer;
 import nl.naturalis.nba.etl.normalize.PhaseOrStageNormalizer;
 import nl.naturalis.nba.etl.normalize.SexNormalizer;
 import nl.naturalis.nba.etl.normalize.SpecimenTypeStatusNormalizer;
@@ -60,6 +61,7 @@ import nl.naturalis.nba.utils.xml.DOMUtil;
  */
 class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 
+    private static final AreaClassNormalizer areaClassNormalizer;
     private static final SpecimenTypeStatusNormalizer tsNormalizer;
     private static final SexNormalizer sexNormalizer;
     private static final PhaseOrStageNormalizer posNormalizer;
@@ -67,6 +69,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
     private static final Field[] geFields;
 
     static {
+        areaClassNormalizer = AreaClassNormalizer.getInstance();
         tsNormalizer = SpecimenTypeStatusNormalizer.getInstance();
         sexNormalizer = SexNormalizer.getInstance();
         posNormalizer = PhaseOrStageNormalizer.getInstance();
@@ -414,22 +417,23 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 
     private List<NamedArea> getNamedAreas() {
       Element record = input.getRecord();
-      List<Element> elems = DOMUtil.getDescendants(record, "ncrsNamedAreas");
-      if (elems == null) {
+      List<Element> elements = DOMUtil.getDescendants(record, "ncrsNamedAreas");
+      if (elements == null) {
           return null;
       }
       List<NamedArea> namedAreas = new ArrayList<>();
-      for (Element e : elems) {
+      for (Element element : elements) {
         AreaClass areaClass = null;
         try {
-          areaClass = AreaClass.parse( val(e, "abcd:AreaClass") );          
+          // areaClass = AreaClass.parse( val(e, "abcd:AreaClass") );
+          areaClass = getAreaClass(element);
         } catch (IllegalArgumentException ex) {
           if (!suppressErrors) {
               warn(ex.getMessage());
           }
           continue;
         }
-        String areaName = val(e, "abcd:AreaName");
+        String areaName = val(element, "abcd:AreaName");
         if (areaClass != null) {          
           namedAreas.add(new NamedArea(areaClass, areaName));
         }
@@ -621,7 +625,19 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
             return null;
         }
     }
-    
+
+    private AreaClass getAreaClass(Element elem) {
+      String raw = val(elem, "abcd:AreaClass");
+      try {
+        return areaClassNormalizer.map(raw);
+      } catch (UnmappedValueException e) {
+        if (logger.isDebugEnabled()) {
+          debug(e.getMessage());
+        }
+        return null;
+      }
+    }
+
     private TaxonRelationType getTaxonRelationType(Element elem) {
       String raw = val(elem, "abcd:ResultRole");
       try {

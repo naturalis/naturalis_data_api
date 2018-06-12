@@ -21,6 +21,7 @@ import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.ETLUtil;
 import nl.naturalis.nba.etl.ThemeCache;
 import nl.naturalis.nba.etl.XMLRecordInfo;
+import nl.naturalis.nba.etl.normalize.AreaClassNormalizer;
 import nl.naturalis.nba.etl.normalize.PhaseOrStageNormalizer;
 import nl.naturalis.nba.etl.normalize.SexNormalizer;
 import nl.naturalis.nba.etl.normalize.SpecimenTypeStatusNormalizer;
@@ -96,6 +97,7 @@ public class CrsSpecimenImportOffline {
 		SpecimenTypeStatusNormalizer.getInstance().resetStatistics();
 		PhaseOrStageNormalizer.getInstance().resetStatistics();
 		TaxonRelationTypeNormalizer.getInstance().resetStatistics();
+		AreaClassNormalizer.getInstance().resetStatistics();
 		ThemeCache.getInstance().resetMatchCounters();
 		try {
 			for (File f : xmlFiles)
@@ -108,6 +110,7 @@ public class CrsSpecimenImportOffline {
 		SpecimenTypeStatusNormalizer.getInstance().logStatistics();
 		PhaseOrStageNormalizer.getInstance().logStatistics();
 		TaxonRelationTypeNormalizer.getInstance().logStatistics();
+		AreaClassNormalizer.getInstance().logStatistics();
 		ThemeCache.getInstance().logMatchInfo();
 		stats.logStatistics(logger);
 		ETLUtil.logDuration(logger, getClass(), start);

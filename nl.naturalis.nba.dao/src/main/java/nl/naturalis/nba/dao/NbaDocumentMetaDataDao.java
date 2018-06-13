@@ -9,12 +9,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import org.apache.logging.log4j.Logger;
 import com.opencsv.CSVParser;
@@ -35,7 +33,6 @@ import nl.naturalis.nba.dao.exception.DaoException;
 import nl.naturalis.nba.dao.translate.OperatorValidator;
 import nl.naturalis.nba.utils.FileUtil;
 import nl.naturalis.nba.utils.IOUtil;
-
 
 public abstract class NbaDocumentMetaDataDao<T extends IDocumentObject>
     implements INbaDocumentMetaData<T> {
@@ -77,6 +74,14 @@ public abstract class NbaDocumentMetaDataDao<T extends IDocumentObject>
     if (fields == null || (fields.length == 1 && fields[0].equals("*"))) {
       fields = getPaths(true);
     }
+
+    Map<String, String> metadata = new HashMap<>();
+    try {
+      metadata = getMetaData();
+    } catch (IOException e) {
+      metadata = null;
+    }
+
     int mapSize = ((int) (fields.length / .75) + 1);
     Map<String, FieldInfo> result = new LinkedHashMap<>(mapSize);
     MappingInfo<T> mappingInfo = new MappingInfo<>(dt.getMapping());
@@ -97,6 +102,10 @@ public abstract class NbaDocumentMetaDataDao<T extends IDocumentObject>
         }
       }
       info.setAllowedOperators(allowed);
+      String description = (metadata != null) ? metadata.get(field) : null; 
+      if (description != null && description.length() > 0) {
+        info.setDescription(description);
+      }
       result.put(field, info);
     }
     return result;
@@ -116,53 +125,19 @@ public abstract class NbaDocumentMetaDataDao<T extends IDocumentObject>
 
   @Override
   public String[] getPaths(boolean sorted) {
-    Map<String, String> metadata = new HashMap<>();
-    try {
-      metadata = getMetaData();      
-    } catch (IOException e) {
-      metadata = null;
-    }
-    if (metadata == null) {
-      return new MappingInfo<>(dt.getMapping()).getPathStrings(sorted);
-    }
-    
-    String[] paths = new MappingInfo<>(dt.getMapping()).getPathStrings(sorted);
-    List<String> result = new ArrayList<>();
-    
-    for (String path : paths) {
-      if ( metadata.get(path) != null && metadata.get(path).length() > 0) {
-        result.add(path + " - " + metadata.get(path));        
-      } else {
-        result.add(path);
-      }
-    }
-    String[] resultArr = new String[result.size()];
-    return result.toArray(resultArr);
+    return new MappingInfo<>(dt.getMapping()).getPathStrings(sorted);
   }
 
   public Map<String, String> getMetaData() throws IOException {
-    
     Map<String, String> metadata = new HashMap<>();
-    
     String fileName = "/" + dt.getName().concat("-metadata.csv").toLowerCase();
     File dir = getMetadataDir();
     File file = new File(dir, fileName);
-    
-    CSVParser parser =
-        new CSVParserBuilder()
-        .withSeparator(',')
-        .withIgnoreQuotations(true)
-        .build();
-
+    CSVParser parser = new CSVParserBuilder().withSeparator(',').withIgnoreQuotations(true).build();
     InputStream is = new FileInputStream(file);
-    
     if (is != null) {
-      CSVReader reader =
-          new CSVReaderBuilder(new InputStreamReader(is))
-          .withSkipLines(1)
-          .withCSVParser(parser)
-          .build();
-      
+      CSVReader reader = new CSVReaderBuilder(new InputStreamReader(is)).withSkipLines(1)
+          .withCSVParser(parser).build();
       String[] record = null;
       while ((record = reader.readNext()) != null) {
         if (record[0] != null)
@@ -170,12 +145,10 @@ public abstract class NbaDocumentMetaDataDao<T extends IDocumentObject>
       }
       is.close();
     }
-    
     return metadata;
   }
-  
-  private static File getMetadataDir()
-  {
+
+  private static File getMetadataDir() {
     File root = DaoRegistry.getInstance().getConfigurationDirectory();
     return FileUtil.newFile(root, "metadata/");
   }

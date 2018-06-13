@@ -181,7 +181,39 @@
             <abcd:Island />
             <abcd:LocalityText>Dutch</abcd:LocalityText>
             <abcd:SiteType />
+            <ncrsNamedAreas>
+              <abcd:AreaClass>county</abcd:AreaClass>
+              <abcd:AreaName>Atewa Range FR</abcd:AreaName>
+            </ncrsNamedAreas>
+            <ncrsNamedAreas>
+              <abcd:AreaClass>ContinenT</abcd:AreaClass>
+              <abcd:AreaName>Africa</abcd:AreaName>
+            </ncrsNamedAreas>
+            <ncrsNamedAreas>
+              <abcd:AreaClass>planet</abcd:AreaClass>
+              <abcd:AreaName>Earth</abcd:AreaName>
+            </ncrsNamedAreas>
           </ncrsGatheringSites>
+          <ncrsSynecology>
+            <abcd:ResultRole>Associated species</abcd:ResultRole>
+            <abcd:KindOfUnit/>
+            <abcd:PhaseOrStage/>
+            <abcd:ScientificOrInformalName>Achillea millefolium</abcd:ScientificOrInformalName>
+            <abcd:Sex/>
+          </ncrsSynecology>
+          <ncrsSynecology>
+            <abcd:ResultRole>Host</abcd:ResultRole>
+            <abcd:ScientificOrInformalName>Achillea centefolium</abcd:ScientificOrInformalName>
+            <abcd:Sex/>
+          </ncrsSynecology>
+          <ncrsSynecology>
+            <abcd:ResultRole>foo</abcd:ResultRole>
+            <abcd:ScientificOrInformalName>bar</abcd:ScientificOrInformalName>
+          </ncrsSynecology>
+          <ncrsSynecology>
+            <abcd:ResultRole>parasite</abcd:ResultRole>
+            <abcd:ScientificOrInformalName/>
+          </ncrsSynecology>
           <ncrsChronoStratigraphy>
             <abcd:YoungRegionalSubstage>Test Regional Sub-Stage</abcd:YoungRegionalSubstage>
             <abcd:YoungRegionalStage>Test Regional Stage</abcd:YoungRegionalStage>
@@ -299,6 +331,10 @@
                     http://crs.naturalis.nl/HttpHandler/icoon.ico?file=19507948</abcd:Url>
           <abcd:MultiMediaPublic>1</abcd:MultiMediaPublic>
           <abcd:fileuri />
+          <ncrsCollectionUnitHistory>
+            <abcd:PreviousSourceName>AAA</abcd:PreviousSourceName>
+            <abcd:PreviousSourceName>OOO</abcd:PreviousSourceName>
+          </ncrsCollectionUnitHistory>
           <abcd:ObjectPublic>1</abcd:ObjectPublic>
         </oai_dc:dc>
       </metadata>

@@ -10,6 +10,7 @@ import static nl.naturalis.nba.etl.ETLConstants.LICENCE;
 import static nl.naturalis.nba.etl.ETLConstants.LICENCE_TYPE;
 import static nl.naturalis.nba.etl.ETLConstants.SOURCE_INSTITUTION_ID;
 import static nl.naturalis.nba.etl.ETLUtil.getSpecimenPurl;
+import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.ACCESSION;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.CATEGORY;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.COLLECTOR;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.DAYIDENT;
@@ -18,6 +19,7 @@ import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.IMAGELIST;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.MONTHIDENT;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.NOTONLINE;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.NUMBER;
+import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.OLDBARCODE;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.PLANTDESC;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.PREFIX;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.SUFFIX;
@@ -86,6 +88,7 @@ class BrahmsSpecimenTransformer extends BrahmsTransformer<Specimen> {
         specimen.setRecordBasis(s);
       specimen.setAssemblageID(getAssemblageID());
       specimen.setNotes(input.get(PLANTDESC));
+      specimen.setPreviousUnitsText(getPreviousUnitsText());
       s = input.get(NOTONLINE);
       if (s == null || s.equals("0"))
         specimen.setObjectPublic(true);
@@ -175,6 +178,28 @@ class BrahmsSpecimenTransformer extends BrahmsTransformer<Specimen> {
     sb.append(rec.get(NUMBER, false).trim()).append(' ');
     sb.append(rec.get(SUFFIX, false).trim());
     return sb.toString();
+  }
+  
+  /*
+   * Returns the value from OLDBARCODE concatenated with the value of
+   * ACCESSION separated by ' | '. Empty values or null are excluded.
+   */
+  private String getPreviousUnitsText()
+  {
+    CSVRecordInfo<BrahmsCsvField> rec = input;
+    String oldBarcode = rec.get(OLDBARCODE, true);
+    String accession = rec.get(ACCESSION, true);
+    String sep = "";
+    if (oldBarcode != null && oldBarcode.trim().length() > 0) {
+      sep = " | ";
+    }
+    if (accession != null && accession.trim().length() > 0) {
+      if (sep.length() > 0) {
+        return oldBarcode.trim() + sep + accession.trim();
+      }
+      return accession.trim();
+    }
+    return sep.length() > 0 ? oldBarcode.trim() : null;
   }
 
   private List<ServiceAccessPoint> getServiceAccessPoints()

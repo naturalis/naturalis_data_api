@@ -38,12 +38,15 @@ public class GatheringEvent implements INbaModelObject {
 	private String method;
 	private String altitude;
 	private String altitudeUnifOfMeasurement;
+	private String biotopeText;
 	private String depth;
 	private String depthUnitOfMeasurement;
 
 	private List<Person> gatheringPersons;
 	private List<Organization> gatheringOrganizations;
 	private List<GatheringSiteCoordinates> siteCoordinates;
+	private List<NamedArea> namedAreas;
+  private List<AssociatedTaxon> associatedTaxa;
 
 	private List<ChronoStratigraphy> chronoStratigraphy;
 	private List<BioStratigraphy> bioStratigraphy;
@@ -52,7 +55,7 @@ public class GatheringEvent implements INbaModelObject {
 	public void addSiteCoordinates(GatheringSiteCoordinates coordinates)
 	{
 		if (siteCoordinates == null) {
-			siteCoordinates = new ArrayList<GatheringSiteCoordinates>();
+			siteCoordinates = new ArrayList<>();
 		}
 		siteCoordinates.add(coordinates);
 	}
@@ -242,6 +245,36 @@ public class GatheringEvent implements INbaModelObject {
 	public void setAltitudeUnifOfMeasurement(String altitudeUnifOfMeasurement)
 	{
 		this.altitudeUnifOfMeasurement = altitudeUnifOfMeasurement;
+	}
+	
+	public List<NamedArea> getNamedAreas()
+	{
+	  return namedAreas;
+	}
+	
+	public void setNamedAreas(List<NamedArea> namedAreas)
+	{
+	  this.namedAreas = namedAreas;
+	}
+	
+	public List<AssociatedTaxon> getAssociatedTaxa()
+	{
+	  return associatedTaxa;
+	}
+	
+	public void setAssociatedTaxa(List<AssociatedTaxon> associatedTaxa)
+	{
+	  this.associatedTaxa = associatedTaxa;
+	}
+	
+	public String getBiotopeText() 
+	{
+	  return biotopeText;
+	}
+	
+	public void setBiotopeText(String biotopeText)
+	{
+	  this.biotopeText = biotopeText;
 	}
 
 	public String getDepth()

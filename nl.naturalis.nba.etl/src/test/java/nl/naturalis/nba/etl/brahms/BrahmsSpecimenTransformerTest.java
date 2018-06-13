@@ -1,6 +1,4 @@
-
 package nl.naturalis.nba.etl.brahms;
-
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -38,8 +36,7 @@ public class BrahmsSpecimenTransformerTest {
      * @throws java.lang.Exception
      */
     @Before
-    public void setUp() throws Exception {
-    }
+    public void setUp() throws Exception {}
 
     /**
      * 
@@ -92,6 +89,8 @@ public class BrahmsSpecimenTransformerTest {
         when(record.get(BrahmsCsvField.DAY)).thenReturn("      3.000000");
         when(record.get(BrahmsCsvField.LATITUDE)).thenReturn("      0.000000");
         when(record.get(BrahmsCsvField.LONGITUDE)).thenReturn("      0.000000");
+        when(record.get(BrahmsCsvField.OLDBARCODE, true)).thenReturn("L  0020601");
+        when(record.get(BrahmsCsvField.ACCESSION, true)).thenReturn("125784");
 
         BrahmsSpecimenTransformer brahmsSpecimenTransformer = new BrahmsSpecimenTransformer(etlStatistics);
 
@@ -107,6 +106,7 @@ public class BrahmsSpecimenTransformerTest {
         String expectedFullScientificName = "Rhododendron ferrugineum L.";
         String expectedScientificNameGroup = "rhododendron ferrugineum ";
         String expectedGenusMonomial = "Rhododendron";
+        String expectedPreviousUnitsTexts = "L  0020601 | 125784";
                
         assertNotNull("01",list);
         assertTrue("02",list.size() == 1);
@@ -115,9 +115,8 @@ public class BrahmsSpecimenTransformerTest {
         assertEquals("05",expectedFullScientificName,list.stream().map(i -> i.getIdentifications().get(0).getScientificName().getFullScientificName()).findFirst().get());       
         assertEquals("06",expectedScientificNameGroup,list.stream().map(i -> i.getIdentifications().get(0).getScientificName().getScientificNameGroup()).findFirst().get());
         assertEquals("07",expectedGenusMonomial, list.stream().map(i -> i.getIdentifications().get(0).getScientificName().getGenusOrMonomial()).findFirst().get());
-        
+        assertEquals("08", expectedPreviousUnitsTexts, list.stream().map(i -> i.getPreviousUnitsText()).findFirst().get());
     }
-
 
     /**
      * Test method for {@link nl.naturalis.nba.etl.brahms.BrahmsSpecimenTransformer#gatheringEvent())}.
@@ -180,8 +179,6 @@ public class BrahmsSpecimenTransformerTest {
 
     }
 
-
-
     /**
      * Test method for
      * {@link nl.naturalis.nba.etl.brahms.BrahmsSpecimenTransformer#getSpecimenIdentification())}.
@@ -226,7 +223,7 @@ public class BrahmsSpecimenTransformerTest {
         when(record.get(BrahmsCsvField.DAY)).thenReturn("      3.000000");
         when(record.get(BrahmsCsvField.LATITUDE)).thenReturn("      0.000000");
         when(record.get(BrahmsCsvField.LONGITUDE)).thenReturn("      0.000000");
-
+        
         BrahmsSpecimenTransformer brahmsSpecimenTransformer = new BrahmsSpecimenTransformer(etlStatistics);
 
         CommonReflectionUtil.setField(AbstractTransformer.class, brahmsSpecimenTransformer, "objectID", "L.3355550");
@@ -238,13 +235,11 @@ public class BrahmsSpecimenTransformerTest {
         String expectedKingdom = "Plantae";
         String expectedSpecificEpithet = "ferrugineum";
 
-
         assertNotNull("01",identification);
         assertEquals("02",expectedGenus, identification.getDefaultClassification().getGenus());
         assertEquals("03",expectedSpecificEpithet, identification.getDefaultClassification().getSpecificEpithet());
         assertEquals(expectedKingdom, identification.getDefaultClassification().getKingdom());
     }
-
 
     /**
      * Test method for {@link nl.naturalis.nba.etl.brahms.BrahmsSpecimenTransformer#getAssemblageID())}.
@@ -273,10 +268,7 @@ public class BrahmsSpecimenTransformerTest {
 
         assertNotNull("01",assembleId);
         assertEquals("02",expectedAssembleID, assembleId);
-
-
     }
-
 
     /**
      * Test method for
@@ -343,10 +335,55 @@ public class BrahmsSpecimenTransformerTest {
 
         assertNotNull("01",actualList);
         assertEquals("02",expectedAccessPoint, actualAccessPoint);
-
-
     }
 
+    /**
+     * Test method for {@link nl.naturalis.nba.etl.brahms.BrahmsSpecimenTransformer#getPreviousUnitsText())}.
+     * 
+     * @throws Exception
+     * 
+     *         Test to verify values returned by getPreviousUnitsText()
+     */
+    @Test
+    public void testGetPreviousUnitsText() throws Exception {
 
+        CSVRecordInfo<BrahmsCsvField> record = PowerMockito.mock(CSVRecordInfo.class);
+        ETLStatistics etlStatistics = new ETLStatistics();
+        BrahmsSpecimenTransformer brahmsSpecimenTransformer = new BrahmsSpecimenTransformer(etlStatistics);
+        CommonReflectionUtil.setField(AbstractTransformer.class, brahmsSpecimenTransformer, "objectID", "L.3355550");
+        CommonReflectionUtil.setField(AbstractTransformer.class, brahmsSpecimenTransformer, "input", record);
+
+        when(record.get(BrahmsCsvField.OLDBARCODE, true)).thenReturn("L  0020601");
+        when(record.get(BrahmsCsvField.ACCESSION, true)).thenReturn("125784");        
+        Object obj = CommonReflectionUtil.callMethod(null, CSVRecordInfo.class, brahmsSpecimenTransformer, "getPreviousUnitsText");
+        String previousUnitsText = (String) obj;
+        String expectedPreviousUnitsText = "L  0020601 | 125784";
+        assertNotNull("01", previousUnitsText);
+        assertEquals( "02", expectedPreviousUnitsText, previousUnitsText);
+
+        when(record.get(BrahmsCsvField.OLDBARCODE, true)).thenReturn("L  0020601");
+        when(record.get(BrahmsCsvField.ACCESSION, true)).thenReturn(null);
+        obj = CommonReflectionUtil.callMethod(null, CSVRecordInfo.class, brahmsSpecimenTransformer, "getPreviousUnitsText");
+        previousUnitsText = (String) obj;
+        expectedPreviousUnitsText = "L  0020601";
+        assertNotNull("03", previousUnitsText);
+        assertEquals( "04", expectedPreviousUnitsText, previousUnitsText);
+
+        when(record.get(BrahmsCsvField.OLDBARCODE, true)).thenReturn(null);
+        when(record.get(BrahmsCsvField.ACCESSION, true)).thenReturn("125784");
+        obj = CommonReflectionUtil.callMethod(null, CSVRecordInfo.class, brahmsSpecimenTransformer, "getPreviousUnitsText");
+        previousUnitsText = (String) obj;
+        expectedPreviousUnitsText = "125784";
+        assertNotNull("05", previousUnitsText);
+        assertEquals( "06", expectedPreviousUnitsText, previousUnitsText);
+        
+        when(record.get(BrahmsCsvField.OLDBARCODE, true)).thenReturn(" L  0020601 ");
+        when(record.get(BrahmsCsvField.ACCESSION, true)).thenReturn(" ");
+        obj = CommonReflectionUtil.callMethod(null, CSVRecordInfo.class, brahmsSpecimenTransformer, "getPreviousUnitsText");
+        previousUnitsText = (String) obj;
+        expectedPreviousUnitsText = "L  0020601";
+        assertNotNull("07", previousUnitsText);
+        assertEquals( "08", expectedPreviousUnitsText, previousUnitsText);
+    }
 
 }

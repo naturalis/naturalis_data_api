@@ -140,8 +140,14 @@ public abstract class NbaDocumentMetaDataDao<T extends IDocumentObject>
           .withCSVParser(parser).build();
       String[] record = null;
       while ((record = reader.readNext()) != null) {
-        if (record[0] != null)
-          metadata.put(record[0], record[1]);
+        try {
+          if (record[0] != null)
+            metadata.put(record[0], record[1]);
+        } catch (ArrayIndexOutOfBoundsException e) {
+          logger.debug("Error in csv file: " + file.toString());
+          metadata = null;
+          break;
+        }          
       }
       is.close();
     }

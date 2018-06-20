@@ -27,6 +27,9 @@ public class NamedArea implements INbaModelObject {
     if (areaClass == null) {
       throw new IllegalArgumentException("AreaClass in NamedArea cannot be null");
     }
+    if (areaName == null) {
+      throw new IllegalArgumentException("AreaName in NamedArea cannot be null");
+    }
     this.areaClass = areaClass;
     this.areaName = areaName;
   }

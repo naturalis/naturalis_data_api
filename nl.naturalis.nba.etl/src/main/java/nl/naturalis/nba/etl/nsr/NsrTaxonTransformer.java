@@ -12,7 +12,6 @@ import static nl.naturalis.nba.etl.TransformUtil.setScientificNameGroup;
 import static nl.naturalis.nba.etl.nsr.NsrImportUtil.val;
 import static nl.naturalis.nba.utils.xml.DOMUtil.getChild;
 import static nl.naturalis.nba.utils.xml.DOMUtil.getChildren;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.OffsetDateTime;
@@ -20,13 +19,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-
 import org.w3c.dom.Element;
-
 import nl.naturalis.nba.api.model.DefaultClassification;
-import nl.naturalis.nba.api.model.Expert;
 import nl.naturalis.nba.api.model.Monomial;
-import nl.naturalis.nba.api.model.Organization;
 import nl.naturalis.nba.api.model.Person;
 import nl.naturalis.nba.api.model.Reference;
 import nl.naturalis.nba.api.model.ScientificName;
@@ -384,22 +379,6 @@ class NsrTaxonTransformer extends AbstractXMLTransformer<Taxon> {
 		sn.setSpecificEpithet(val(nameElem, "specific_epithet"));
 		sn.setInfraspecificEpithet(val(nameElem, "infra_specific_epithet"));
 		sn.setTaxonomicStatus(getTaxonomicStatus(nameElem));
-		String expertName = val(nameElem, "expert_name");
-		if (expertName == null) {
-			expertName = val(nameElem, "expert");
-		}
-		String organization = val(nameElem, "organisation_name");
-		if (organization == null) {
-			organization = val(nameElem, "organisation");
-		}
-		if (expertName != null || organization != null) {
-			Expert expert = new Expert();
-			expert.setFullName(expertName);
-			if (organization != null) {
-				expert.setOrganization(new Organization(organization));
-			}
-			sn.setExperts(Arrays.asList(expert));
-		}
 		String author = val(nameElem, "reference_author");
 		String title = val(nameElem, "reference_title");
 		if (author != null || title != null) {
@@ -422,22 +401,6 @@ class NsrTaxonTransformer extends AbstractXMLTransformer<Taxon> {
 		vn.setName(val(e, "fullname"));
 		String nameType = val(e, "nametype");
 		vn.setPreferred(nameType.equals("isPreferredNameOf"));
-		String expert = val(e, "expert_name");
-		if (expert == null) {
-			expert = val(e, "expert");
-		}
-		String organization = val(e, "organisation_name");
-		if (organization == null) {
-			organization = val(e, "organisation");
-		}
-		if (expert != null || organization != null) {
-			Expert exp = new Expert();
-			exp.setFullName(expert);
-			if (organization != null) {
-				exp.setOrganization(new Organization(organization));
-			}
-			vn.setExperts(Arrays.asList(exp));
-		}
 		String author = val(e, "reference_author");
 		String title = val(e, "reference_title");
 		if (author != null || title != null) {

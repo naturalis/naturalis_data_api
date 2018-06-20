@@ -381,7 +381,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
       if (elements == null) {
           return null;
       }
-      HashMap<TaxonRelationType, String> relationTypeMap= new HashMap<>();
+      HashMap<TaxonRelationType, String> relationTypeMap = new HashMap<>();
       for (Element element : elements) {
         String scientificOrInformalName = val(element, "abcd:ScientificOrInformalName");
         TaxonRelationType relationType = null;
@@ -407,11 +407,9 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
         return null;        
       }
       ArrayList<AssociatedTaxon> associatedTaxa = new ArrayList<>();
-      
       for (Entry<TaxonRelationType, String> entry : relationTypeMap.entrySet()) {
         associatedTaxa.add(new AssociatedTaxon(entry.getValue(), entry.getKey()));
       }
-      
       return associatedTaxa;
     }
 

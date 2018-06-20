@@ -36,6 +36,8 @@ public class MultiMediaObject extends NbaTraceableObject implements IDocumentObj
 	private String license;
 	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String unitID;
+	@SuppressWarnings("unused")
+  private String previousUnitsText;
 	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String collectionType;
 	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })

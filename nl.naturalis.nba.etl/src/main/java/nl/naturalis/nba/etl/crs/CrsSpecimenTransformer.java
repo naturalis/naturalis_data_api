@@ -381,7 +381,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
       if (elements == null) {
           return null;
       }
-      HashMap<TaxonRelationType, String> relationTypeMap= new HashMap<>();
+      HashMap<TaxonRelationType, String> relationTypeMap = new HashMap<>();
       for (Element element : elements) {
         String scientificOrInformalName = val(element, "abcd:ScientificOrInformalName");
         TaxonRelationType relationType = null;
@@ -407,11 +407,9 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
         return null;        
       }
       ArrayList<AssociatedTaxon> associatedTaxa = new ArrayList<>();
-      
       for (Entry<TaxonRelationType, String> entry : relationTypeMap.entrySet()) {
         associatedTaxa.add(new AssociatedTaxon(entry.getValue(), entry.getKey()));
       }
-      
       return associatedTaxa;
     }
 
@@ -425,7 +423,6 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
       for (Element element : elements) {
         AreaClass areaClass = null;
         try {
-          // areaClass = AreaClass.parse( val(e, "abcd:AreaClass") );
           areaClass = getAreaClass(element);
         } catch (IllegalArgumentException ex) {
           if (!suppressErrors) {
@@ -434,9 +431,9 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
           continue;
         }
         String areaName = val(element, "abcd:AreaName");
-        if (areaClass != null) {          
+        if (areaClass != null && areaName != null) {          
           namedAreas.add(new NamedArea(areaClass, areaName));
-        }
+        } 
       }
       return (namedAreas == null || namedAreas.size() == 0) ? null : namedAreas;
     }

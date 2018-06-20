@@ -89,7 +89,7 @@ public class NsrMultiMediaTransformerTest {
     }
     String expectedAssociatedTaxRef = "D3KF0JNQ0UA@NSR";
     String expectedCreator = "Arnold Wijker";
-    String expectedCollectionType = "Nederlandse soorten en exoten";
+    String expectedCollectionType = null;
     String expectedCaption = "Adult winter";
     String expectedDescription = "Adult winter";
     String expectedId = "D3KF0JNQ0UA_1011552535@NSR";
@@ -160,7 +160,7 @@ public class NsrMultiMediaTransformerTest {
     }
     String expectedAssociatedTaxRef = "D3KF0JNQ0UA@NSR";
     String expectedCreator = "Arnold Wijker";
-    String expectedCollectionType = "Nederlandse soorten en exoten";
+    String expectedCollectionType = null;
     String expectedCaption = "Adult winter";
     String expectedDescription = "Adult winter";
     String expectedId = "D3KF0JNQ0UA_1011552535@NSR";
@@ -253,7 +253,7 @@ public class NsrMultiMediaTransformerTest {
 
     }
     String expectedAssociatedTaxRef = "D3KF0JNQ0UA@NSR";
-    String expectedCollectionType = "Nederlandse soorten en exoten";
+    String expectedCollectionType = null;
     String expectedOwner = "Naturalis Biodiversity Center";
     String expectedSourceId = "LNG NSR";
 

@@ -41,6 +41,7 @@ public class NsrTaxonTransformerTest {
    */
   @Before
   public void setUp() throws Exception {
+    System.setProperty("nl.naturalis.nba.etl.testGenera", "malus,parus,larus,bombus,rhododendron,felix,tulipa,rosa,canis,passer,trientalis");
     nsrFileURL = AllTests.class.getResource("nsr-export--2017-12-30_0533--06.xml");
     nsrFile = new File(nsrFileURL.getFile());
 
@@ -92,7 +93,7 @@ public class NsrTaxonTransformerTest {
     String expectedGenusOrMonomial = "Larus";
     String expectedScientificNameGroup = "larus argentatus argentatus";
     String recordUri = "http://nederlandsesoorten.nl/nsr/concept/0D3KF0JNQ0UA";
-    String sourceSystemName = "Naturalis - Nederlands Soortenregister";
+    String sourceSystemName = "Naturalis - Dutch Species Register";
 
     assertEquals(expectedId, actual.getId());
     assertEquals(expectedSourceSystemId, actual.getSourceSystemId());

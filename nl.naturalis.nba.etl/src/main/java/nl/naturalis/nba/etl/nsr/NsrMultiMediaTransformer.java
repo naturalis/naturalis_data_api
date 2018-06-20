@@ -184,7 +184,6 @@ class NsrMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 		mmo.setSourceInstitutionID(SOURCE_INSTITUTION_ID);
 		mmo.setOwner(SOURCE_INSTITUTION_ID);
 		mmo.setSourceID("LNG NSR");
-		mmo.setCollectionType("Nederlandse soorten en exoten");
 		String taxonId = getElasticsearchId(NSR, taxon.getSourceSystemId());
 		mmo.setAssociatedTaxonReference(taxonId);
 		mmo.setIdentifications(Arrays.asList(getIdentification()));

@@ -12,9 +12,8 @@ import org.junit.runners.Suite.SuiteClasses;
   SpecimenClientTest.class,
   MultiMediaObjectClientTest.class,
   TaxonClientTest.class,
-	GeoAreaClientTest.class
+	GeoAreaClientTest.class,
+	DownloadTest.class
 })
 //@formatter:on
-public class AllTests {
-
-}
+public class AllTests {}

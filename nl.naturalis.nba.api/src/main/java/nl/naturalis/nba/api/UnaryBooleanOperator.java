@@ -2,6 +2,7 @@ package nl.naturalis.nba.api;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 
+
 /**
  * Defines a single constant representing the unary boolean operator NOT. This
  * constant can be used to negate a {@link QueryCondition query condition}. See
@@ -26,8 +27,11 @@ public enum UnaryBooleanOperator
 	@JsonCreator
 	public static UnaryBooleanOperator parse(String s)
 	{
-		if (s == null || s.isEmpty()) {
-			return null;
+		if (s == null) {
+		  throw new IllegalArgumentException("Inappropriate use of unary boolean operator.");
+		}
+		if (s.isEmpty()) {
+		  return null;
 		}
 		if (s.equalsIgnoreCase("NOT") || s.equals("!")) {
 			return NOT;

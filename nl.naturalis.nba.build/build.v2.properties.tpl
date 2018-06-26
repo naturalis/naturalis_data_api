@@ -51,6 +51,7 @@ etl.nsr.data.dir=<directory containing NSR XML dumps>
 etl.geo.data.dir=<directory containing GEO areas CSV file>
 etl.ndff.data.dir=<directory containing BRAHMS CSV dumps>
 etl.medialib.data.dir=<directory containing mimetypes.zip>
+etl.json.data.dir=<directory containing JSON import files>
 
 # Variable used to generate URLs for Catalogue of Life
 etl.col.year=2016

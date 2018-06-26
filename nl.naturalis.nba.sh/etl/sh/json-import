@@ -1,0 +1,16 @@
+#!/bin/bash
+
+. ./include.sh
+
+type="${1}"
+file="${2}"
+
+if [ "${type}" = specimen ]
+then
+    java -cp ${classpath} $JAVA_OPTS ${root_package}.JsonImporter specimen ${file}
+elif [ "${type}" = multimedia ]
+then
+    java -cp ${classpath} $JAVA_OPTS ${root_package}.JsonImporter multimedia $@
+else
+    echo "USAGE: ${0} [ specimens | multimedia | taxa ]"
+fi

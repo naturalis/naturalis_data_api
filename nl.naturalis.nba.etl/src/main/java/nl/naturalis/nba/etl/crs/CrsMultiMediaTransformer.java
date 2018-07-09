@@ -262,12 +262,9 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 			MultiMediaContentIdentification mmci = new MultiMediaContentIdentification();
 			mmci.setTypeStatus(getTypeStatus(ncrsDeterminationElem));
 			mmci.setScientificName(sn);			
-			// mmci.setDefaultClassification(TransformUtil.extractClassificiationFromName(sn));
-			
       List<Monomial> sc = getSystemClassification(ncrsDeterminationElem, mmci.getScientificName());
       DefaultClassification dc = DefaultClassification.fromSystemClassification(sc);
-      mmci.setDefaultClassification(dc);
-      
+      mmci.setDefaultClassification(dc);      
 			mmci.setIdentificationQualifiers(getQualifiers(ncrsDeterminationElem));
 			mmci.setVernacularNames(getVernacularNames(ncrsDeterminationElem));
 			if (identifications == null) {

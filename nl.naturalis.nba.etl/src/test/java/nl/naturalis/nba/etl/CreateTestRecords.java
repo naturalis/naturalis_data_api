@@ -14,19 +14,35 @@ import nl.naturalis.nba.api.model.AreaClass;
 import nl.naturalis.nba.api.model.AssociatedTaxon;
 import nl.naturalis.nba.api.model.BioStratigraphy;
 import nl.naturalis.nba.api.model.ChronoStratigraphy;
+import nl.naturalis.nba.api.model.DefaultClassification;
+import nl.naturalis.nba.api.model.Expert;
 import nl.naturalis.nba.api.model.GatheringEvent;
 import nl.naturalis.nba.api.model.GatheringSiteCoordinates;
 import nl.naturalis.nba.api.model.LithoStratigraphy;
+import nl.naturalis.nba.api.model.Monomial;
+import nl.naturalis.nba.api.model.MultiMediaContentIdentification;
+import nl.naturalis.nba.api.model.MultiMediaGatheringEvent;
+import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.api.model.NamedArea;
 import nl.naturalis.nba.api.model.Organization;
 import nl.naturalis.nba.api.model.Person;
 import nl.naturalis.nba.api.model.PhaseOrStage;
+import nl.naturalis.nba.api.model.Reference;
+import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.ServiceAccessPoint;
 import nl.naturalis.nba.api.model.Sex;
 import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
+import nl.naturalis.nba.api.model.SpecimenTypeStatus;
 import nl.naturalis.nba.api.model.TaxonRelationType;
+import nl.naturalis.nba.api.model.TaxonomicEnrichment;
+import nl.naturalis.nba.api.model.TaxonomicIdentification;
+import nl.naturalis.nba.api.model.TaxonomicStatus;
+import nl.naturalis.nba.api.model.VernacularName;
+import nl.naturalis.nba.api.model.summary.SummaryScientificName;
+import nl.naturalis.nba.api.model.summary.SummarySourceSystem;
+import nl.naturalis.nba.api.model.summary.SummaryVernacularName;
 import nl.naturalis.nba.common.json.JsonUtil;
 
 /**
@@ -38,27 +54,61 @@ public class CreateTestRecords {
   
   @SuppressWarnings("static-method")
   @Test
-  public void createSpecimenRecord() throws Exception {
+  public void createSpecimenObject() throws Exception {
     
+    Specimen specimen = generateSpecimen();
+    
+    // System.out.println(JsonUtil.toPrettyJson(specimen));
+
+  }
+
+  @SuppressWarnings("static-method")
+  @Test
+  public void createMultiMediaObject() {
+
+    MultiMediaObject multiMediaObject = new MultiMediaObject();
+    multiMediaObject.setCreator(reverseString("creator"));
+    multiMediaObject.setCopyrightText(reverseString("copyrightText"));
+    multiMediaObject.setAssociatedSpecimenReference(reverseString("associatedSpecimenReference"));
+    multiMediaObject.setAssociatedTaxonReference(reverseString("associatedTaxonReference"));
+    multiMediaObject.setMultiMediaPublic(true);
+    
+    multiMediaObject.setSubjectParts(Arrays.asList(new String[] {reverseString("subjectParts") + "_1", reverseString("subjectParts") + "_2"}));
+    multiMediaObject.setSubjectOrientations(Arrays.asList(new String[] {reverseString("subjectOrientations") + "_1", reverseString("subjectOrientations") + "_2"}));
+    multiMediaObject.setPhasesOrStages(Arrays.asList(new String[] {reverseString("phasesOrStages") + "_1", reverseString("phasesOrStages") + "_2"}));
+    multiMediaObject.setSexes(Arrays.asList(new String[] {"female", "male"}));
+    
+    System.out.println(JsonUtil.toPrettyJson(multiMediaObject));    
+
+  }
+
+  private static Specimen generateSpecimen() throws Exception {
+    
+    Specimen specimen = new Specimen();
+    
+    // NbaTraceableObject
+    specimen.setSourceSystemId(reverseString("sourceSystemId"));
     String prefix = "TEST";
     SourceSystem sourceSystem = SourceSystem.CRS;    
     String recordNumber = Instant.now().getEpochSecond() * 1009 + "";
+    specimen.setSourceSystem(sourceSystem);
+    specimen.setRecordURI(new URI("https://location/" + prefix + "." + recordNumber));
     
-    Specimen specimen = new Specimen();
+    // Specimen
     specimen.setId(prefix + "." + recordNumber + "@" + sourceSystem);
     specimen.setUnitID(prefix + "."  + recordNumber);
-    specimen.setUnitGUID("https://somewhere/" + prefix + "."  + recordNumber);
+    specimen.setUnitGUID("https://location/" + prefix + "."  + recordNumber);
     
-    specimen.setSourceInstitutionID(reverseString("sourceInstitutionID"));
-    specimen.setSourceSystem(sourceSystem);
+    specimen.setSourceID("CRS");
+    specimen.setSourceInstitutionID("Naturalis Biodiversity Center");
     
     specimen.setCollectorsFieldNumber(reverseString("collectorsFieldNumber"));
     specimen.setAssemblageID(reverseString("assemblageID"));
     specimen.setPreviousSourceID( Arrays.asList(new String[] {reverseString("previousSourceID.001"), reverseString("previousSourceID.002"), reverseString("previousSourceID.003")}));
    
     specimen.setOwner(reverseString("owner"));
-    specimen.setLicenseType(reverseString("licenseType"));
-    specimen.setLicense(reverseString("licence"));
+    specimen.setLicenseType("Copyright"); // Fixed value
+    specimen.setLicense("CC0"); // Fixed value
     specimen.setRecordBasis(reverseString("recordBasis"));
     specimen.setKindOfUnit(reverseString("kindOfUnit"));
     specimen.setCollectionType(reverseString("collectionType"));
@@ -83,10 +133,9 @@ public class CreateTestRecords {
     specimen.setTheme(Arrays.asList(new String[] {reverseString("theme") + "_1", reverseString("theme") + "_2", reverseString("theme") + "_3"}));
     
     specimen.setAssociatedMultiMediaObjects(null);
-
-    System.out.println(JsonUtil.toPrettyJson(specimen));
+    return specimen;
   }
-
+  
   private static GatheringEvent createGatheringEvent() {
     GatheringEvent gatheringEvent = new GatheringEvent();
     gatheringEvent.setProjectTitle(reverseString("gatheringEvent.projectTitle"));
@@ -120,13 +169,32 @@ public class CreateTestRecords {
     gatheringEvent.setLithoStratigraphy(Arrays.asList(new LithoStratigraphy[] {createLithoStratigraphy(1), createLithoStratigraphy(2)}));
     return gatheringEvent;
   }
-    
+  
+  private static MultiMediaGatheringEvent createMultiMediaGatheringEvent() {
+    MultiMediaGatheringEvent mmGatheringEvent = (MultiMediaGatheringEvent) createGatheringEvent();
+    //mmGatheringEvent.set
+    return mmGatheringEvent;
+  }
+
+  private static Agent createAgent(int n) {
+    return new Agent(reverseString("agentText") + "_" + n);
+  }
+  
   private static Person createPerson(int n) {
     Person person = new Person (reverseString("fullName") + "_" + n);
     person.setAgentText(reverseString("agentText") + "_" + n);
     person.setOrganization(createOrganization(n));
     return person;
   }
+  
+  private static Expert createExpert(int n) {
+    Expert expert = new Expert();
+    expert.setFullName(reverseString("fullName") + "_" + n);
+    expert.setAgentText(reverseString("agentText") + "_" + n);
+    expert.setOrganization(createOrganization(n));
+    return expert;
+  }
+
   
   private static Organization createOrganization(int n) {
     Organization organization = new Organization(reverseString("organization.name") + "_" + n);
@@ -239,8 +307,42 @@ public class CreateTestRecords {
     return lithoStratigraphy;
   }
   
+  private static TaxonomicIdentification generateGeneralIdentificationFields(TaxonomicIdentification identification, int n) {
+    identification.setTaxonRank(reverseString("taxonRank") + "_" + n);
+    identification.setScientificName(createScientificName(n));
+    Random rand = new Random();
+    int i = rand.nextInt(SpecimenTypeStatus.values().length);
+    identification.setTypeStatus(Arrays.asList(SpecimenTypeStatus.values()).get(i));
+    identification.setDateIdentified(OffsetDateTime.now());
+    identification.setDefaultClassification(createDefaultClassification());
+    identification.setSystemClassification(Arrays.asList(new Monomial[] {createSystemClassification(1), createSystemClassification(2)}));
+    identification.setVernacularNames(Arrays.asList(new VernacularName[] {createVernacularName(1), createVernacularName(2)}));
+    identification.setIdentificationQualifiers(Arrays.asList(new String[] {reverseString("identificationQualifier") + "_1", reverseString("identificationQualifier") + "_2"}));
+    identification.setIdentifiers(Arrays.asList(new Agent[] {createAgent(1), createAgent(2)}));
+    identification.setTaxonomicEnrichments(Arrays.asList(new TaxonomicEnrichment[] {createTaxonomicEnrichtment(1), createTaxonomicEnrichtment(2)}));
+    return identification;
+  }
+  
+  private static Monomial createSystemClassification(int n) {
+    return new Monomial(reverseString("name") + "_" + n, reverseString("rank") + "_" + n);
+  }
+  
+  private static VernacularName createVernacularName(int n) {
+    VernacularName vernacularName = new VernacularName();
+    vernacularName.setName(reverseString("name") + "_" + n);
+    vernacularName.setLanguage(reverseString("language") + "_" + n);
+    if (n == 1)
+      vernacularName.setPreferred(true);
+    else
+      vernacularName.setPreferred(false);
+    vernacularName.setReferences(Arrays.asList(new Reference[] {createReference(1), createReference(2)}));
+    vernacularName.setExperts(Arrays.asList(new Expert[] {createExpert(1), createExpert(2)}));
+    return vernacularName;
+  }
+  
   private static SpecimenIdentification createSpecimenIdentification(int n) {
     SpecimenIdentification specimenIdentification = new SpecimenIdentification();
+    generateGeneralIdentificationFields(specimenIdentification, n);
     if (n == 1)
       specimenIdentification.setPreferred(true);
     else
@@ -252,6 +354,85 @@ public class CreateTestRecords {
     specimenIdentification.setAssociatedMineralName(reverseString("associatedMineralName") + "_" + n);
     specimenIdentification.setRemarks(reverseString("remarks") + "_" + n);
     return specimenIdentification;
+  }
+  
+  private static MultiMediaContentIdentification createMultiMediaContentIdentification(int n) {
+    MultiMediaContentIdentification multiMediaContentIdentification = new MultiMediaContentIdentification();
+    return multiMediaContentIdentification;
+  }
+  
+  
+  private static ScientificName createScientificName(int n) {
+    ScientificName scientificName = new ScientificName();
+    scientificName.setFullScientificName(reverseString("fullScientificName"));
+    scientificName.setTaxonomicStatus(TaxonomicStatus.ACCEPTED_NAME);
+    scientificName.setGenusOrMonomial(reverseString("genusOrMonomial") + "_" + n);
+    scientificName.setSubgenus(reverseString("Subgenus") + "_" + n);
+    scientificName.setSpecificEpithet(reverseString("specificEpithet") + "_" + n);
+    scientificName.setInfraspecificEpithet(reverseString("infraspecificEpithet") + "_" + n);
+    scientificName.setInfraspecificMarker(reverseString("infraspecificMarker") + "_" + n);
+    scientificName.setNameAddendum(reverseString("nameAddendum") + "_" + n);
+    scientificName.setAuthorshipVerbatim(reverseString("authorshipVerbatim") + "_" + n);
+    scientificName.setAuthor(reverseString("author") + "_" + n);
+    scientificName.setYear(reverseString("year") + "_" + n);
+    scientificName.setScientificNameGroup(reverseString("scientificNameGroup") + "_" + n);
+    scientificName.setReferences(Arrays.asList(new Reference[] {createReference(1), createReference(2)}));
+    scientificName.setExperts(Arrays.asList(new Expert[] {createExpert(1), createExpert(2)}));
+    return scientificName;
+  }
+  
+  private static DefaultClassification createDefaultClassification() {
+    DefaultClassification defaultClassification = new DefaultClassification();
+    defaultClassification.setKingdom(reverseString("kingdom"));
+    defaultClassification.setPhylum(reverseString("phylum"));
+    defaultClassification.setClassName(reverseString("className"));
+    defaultClassification.setOrder(reverseString("order"));
+    defaultClassification.setSuperFamily(reverseString("superFamily"));
+    defaultClassification.setFamily(reverseString("family"));
+    defaultClassification.setGenus(reverseString("genus"));
+    defaultClassification.setSubgenus(reverseString("subgenus"));
+    defaultClassification.setSpecificEpithet(reverseString("specificEpithet"));
+    defaultClassification.setInfraspecificEpithet(reverseString("infraspecificEpithet"));
+    defaultClassification.setInfraspecificRank(reverseString("infraspecificRank"));
+    return defaultClassification;
+  }
+  
+  private static Reference createReference(int n) {
+    Reference reference = new Reference();
+    reference.setTitleCitation(reverseString("titleCitation") + "_" + n);
+    reference.setCitationDetail(reverseString("citationDetail") + "_" + n);
+    reference.setUri(reverseString("uri") + "_" + n);
+    reference.setAuthor(createPerson(1));
+    reference.setPublicationDate(OffsetDateTime.now());
+    return reference;
+  }
+  
+  private static TaxonomicEnrichment createTaxonomicEnrichtment(int n) {
+    TaxonomicEnrichment enrichment = new TaxonomicEnrichment();
+    enrichment.setVernacularNames(Arrays.asList(new SummaryVernacularName[] {createSummaryVernacularName(1), createSummaryVernacularName(2)}));
+    enrichment.setSynonyms(Arrays.asList(new SummaryScientificName[] {createSummaryScientificName(1), createSummaryScientificName(2)}));
+    enrichment.setSourceSystem(new SummarySourceSystem(reverseString("code") + "_" + n));
+    enrichment.setTaxonId(reverseString("taxonId") + "_" + n);
+    return enrichment;
+  }
+  
+  private static SummaryVernacularName createSummaryVernacularName(int n) {
+    SummaryVernacularName vernacularName = new SummaryVernacularName();
+    vernacularName.setName(reverseString("name") + "_" + n);
+    vernacularName.setLanguage(reverseString("language") + "_" + n);
+    return vernacularName;
+  }
+  
+  private static SummaryScientificName createSummaryScientificName(int n) {
+    SummaryScientificName scientificName = new SummaryScientificName();
+    scientificName.setFullScientificName(reverseString("fullScientificName") + "_" + n);
+    scientificName.setTaxonomicStatus(TaxonomicStatus.ACCEPTED_NAME);
+    scientificName.setGenusOrMonomial(reverseString("genusOrMonomial") + "_" + n);
+    scientificName.setSubgenus(reverseString("subgenus") + "_" + n);
+    scientificName.setSpecificEpithet(reverseString("specificEpithet") + "_" + n);
+    scientificName.setInfraspecificEpithet(reverseString("infraspecificEpithet") + "_" + n);
+    scientificName.setAuthorshipVerbatim(reverseString("authorshipVerbatim") + "_" + n);
+    return scientificName;
   }
   
   private static ServiceAccessPoint createServiceAccessPoint(int n) throws URISyntaxException {

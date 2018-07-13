@@ -9,6 +9,7 @@ import java.util.List;
 
 import nl.naturalis.nba.api.annotations.Analyzers;
 import nl.naturalis.nba.api.annotations.NotStored;
+import nl.naturalis.nba.api.model.Type;
 
 /**
  * 
@@ -16,15 +17,15 @@ import nl.naturalis.nba.api.annotations.NotStored;
  */
 public class MultiMediaObject extends NbaTraceableObject implements IDocumentObject {
 
-	/**
-	 * Enumeration of the possible types of a {@code Media} object.
-	 * 
-	 * @see http://terms.tdwg.org/wiki/Audubon_Core_Term_List#dc:type
-	 */
-	public static enum Type
-	{
-		COLLECTION, STILL_IMAGE, SOUND, MOVING_IMAGE, INTERACTIVE_RESOURCE, TEXT, OTHER
-	}
+//	/**
+//	 * Enumeration of the possible types of a {@code Media} object.
+//	 * 
+//	 * @see http://terms.tdwg.org/wiki/Audubon_Core_Term_List#dc:type
+//	 */
+//	public static enum Type
+//	{
+//		COLLECTION, STILL_IMAGE, SOUND, MOVING_IMAGE, INTERACTIVE_RESOURCE, TEXT, OTHER
+//	}
 
 	@NotStored
 	private String id;

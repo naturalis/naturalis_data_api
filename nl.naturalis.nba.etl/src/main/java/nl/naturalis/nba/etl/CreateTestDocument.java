@@ -5,9 +5,14 @@ import java.net.URISyntaxException;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.Random;
-import org.junit.Test;
+import org.apache.logging.log4j.Logger;
+import org.elasticsearch.client.Client;
+import org.elasticsearch.index.query.TermQueryBuilder;
+import org.elasticsearch.index.reindex.DeleteByQueryAction;
+import org.elasticsearch.index.reindex.DeleteByQueryRequestBuilder;
 import nl.naturalis.nba.api.model.Agent;
 import nl.naturalis.nba.api.model.AreaClass;
 import nl.naturalis.nba.api.model.AssociatedTaxon;
@@ -22,7 +27,6 @@ import nl.naturalis.nba.api.model.Monomial;
 import nl.naturalis.nba.api.model.MultiMediaContentIdentification;
 import nl.naturalis.nba.api.model.MultiMediaGatheringEvent;
 import nl.naturalis.nba.api.model.MultiMediaObject;
-import nl.naturalis.nba.api.model.MultiMediaObject.Type;
 import nl.naturalis.nba.api.model.NamedArea;
 import nl.naturalis.nba.api.model.NbaTraceableObject;
 import nl.naturalis.nba.api.model.Organization;
@@ -40,33 +44,85 @@ import nl.naturalis.nba.api.model.TaxonRelationType;
 import nl.naturalis.nba.api.model.TaxonomicEnrichment;
 import nl.naturalis.nba.api.model.TaxonomicIdentification;
 import nl.naturalis.nba.api.model.TaxonomicStatus;
+import nl.naturalis.nba.api.model.Type;
 import nl.naturalis.nba.api.model.VernacularName;
 import nl.naturalis.nba.api.model.summary.SummaryScientificName;
 import nl.naturalis.nba.api.model.summary.SummarySourceSystem;
 import nl.naturalis.nba.api.model.summary.SummaryVernacularName;
-import nl.naturalis.nba.common.json.JsonUtil;
+import nl.naturalis.nba.dao.MultiMediaObjectDao;
+import nl.naturalis.nba.dao.SpecimenDao;
+import nl.naturalis.nba.dao.util.es.ESUtil;
+import nl.naturalis.nba.etl.crs.CrsSpecimenImportOffline;
 
-/**
- * Class that creates a test record for each document type, generating data
- * for each available field
- *
- */
-public class CreateTestRecords {
-  
-  @SuppressWarnings("static-method")
-  @Test
-  public void createSpecimenObject() throws Exception {
-    Specimen specimen = generateSpecimen();
-    // System.out.println(JsonUtil.toPrettyJson(specimen));
+public class CreateTestDocument {
+
+  private static final Logger logger;
+
+  static {
+    logger = ETLRegistry.getInstance().getLogger(CrsSpecimenImportOffline.class);
+  }
+
+  public static void main(String[] args) throws Exception {
+    List<String> options = Arrays.asList(args);
+
+    CreateTestDocument docCreator = new CreateTestDocument();
+    docCreator.deleteTestDocs();
+    if (!options.contains("--delete")) {
+      docCreator.createTestDocs();      
+    }
   }
   
   @SuppressWarnings("static-method")
-  @Test
-  public void createMultiMediaObject() throws Exception {
+  private void createTestDocs() {
+
+    Specimen specimen;
+    String specimenId = "";
+    try {
+      specimen = generateSpecimen();
+      specimen.getId();
+      SpecimenDao specimenDao = new SpecimenDao();
+      specimenId = specimenDao.save(specimen, true);
+    } catch (Exception e) {
+      logger.error("Failed to create a Specmen test document!");
+      logger.error(e.getMessage());
+    }
+    
+    MultiMediaObjectDao mmDao;
+    String multimediaId = "";
+    try {
     MultiMediaObject multiMediaObject = generateMultiMediaObject();
-    System.out.println(JsonUtil.toPrettyJson(multiMediaObject));    
+    mmDao = new MultiMediaObjectDao();
+    multimediaId = mmDao.save(multiMediaObject, true);
+    } catch (Exception e) {
+      logger.error("Failed to create a MultiMediaObject test document!");
+      logger.error(e.getMessage());
+    }
+    
+    logger.info("");
+    logger.info("The following test documents have been created:");
+    if (!specimenId.equals(""))
+      logger.info("Specimen:         " + specimenId);
+    if (!multimediaId.equals(""))
+    logger.info("MultiMediaObject: " + multimediaId);
+    logger.info("");
   }
   
+  @SuppressWarnings("static-method")
+  private void deleteTestDocs() {
+    
+    // Client client = ESClientManager.getInstance().getClient();
+    Client client = ESUtil.esClient();
+    TermQueryBuilder qb = new TermQueryBuilder("collectionType", "epyTnoitcelloc");
+    
+    DeleteByQueryRequestBuilder response = DeleteByQueryAction.INSTANCE.newRequestBuilder(client);
+    response.filter(qb);
+    response.source("specimen", "multimedia");
+    long deleted = response.get().getDeleted();
+    logger.info(deleted + " test documents have been deleted");
+
+  }
+
+
   private static NbaTraceableObject generateDocumentBasics(SourceSystem sourceSystem, NbaTraceableObject document) throws Exception { 
     String prefix = "TEST";
     String recordNumber = Instant.now().getEpochSecond() * 1009 + "";
@@ -471,5 +527,5 @@ public class CreateTestRecords {
     }
     return reverse;
   }
-
+ 
 }

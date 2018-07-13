@@ -179,6 +179,7 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
 
   public String save(T apiObject, boolean immediate) {
     String id = apiObject.getId();
+    apiObject.setId(null);
     String index = dt.getIndexInfo().getName();
     String type = dt.getName();
     if (logger.isDebugEnabled()) {

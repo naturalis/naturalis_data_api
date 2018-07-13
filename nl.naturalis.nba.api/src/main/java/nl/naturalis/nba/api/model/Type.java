@@ -21,7 +21,7 @@ public enum Type implements INbaModelObject {
   PHYSICAL_OBJECT ("PhysicalObject"), 
   SERVICE ("Service"), 
   SOFTWARE ("Software"), 
-  SOUNDS ("Sound"), 
+  SOUND ("Sound"), 
   STILL_IMAGE ("StillImage"), 
   TEXT ("Text");
 

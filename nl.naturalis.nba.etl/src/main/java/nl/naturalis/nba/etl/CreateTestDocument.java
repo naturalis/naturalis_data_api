@@ -9,7 +9,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 import org.apache.logging.log4j.Logger;
+import org.elasticsearch.action.admin.indices.refresh.RefreshRequestBuilder;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.client.IndicesAdminClient;
 import org.elasticsearch.index.query.TermQueryBuilder;
 import org.elasticsearch.index.reindex.DeleteByQueryAction;
 import org.elasticsearch.index.reindex.DeleteByQueryRequestBuilder;
@@ -54,6 +56,13 @@ import nl.naturalis.nba.dao.SpecimenDao;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.crs.CrsSpecimenImportOffline;
 
+/**
+ * This class can be used to create test documents that contain a sample value
+ * for all of the available fields. It will create a Specimen document and
+ * a MultiMediaObject document. It also contains a method to delete the
+ * test records again.
+ *
+ */
 public class CreateTestDocument {
 
   private static final Logger logger;
@@ -63,7 +72,18 @@ public class CreateTestDocument {
   }
 
   public static void main(String[] args) throws Exception {
+    
     List<String> options = Arrays.asList(args);
+    
+    if (options.size() > 0) {
+      if (options.contains("--help") || !(options.size() == 1 && options.contains("--delete"))) {
+        System.out.println("Usage:");
+        System.out.println("./create-test-records           : creates a Specimen and a MultiMediaObject test record.");
+        System.out.println("./create-test-records --delete  : deletes all test records.");
+        System.out.println("./create-test-records --help    : prints this menu.");
+        System.exit(0);
+      }
+    }
 
     CreateTestDocument docCreator = new CreateTestDocument();
     docCreator.deleteTestDocs();
@@ -73,7 +93,7 @@ public class CreateTestDocument {
   }
   
   @SuppressWarnings("static-method")
-  private void createTestDocs() {
+  public void createTestDocs() {
 
     Specimen specimen;
     String specimenId = "";
@@ -108,9 +128,8 @@ public class CreateTestDocument {
   }
   
   @SuppressWarnings("static-method")
-  private void deleteTestDocs() {
+  public void deleteTestDocs() {
     
-    // Client client = ESClientManager.getInstance().getClient();
     Client client = ESUtil.esClient();
     TermQueryBuilder qb = new TermQueryBuilder("collectionType", "epyTnoitcelloc");
     
@@ -120,10 +139,16 @@ public class CreateTestDocument {
     long deleted = response.get().getDeleted();
     logger.info(deleted + " test documents have been deleted");
 
+    // Refresh index
+    IndicesAdminClient iac = ESUtil.esClient().admin().indices();
+    RefreshRequestBuilder rrb = iac.prepareRefresh("specimen", "multimedia");
+    rrb.execute().actionGet();
   }
 
 
-  private static NbaTraceableObject generateDocumentBasics(SourceSystem sourceSystem, NbaTraceableObject document) throws Exception { 
+  private static NbaTraceableObject generateDocumentBasics(SourceSystem sourceSystem, NbaTraceableObject document) throws Exception {
+    Objects.requireNonNull(sourceSystem, "SourceSystem cannot be null!");
+    Objects.requireNonNull(document, "Document object cannot be null!");
     String prefix = "TEST";
     String recordNumber = Instant.now().getEpochSecond() * 1009 + "";
     String sourceSystemId = prefix + "." + recordNumber;
@@ -228,6 +253,7 @@ public class CreateTestDocument {
   }
 
   private static void updateGatheringEvent(GatheringEvent gatheringEvent, Integer i) {
+    Objects.requireNonNull(gatheringEvent, "gatheringEvent cannot be null!");
     String n = (i == null) ? "" : "_" + i;
     gatheringEvent.setProjectTitle(reverseString("gatheringEvent.projectTitle") + n);
     gatheringEvent.setWorldRegion(reverseString("gatheringEvent.worldRegion") + n);
@@ -385,6 +411,7 @@ public class CreateTestDocument {
   }
   
   private static TaxonomicIdentification generateGeneralIdentificationFields(TaxonomicIdentification identification, int n) {
+    Objects.requireNonNull(identification, "Identification cannot be null!");
     identification.setTaxonRank(reverseString("taxonRank") + "_" + n);
     identification.setScientificName(createScientificName(n));
     Random rand = new Random();
@@ -475,7 +502,7 @@ public class CreateTestDocument {
     Reference reference = new Reference();
     reference.setTitleCitation(reverseString("titleCitation") + "_" + n);
     reference.setCitationDetail(reverseString("citationDetail") + "_" + n);
-    reference.setUri(reverseString("uri") + "_" + n);
+    reference.setUri("https://www.example.org/foo_" + n);
     reference.setAuthor(createPerson(1));
     reference.setPublicationDate(OffsetDateTime.now());
     return reference;
@@ -511,7 +538,7 @@ public class CreateTestDocument {
   
   private static ServiceAccessPoint createServiceAccessPoint(int n) throws URISyntaxException {
     ServiceAccessPoint serviceAccessPoint = new ServiceAccessPoint();
-    serviceAccessPoint.setAccessUri(new URI("https://en.wikipedia.org/wiki/Uniform_Resource_Identifier"));
+    serviceAccessPoint.setAccessUri(new URI("https://www.example.org/abc_" + n));
     serviceAccessPoint.setFormat(reverseString("format") + "_" + n);
     Random rand = new Random();
     int item = rand.nextInt(ServiceAccessPoint.Variant.values().length - 1);    

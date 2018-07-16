@@ -140,6 +140,7 @@ public class SpecimenTaxonomicEnricher2 {
 				}
 			}
 			indexer.index(batch);
+			logger.info("Specimen documents imported: {}", processed);
 		}
 		finally {
 			IOUtil.close(lnr);

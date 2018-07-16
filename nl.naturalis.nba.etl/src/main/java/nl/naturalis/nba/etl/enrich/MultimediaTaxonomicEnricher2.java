@@ -140,6 +140,8 @@ public class MultimediaTaxonomicEnricher2 {
 					logger.info("MultiMediaObject documents imported: {}", processed);
 				}
 			}
+			indexer.index(batch);
+			logger.info("MultiMediaObject documents imported: {}", processed);
 		}
 		finally {
 			IOUtil.close(lnr);

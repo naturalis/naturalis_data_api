@@ -54,7 +54,6 @@ import nl.naturalis.nba.api.model.summary.SummaryVernacularName;
 import nl.naturalis.nba.dao.MultiMediaObjectDao;
 import nl.naturalis.nba.dao.SpecimenDao;
 import nl.naturalis.nba.dao.util.es.ESUtil;
-import nl.naturalis.nba.etl.crs.CrsSpecimenImportOffline;
 
 /**
  * This class can be used to create test documents that contain a sample value
@@ -68,7 +67,7 @@ public class CreateTestDocument {
   private static final Logger logger;
 
   static {
-    logger = ETLRegistry.getInstance().getLogger(CrsSpecimenImportOffline.class);
+    logger = ETLRegistry.getInstance().getLogger(CreateTestDocument.class);
   }
 
   public static void main(String[] args) throws Exception {
@@ -103,7 +102,7 @@ public class CreateTestDocument {
       SpecimenDao specimenDao = new SpecimenDao();
       specimenId = specimenDao.save(specimen, true);
     } catch (Exception e) {
-      logger.error("Failed to create a Specmen test document!");
+      logger.error("Failed to create a Specimen test document!");
       logger.error(e.getMessage());
     }
     
@@ -158,7 +157,7 @@ public class CreateTestDocument {
     return document;
   }
 
-  private static Specimen generateSpecimen() throws Exception {
+  static Specimen generateSpecimen() throws Exception {
     SourceSystem sourceSystem = SourceSystem.CRS;
     Specimen specimen = new Specimen();
     generateDocumentBasics(sourceSystem, specimen);
@@ -201,7 +200,7 @@ public class CreateTestDocument {
     return specimen;
   }
 
-  private static MultiMediaObject generateMultiMediaObject() throws Exception {
+  static MultiMediaObject generateMultiMediaObject() throws Exception {
     SourceSystem sourceSystem = SourceSystem.CRS;
     MultiMediaObject multiMediaObject = new MultiMediaObject();
     generateDocumentBasics(sourceSystem, multiMediaObject);
@@ -512,6 +511,7 @@ public class CreateTestDocument {
     TaxonomicEnrichment enrichment = new TaxonomicEnrichment();
     enrichment.setVernacularNames(Arrays.asList(new SummaryVernacularName[] {createSummaryVernacularName(1), createSummaryVernacularName(2)}));
     enrichment.setSynonyms(Arrays.asList(new SummaryScientificName[] {createSummaryScientificName(1), createSummaryScientificName(2)}));
+    enrichment.setDefaultClassification(createDefaultClassification());
     enrichment.setSourceSystem(new SummarySourceSystem(reverseString("code") + "_" + n));
     enrichment.setTaxonId(reverseString("taxonId") + "_" + n);
     return enrichment;

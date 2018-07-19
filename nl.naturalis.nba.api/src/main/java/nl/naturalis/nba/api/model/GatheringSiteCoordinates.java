@@ -135,7 +135,9 @@ public class GatheringSiteCoordinates implements INbaModelObject {
   }
 
   public void setCoordinateUncertaintyInMeters(Integer coordinateUncertaintyInMeters) {
-    this.coordinateUncertaintyInMeters = coordinateUncertaintyInMeters;
+    if (coordinateUncertaintyInMeters > 0) {
+      this.coordinateUncertaintyInMeters = coordinateUncertaintyInMeters;
+    }
   }
 
 }

@@ -43,7 +43,7 @@ public class GatheringEvent implements INbaModelObject {
 	private String biotopeText;
 	private String depth;
 	private String depthUnitOfMeasurement;
-
+	
 	private List<Person> gatheringPersons;
 	private List<Organization> gatheringOrganizations;
 	private List<GatheringSiteCoordinates> siteCoordinates;

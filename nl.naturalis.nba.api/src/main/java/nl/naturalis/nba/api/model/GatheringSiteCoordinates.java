@@ -24,6 +24,7 @@ public class GatheringSiteCoordinates implements INbaModelObject {
 	private Double gridLongitudeDecimal;
 	private String gridCellCode;
 	private String gridQualifier;
+	private Integer coordinateUncertaintyInMeters;
 
 	public GatheringSiteCoordinates()
 	{
@@ -128,5 +129,13 @@ public class GatheringSiteCoordinates implements INbaModelObject {
 	{
 		this.gridQualifier = gridQualifier;
 	}
+
+  public Integer getCoordinateUncertaintyInMeters() {
+    return coordinateUncertaintyInMeters;
+  }
+
+  public void setCoordinateUncertaintyInMeters(Integer coordinateUncertaintyInMeters) {
+    this.coordinateUncertaintyInMeters = coordinateUncertaintyInMeters;
+  }
 
 }

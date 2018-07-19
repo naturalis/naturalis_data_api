@@ -49,6 +49,7 @@ public class MultiMediaObject extends NbaTraceableObject implements IDocumentObj
 	private boolean multiMediaPublic;
 	private String informationWithheld;
 	private String dataGeneralizations;
+	private Byte rating;
 	
 	private List<String> subjectParts;
 	private List<String> subjectOrientations;
@@ -378,6 +379,20 @@ public class MultiMediaObject extends NbaTraceableObject implements IDocumentObj
 
   public void setDataGeneralizations(String dataGeneralizations) {
     this.dataGeneralizations = dataGeneralizations;
+  }
+
+  public Byte getRating() {
+    return rating;
+  }
+
+  /**
+   * Rating is an integer from the scale: -1, 0, 1, 2, 3, 4, 5
+   * @param rating
+   */
+  public void setRating(Byte rating) {
+    if (rating >= -1 && rating <= 5) {
+      this.rating = rating;      
+    }
   }
 
 }

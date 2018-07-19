@@ -9,7 +9,7 @@ import java.util.List;
 
 import nl.naturalis.nba.api.annotations.Analyzers;
 import nl.naturalis.nba.api.annotations.NotStored;
-import nl.naturalis.nba.api.model.Type;
+import nl.naturalis.nba.api.model.ResourceType;
 
 /**
  * Class modeling a MultiMediaObject
@@ -39,7 +39,7 @@ public class MultiMediaObject extends NbaTraceableObject implements IDocumentObj
 	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String description;
 	private List<ServiceAccessPoint> serviceAccessPoints;
-	private Type type;
+	private ResourceType type;
 	private int taxonCount;
 	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String creator;
@@ -204,12 +204,12 @@ public class MultiMediaObject extends NbaTraceableObject implements IDocumentObj
 		this.serviceAccessPoints = serviceAccessPoints;
 	}
 
-	public Type getType()
+	public ResourceType getType()
 	{
 		return type;
 	}
 
-	public void setType(Type type)
+	public void setType(ResourceType type)
 	{
 		this.type = type;
 	}

@@ -24,7 +24,7 @@ import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.api.model.SpecimenTypeStatus;
 import nl.naturalis.nba.api.model.TaxonomicEnrichment;
-import nl.naturalis.nba.api.model.Type;
+import nl.naturalis.nba.api.model.ResourceType;
 
 public class DataMockUtil {
 
@@ -56,7 +56,7 @@ public class DataMockUtil {
 
     multiMediaObject.setServiceAccessPoints(serviceAccessPoints);
 
-    Type type = Type.SOUND;
+    ResourceType type = ResourceType.SOUND;
 
     multiMediaObject.setType(type);
     multiMediaObject.setTaxonCount(3);

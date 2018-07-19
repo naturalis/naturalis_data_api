@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * More information: {@linkplain https://terms.tdwg.org/wiki/Audubon_Core_Term_List#dc:type}
  *
  */
-public enum Type implements INbaModelObject {
+public enum ResourceType implements INbaModelObject {
     
   COLLECTION ("Collection"), 
   DATASET ("Dataset"), 
@@ -27,17 +27,17 @@ public enum Type implements INbaModelObject {
 
   private String name;
   
-  private Type(String name) {
+  private ResourceType(String name) {
     this.name = name;
   }
 
   @JsonCreator
-  public static Type parse(@JsonProperty("name") String name)
+  public static ResourceType parse(@JsonProperty("name") String name)
   {
     if (name == null) {
       return null;
     }
-    for (Type type : Type.values()) {
+    for (ResourceType type : ResourceType.values()) {
       if (type.name.equalsIgnoreCase(name)) {
         return type;
       }

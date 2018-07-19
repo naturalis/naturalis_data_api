@@ -39,6 +39,7 @@ public class GatheringEvent implements INbaModelObject {
 	private String method;
 	private String altitude;
 	private String altitudeUnifOfMeasurement;
+	private String behavior;
 	private String biotopeText;
 	private String depth;
 	private String depthUnitOfMeasurement;
@@ -364,6 +365,14 @@ public class GatheringEvent implements INbaModelObject {
 
   public void setDateText(String dateText) {
     this.dateText = dateText;
+  }
+
+  public String getBehavior() {
+    return behavior;
+  }
+
+  public void setBehavior(String behavior) {
+    this.behavior = behavior;
   }
 
 }

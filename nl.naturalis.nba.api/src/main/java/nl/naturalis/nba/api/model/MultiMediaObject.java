@@ -48,6 +48,7 @@ public class MultiMediaObject extends NbaTraceableObject implements IDocumentObj
 	private String associatedTaxonReference;
 	private boolean multiMediaPublic;
 	private String informationWithheld;
+	private String dataGeneralizations;
 	
 	private List<String> subjectParts;
 	private List<String> subjectOrientations;
@@ -369,6 +370,14 @@ public class MultiMediaObject extends NbaTraceableObject implements IDocumentObj
 
   public void setInformationWithheld(String informationWithheld) {
     this.informationWithheld = informationWithheld;
+  }
+
+  public String getDataGeneralizations() {
+    return dataGeneralizations;
+  }
+
+  public void setDataGeneralizations(String dataGeneralizations) {
+    this.dataGeneralizations = dataGeneralizations;
   }
 
 }

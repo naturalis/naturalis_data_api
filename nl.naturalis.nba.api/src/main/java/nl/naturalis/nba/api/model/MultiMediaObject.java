@@ -3,7 +3,7 @@ package nl.naturalis.nba.api.model;
 import static nl.naturalis.nba.api.annotations.Analyzer.CASE_INSENSITIVE;
 import static nl.naturalis.nba.api.annotations.Analyzer.DEFAULT;
 import static nl.naturalis.nba.api.annotations.Analyzer.LIKE;
-
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,6 +51,7 @@ public class MultiMediaObject extends NbaTraceableObject implements IDocumentObj
 	private String dataGeneralizations;
 	private Byte rating;
 	private String resourceCreationTechnique;
+	private OffsetDateTime dateModified;
 	
 	private List<String> subjectParts;
 	private List<String> subjectOrientations;
@@ -402,6 +403,14 @@ public class MultiMediaObject extends NbaTraceableObject implements IDocumentObj
 
   public void setResourceCreationTechnique(String resourceCreationTechnique) {
     this.resourceCreationTechnique = resourceCreationTechnique;
+  }
+
+  public OffsetDateTime getDateModified() {
+    return dateModified;
+  }
+
+  public void setDateModified(OffsetDateTime dateModified) {
+    this.dateModified = dateModified;
   }
 
 }

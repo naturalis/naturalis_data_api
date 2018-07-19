@@ -19,6 +19,7 @@ import static nl.naturalis.nba.utils.xml.DOMUtil.getDescendants;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -35,6 +36,7 @@ import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.ServiceAccessPoint;
 import nl.naturalis.nba.api.model.SpecimenTypeStatus;
 import nl.naturalis.nba.api.model.VernacularName;
+import nl.naturalis.nba.common.es.ESDateInput;
 import nl.naturalis.nba.etl.AbstractXMLTransformer;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.MimeTypeCache;
@@ -45,6 +47,7 @@ import nl.naturalis.nba.etl.normalize.PhaseOrStageNormalizer;
 import nl.naturalis.nba.etl.normalize.SexNormalizer;
 import nl.naturalis.nba.etl.normalize.SpecimenTypeStatusNormalizer;
 import nl.naturalis.nba.etl.normalize.UnmappedValueException;
+import nl.naturalis.nba.utils.xml.DOMUtil;
 
 /**
  * The transformer component for the CRS multimedia import.
@@ -186,6 +189,7 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 				mmo.setCaption(title);
 				mmo.setMultiMediaPublic(bval(frmDigitaleBestandenElem, "abcd:MultiMediaPublic"));
 				mmo.setCreator(val(frmDigitaleBestandenElem, "dc:creator"));
+				mmo.setDateModified(getDateModified());
 				mmos.add(mmo);
 				stats.objectsAccepted++;
 			}
@@ -500,6 +504,20 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 		}
 		return result;
 	}
+	
+  private OffsetDateTime getDateModified() {
+    Element hdr = DOMUtil.getChild(input.getRecord(), "header");
+    String dateStamp = val(hdr, "datestamp");
+    if (dateStamp != null) {
+      ESDateInput input = new ESDateInput(dateStamp);
+      OffsetDateTime odt = input.parseAsOffsetDateTime();
+      if (odt == null && !suppressErrors) {
+        warn("Invalid date in element <datestamp>: %s", dateStamp);
+      }
+      return odt;
+    }
+    return null;
+  }
 
 	private boolean hasTestGenus(List<Element> elems)
 	{

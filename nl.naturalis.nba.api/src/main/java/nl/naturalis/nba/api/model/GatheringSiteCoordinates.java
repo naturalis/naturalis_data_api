@@ -25,6 +25,7 @@ public class GatheringSiteCoordinates implements INbaModelObject {
 	private String gridCellCode;
 	private String gridQualifier;
 	private Integer coordinateUncertaintyInMeters;
+	private String spatialDatum;
 
 	public GatheringSiteCoordinates()
 	{
@@ -138,6 +139,14 @@ public class GatheringSiteCoordinates implements INbaModelObject {
     if (coordinateUncertaintyInMeters > 0) {
       this.coordinateUncertaintyInMeters = coordinateUncertaintyInMeters;
     }
+  }
+
+  public String getSpatialDatum() {
+    return spatialDatum;
+  }
+
+  public void setSpatialDatum(String spatialDatum) {
+    this.spatialDatum = spatialDatum;
   }
 
 }

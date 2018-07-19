@@ -47,6 +47,8 @@ public class MultiMediaObject extends NbaTraceableObject implements IDocumentObj
 	private String associatedSpecimenReference;
 	private String associatedTaxonReference;
 	private boolean multiMediaPublic;
+	private String informationWithheld;
+	
 	private List<String> subjectParts;
 	private List<String> subjectOrientations;
 	private List<String> phasesOrStages;
@@ -360,5 +362,13 @@ public class MultiMediaObject extends NbaTraceableObject implements IDocumentObj
 	{
 		this.associatedTaxon = associatedTaxon;
 	}
+
+  public String getInformationWithheld() {
+    return informationWithheld;
+  }
+
+  public void setInformationWithheld(String informationWithheld) {
+    this.informationWithheld = informationWithheld;
+  }
 
 }

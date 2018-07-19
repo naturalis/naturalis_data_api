@@ -45,6 +45,8 @@ public class Specimen extends NbaTraceableObject implements IDocumentObject {
 
 	private Agent acquiredFrom;
 	private GatheringEvent gatheringEvent;
+	private String informationWithheld;
+	
 	private List<SpecimenIdentification> identifications;
 	private List<ServiceAccessPoint> associatedMultiMediaUris;
 	private List<String> theme;
@@ -360,5 +362,13 @@ public class Specimen extends NbaTraceableObject implements IDocumentObject {
 	{
 		this.associatedMultiMediaObjects = associatedMultiMediaObjects;
 	}
+
+  public String getInformationWithheld() {
+    return informationWithheld;
+  }
+
+  public void setInformationWithheld(String informationWithheld) {
+    this.informationWithheld = informationWithheld;
+  }
 
 }

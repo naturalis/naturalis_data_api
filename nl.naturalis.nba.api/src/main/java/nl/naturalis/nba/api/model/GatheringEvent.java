@@ -35,6 +35,7 @@ public class GatheringEvent implements INbaModelObject {
 	private String localityText;
 	private OffsetDateTime dateTimeBegin;
 	private OffsetDateTime dateTimeEnd;
+	private String dateText;
 	private String method;
 	private String altitude;
 	private String altitudeUnifOfMeasurement;
@@ -356,5 +357,13 @@ public class GatheringEvent implements INbaModelObject {
 	{
 		this.lithoStratigraphy = lithoStratigraphy;
 	}
+
+  public String getDateText() {
+    return dateText;
+  }
+
+  public void setDateText(String dateText) {
+    this.dateText = dateText;
+  }
 
 }

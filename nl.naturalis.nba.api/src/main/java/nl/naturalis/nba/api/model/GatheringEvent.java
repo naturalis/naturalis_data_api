@@ -43,6 +43,7 @@ public class GatheringEvent implements INbaModelObject {
 	private String biotopeText;
 	private String depth;
 	private String depthUnitOfMeasurement;
+	private String code;
 	
 	private List<Person> gatheringPersons;
 	private List<Organization> gatheringOrganizations;
@@ -373,6 +374,14 @@ public class GatheringEvent implements INbaModelObject {
 
   public void setBehavior(String behavior) {
     this.behavior = behavior;
+  }
+
+  public String getCode() {
+    return code;
+  }
+
+  public void setCode(String code) {
+    this.code = code;
   }
 
 }

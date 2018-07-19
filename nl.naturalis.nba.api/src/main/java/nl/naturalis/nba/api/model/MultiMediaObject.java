@@ -50,6 +50,7 @@ public class MultiMediaObject extends NbaTraceableObject implements IDocumentObj
 	private String informationWithheld;
 	private String dataGeneralizations;
 	private Byte rating;
+	private String resourceCreationTechnique;
 	
 	private List<String> subjectParts;
 	private List<String> subjectOrientations;
@@ -393,6 +394,14 @@ public class MultiMediaObject extends NbaTraceableObject implements IDocumentObj
     if (rating >= -1 && rating <= 5) {
       this.rating = rating;      
     }
+  }
+
+  public String getResourceCreationTechnique() {
+    return resourceCreationTechnique;
+  }
+
+  public void setResourceCreationTechnique(String resourceCreationTechnique) {
+    this.resourceCreationTechnique = resourceCreationTechnique;
   }
 
 }

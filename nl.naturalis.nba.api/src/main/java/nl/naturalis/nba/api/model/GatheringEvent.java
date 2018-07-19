@@ -44,6 +44,7 @@ public class GatheringEvent implements INbaModelObject {
 	private String depth;
 	private String depthUnitOfMeasurement;
 	private String code;
+	private String establishmentMeans;
 	
 	private List<Person> gatheringPersons;
 	private List<Organization> gatheringOrganizations;
@@ -382,6 +383,14 @@ public class GatheringEvent implements INbaModelObject {
 
   public void setCode(String code) {
     this.code = code;
+  }
+
+  public String getEstablishmentMeans() {
+    return establishmentMeans;
+  }
+
+  public void setEstablishmentMeans(String establishmentMeans) {
+    this.establishmentMeans = establishmentMeans;
   }
 
 }

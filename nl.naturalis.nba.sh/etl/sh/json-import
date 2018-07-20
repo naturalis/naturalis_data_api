@@ -3,14 +3,17 @@
 . ./include.sh
 
 type="${1}"
-file="${2}"
 
 if [ "${type}" = specimen ]
 then
-    java -cp ${classpath} $JAVA_OPTS ${root_package}.JsonImporter specimen ${file}
+    java -cp ${classpath} $JAVA_OPTS ${root_package}.JsonImporter Specimen
 elif [ "${type}" = multimedia ]
 then
-    java -cp ${classpath} $JAVA_OPTS ${root_package}.JsonImporter multimedia $@
+    java -cp ${classpath} $JAVA_OPTS ${root_package}.JsonImporter MultiMediaObject
+elif [ "${type}" = all ]
+then
+    java -cp ${classpath} $JAVA_OPTS ${root_package}.JsonImporter Specimen
+    java -cp ${classpath} $JAVA_OPTS ${root_package}.JsonImporter MultiMediaObject
 else
-    echo "USAGE: ${0} [ specimens | multimedia | taxa ]"
+    echo "USAGE: ${0} [ specimens | multimedia | all ]"
 fi

@@ -7,7 +7,7 @@
 
 	<groupId>nl.naturalis.nba</groupId>
 	<artifactId>nba-motherpom</artifactId>
-	<version>2.11-SNAPSHOT</version>
+	<version>2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>NBA Mother POM</name>
@@ -49,7 +49,7 @@
 		<apache-commons-text.version>1.1</apache-commons-text.version>
 		<apache-commons-csv.version>1.4</apache-commons-csv.version>
 		<apache-logging.version>2.7</apache-logging.version>
-		<apache-commons-compress.version>1.12</apache-commons-compress.version>
+		<apache-commons-compress.version>1.17</apache-commons-compress.version>
 
 		<elasticsearch.version>5.1.2</elasticsearch.version>
 		<apache-lucene.version>6.3.0</apache-lucene.version>

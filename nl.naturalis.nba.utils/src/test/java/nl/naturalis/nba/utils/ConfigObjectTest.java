@@ -21,6 +21,14 @@ import org.junit.Test;
 import nl.naturalis.nba.utils.ConfigObject.InvalidValueException;
 import nl.naturalis.nba.utils.ConfigObject.MissingPropertyException;
 import nl.naturalis.nba.utils.ConfigObject.PropertyNotSetException;
+import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+/*import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.beans.HasPropertyWithValue.hasProperty;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.equalTo;*/
 
 /**
  * Test class for ConfigObject.java
@@ -175,11 +183,12 @@ public class ConfigObjectTest {
     @Ignore
     public void testGetPropertyNames() {
 
-        List<String> expectedList = Arrays.asList("prop_4", "prop_3", "prop_2", "prop_1");
+        List<String> expectedList = Arrays.asList("prop_1", "prop_2", "prop_3", "prop_4");
         List<String> actual = configObject.getPropertyNames();
 
         assertEquals(4, actual.size());
-        assertEquals(expectedList, actual);
+        //assertEquals(expectedList, containsInAnyOrder(actual) );
+        assertThat(actual, containsInAnyOrder(expectedList.toArray(new String[expectedList.size()])));
     }
 
     /**
@@ -637,13 +646,14 @@ public class ConfigObjectTest {
         properties.setProperty("prefix3.test", "3");
         properties.setProperty("prefix4.test", "4");
 
-        String[] expected = {"prefix4", "prefix3", "prefix2", "prefix1"};
-        String[] actual = configObject.getSubsections();
-
+        //String[] expected = {"prefix4", "prefix3", "prefix2", "prefix1"};
+        //String[] actual = configObject.getSubsections();
+        
+        List<String> expected = Arrays.asList("prefix4", "prefix2", "prefix3", "prefix1");
+        List<String> actual = Arrays.asList(configObject.getSubsections());
         assertNotNull(actual);
-        assertArrayEquals(expected, actual);
-
-
+        assertThat(actual, containsInAnyOrder(expected.toArray(new String[expected.size()])));
+        //assertArrayEquals(expected, actual);
     }
 
     /**
@@ -660,12 +670,12 @@ public class ConfigObjectTest {
         properties.setProperty("system.db.password", "password");
         properties.setProperty("system.host.port", "8080");
         properties.setProperty("system.host.ip", "180.35.35.32");
-        String[] expected = {"db", "host"};
-        String[] actual = configObject.getSubsections("system");
+        List<String> expected = Arrays.asList("db", "host");;
+        List<String> actual = Arrays.asList(configObject.getSubsections("system"));
 
         assertNotNull(actual);
-        assertArrayEquals(expected, actual);
-
+        //assertArrayEquals(expected, actual);
+        assertThat(actual, containsInAnyOrder(expected.toArray(new String[expected.size()])));
 
     }
 

@@ -16,6 +16,7 @@ public class FieldInfo {
 	private boolean indexed;
 	private String type;
 	private Set<ComparisonOperator> allowedOperators;
+	private String description;
 
 	public FieldInfo()
 	{
@@ -49,6 +50,14 @@ public class FieldInfo {
 	public void setAllowedOperators(Set<ComparisonOperator> allowedOperators)
 	{
 		this.allowedOperators = allowedOperators;
+	}
+	
+	public void setDescription(String description) {
+	  this.description = description;
+	}
+	
+	public String getDescription() {
+	  return description;
 	}
 
 }

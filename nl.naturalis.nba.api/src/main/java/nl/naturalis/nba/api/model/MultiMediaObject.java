@@ -9,33 +9,27 @@ import java.util.List;
 
 import nl.naturalis.nba.api.annotations.Analyzers;
 import nl.naturalis.nba.api.annotations.NotStored;
+import nl.naturalis.nba.api.model.Type;
 
 /**
- * 
- * @see http://terms.tdwg.org/wiki/Audubon_Core_Term_List#dwc:scientificName
+ * Class modeling a MultiMediaObject
  */
 public class MultiMediaObject extends NbaTraceableObject implements IDocumentObject {
-
-	/**
-	 * Enumeration of the possible types of a {@code Media} object.
-	 * 
-	 * @see http://terms.tdwg.org/wiki/Audubon_Core_Term_List#dc:type
-	 */
-	public static enum Type
-	{
-		COLLECTION, STILL_IMAGE, SOUND, MOVING_IMAGE, INTERACTIVE_RESOURCE, TEXT, OTHER
-	}
 
 	@NotStored
 	private String id;
 	private String sourceInstitutionID;
 	private String sourceID;
+	@SuppressWarnings("unused")
+  private List<String> previousSourceID;
 	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String owner;
 	private String licenseType;
 	private String license;
 	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String unitID;
+	@SuppressWarnings("unused")
+  private String previousUnitsText;
 	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String collectionType;
 	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
@@ -67,7 +61,8 @@ public class MultiMediaObject extends NbaTraceableObject implements IDocumentObj
 	@NotStored
 	private Taxon associatedTaxon;
 
-	public void addServiceAccessPoint(String uri, String format, ServiceAccessPoint.Variant variant)
+	@SuppressWarnings("unused")
+  public void addServiceAccessPoint(String uri, String format, ServiceAccessPoint.Variant variant)
 	{
 		if (serviceAccessPoints == null) {
 			serviceAccessPoints = new ArrayList<ServiceAccessPoint>();
@@ -75,7 +70,8 @@ public class MultiMediaObject extends NbaTraceableObject implements IDocumentObj
 		serviceAccessPoints.add(new ServiceAccessPoint(uri, format, variant));
 	}
 
-	public void addServiceAccessPoint(ServiceAccessPoint sap)
+	@SuppressWarnings("unused")
+  public void addServiceAccessPoint(ServiceAccessPoint sap)
 	{
 		if (serviceAccessPoints == null) {
 			serviceAccessPoints = new ArrayList<ServiceAccessPoint>();

@@ -14,8 +14,12 @@ import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 import org.w3c.dom.Element;
+import nl.naturalis.nba.api.model.AreaClass;
+import nl.naturalis.nba.api.model.AssociatedTaxon;
 import nl.naturalis.nba.api.model.BioStratigraphy;
 import nl.naturalis.nba.api.model.ChronoStratigraphy;
 import nl.naturalis.nba.api.model.DefaultClassification;
@@ -23,6 +27,7 @@ import nl.naturalis.nba.api.model.GatheringEvent;
 import nl.naturalis.nba.api.model.GatheringSiteCoordinates;
 import nl.naturalis.nba.api.model.LithoStratigraphy;
 import nl.naturalis.nba.api.model.Monomial;
+import nl.naturalis.nba.api.model.NamedArea;
 import nl.naturalis.nba.api.model.Person;
 import nl.naturalis.nba.api.model.PhaseOrStage;
 import nl.naturalis.nba.api.model.ScientificName;
@@ -30,6 +35,7 @@ import nl.naturalis.nba.api.model.Sex;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.api.model.SpecimenTypeStatus;
+import nl.naturalis.nba.api.model.TaxonRelationType;
 import nl.naturalis.nba.api.model.VernacularName;
 import nl.naturalis.nba.common.es.ESDateInput;
 import nl.naturalis.nba.etl.AbstractXMLTransformer;
@@ -38,9 +44,11 @@ import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.ETLUtil;
 import nl.naturalis.nba.etl.ThemeCache;
 import nl.naturalis.nba.etl.TransformUtil;
+import nl.naturalis.nba.etl.normalize.AreaClassNormalizer;
 import nl.naturalis.nba.etl.normalize.PhaseOrStageNormalizer;
 import nl.naturalis.nba.etl.normalize.SexNormalizer;
 import nl.naturalis.nba.etl.normalize.SpecimenTypeStatusNormalizer;
+import nl.naturalis.nba.etl.normalize.TaxonRelationTypeNormalizer;
 import nl.naturalis.nba.etl.normalize.UnmappedValueException;
 import nl.naturalis.nba.utils.xml.DOMUtil;
 
@@ -53,15 +61,19 @@ import nl.naturalis.nba.utils.xml.DOMUtil;
  */
 class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 
+    private static final AreaClassNormalizer areaClassNormalizer;
     private static final SpecimenTypeStatusNormalizer tsNormalizer;
     private static final SexNormalizer sexNormalizer;
     private static final PhaseOrStageNormalizer posNormalizer;
+    private static final TaxonRelationTypeNormalizer trtNormalizer;
     private static final Field[] geFields;
 
     static {
+        areaClassNormalizer = AreaClassNormalizer.getInstance();
         tsNormalizer = SpecimenTypeStatusNormalizer.getInstance();
         sexNormalizer = SexNormalizer.getInstance();
         posNormalizer = PhaseOrStageNormalizer.getInstance();
+        trtNormalizer = TaxonRelationTypeNormalizer.getInstance();
         geFields = GatheringEvent.class.getDeclaredFields();
         for (Field f : geFields) {
             f.setAccessible(true);
@@ -156,6 +168,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
             specimen.setUnitGUID(ETLUtil.getSpecimenPurl(objectID));
             specimen.setCollectorsFieldNumber(val(record, "abcd:CollectorsFieldNumber"));
             specimen.setSourceInstitutionID(SOURCE_INSTITUTION_ID);
+            specimen.setPreviousSourceID(getPreviousSourceIds());
             specimen.setOwner(SOURCE_INSTITUTION_ID);
             specimen.setSourceID("CRS");
             specimen.setLicenseType(LICENCE_TYPE);
@@ -186,7 +199,22 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
             return null;
         }
     }
-
+    
+    private List<String> getPreviousSourceIds() {
+      Element record = input.getRecord();
+      List<Element> elems = DOMUtil.getDescendants(record, "abcd:PreviousSourceName");
+      if (elems == null) {
+          return null;
+      }
+      List<String> sourceIds = new ArrayList<>(elems.size());
+      for (Element e : elems) {
+        String id = e.getTextContent().trim();
+        if (id.length() > 0)
+          sourceIds.add(id);
+      }
+      return (sourceIds.size() == 0) ? null : sourceIds;      
+    }
+    
     private SpecimenIdentification getIdentification(Element elem, String collectionType) {
 
         ScientificName sn = getScientificName(elem, collectionType);
@@ -307,6 +335,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
         ge.setIsland(val(record, "abcd:Island"));
         ge.setLocality(val(record, "abcd:Locality"));
         ge.setLocalityText(val(record, "abcd:LocalityText"));
+        ge.setNamedAreas(getNamedAreas());
         ge.setDateTimeBegin(date(record, "abcd:CollectingStartDate"));
         ge.setDateTimeEnd(date(record, "abcd:CollectingEndDate"));
         String s = val(record, "abcd:GatheringAgent");
@@ -328,6 +357,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
         if (lat != null || lon != null) {
             ge.setSiteCoordinates(Arrays.asList(new GatheringSiteCoordinates(lat, lon)));
         }
+        ge.setAssociatedTaxa(getAssociatedTaxa());
         ge.setChronoStratigraphy(getChronoStratigraphyList());
         ge.setBioStratigraphy(getBioStratigraphyList());
         ge.setLithoStratigraphy(getLithoStratigraphyList());
@@ -343,6 +373,69 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
         }
 
         return null;
+    }
+
+    private List<AssociatedTaxon> getAssociatedTaxa() {
+      Element record = input.getRecord();
+      List<Element> elements = DOMUtil.getDescendants(record, "ncrsSynecology");
+      if (elements == null) {
+          return null;
+      }
+      HashMap<TaxonRelationType, String> relationTypeMap = new HashMap<>();
+      for (Element element : elements) {
+        String scientificOrInformalName = val(element, "abcd:ScientificOrInformalName");
+        TaxonRelationType relationType = null;
+        try {
+          relationType = getTaxonRelationType(element);
+          if (relationType == null) {
+            continue;
+          }
+          else if (relationTypeMap.containsKey(relationType) && scientificOrInformalName != null) {
+            relationTypeMap.put(relationType, relationTypeMap.get(relationType).concat(" | " + scientificOrInformalName));
+          } 
+          else if (scientificOrInformalName != null) {
+            relationTypeMap.put(relationType, scientificOrInformalName);
+          }
+        } catch (IllegalArgumentException e){
+          if (!suppressErrors) {
+            warn(e.getMessage());
+            }
+          continue;
+        }
+      }
+      if (relationTypeMap == null || relationTypeMap.size() == 0) {
+        return null;        
+      }
+      ArrayList<AssociatedTaxon> associatedTaxa = new ArrayList<>();
+      for (Entry<TaxonRelationType, String> entry : relationTypeMap.entrySet()) {
+        associatedTaxa.add(new AssociatedTaxon(entry.getValue(), entry.getKey()));
+      }
+      return associatedTaxa;
+    }
+
+    private List<NamedArea> getNamedAreas() {
+      Element record = input.getRecord();
+      List<Element> elements = DOMUtil.getDescendants(record, "ncrsNamedAreas");
+      if (elements == null) {
+          return null;
+      }
+      List<NamedArea> namedAreas = new ArrayList<>();
+      for (Element element : elements) {
+        AreaClass areaClass = null;
+        try {
+          areaClass = getAreaClass(element);
+        } catch (IllegalArgumentException ex) {
+          if (!suppressErrors) {
+              warn(ex.getMessage());
+          }
+          continue;
+        }
+        String areaName = val(element, "abcd:AreaName");
+        if (areaClass != null && areaName != null) {          
+          namedAreas.add(new NamedArea(areaClass, areaName));
+        } 
+      }
+      return (namedAreas == null || namedAreas.size() == 0) ? null : namedAreas;
     }
 
     private List<ChronoStratigraphy> getChronoStratigraphyList() {
@@ -528,6 +621,30 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
             }
             return null;
         }
+    }
+
+    private AreaClass getAreaClass(Element elem) {
+      String raw = val(elem, "abcd:AreaClass");
+      try {
+        return areaClassNormalizer.map(raw);
+      } catch (UnmappedValueException e) {
+        if (logger.isDebugEnabled()) {
+          debug(e.getMessage());
+        }
+        return null;
+      }
+    }
+
+    private TaxonRelationType getTaxonRelationType(Element elem) {
+      String raw = val(elem, "abcd:ResultRole");
+      try {
+        return trtNormalizer.map(raw);
+      } catch (UnmappedValueException e) {
+        if (logger.isDebugEnabled()) {
+          debug(e.getMessage());
+        }
+        return null;
+      }
     }
 
     private static final String MSG_BAD_DATE = "Invalid date in element %s: \"%s\"";

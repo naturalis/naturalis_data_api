@@ -8,6 +8,7 @@ import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.CONTINENT;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.COUNTRY;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.DAY;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.GENUS;
+import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.HABITATTXT;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.LATITUDE;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.LOCNOTES;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.LONGITUDE;
@@ -117,6 +118,7 @@ abstract class BrahmsTransformer<T extends IDocumentObject>
 			sb.append(locNotes);
 		}
 		ge.setLocalityText(sb.toString());
+		ge.setBiotopeText(record.get(HABITATTXT));
 		String y = record.get(YEAR);
 		String m = record.get(MONTH);
 		String d = record.get(DAY);

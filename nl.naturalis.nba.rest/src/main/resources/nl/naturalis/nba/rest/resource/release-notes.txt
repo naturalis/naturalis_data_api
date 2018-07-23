@@ -1,3 +1,14 @@
+RELEASE NOTES v 2.15
+* Several new fields have been added to the document 
+  types Specimen and MultiMediaObject allowing for 
+  extra information to be stored (NBAX-148, NBAX-149, 
+  NBAX-150, NBAX-151, NBAX-152, NBAX-153)
+* The servcie getFieldInfo has been updated with a 
+  description field. The description can contains 
+  more information about the type of field, like 
+  a reference to the metadate model (e.g. ABCD 
+  Version 2.06).
+
 RELEASE NOTES v 2.14
 
 * NBAX-101 New feature in this release is a download 

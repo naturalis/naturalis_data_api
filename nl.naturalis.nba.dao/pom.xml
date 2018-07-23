@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
@@ -32,17 +33,15 @@
 
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-core</artifactId>
+			<artifactId>log4j-api</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.elasticsearch.client</groupId>
 			<artifactId>transport</artifactId>
-			<version>5.1.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.elasticsearch</groupId>
 			<artifactId>elasticsearch</artifactId>
-			<version>5.1.2</version>
 		</dependency>
 		<dependency>
 			<groupId>com.vividsolutions</groupId>
@@ -68,20 +67,18 @@
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
-			<version>3.5</version>
 		</dependency>
-
 		<dependency>
+			<!-- Needed b/c elasticsearch doesn't hide it behind its API -->
 			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-join</artifactId>
-			<version>6.3.0</version>
 		</dependency>
 
 		<!-- TEST SCOPE -->
 		<dependency>
+			<!-- Needed even if mvn dependency:analyze says it isn't! -->
 			<groupId>org.locationtech.spatial4j</groupId>
 			<artifactId>spatial4j</artifactId>
-			<version>0.6</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -90,5 +87,5 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-	
+
 </project>

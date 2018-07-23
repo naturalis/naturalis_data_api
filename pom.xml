@@ -43,7 +43,8 @@
 		<!-- Check dependencies: mvn dependency:analyze -->
 		<jackson.version>2.8.5</jackson.version>
 		<geojson.version>1.8</geojson.version>
-		<apache-http-client.version>4.5.2</apache-http-client.version>
+		<apache-http-client.version>4.5.6</apache-http-client.version>
+		<apache-http-core.version>4.4.10</apache-http-core.version>
 		<apache-commons-io.version>2.6</apache-commons-io.version>
 		<apache-commons-lang3.version>3.5</apache-commons-lang3.version>
 		<apache-commons-text.version>1.1</apache-commons-text.version>
@@ -80,6 +81,7 @@
 		<resteasy-jaxrs.version>3.0.19.Final</resteasy-jaxrs.version>
 		<org.reflections.version>0.9.11</org.reflections.version>
 		<spatial4j.version>0.6</spatial4j.version>
+		<joda-time.version>2.9.5</joda-time.version>
 
 		<junit.version>4.12</junit.version>
 		<hamcrest-core.version>1.3</hamcrest-core.version>
@@ -133,7 +135,7 @@
 		<module>nl.naturalis.nba.client</module>
 	</modules>
 
-	<distributionManagement>
+	<!--distributionManagement>
 		<repository>
 			<id>gbif-release</id>
 			<url>http://repository.gbif.org/content/repositories/releases</url>
@@ -142,7 +144,7 @@
 			<id>gbif-snapshot</id>
 			<url>http://repository.gbif.org/content/repositories/snapshots</url>
 		</snapshotRepository>
-	</distributionManagement>
+	</distributionManagement-->
 
 	<dependencyManagement>
 		<dependencies>
@@ -200,6 +202,14 @@
 				<artifactId>lucene-join</artifactId>
 				<version>6.3.0</version>
 			</dependency>
+			<dependency>
+				<!-- Somehow needed b/c of Elasticsearch. We have no direct dependency 
+					on joda time any longer -->
+				<groupId>joda-time</groupId>
+				<artifactId>joda-time</artifactId>
+				<version>${joda-time.version}</version>
+			</dependency>
+
 
 
 			<!-- APACHE -->
@@ -207,6 +217,11 @@
 				<groupId>org.apache.httpcomponents</groupId>
 				<artifactId>httpclient</artifactId>
 				<version>${apache-http-client.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.httpcomponents</groupId>
+				<artifactId>httpcore</artifactId>
+				<version>${apache-http-core.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>commons-io</groupId>

@@ -44,7 +44,7 @@
 		<jackson.version>2.8.5</jackson.version>
 		<geojson.version>1.8</geojson.version>
 		<apache-http-client.version>4.5.2</apache-http-client.version>
-		<apache-commons-io.version>1.3.2</apache-commons-io.version>
+		<apache-commons-io.version>2.6</apache-commons-io.version>
 		<apache-commons-lang3.version>3.5</apache-commons-lang3.version>
 		<apache-commons-text.version>1.1</apache-commons-text.version>
 		<apache-commons-csv.version>1.4</apache-commons-csv.version>
@@ -53,8 +53,9 @@
 
 		<elasticsearch.version>5.1.2</elasticsearch.version>
 		<apache-lucene.version>6.3.0</apache-lucene.version>
-		
+
 		<osgi.version>4.3.1</osgi.version>
+		<com.opencsv.version>4.2</com.opencsv.version>
 		<com.lmax.disruptor.version>3.3.5</com.lmax.disruptor.version>
 		<com.conversantmedia.disruptor.version>1.2.8-JDK7</com.conversantmedia.disruptor.version>
 		<slf4j.version>1.7.21</slf4j.version>
@@ -208,7 +209,7 @@
 				<version>${apache-http-client.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.apache.commons</groupId>
+				<groupId>commons-io</groupId>
 				<artifactId>commons-io</artifactId>
 				<version>${apache-commons-io.version}</version>
 			</dependency>
@@ -378,6 +379,12 @@
 				<artifactId>spatial4j</artifactId>
 				<version>${spatial4j.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>com.opencsv</groupId>
+				<artifactId>opencsv</artifactId>
+				<version>${com.opencsv.version}</version>
+			</dependency>
+
 
 
 			<!-- TEST -->
@@ -486,32 +493,13 @@
 						</execution>
 					</executions>
 				</plugin>
-				<!--plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-failsafe-plugin</artifactId>
-					<version>${maven-failsave-plugin.version}</version>
-					<executions>
-						<execution>
-							<id>integration-test</id>
-							<goals>
-								<goal>integration-test</goal>
-							</goals>
-						</execution>
-						<execution>
-							<id>verify</id>
-							<goals>
-								<goal>verify</goal>
-							</goals>
-						</execution>
-					</executions>
-					<configuration>
-						<forkCount>1</forkCount>
-						<reuseForks>false</reuseForks>
-						<redirectTestOutputToFile>true</redirectTestOutputToFile>
-						<argLine>-Xmx256m</argLine>
-						<runOrder>random</runOrder>
-					</configuration>
-				</plugin-->
+				<!--plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-failsafe-plugin</artifactId> 
+					<version>${maven-failsave-plugin.version}</version> <executions> <execution> 
+					<id>integration-test</id> <goals> <goal>integration-test</goal> </goals> 
+					</execution> <execution> <id>verify</id> <goals> <goal>verify</goal> </goals> 
+					</execution> </executions> <configuration> <forkCount>1</forkCount> <reuseForks>false</reuseForks> 
+					<redirectTestOutputToFile>true</redirectTestOutputToFile> <argLine>-Xmx256m</argLine> 
+					<runOrder>random</runOrder> </configuration> </plugin -->
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-install-plugin</artifactId>

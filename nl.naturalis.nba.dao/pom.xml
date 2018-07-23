@@ -69,6 +69,10 @@
 			<artifactId>commons-lang3</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>com.opencsv</groupId>
+			<artifactId>opencsv</artifactId>
+		</dependency>
+		<dependency>
 			<!-- Needed b/c elasticsearch doesn't hide it behind its API -->
 			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-join</artifactId>

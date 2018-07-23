@@ -1,5 +1,6 @@
 package nl.naturalis.nba.etl;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class CreateTestDocumentTest {
@@ -13,6 +14,7 @@ public class CreateTestDocumentTest {
 
   @SuppressWarnings("static-method")
   @Test
+  @Ignore
   public void testDeleteTestDocs() {
     CreateTestDocument test = new CreateTestDocument();
     test.deleteTestDocs(); 

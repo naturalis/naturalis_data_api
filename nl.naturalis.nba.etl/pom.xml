@@ -139,6 +139,7 @@
 						</goals>
 						<configuration>
 							<outputDirectory>${nba.etl.install.dir}/conf</outputDirectory>
+							<overwrite>false</overwrite>
 							<resources>
 								<resource>
 									<directory>cli/conf</directory>

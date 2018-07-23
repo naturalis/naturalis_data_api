@@ -2,12 +2,18 @@
 <Configuration>
 	<Appenders>
 		<Console name="CONSOLE">
-			<PatternLayout pattern="%d{HH:mm:ss.SSS}|%-5level|%c{10}: %msg%n" />
+			<PatternLayout
+				pattern="%d{HH:mm:ss.SSS}|%-5level|%c{10}: %msg%n" />
 		</Console>
-		<File name="FILE" fileName="${sys:nl.naturalis.nba.logFileBaseName}.log">
-			<PatternLayout pattern="%d{HH:mm:ss.SSS}|%-5level|%c{10}: %msg%n" />
+		<!-- nl.naturalis.nba.logFileBaseName is the name of a Java system property 
+			that is set in include.sh (under the sh directory) -->
+		<File name="FILE"
+			fileName="${sys:nl.naturalis.nba.logFileBaseName}.log">
+			<PatternLayout
+				pattern="%d{HH:mm:ss.SSS}|%-5level|%c{10}: %msg%n" />
 		</File>
-		<File name="JSON" fileName="${sys:nl.naturalis.nba.logFileBaseName}.json">
+		<File name="JSON"
+			fileName="${sys:nl.naturalis.nba.logFileBaseName}.json">
 			<JSONLayout complete="false" compact="true"
 				includeStacktrace="false" eventEol="true" />
 		</File>
@@ -15,12 +21,12 @@
 	<Loggers>
 		<Logger name="nl.naturalis" level="INFO" additivity="false">
 			<AppenderRef ref="FILE" />
-			<AppenderRef ref="JSON" />
+			<!-- AppenderRef ref="JSON" / -->
 			<!-- AppenderRef ref="CONSOLE" / -->
 		</Logger>
 		<Root level="ERROR">
 			<AppenderRef ref="FILE" />
-			<AppenderRef ref="JSON" />
+			<!-- AppenderRef ref="JSON" / -->
 			<!-- AppenderRef ref="CONSOLE" / -->
 		</Root>
 	</Loggers>

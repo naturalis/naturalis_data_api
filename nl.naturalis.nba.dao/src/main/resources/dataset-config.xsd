@@ -3,6 +3,8 @@
 	xmlns:self="http://data.naturalis.nl/nba-dataset-config" version="1.0"
 >
 
+	<!-- This XSD is used to generate the JAXB classes in nl.naturalis.dao.format.config -->
+
 	<!-- IMPORTANT: After xjc has generated a class for DataSetXmlConfig-->
 	<!-- [1] Annotate the class with: @XmlRootElement(name = "dataset-config") -->
 	<!-- [2] Set name attribute of @XmlType annotation to empty string ("")-->

@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-NBA_ETL_HOME=@etl.install.dir@
+NBA_ETL_HOME=@nba.etl.install.dir@
 
 cnf_dir=${NBA_ETL_HOME}/conf
 lib_dir=${NBA_ETL_HOME}/lib

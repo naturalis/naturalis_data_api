@@ -96,13 +96,13 @@
 		<!-- Maven plugin versions. Check for available updates: mvn versions:display-plugin-updates -->
 		<maven-clean-plugin.version>3.0.0</maven-clean-plugin.version>
 		<maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
-		<maven-dependency-plugin.version>3.0.1</maven-dependency-plugin.version>
+		<maven-dependency-plugin.version>3.1.1</maven-dependency-plugin.version>
 		<maven-enforcer-plugin.version>1.4.1</maven-enforcer-plugin.version>
 		<maven-install-plugin.version>2.5.2</maven-install-plugin.version>
 		<maven-jar-plugin.version>3.0.2</maven-jar-plugin.version>
 		<maven-release-plugin.version>2.5.3</maven-release-plugin.version>
 		<maven-resources-plugin.version>3.0.2</maven-resources-plugin.version>
-		<maven-shade-plugin.version>3.0.0</maven-shade-plugin.version>
+		<maven-shade-plugin.version>3.1.1</maven-shade-plugin.version>
 		<maven-source-plugin.version>3.0.1</maven-source-plugin.version>
 		<maven-surefire-plugin.version>2.22.0</maven-surefire-plugin.version>
 		<maven-failsave-plugin.version>2.22.0</maven-failsave-plugin.version>
@@ -135,16 +135,9 @@
 		<module>nl.naturalis.nba.client</module>
 	</modules>
 
-	<!--distributionManagement>
-		<repository>
-			<id>gbif-release</id>
-			<url>http://repository.gbif.org/content/repositories/releases</url>
-		</repository>
-		<snapshotRepository>
-			<id>gbif-snapshot</id>
-			<url>http://repository.gbif.org/content/repositories/snapshots</url>
-		</snapshotRepository>
-	</distributionManagement-->
+	<!--distributionManagement> <repository> <id>gbif-release</id> <url>http://repository.gbif.org/content/repositories/releases</url> 
+		</repository> <snapshotRepository> <id>gbif-snapshot</id> <url>http://repository.gbif.org/content/repositories/snapshots</url> 
+		</snapshotRepository> </distributionManagement -->
 
 	<dependencyManagement>
 		<dependencies>
@@ -578,16 +571,12 @@
 						<forkCount>1</forkCount>
 						<reuseForks>false</reuseForks>
 						<redirectTestOutputToFile>true</redirectTestOutputToFile>
-
 						<argLine>-Xmx256m -Dnba.v2.conf.dir=${test.conf.dir}
-							-Dlog4jConfigurationFile=${test.conf.dir}/log4j2-test.xml</argLine>
+							-Dlog4jConfigurationFile=${test.conf.dir}/log4j2-test.xml
+							-Dnba.v2.conf.file=${project.basedir}/../nba-test.properties</argLine>
 						<runOrder>random</runOrder>
-
 						<includes>
-							<!-- include regular unit tests -->
 							<include>**/*Test.java</include>
-							<!-- include test suites -->
-							<include>**/*TestSuite.java</include>
 						</includes>
 						<excludes>
 							<!-- Still no solid way to run test classes of Java client -->

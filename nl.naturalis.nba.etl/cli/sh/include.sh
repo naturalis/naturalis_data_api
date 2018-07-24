@@ -35,11 +35,11 @@ dry_run=false
 # files will be found there first.
 classpath="${cnf_dir}"
 
-for file in `find ${lib_dir} -type f`
+for lib in `find ${lib_dir} -type f`
 do
-  classpath="${classpath}:${file}"
+  classpath="${classpath}:${lib}"
 done
-#echo CLASSPATH: $classpath
+echo CLASSPATH: $classpath
 
 # Generate path for log file
 log_file="${0:2}"

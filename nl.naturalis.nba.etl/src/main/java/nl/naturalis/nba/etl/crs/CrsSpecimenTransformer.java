@@ -192,7 +192,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
             specimen.setPhaseOrStage(getPhaseOrStage());
             specimen.setSex(getSex());
             specimen.setGatheringEvent(getGatheringEvent());
-            specimen.setDateModified(getDateModified());
+            specimen.setDateLastEdited(getDateLastEdited());
             stats.objectsAccepted++;
             return Arrays.asList(specimen);
         } catch (Throwable t) {
@@ -582,7 +582,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
         return hdr.getAttribute("status").equals("deleted");
     }
 
-    private OffsetDateTime getDateModified() {
+    private OffsetDateTime getDateLastEdited() {
       Element hdr = DOMUtil.getChild(input.getRecord(), "header");
       String dateStamp = val(hdr, "datestamp");
       if (dateStamp != null) {

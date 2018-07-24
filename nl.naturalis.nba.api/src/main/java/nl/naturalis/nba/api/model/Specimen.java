@@ -46,7 +46,7 @@ public class Specimen extends NbaTraceableObject implements IDocumentObject {
 	private GatheringEvent gatheringEvent;
 	private String informationWithheld;
 	private String dataGeneralizations;
-	private OffsetDateTime dateModified;
+	private OffsetDateTime dateLastEdited;
 	
 	private List<SpecimenIdentification> identifications;
 	private List<ServiceAccessPoint> associatedMultiMediaUris;
@@ -380,12 +380,12 @@ public class Specimen extends NbaTraceableObject implements IDocumentObject {
     this.dataGeneralizations = dataGeneralizations;
   }
 
-  public OffsetDateTime getDateModified() {
-    return dateModified;
+  public OffsetDateTime getDateLastEdited() {
+    return dateLastEdited;
   }
 
-  public void setDateModified(OffsetDateTime dateModified) {
-    this.dateModified = dateModified;
+  public void setDateLastEdited(OffsetDateTime dateLastEdited) {
+    this.dateLastEdited = dateLastEdited;
   }
 
 }

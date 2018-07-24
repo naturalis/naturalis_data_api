@@ -21,23 +21,22 @@ import nl.naturalis.nba.utils.FileUtil;
 import nl.naturalis.nba.utils.IOUtil;
 
 /**
- * Class which adds new documents in the correct Json format 
- * from a file (or files) to the Document Store.
- *
+ * The JsonImporter class adds new documents from a file (or files) 
+ * to the Document Store. The document in the file(s) have to be in 
+ * the correct Json format of the given DocumentType.
  */
 public class JsonImporter {
 
   private boolean dryRun = ConfigObject.isEnabled(SYSPROP_DRY_RUN);
-  private int writeBatchSize = 10;
-  private static final Logger logger = getLogger(JsonImporter.class);
   private DocumentType<? extends IDocumentObject> docType;
+  private int batchSize = 1000;
+  private static final Logger logger = getLogger(JsonImporter.class);
 
   JsonImporter(DocumentType<? extends IDocumentObject> docType) {
     this.docType = docType;
   }
   
   public static void main(String[] args) {
-    
     String documentType = args[0];
     JsonImporter importer = new JsonImporter( DocumentType.forName(documentType) );
     try {
@@ -59,9 +58,8 @@ public class JsonImporter {
   }
   
   private <T extends IDocumentObject> void importJsonFile(File file, DocumentType<T> docType) throws IOException, BulkIndexException {
-    
     BulkIndexer<T> indexer = new BulkIndexer<>(docType);
-    Collection<T> batch = new ArrayList<>(writeBatchSize);
+    Collection<T> batch = new ArrayList<>(batchSize);
     LineNumberReader lnr = null;
     int processed = 0;
     
@@ -70,11 +68,10 @@ public class JsonImporter {
       lnr = new LineNumberReader(fr, 4096);
       String line;
       while ((line = lnr.readLine()) != null) {
-        
         T documentObject = JsonUtil.deserialize(line, docType.getJavaType());
         batch.add(documentObject);
         processed++;
-        if (batch.size() == writeBatchSize) {
+        if (batch.size() == batchSize) {
           if (!dryRun) {
             indexer.index(batch);
             logger.info(docType.getName() + " documents imported: {}", processed);

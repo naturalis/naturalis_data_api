@@ -49,9 +49,6 @@ public class BulkIndexer<T extends IDocumentObject> {
 			ids[i] = objs.get(i).getId();
 			objs.get(i).setId(null);
 		}
-//		for (int i = 0; i < objs.size(); i++) {
-//			objs.get(i).setId(null);
-//		}
 		index(objs, Arrays.asList(ids), null);
 		for (int i = 0; i < objs.size(); i++) {
 			objs.get(i).setId(ids[i]);

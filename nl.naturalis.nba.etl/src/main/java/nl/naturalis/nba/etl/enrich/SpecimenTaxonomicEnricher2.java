@@ -139,6 +139,7 @@ public class SpecimenTaxonomicEnricher2 {
 					logger.info("Specimen documents imported: {}", processed);
 				}
 			}
+
 			if (!dryRun && batch.size() != 0) {
 			  indexer.index(batch);
 			}

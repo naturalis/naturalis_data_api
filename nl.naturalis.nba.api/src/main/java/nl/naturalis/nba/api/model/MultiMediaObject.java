@@ -3,13 +3,13 @@ package nl.naturalis.nba.api.model;
 import static nl.naturalis.nba.api.annotations.Analyzer.CASE_INSENSITIVE;
 import static nl.naturalis.nba.api.annotations.Analyzer.DEFAULT;
 import static nl.naturalis.nba.api.annotations.Analyzer.LIKE;
-
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import nl.naturalis.nba.api.annotations.Analyzers;
 import nl.naturalis.nba.api.annotations.NotStored;
-import nl.naturalis.nba.api.model.Type;
+import nl.naturalis.nba.api.model.ResourceType;
 
 /**
  * Class modeling a MultiMediaObject
@@ -39,7 +39,7 @@ public class MultiMediaObject extends NbaTraceableObject implements IDocumentObj
 	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String description;
 	private List<ServiceAccessPoint> serviceAccessPoints;
-	private Type type;
+	private ResourceType type;
 	private int taxonCount;
 	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String creator;
@@ -47,6 +47,12 @@ public class MultiMediaObject extends NbaTraceableObject implements IDocumentObj
 	private String associatedSpecimenReference;
 	private String associatedTaxonReference;
 	private boolean multiMediaPublic;
+	private String informationWithheld;
+	private String dataGeneralizations;
+	private Byte rating;
+	private String resourceCreationTechnique;
+	private OffsetDateTime dateModified;
+	
 	private List<String> subjectParts;
 	private List<String> subjectOrientations;
 	private List<String> phasesOrStages;
@@ -201,12 +207,12 @@ public class MultiMediaObject extends NbaTraceableObject implements IDocumentObj
 		this.serviceAccessPoints = serviceAccessPoints;
 	}
 
-	public Type getType()
+	public ResourceType getType()
 	{
 		return type;
 	}
 
-	public void setType(Type type)
+	public void setType(ResourceType type)
 	{
 		this.type = type;
 	}
@@ -360,5 +366,51 @@ public class MultiMediaObject extends NbaTraceableObject implements IDocumentObj
 	{
 		this.associatedTaxon = associatedTaxon;
 	}
+
+  public String getInformationWithheld() {
+    return informationWithheld;
+  }
+
+  public void setInformationWithheld(String informationWithheld) {
+    this.informationWithheld = informationWithheld;
+  }
+
+  public String getDataGeneralizations() {
+    return dataGeneralizations;
+  }
+
+  public void setDataGeneralizations(String dataGeneralizations) {
+    this.dataGeneralizations = dataGeneralizations;
+  }
+
+  public Byte getRating() {
+    return rating;
+  }
+
+  /**
+   * Rating is an integer from the scale: -1, 0, 1, 2, 3, 4, 5
+   * @param rating
+   */
+  public void setRating(Byte rating) {
+    if (rating >= -1 && rating <= 5) {
+      this.rating = rating;      
+    }
+  }
+
+  public String getResourceCreationTechnique() {
+    return resourceCreationTechnique;
+  }
+
+  public void setResourceCreationTechnique(String resourceCreationTechnique) {
+    this.resourceCreationTechnique = resourceCreationTechnique;
+  }
+
+  public OffsetDateTime getDateModified() {
+    return dateModified;
+  }
+
+  public void setDateModified(OffsetDateTime dateModified) {
+    this.dateModified = dateModified;
+  }
 
 }

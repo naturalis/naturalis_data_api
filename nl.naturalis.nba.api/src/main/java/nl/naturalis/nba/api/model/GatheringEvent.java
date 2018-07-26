@@ -35,13 +35,17 @@ public class GatheringEvent implements INbaModelObject {
 	private String localityText;
 	private OffsetDateTime dateTimeBegin;
 	private OffsetDateTime dateTimeEnd;
+	private String dateText;
 	private String method;
 	private String altitude;
 	private String altitudeUnifOfMeasurement;
+	private String behavior;
 	private String biotopeText;
 	private String depth;
 	private String depthUnitOfMeasurement;
-
+	private String code;
+	private String establishmentMeans;
+	
 	private List<Person> gatheringPersons;
 	private List<Organization> gatheringOrganizations;
 	private List<GatheringSiteCoordinates> siteCoordinates;
@@ -356,5 +360,37 @@ public class GatheringEvent implements INbaModelObject {
 	{
 		this.lithoStratigraphy = lithoStratigraphy;
 	}
+
+  public String getDateText() {
+    return dateText;
+  }
+
+  public void setDateText(String dateText) {
+    this.dateText = dateText;
+  }
+
+  public String getBehavior() {
+    return behavior;
+  }
+
+  public void setBehavior(String behavior) {
+    this.behavior = behavior;
+  }
+
+  public String getCode() {
+    return code;
+  }
+
+  public void setCode(String code) {
+    this.code = code;
+  }
+
+  public String getEstablishmentMeans() {
+    return establishmentMeans;
+  }
+
+  public void setEstablishmentMeans(String establishmentMeans) {
+    this.establishmentMeans = establishmentMeans;
+  }
 
 }

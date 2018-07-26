@@ -5,30 +5,33 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class SourceSystem implements INbaModelObject {
 
-	private static final String CODE_CRS = "CRS";
+	private static final String CODE_CRS    = "CRS";
 	private static final String CODE_BRAHMS = "BRAHMS";
-	private static final String CODE_COL = "COL";
-	private static final String CODE_NSR = "NSR";
-	private static final String CODE_GEO = "GEO";
-	private static final String CODE_NDFF = "NDFF";
+	private static final String CODE_COL    = "COL";
+	private static final String CODE_NSR    = "NSR";
+	private static final String CODE_GEO    = "GEO";
+	private static final String CODE_NDFF   = "NDFF";
+	private static final String CODE_XC     = "XC";
 
-	private static final String NAME_CRS = "Naturalis - Zoology and Geology catalogues";
+	private static final String NAME_CRS    = "Naturalis - Zoology and Geology catalogues";
 	private static final String NAME_BRAHMS = "Naturalis - Botany catalogues";
-	private static final String NAME_COL = "Species 2000 - Catalogue Of Life";
-	private static final String NAME_NSR = "Naturalis - Dutch Species Register";
-	private static final String NAME_GEO = "Naturalis - Geo Areas";
-	private static final String NAME_NDFF = "NDFF - Nationale Databank Flora en Fauna";
+	private static final String NAME_COL    = "Species 2000 - Catalogue Of Life";
+	private static final String NAME_NSR    = "Naturalis - Dutch Species Register";
+	private static final String NAME_GEO    = "Naturalis - Geo Areas";
+	private static final String NAME_NDFF   = "NDFF - Nationale Databank Flora en Fauna";
+	private static final String NAME_XC     = "xeno-canto.org - Bird sounds";
 
-	public static final SourceSystem CRS = new SourceSystem(CODE_CRS, NAME_CRS);
+	public static final SourceSystem CRS    = new SourceSystem(CODE_CRS, NAME_CRS);
 	public static final SourceSystem BRAHMS = new SourceSystem(CODE_BRAHMS, NAME_BRAHMS);
-	public static final SourceSystem COL = new SourceSystem(CODE_COL, NAME_COL);
-	public static final SourceSystem NSR = new SourceSystem(CODE_NSR, NAME_NSR);
-	public static final SourceSystem GEO = new SourceSystem(CODE_GEO, NAME_GEO);
-	public static final SourceSystem NDFF = new SourceSystem(CODE_NDFF, NAME_NDFF);
+	public static final SourceSystem COL    = new SourceSystem(CODE_COL, NAME_COL);
+	public static final SourceSystem NSR    = new SourceSystem(CODE_NSR, NAME_NSR);
+	public static final SourceSystem GEO    = new SourceSystem(CODE_GEO, NAME_GEO);
+	public static final SourceSystem NDFF   = new SourceSystem(CODE_NDFF, NAME_NDFF);
+	public static final SourceSystem XC     = new SourceSystem(CODE_XC, NAME_XC);
 
 	public static SourceSystem[] getAllSourceSystems()
 	{
-		return new SourceSystem[] { BRAHMS, COL, CRS, GEO, NDFF, NSR };
+		return new SourceSystem[] { BRAHMS, COL, CRS, GEO, NDFF, NSR, XC };
 	}
 
 	@JsonCreator
@@ -49,6 +52,8 @@ public class SourceSystem implements INbaModelObject {
 					return NDFF;
 				case CODE_GEO:
 					return GEO;
+				case CODE_XC:
+				  return XC;
 			}
 			throw new IllegalArgumentException("No such source system: " + code);
 		}
@@ -65,6 +70,8 @@ public class SourceSystem implements INbaModelObject {
 				return NDFF;
 			case NAME_GEO:
 				return GEO;
+			case NAME_XC:
+			  return XC;
 		}
 		throw new IllegalArgumentException("No such source system: " + name);
 	}

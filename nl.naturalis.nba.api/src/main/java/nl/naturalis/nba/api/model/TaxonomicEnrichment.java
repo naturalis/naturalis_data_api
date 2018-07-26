@@ -20,6 +20,7 @@ public class TaxonomicEnrichment implements INbaModelObject {
 
 	private List<SummaryVernacularName> vernacularNames;
 	private List<SummaryScientificName> synonyms;
+	private DefaultClassification defaultClassification;
 
 	private SummarySourceSystem sourceSystem;
 	@NotIndexed
@@ -61,6 +62,14 @@ public class TaxonomicEnrichment implements INbaModelObject {
 	public void setSynonyms(List<SummaryScientificName> synonyms)
 	{
 		this.synonyms = synonyms;
+	}
+
+	public void setDefaultClassification(DefaultClassification defaultClassification) {
+	  this.defaultClassification = defaultClassification;
+	}
+	
+	public DefaultClassification getDefaultClassification() {
+	  return defaultClassification;
 	}
 
 	/**
@@ -106,5 +115,6 @@ public class TaxonomicEnrichment implements INbaModelObject {
 	{
 		this.sourceSystem = sourceSystem;
 	}
+	
 
 }

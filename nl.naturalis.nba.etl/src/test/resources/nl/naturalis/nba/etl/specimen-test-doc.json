@@ -1,0 +1,925 @@
+{
+    "sourceSystem" : {
+        "code" : "CRS",
+        "name" : "Naturalis - Zoology and Geology catalogues"
+    },
+    "sourceSystemId" : "TEST.1545605667646",
+    "recordURI" : "https://location/TEST.1545605667646",
+    "id" : "TEST.1545605667646@CRS",
+    "unitID" : "TEST.1545605667646",
+    "unitGUID" : "https://location/TEST.1545605667646",
+    "collectorsFieldNumber" : "rebmuNdleiFsrotcelloc",
+    "assemblageID" : "DIegalbmessa",
+    "sourceInstitutionID" : "Naturalis Biodiversity Center",
+    "sourceID" : "CRS",
+    "previousSourceID" : [
+        "100.DIecruoSsuoiverp",
+        "200.DIecruoSsuoiverp",
+        "300.DIecruoSsuoiverp"
+    ],
+    "owner" : "renwo",
+    "licenseType" : "Copyright",
+    "license" : "CC0",
+    "recordBasis" : "sisaBdrocer",
+    "kindOfUnit" : "tinUfOdnik",
+    "collectionType" : "epyTnoitcelloc",
+    "sex" : "female",
+    "phaseOrStage" : "adult",
+    "title" : "eltit",
+    "notes" : "seton",
+    "preparationType" : "epyTnoitaraperp",
+    "previousUnitsText" : "txeTstinUsuoiverp",
+    "numberOfSpecimen" : 12345,
+    "fromCaptivity" : true,
+    "objectPublic" : true,
+    "multiMediaPublic" : true,
+    "acquiredFrom" : {
+        "agentText" : "txeTtnega.morFderiuqca"
+    },
+    "gatheringEvent" : {
+        "projectTitle" : "eltiTtcejorp.tnevEgnirehtag",
+        "worldRegion" : "noigeRdlrow.tnevEgnirehtag",
+        "continent" : "tnenitnoc.tnevEgnirehtag",
+        "country" : "yrtnuoc.tnevEgnirehtag",
+        "iso3166Code" : "edoC6613osi.tnevEgnirehtag",
+        "provinceState" : "etatSecnivorp.tnevEgnirehtag",
+        "island" : "dnalsi.tnevEgnirehtag",
+        "locality" : "ytilacol.tnevEgnirehtag",
+        "city" : "ytic.tnevEgnirehtag",
+        "sublocality" : "ytilacolbus.tnevEgnirehtag",
+        "localityText" : "txeTytilacol.tnevEgnirehtag",
+        "dateTimeBegin" : "2017-07-17T11:21:34+0200",
+        "dateTimeEnd" : "2018-07-17T11:21:34+0200",
+        "method" : "dohtem",
+        "altitude" : "edutitla",
+        "altitudeUnifOfMeasurement" : "tnemerusaeMfOfinUedutitla",
+        "biotopeText" : "txeTepotoib",
+        "depth" : "htped",
+        "depthUnitOfMeasurement" : "tnemerusaeMfOtinUhtped",
+        "gatheringPersons" : [
+            {
+                "agentText" : "txeTtnega_1",
+                "fullName" : "emaNlluf_1",
+                "organization" : {
+                    "agentText" : "txeTtnega.noitazinagro_1",
+                    "name" : "eman.noitazinagro_1"
+                }
+            },
+            {
+                "agentText" : "txeTtnega_2",
+                "fullName" : "emaNlluf_2",
+                "organization" : {
+                    "agentText" : "txeTtnega.noitazinagro_2",
+                    "name" : "eman.noitazinagro_2"
+                }
+            }
+        ],
+        "gatheringOrganizations" : [
+            {
+                "agentText" : "txeTtnega.noitazinagro_3",
+                "name" : "eman.noitazinagro_3"
+            },
+            {
+                "agentText" : "txeTtnega.noitazinagro_4",
+                "name" : "eman.noitazinagro_4"
+            }
+        ],
+        "siteCoordinates" : [
+            {
+                "longitudeDecimal" : -93.12384178125677,
+                "latitudeDecimal" : -67.95572405638889,
+                "gridCellSystem" : "metsySlleCdirg",
+                "gridLatitudeDecimal" : -68.0,
+                "gridLongitudeDecimal" : -94.0,
+                "gridCellCode" : "edoClleCdirg",
+                "gridQualifier" : "reifilauQdirg",
+                "geoShape" : {
+                    "type" : "Point",
+                    "coordinates" : [
+                        -93.12384178125677,
+                        -67.95572405638889
+                    ]
+                }
+            },
+            {
+                "longitudeDecimal" : -29.27260319399153,
+                "latitudeDecimal" : 84.22244346490675,
+                "gridCellSystem" : "metsySlleCdirg",
+                "gridLatitudeDecimal" : 84.0,
+                "gridLongitudeDecimal" : -30.0,
+                "gridCellCode" : "edoClleCdirg",
+                "gridQualifier" : "reifilauQdirg",
+                "geoShape" : {
+                    "type" : "Point",
+                    "coordinates" : [
+                        -29.27260319399153,
+                        84.22244346490675
+                    ]
+                }
+            }
+        ],
+        "namedAreas" : [
+            {
+                "areaClass" : "continent",
+                "areaName" : "emaNaera_1"
+            },
+            {
+                "areaClass" : "continent",
+                "areaName" : "emaNaera_2"
+            }
+        ],
+        "associatedTaxa" : [
+            {
+                "name" : "eman_1",
+                "relationType" : "is trace of"
+            },
+            {
+                "name" : "eman_2",
+                "relationType" : "is trace of"
+            }
+        ],
+        "chronoStratigraphy" : [
+            {
+                "youngRegionalSubstage" : "egatsbuSlanoigeRgnuoy_1",
+                "youngRegionalStage" : "egatSlanoigeRgnuoy_1",
+                "youngDatingQualifier" : "reifilauQgnitaDgnuoy_1",
+                "youngInternSystem" : "metsySnretnIgnuoy_1",
+                "youngInternSubstage" : "egatsbuSnretnIgnuoy_1",
+                "youngInternStage" : "egatSnretnIgnuoy_1",
+                "youngInternSeries" : "seireSnretnIgnuoy_1",
+                "youngInternErathem" : "mehtarEnretnIgnuoy_1",
+                "youngInternEonothem" : "mehtonoEnretnIgnuoy_1",
+                "youngChronoName" : "emaNonorhCgnuoy_1",
+                "youngCertainty" : "ytniatreCgnuoy_1",
+                "chronoPreferredFlag" : true,
+                "oldRegionalSubstage" : "egatsbuSlanoigeRdlo_1",
+                "oldRegionalStage" : "egatSlanoigeRdlo_1",
+                "oldRegionalSeries" : "seireSlanoigeRdlo_1",
+                "oldInternSystem" : "metsySnretnIdlo_1",
+                "oldInternSubstage" : "egatsbuSnretnIdlo_1",
+                "oldInternStage" : "egatSnretnIdlo_1",
+                "oldInternSeries" : "seireSnretnIdlo_1",
+                "oldInternErathem" : "mehtarEnretnIdlo_1",
+                "oldInternEonothem" : "mehtonoEnretnIdlo_1",
+                "oldChronoName" : "emaNonorhCdlo_1",
+                "chronoIdentifier" : "reifitnedIonorhc_1",
+                "oldCertainty" : "ytniatreCdlo_1"
+            },
+            {
+                "youngRegionalSubstage" : "egatsbuSlanoigeRgnuoy_2",
+                "youngRegionalStage" : "egatSlanoigeRgnuoy_2",
+                "youngDatingQualifier" : "reifilauQgnitaDgnuoy_2",
+                "youngInternSystem" : "metsySnretnIgnuoy_2",
+                "youngInternSubstage" : "egatsbuSnretnIgnuoy_2",
+                "youngInternStage" : "egatSnretnIgnuoy_2",
+                "youngInternSeries" : "seireSnretnIgnuoy_2",
+                "youngInternErathem" : "mehtarEnretnIgnuoy_2",
+                "youngInternEonothem" : "mehtonoEnretnIgnuoy_2",
+                "youngChronoName" : "emaNonorhCgnuoy_2",
+                "youngCertainty" : "ytniatreCgnuoy_2",
+                "chronoPreferredFlag" : false,
+                "oldRegionalSubstage" : "egatsbuSlanoigeRdlo_2",
+                "oldRegionalStage" : "egatSlanoigeRdlo_2",
+                "oldRegionalSeries" : "seireSlanoigeRdlo_2",
+                "oldInternSystem" : "metsySnretnIdlo_2",
+                "oldInternSubstage" : "egatsbuSnretnIdlo_2",
+                "oldInternStage" : "egatSnretnIdlo_2",
+                "oldInternSeries" : "seireSnretnIdlo_2",
+                "oldInternErathem" : "mehtarEnretnIdlo_2",
+                "oldInternEonothem" : "mehtonoEnretnIdlo_2",
+                "oldChronoName" : "emaNonorhCdlo_2",
+                "chronoIdentifier" : "reifitnedIonorhc_2",
+                "oldCertainty" : "ytniatreCdlo_2"
+            }
+        ],
+        "bioStratigraphy" : [
+            {
+                "youngBioDatingQualifier" : "reifilauQgnitaDoiBgnuoy_1",
+                "youngBioName" : "emaNoiBgnuoy_1",
+                "youngFossilZone" : "enoZlissoFgnuoy_1",
+                "youngFossilSubZone" : "enoZbuSlissoFgnuoy_1",
+                "youngBioCertainty" : "ytniatreCoiBgnuoy_1",
+                "youngStratType" : "epyTtartSgnuoy_1",
+                "bioDatingQualifier" : "reifilauQgnitaDoib_1",
+                "bioPreferredFlag" : true,
+                "rangePosition" : "noitisoPegnar_1",
+                "oldBioName" : "emaNoiBdlo_1",
+                "bioIdentifier" : "reifitnedIoib_1",
+                "oldFossilzone" : "enozlissoFdlo_1",
+                "oldFossilSubzone" : "enozbuSlissoFdlo_1",
+                "oldBioCertainty" : "ytniatreCoiBdlo_1",
+                "oldBioStratType" : "epyTtartSoiBdlo_1"
+            },
+            {
+                "youngBioDatingQualifier" : "reifilauQgnitaDoiBgnuoy_2",
+                "youngBioName" : "emaNoiBgnuoy_2",
+                "youngFossilZone" : "enoZlissoFgnuoy_2",
+                "youngFossilSubZone" : "enoZbuSlissoFgnuoy_2",
+                "youngBioCertainty" : "ytniatreCoiBgnuoy_2",
+                "youngStratType" : "epyTtartSgnuoy_2",
+                "bioDatingQualifier" : "reifilauQgnitaDoib_2",
+                "bioPreferredFlag" : false,
+                "rangePosition" : "noitisoPegnar_2",
+                "oldBioName" : "emaNoiBdlo_2",
+                "bioIdentifier" : "reifitnedIoib_2",
+                "oldFossilzone" : "enozlissoFdlo_2",
+                "oldFossilSubzone" : "enozbuSlissoFdlo_2",
+                "oldBioCertainty" : "ytniatreCoiBdlo_2",
+                "oldBioStratType" : "epyTtartSoiBdlo_2"
+            }
+        ],
+        "lithoStratigraphy" : [
+            {
+                "qualifier" : "reifilauq_1",
+                "preferredFlag" : true,
+                "member2" : "2rebmem_1",
+                "member" : "rebmem_1",
+                "informalName2" : "2emaNlamrofni_1",
+                "informalName" : "emaNlamrofni_1",
+                "importedName2" : "2emaNdetropmi_1",
+                "importedName1" : "1emaNdetropmi_1",
+                "lithoIdentifier" : "reifitnedIohtil_1",
+                "formation2" : "2noitamrof_1",
+                "formationGroup2" : "2puorGnoitamrof_1",
+                "formationGroup" : "puorGnoitamrof_1",
+                "formation" : "noitamrof_1",
+                "certainty2" : "2ytniatrec_1",
+                "certainty" : "ytniatrec_1",
+                "bed2" : "2deb_1",
+                "bed" : "deb_1"
+            },
+            {
+                "qualifier" : "reifilauq_2",
+                "preferredFlag" : false,
+                "member2" : "2rebmem_2",
+                "member" : "rebmem_2",
+                "informalName2" : "2emaNlamrofni_2",
+                "informalName" : "emaNlamrofni_2",
+                "importedName2" : "2emaNdetropmi_2",
+                "importedName1" : "1emaNdetropmi_2",
+                "lithoIdentifier" : "reifitnedIohtil_2",
+                "formation2" : "2noitamrof_2",
+                "formationGroup2" : "2puorGnoitamrof_2",
+                "formationGroup" : "puorGnoitamrof_2",
+                "formation" : "noitamrof_2",
+                "certainty2" : "2ytniatrec_2",
+                "certainty" : "ytniatrec_2",
+                "bed2" : "2deb_2",
+                "bed" : "deb_2"
+            }
+        ]
+    },
+    "identifications" : [
+        {
+            "taxonRank" : "knaRnoxat_1",
+            "scientificName" : {
+                "fullScientificName" : "emaNcifitneicSlluf",
+                "taxonomicStatus" : "accepted name",
+                "genusOrMonomial" : "laimonoMrOsuneg_1",
+                "subgenus" : "sunegbuS_1",
+                "specificEpithet" : "tehtipEcificeps_1",
+                "infraspecificEpithet" : "tehtipEcificepsarfni_1",
+                "infraspecificMarker" : "rekraMcificepsarfni_1",
+                "nameAddendum" : "mudneddAeman_1",
+                "authorshipVerbatim" : "mitabreVpihsrohtua_1",
+                "author" : "rohtua_1",
+                "year" : "raey_1",
+                "scientificNameGroup" : "puorGemaNcifitneics_1",
+                "references" : [
+                    {
+                        "titleCitation" : "noitatiCeltit_1",
+                        "citationDetail" : "liateDnoitatic_1",
+                        "uri" : "https://www.example.org/foo_1",
+                        "author" : {
+                            "agentText" : "txeTtnega_1",
+                            "fullName" : "emaNlluf_1",
+                            "organization" : {
+                                "agentText" : "txeTtnega.noitazinagro_1",
+                                "name" : "eman.noitazinagro_1"
+                            }
+                        },
+                        "publicationDate" : "2018-07-17T11:21:34+0200"
+                    },
+                    {
+                        "titleCitation" : "noitatiCeltit_2",
+                        "citationDetail" : "liateDnoitatic_2",
+                        "uri" : "https://www.example.org/foo_2",
+                        "author" : {
+                            "agentText" : "txeTtnega_1",
+                            "fullName" : "emaNlluf_1",
+                            "organization" : {
+                                "agentText" : "txeTtnega.noitazinagro_1",
+                                "name" : "eman.noitazinagro_1"
+                            }
+                        },
+                        "publicationDate" : "2018-07-17T11:21:34+0200"
+                    }
+                ],
+                "experts" : [
+                    {
+                        "agentText" : "txeTtnega_1",
+                        "fullName" : "emaNlluf_1",
+                        "organization" : {
+                            "agentText" : "txeTtnega.noitazinagro_1",
+                            "name" : "eman.noitazinagro_1"
+                        }
+                    },
+                    {
+                        "agentText" : "txeTtnega_2",
+                        "fullName" : "emaNlluf_2",
+                        "organization" : {
+                            "agentText" : "txeTtnega.noitazinagro_2",
+                            "name" : "eman.noitazinagro_2"
+                        }
+                    }
+                ]
+            },
+            "typeStatus" : "holotype",
+            "dateIdentified" : "2018-07-17T11:21:34+0200",
+            "defaultClassification" : {
+                "kingdom" : "modgnik",
+                "phylum" : "mulyhp",
+                "className" : "emaNssalc",
+                "order" : "redro",
+                "superFamily" : "ylimaFrepus",
+                "family" : "ylimaf",
+                "genus" : "suneg",
+                "subgenus" : "sunegbus",
+                "specificEpithet" : "tehtipEcificeps",
+                "infraspecificEpithet" : "tehtipEcificepsarfni",
+                "infraspecificRank" : "knaRcificepsarfni"
+            },
+            "systemClassification" : [
+                {
+                    "rank" : "eman_1",
+                    "name" : "knar_1"
+                },
+                {
+                    "rank" : "eman_2",
+                    "name" : "knar_2"
+                }
+            ],
+            "vernacularNames" : [
+                {
+                    "name" : "eman_1",
+                    "language" : "egaugnal_1",
+                    "preferred" : true,
+                    "references" : [
+                        {
+                            "titleCitation" : "noitatiCeltit_1",
+                            "citationDetail" : "liateDnoitatic_1",
+                            "uri" : "https://www.example.org/foo_1",
+                            "author" : {
+                                "agentText" : "txeTtnega_1",
+                                "fullName" : "emaNlluf_1",
+                                "organization" : {
+                                    "agentText" : "txeTtnega.noitazinagro_1",
+                                    "name" : "eman.noitazinagro_1"
+                                }
+                            },
+                            "publicationDate" : "2018-07-17T11:21:34+0200"
+                        },
+                        {
+                            "titleCitation" : "noitatiCeltit_2",
+                            "citationDetail" : "liateDnoitatic_2",
+                            "uri" : "https://www.example.org/foo_2",
+                            "author" : {
+                                "agentText" : "txeTtnega_1",
+                                "fullName" : "emaNlluf_1",
+                                "organization" : {
+                                    "agentText" : "txeTtnega.noitazinagro_1",
+                                    "name" : "eman.noitazinagro_1"
+                                }
+                            },
+                            "publicationDate" : "2018-07-17T11:21:34+0200"
+                        }
+                    ],
+                    "experts" : [
+                        {
+                            "agentText" : "txeTtnega_1",
+                            "fullName" : "emaNlluf_1",
+                            "organization" : {
+                                "agentText" : "txeTtnega.noitazinagro_1",
+                                "name" : "eman.noitazinagro_1"
+                            }
+                        },
+                        {
+                            "agentText" : "txeTtnega_2",
+                            "fullName" : "emaNlluf_2",
+                            "organization" : {
+                                "agentText" : "txeTtnega.noitazinagro_2",
+                                "name" : "eman.noitazinagro_2"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name" : "eman_2",
+                    "language" : "egaugnal_2",
+                    "preferred" : false,
+                    "references" : [
+                        {
+                            "titleCitation" : "noitatiCeltit_1",
+                            "citationDetail" : "liateDnoitatic_1",
+                            "uri" : "https://www.example.org/foo_1",
+                            "author" : {
+                                "agentText" : "txeTtnega_1",
+                                "fullName" : "emaNlluf_1",
+                                "organization" : {
+                                    "agentText" : "txeTtnega.noitazinagro_1",
+                                    "name" : "eman.noitazinagro_1"
+                                }
+                            },
+                            "publicationDate" : "2018-07-17T11:21:34+0200"
+                        },
+                        {
+                            "titleCitation" : "noitatiCeltit_2",
+                            "citationDetail" : "liateDnoitatic_2",
+                            "uri" : "https://www.example.org/foo_2",
+                            "author" : {
+                                "agentText" : "txeTtnega_1",
+                                "fullName" : "emaNlluf_1",
+                                "organization" : {
+                                    "agentText" : "txeTtnega.noitazinagro_1",
+                                    "name" : "eman.noitazinagro_1"
+                                }
+                            },
+                            "publicationDate" : "2018-07-17T11:21:34+0200"
+                        }
+                    ],
+                    "experts" : [
+                        {
+                            "agentText" : "txeTtnega_1",
+                            "fullName" : "emaNlluf_1",
+                            "organization" : {
+                                "agentText" : "txeTtnega.noitazinagro_1",
+                                "name" : "eman.noitazinagro_1"
+                            }
+                        },
+                        {
+                            "agentText" : "txeTtnega_2",
+                            "fullName" : "emaNlluf_2",
+                            "organization" : {
+                                "agentText" : "txeTtnega.noitazinagro_2",
+                                "name" : "eman.noitazinagro_2"
+                            }
+                        }
+                    ]
+                }
+            ],
+            "identificationQualifiers" : [
+                "reifilauQnoitacifitnedi_1",
+                "reifilauQnoitacifitnedi_2"
+            ],
+            "identifiers" : [
+                {
+                    "agentText" : "txeTtnega_1"
+                },
+                {
+                    "agentText" : "txeTtnega_2"
+                }
+            ],
+            "taxonomicEnrichments" : [
+                {
+                    "vernacularNames" : [
+                        {
+                            "name" : "eman_1",
+                            "language" : "egaugnal_1"
+                        },
+                        {
+                            "name" : "eman_2",
+                            "language" : "egaugnal_2"
+                        }
+                    ],
+                    "synonyms" : [
+                        {
+                            "fullScientificName" : "emaNcifitneicSlluf_1",
+                            "taxonomicStatus" : "accepted name",
+                            "genusOrMonomial" : "laimonoMrOsuneg_1",
+                            "subgenus" : "sunegbus_1",
+                            "specificEpithet" : "tehtipEcificeps_1",
+                            "infraspecificEpithet" : "tehtipEcificepsarfni_1",
+                            "authorshipVerbatim" : "mitabreVpihsrohtua_1"
+                        },
+                        {
+                            "fullScientificName" : "emaNcifitneicSlluf_2",
+                            "taxonomicStatus" : "accepted name",
+                            "genusOrMonomial" : "laimonoMrOsuneg_2",
+                            "subgenus" : "sunegbus_2",
+                            "specificEpithet" : "tehtipEcificeps_2",
+                            "infraspecificEpithet" : "tehtipEcificepsarfni_2",
+                            "authorshipVerbatim" : "mitabreVpihsrohtua_2"
+                        }
+                    ],
+                    "defaultClassification" : {
+                        "kingdom" : "modgnik",
+                        "phylum" : "mulyhp",
+                        "className" : "emaNssalc",
+                        "order" : "redro",
+                        "superFamily" : "ylimaFrepus",
+                        "family" : "ylimaf",
+                        "genus" : "suneg",
+                        "subgenus" : "sunegbus",
+                        "specificEpithet" : "tehtipEcificeps",
+                        "infraspecificEpithet" : "tehtipEcificepsarfni",
+                        "infraspecificRank" : "knaRcificepsarfni"
+                    },
+                    "sourceSystem" : {
+                        "code" : "edoc_1"
+                    },
+                    "taxonId" : "dInoxat_1"
+                },
+                {
+                    "vernacularNames" : [
+                        {
+                            "name" : "eman_1",
+                            "language" : "egaugnal_1"
+                        },
+                        {
+                            "name" : "eman_2",
+                            "language" : "egaugnal_2"
+                        }
+                    ],
+                    "synonyms" : [
+                        {
+                            "fullScientificName" : "emaNcifitneicSlluf_1",
+                            "taxonomicStatus" : "accepted name",
+                            "genusOrMonomial" : "laimonoMrOsuneg_1",
+                            "subgenus" : "sunegbus_1",
+                            "specificEpithet" : "tehtipEcificeps_1",
+                            "infraspecificEpithet" : "tehtipEcificepsarfni_1",
+                            "authorshipVerbatim" : "mitabreVpihsrohtua_1"
+                        },
+                        {
+                            "fullScientificName" : "emaNcifitneicSlluf_2",
+                            "taxonomicStatus" : "accepted name",
+                            "genusOrMonomial" : "laimonoMrOsuneg_2",
+                            "subgenus" : "sunegbus_2",
+                            "specificEpithet" : "tehtipEcificeps_2",
+                            "infraspecificEpithet" : "tehtipEcificepsarfni_2",
+                            "authorshipVerbatim" : "mitabreVpihsrohtua_2"
+                        }
+                    ],
+                    "defaultClassification" : {
+                        "kingdom" : "modgnik",
+                        "phylum" : "mulyhp",
+                        "className" : "emaNssalc",
+                        "order" : "redro",
+                        "superFamily" : "ylimaFrepus",
+                        "family" : "ylimaf",
+                        "genus" : "suneg",
+                        "subgenus" : "sunegbus",
+                        "specificEpithet" : "tehtipEcificeps",
+                        "infraspecificEpithet" : "tehtipEcificepsarfni",
+                        "infraspecificRank" : "knaRcificepsarfni"
+                    },
+                    "sourceSystem" : {
+                        "code" : "edoc_2"
+                    },
+                    "taxonId" : "dInoxat_2"
+                }
+            ],
+            "preferred" : true,
+            "verificationStatus" : "sutatSnoitacifirev_1",
+            "rockType" : "epyTkcor_1",
+            "associatedFossilAssemblage" : "egalbmessAlissoFdetaicossa_1",
+            "rockMineralUsage" : "egasUlareniMkcor_1",
+            "associatedMineralName" : "emaNlareniMdetaicossa_1",
+            "remarks" : "skramer_1"
+        },
+        {
+            "taxonRank" : "knaRnoxat_2",
+            "scientificName" : {
+                "fullScientificName" : "emaNcifitneicSlluf",
+                "taxonomicStatus" : "accepted name",
+                "genusOrMonomial" : "laimonoMrOsuneg_2",
+                "subgenus" : "sunegbuS_2",
+                "specificEpithet" : "tehtipEcificeps_2",
+                "infraspecificEpithet" : "tehtipEcificepsarfni_2",
+                "infraspecificMarker" : "rekraMcificepsarfni_2",
+                "nameAddendum" : "mudneddAeman_2",
+                "authorshipVerbatim" : "mitabreVpihsrohtua_2",
+                "author" : "rohtua_2",
+                "year" : "raey_2",
+                "scientificNameGroup" : "puorGemaNcifitneics_2",
+                "references" : [
+                    {
+                        "titleCitation" : "noitatiCeltit_1",
+                        "citationDetail" : "liateDnoitatic_1",
+                        "uri" : "https://www.example.org/foo_1",
+                        "author" : {
+                            "agentText" : "txeTtnega_1",
+                            "fullName" : "emaNlluf_1",
+                            "organization" : {
+                                "agentText" : "txeTtnega.noitazinagro_1",
+                                "name" : "eman.noitazinagro_1"
+                            }
+                        },
+                        "publicationDate" : "2018-07-17T11:21:34+0200"
+                    },
+                    {
+                        "titleCitation" : "noitatiCeltit_2",
+                        "citationDetail" : "liateDnoitatic_2",
+                        "uri" : "https://www.example.org/foo_2",
+                        "author" : {
+                            "agentText" : "txeTtnega_1",
+                            "fullName" : "emaNlluf_1",
+                            "organization" : {
+                                "agentText" : "txeTtnega.noitazinagro_1",
+                                "name" : "eman.noitazinagro_1"
+                            }
+                        },
+                        "publicationDate" : "2018-07-17T11:21:34+0200"
+                    }
+                ],
+                "experts" : [
+                    {
+                        "agentText" : "txeTtnega_1",
+                        "fullName" : "emaNlluf_1",
+                        "organization" : {
+                            "agentText" : "txeTtnega.noitazinagro_1",
+                            "name" : "eman.noitazinagro_1"
+                        }
+                    },
+                    {
+                        "agentText" : "txeTtnega_2",
+                        "fullName" : "emaNlluf_2",
+                        "organization" : {
+                            "agentText" : "txeTtnega.noitazinagro_2",
+                            "name" : "eman.noitazinagro_2"
+                        }
+                    }
+                ]
+            },
+            "typeStatus" : "isoepitype",
+            "dateIdentified" : "2018-07-17T11:21:34+0200",
+            "defaultClassification" : {
+                "kingdom" : "modgnik",
+                "phylum" : "mulyhp",
+                "className" : "emaNssalc",
+                "order" : "redro",
+                "superFamily" : "ylimaFrepus",
+                "family" : "ylimaf",
+                "genus" : "suneg",
+                "subgenus" : "sunegbus",
+                "specificEpithet" : "tehtipEcificeps",
+                "infraspecificEpithet" : "tehtipEcificepsarfni",
+                "infraspecificRank" : "knaRcificepsarfni"
+            },
+            "systemClassification" : [
+                {
+                    "rank" : "eman_1",
+                    "name" : "knar_1"
+                },
+                {
+                    "rank" : "eman_2",
+                    "name" : "knar_2"
+                }
+            ],
+            "vernacularNames" : [
+                {
+                    "name" : "eman_1",
+                    "language" : "egaugnal_1",
+                    "preferred" : true,
+                    "references" : [
+                        {
+                            "titleCitation" : "noitatiCeltit_1",
+                            "citationDetail" : "liateDnoitatic_1",
+                            "uri" : "https://www.example.org/foo_1",
+                            "author" : {
+                                "agentText" : "txeTtnega_1",
+                                "fullName" : "emaNlluf_1",
+                                "organization" : {
+                                    "agentText" : "txeTtnega.noitazinagro_1",
+                                    "name" : "eman.noitazinagro_1"
+                                }
+                            },
+                            "publicationDate" : "2018-07-17T11:21:34+0200"
+                        },
+                        {
+                            "titleCitation" : "noitatiCeltit_2",
+                            "citationDetail" : "liateDnoitatic_2",
+                            "uri" : "https://www.example.org/foo_2",
+                            "author" : {
+                                "agentText" : "txeTtnega_1",
+                                "fullName" : "emaNlluf_1",
+                                "organization" : {
+                                    "agentText" : "txeTtnega.noitazinagro_1",
+                                    "name" : "eman.noitazinagro_1"
+                                }
+                            },
+                            "publicationDate" : "2018-07-17T11:21:34+0200"
+                        }
+                    ],
+                    "experts" : [
+                        {
+                            "agentText" : "txeTtnega_1",
+                            "fullName" : "emaNlluf_1",
+                            "organization" : {
+                                "agentText" : "txeTtnega.noitazinagro_1",
+                                "name" : "eman.noitazinagro_1"
+                            }
+                        },
+                        {
+                            "agentText" : "txeTtnega_2",
+                            "fullName" : "emaNlluf_2",
+                            "organization" : {
+                                "agentText" : "txeTtnega.noitazinagro_2",
+                                "name" : "eman.noitazinagro_2"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name" : "eman_2",
+                    "language" : "egaugnal_2",
+                    "preferred" : false,
+                    "references" : [
+                        {
+                            "titleCitation" : "noitatiCeltit_1",
+                            "citationDetail" : "liateDnoitatic_1",
+                            "uri" : "https://www.example.org/foo_1",
+                            "author" : {
+                                "agentText" : "txeTtnega_1",
+                                "fullName" : "emaNlluf_1",
+                                "organization" : {
+                                    "agentText" : "txeTtnega.noitazinagro_1",
+                                    "name" : "eman.noitazinagro_1"
+                                }
+                            },
+                            "publicationDate" : "2018-07-17T11:21:34+0200"
+                        },
+                        {
+                            "titleCitation" : "noitatiCeltit_2",
+                            "citationDetail" : "liateDnoitatic_2",
+                            "uri" : "https://www.example.org/foo_2",
+                            "author" : {
+                                "agentText" : "txeTtnega_1",
+                                "fullName" : "emaNlluf_1",
+                                "organization" : {
+                                    "agentText" : "txeTtnega.noitazinagro_1",
+                                    "name" : "eman.noitazinagro_1"
+                                }
+                            },
+                            "publicationDate" : "2018-07-17T11:21:34+0200"
+                        }
+                    ],
+                    "experts" : [
+                        {
+                            "agentText" : "txeTtnega_1",
+                            "fullName" : "emaNlluf_1",
+                            "organization" : {
+                                "agentText" : "txeTtnega.noitazinagro_1",
+                                "name" : "eman.noitazinagro_1"
+                            }
+                        },
+                        {
+                            "agentText" : "txeTtnega_2",
+                            "fullName" : "emaNlluf_2",
+                            "organization" : {
+                                "agentText" : "txeTtnega.noitazinagro_2",
+                                "name" : "eman.noitazinagro_2"
+                            }
+                        }
+                    ]
+                }
+            ],
+            "identificationQualifiers" : [
+                "reifilauQnoitacifitnedi_1",
+                "reifilauQnoitacifitnedi_2"
+            ],
+            "identifiers" : [
+                {
+                    "agentText" : "txeTtnega_1"
+                },
+                {
+                    "agentText" : "txeTtnega_2"
+                }
+            ],
+            "taxonomicEnrichments" : [
+                {
+                    "vernacularNames" : [
+                        {
+                            "name" : "eman_1",
+                            "language" : "egaugnal_1"
+                        },
+                        {
+                            "name" : "eman_2",
+                            "language" : "egaugnal_2"
+                        }
+                    ],
+                    "synonyms" : [
+                        {
+                            "fullScientificName" : "emaNcifitneicSlluf_1",
+                            "taxonomicStatus" : "accepted name",
+                            "genusOrMonomial" : "laimonoMrOsuneg_1",
+                            "subgenus" : "sunegbus_1",
+                            "specificEpithet" : "tehtipEcificeps_1",
+                            "infraspecificEpithet" : "tehtipEcificepsarfni_1",
+                            "authorshipVerbatim" : "mitabreVpihsrohtua_1"
+                        },
+                        {
+                            "fullScientificName" : "emaNcifitneicSlluf_2",
+                            "taxonomicStatus" : "accepted name",
+                            "genusOrMonomial" : "laimonoMrOsuneg_2",
+                            "subgenus" : "sunegbus_2",
+                            "specificEpithet" : "tehtipEcificeps_2",
+                            "infraspecificEpithet" : "tehtipEcificepsarfni_2",
+                            "authorshipVerbatim" : "mitabreVpihsrohtua_2"
+                        }
+                    ],
+                    "defaultClassification" : {
+                        "kingdom" : "modgnik",
+                        "phylum" : "mulyhp",
+                        "className" : "emaNssalc",
+                        "order" : "redro",
+                        "superFamily" : "ylimaFrepus",
+                        "family" : "ylimaf",
+                        "genus" : "suneg",
+                        "subgenus" : "sunegbus",
+                        "specificEpithet" : "tehtipEcificeps",
+                        "infraspecificEpithet" : "tehtipEcificepsarfni",
+                        "infraspecificRank" : "knaRcificepsarfni"
+                    },
+                    "sourceSystem" : {
+                        "code" : "edoc_1"
+                    },
+                    "taxonId" : "dInoxat_1"
+                },
+                {
+                    "vernacularNames" : [
+                        {
+                            "name" : "eman_1",
+                            "language" : "egaugnal_1"
+                        },
+                        {
+                            "name" : "eman_2",
+                            "language" : "egaugnal_2"
+                        }
+                    ],
+                    "synonyms" : [
+                        {
+                            "fullScientificName" : "emaNcifitneicSlluf_1",
+                            "taxonomicStatus" : "accepted name",
+                            "genusOrMonomial" : "laimonoMrOsuneg_1",
+                            "subgenus" : "sunegbus_1",
+                            "specificEpithet" : "tehtipEcificeps_1",
+                            "infraspecificEpithet" : "tehtipEcificepsarfni_1",
+                            "authorshipVerbatim" : "mitabreVpihsrohtua_1"
+                        },
+                        {
+                            "fullScientificName" : "emaNcifitneicSlluf_2",
+                            "taxonomicStatus" : "accepted name",
+                            "genusOrMonomial" : "laimonoMrOsuneg_2",
+                            "subgenus" : "sunegbus_2",
+                            "specificEpithet" : "tehtipEcificeps_2",
+                            "infraspecificEpithet" : "tehtipEcificepsarfni_2",
+                            "authorshipVerbatim" : "mitabreVpihsrohtua_2"
+                        }
+                    ],
+                    "defaultClassification" : {
+                        "kingdom" : "modgnik",
+                        "phylum" : "mulyhp",
+                        "className" : "emaNssalc",
+                        "order" : "redro",
+                        "superFamily" : "ylimaFrepus",
+                        "family" : "ylimaf",
+                        "genus" : "suneg",
+                        "subgenus" : "sunegbus",
+                        "specificEpithet" : "tehtipEcificeps",
+                        "infraspecificEpithet" : "tehtipEcificepsarfni",
+                        "infraspecificRank" : "knaRcificepsarfni"
+                    },
+                    "sourceSystem" : {
+                        "code" : "edoc_2"
+                    },
+                    "taxonId" : "dInoxat_2"
+                }
+            ],
+            "preferred" : false,
+            "verificationStatus" : "sutatSnoitacifirev_2",
+            "rockType" : "epyTkcor_2",
+            "associatedFossilAssemblage" : "egalbmessAlissoFdetaicossa_2",
+            "rockMineralUsage" : "egasUlareniMkcor_2",
+            "associatedMineralName" : "emaNlareniMdetaicossa_2",
+            "remarks" : "skramer_2"
+        }
+    ],
+    "associatedMultiMediaUris" : [
+        {
+            "accessUri" : "https://www.example.org/abc_1",
+            "format" : "tamrof_1",
+            "variant" : "THUMBNAIL"
+        },
+        {
+            "accessUri" : "https://www.example.org/abc_2",
+            "format" : "tamrof_2",
+            "variant" : "THUMBNAIL"
+        }
+    ],
+    "theme" : [
+        "emeht_1",
+        "emeht_2",
+        "emeht_3"
+    ]
+}

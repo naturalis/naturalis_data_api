@@ -192,6 +192,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
             specimen.setPhaseOrStage(getPhaseOrStage());
             specimen.setSex(getSex());
             specimen.setGatheringEvent(getGatheringEvent());
+            specimen.setDateLastEdited(getDateLastEdited());
             stats.objectsAccepted++;
             return Arrays.asList(specimen);
         } catch (Throwable t) {
@@ -580,6 +581,20 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
             return false;
         return hdr.getAttribute("status").equals("deleted");
     }
+
+    private OffsetDateTime getDateLastEdited() {
+      Element hdr = DOMUtil.getChild(input.getRecord(), "header");
+      String dateStamp = val(hdr, "datestamp");
+      if (dateStamp != null) {
+        ESDateInput input = new ESDateInput(dateStamp);
+        OffsetDateTime odt = input.parseAsOffsetDateTime();
+        if (odt == null && !suppressErrors) {
+          warn("Invalid date in element <datestamp>: %s", dateStamp);
+        }
+        return odt;
+      }
+      return null;
+  }
 
     private PhaseOrStage getPhaseOrStage() {
         String raw = val(input.getRecord(), "abcd:PhaseOrStage");

@@ -24,6 +24,7 @@ import nl.naturalis.nba.api.model.MultiMediaContentIdentification;
 import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.ServiceAccessPoint;
+import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.api.model.Taxon;
@@ -77,7 +78,7 @@ class EnrichmentUtil {
 	{
 		List<TaxonomicEnrichment> enrichments = new ArrayList<>(taxa.size());
 		for (Taxon taxon : taxa) {
-			if (taxon.getVernacularNames() == null && taxon.getSynonyms() == null) {
+			if (taxon.getVernacularNames() == null && taxon.getSynonyms() == null && taxon.getDefaultClassification() == null) {
 				continue;
 			}
 			TaxonomicEnrichment enrichment = new TaxonomicEnrichment();
@@ -90,6 +91,9 @@ class EnrichmentUtil {
 				for (ScientificName sn : taxon.getSynonyms()) {
 					enrichment.addSynonym(copyScientificName(sn));
 				}
+			}
+			if (taxon.getDefaultClassification() != null && taxon.getSourceSystem() == SourceSystem.COL) {
+			  enrichment.setDefaultClassification(taxon.getDefaultClassification());
 			}
 			enrichment.setSourceSystem(copySourceSystem(taxon.getSourceSystem()));
 			enrichment.setTaxonId(taxon.getId());

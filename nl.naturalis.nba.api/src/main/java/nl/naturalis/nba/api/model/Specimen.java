@@ -3,10 +3,9 @@ package nl.naturalis.nba.api.model;
 import static nl.naturalis.nba.api.annotations.Analyzer.CASE_INSENSITIVE;
 import static nl.naturalis.nba.api.annotations.Analyzer.DEFAULT;
 import static nl.naturalis.nba.api.annotations.Analyzer.LIKE;
-
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
 import nl.naturalis.nba.api.annotations.Analyzers;
 import nl.naturalis.nba.api.annotations.NotIndexed;
 import nl.naturalis.nba.api.annotations.NotStored;
@@ -45,6 +44,10 @@ public class Specimen extends NbaTraceableObject implements IDocumentObject {
 
 	private Agent acquiredFrom;
 	private GatheringEvent gatheringEvent;
+	private String informationWithheld;
+	private String dataGeneralizations;
+	private OffsetDateTime dateLastEdited;
+	
 	private List<SpecimenIdentification> identifications;
 	private List<ServiceAccessPoint> associatedMultiMediaUris;
 	private List<String> theme;
@@ -360,5 +363,29 @@ public class Specimen extends NbaTraceableObject implements IDocumentObject {
 	{
 		this.associatedMultiMediaObjects = associatedMultiMediaObjects;
 	}
+
+  public String getInformationWithheld() {
+    return informationWithheld;
+  }
+
+  public void setInformationWithheld(String informationWithheld) {
+    this.informationWithheld = informationWithheld;
+  }
+
+  public String getDataGeneralizations() {
+    return dataGeneralizations;
+  }
+
+  public void setDataGeneralizations(String dataGeneralizations) {
+    this.dataGeneralizations = dataGeneralizations;
+  }
+
+  public OffsetDateTime getDateLastEdited() {
+    return dateLastEdited;
+  }
+
+  public void setDateLastEdited(OffsetDateTime dateLastEdited) {
+    this.dateLastEdited = dateLastEdited;
+  }
 
 }

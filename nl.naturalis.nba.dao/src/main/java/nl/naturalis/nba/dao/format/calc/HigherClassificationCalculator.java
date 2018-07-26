@@ -47,7 +47,7 @@ public class HigherClassificationCalculator implements ICalculator {
 		else {
 			String kingdom = dc.getKingdom();
 			if (kingdom != null && kingdom.toLowerCase().contains("fungi")) {
-				append(sb, "fungi");
+				append(sb, "Fungi");
 			}
 			else {
 				append(sb, "Plantae");

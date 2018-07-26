@@ -46,7 +46,7 @@ import nl.naturalis.nba.api.model.TaxonRelationType;
 import nl.naturalis.nba.api.model.TaxonomicEnrichment;
 import nl.naturalis.nba.api.model.TaxonomicIdentification;
 import nl.naturalis.nba.api.model.TaxonomicStatus;
-import nl.naturalis.nba.api.model.Type;
+import nl.naturalis.nba.api.model.ResourceType;
 import nl.naturalis.nba.api.model.VernacularName;
 import nl.naturalis.nba.api.model.summary.SummaryScientificName;
 import nl.naturalis.nba.api.model.summary.SummarySourceSystem;
@@ -219,7 +219,7 @@ public class CreateTestDocument {
     multiMediaObject.setCaption(reverseString("caption"));
     multiMediaObject.setDescription(reverseString("description"));
     multiMediaObject.setServiceAccessPoints(Arrays.asList(new ServiceAccessPoint[] {createServiceAccessPoint(1), createServiceAccessPoint(2)}));
-    multiMediaObject.setType(Type.STILL_IMAGE);
+    multiMediaObject.setType(ResourceType.STILL_IMAGE);
     multiMediaObject.setTaxonCount(12345);
         
     multiMediaObject.setCreator(reverseString("creator"));

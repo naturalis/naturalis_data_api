@@ -26,12 +26,6 @@
 
 	<properties>
 
-		<!-- Both dao and etl module unit tests must be started with -Dnba.v2.conf.dir, 
-			pointing to a directory containg nba.properties and log4j2.xml. We use src/test/resources/conf 
-			in the dao module to cater for both dao unit tests and etl unit tests. -->
-		<test.conf.dir>${project.basedir}/../nl.naturalis.nba.dao/target/test-classes/conf</test.conf.dir>
-
-
 		<!-- build settings -->
 		<minimumMavenVersion>3.3</minimumMavenVersion>
 		<jdkLevel>1.8</jdkLevel>
@@ -105,7 +99,6 @@
 		<maven-shade-plugin.version>3.1.1</maven-shade-plugin.version>
 		<maven-source-plugin.version>3.0.1</maven-source-plugin.version>
 		<maven-surefire-plugin.version>2.22.0</maven-surefire-plugin.version>
-		<maven-failsave-plugin.version>2.22.0</maven-failsave-plugin.version>
 		<maven-war-plugin.version>3.2.0</maven-war-plugin.version>
 		<versions-maven-plugin.version>2.4</versions-maven-plugin.version>
 		<exec-maven-plugin.version>1.6.0</exec-maven-plugin.version>
@@ -501,13 +494,6 @@
 						</execution>
 					</executions>
 				</plugin>
-				<!--plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-failsafe-plugin</artifactId> 
-					<version>${maven-failsave-plugin.version}</version> <executions> <execution> 
-					<id>integration-test</id> <goals> <goal>integration-test</goal> </goals> 
-					</execution> <execution> <id>verify</id> <goals> <goal>verify</goal> </goals> 
-					</execution> </executions> <configuration> <forkCount>1</forkCount> <reuseForks>false</reuseForks> 
-					<redirectTestOutputToFile>true</redirectTestOutputToFile> <argLine>-Xmx256m</argLine> 
-					<runOrder>random</runOrder> </configuration> </plugin -->
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-install-plugin</artifactId>
@@ -573,6 +559,7 @@
 						<excludes>
 							<!-- Still no solid way to run test classes of Java client -->
 							<exclude>**/nl.naturalis.nba.client.*.java</exclude>
+							<exclude>**/AllTests.java</exclude>
 						</excludes>
 					</configuration>
 				</plugin>
@@ -645,15 +632,6 @@
 						</goals>
 					</execution>
 				</executions>
-			</plugin>
-			<!-- run integration tests (*IT) during verify -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-failsafe-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

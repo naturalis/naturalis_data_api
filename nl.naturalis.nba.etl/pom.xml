@@ -108,26 +108,17 @@
 
 	<build>
 		<plugins>
-			<!--plugin>
-				<artifactId>maven-clean-plugin</artifactId>
-				<configuration>
-					<filesets>
-						<fileset>
-							<directory>${nba.etl.install.dir}</directory>
-							<includes>
-								<include>**/*</include>
-							</includes>
-						</fileset>
-					</filesets>
-				</configuration>
-			</plugin-->
+			<!--plugin> <artifactId>maven-clean-plugin</artifactId> <configuration> 
+				<filesets> <fileset> <directory>${nba.etl.install.dir}</directory> <includes> 
+				<include>**/*</include> </includes> </fileset> </filesets> </configuration> 
+				</plugin -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>exec-maven-plugin</artifactId>
 				<executions>
 					<execution>
 						<id>delete-etl-install-dir</id>
-						<phase>process-resources</phase>
+						<phase>initialize</phase>
 						<goals>
 							<goal>exec</goal>
 						</goals>
@@ -141,7 +132,7 @@
 					</execution>
 					<execution>
 						<id>make-etl-dirs</id>
-						<phase>process-resources</phase>
+						<phase>initialize</phase>
 						<goals>
 							<goal>exec</goal>
 						</goals>
@@ -149,7 +140,6 @@
 							<executable>mkdir</executable>
 							<arguments>
 								<argument>${nba.etl.install.dir}</argument>
-								<argument>${nba.etl.install.dir}/sh</argument>
 								<argument>${nba.etl.install.dir}/conf</argument>
 								<argument>${nba.etl.install.dir}/lib</argument>
 							</arguments>
@@ -157,7 +147,7 @@
 					</execution>
 					<execution>
 						<id>clone-dwca-config-repo</id>
-						<phase>process-resources</phase>
+						<phase>initialize</phase>
 						<goals>
 							<goal>exec</goal>
 						</goals>
@@ -170,62 +160,52 @@
 							</arguments>
 						</configuration>
 					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<artifactId>maven-resources-plugin</artifactId>
-				<executions>
 					<execution>
 						<id>copy-nba-properties</id>
-						<phase>process-resources</phase>
+						<phase>initialize</phase>
 						<goals>
-							<goal>copy-resources</goal>
+							<goal>exec</goal>
 						</goals>
 						<configuration>
-							<outputDirectory>${nba.etl.install.dir}/conf</outputDirectory>
-							<overwrite>false</overwrite>
-							<resources>
-								<resource>
-									<directory>${project.basedir}/../</directory>
-									<includes>
-										<include>nba.properties</include>
-									</includes>
-									<filtering>true</filtering>
-								</resource>
-							</resources>
+							<executable>cp</executable>
+							<arguments>
+								<argument>${project.basedir}/../nba.properties</argument>
+								<argument>${nba.etl.install.dir}/conf</argument>
+							</arguments>
 						</configuration>
 					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<artifactId>maven-resources-plugin</artifactId>
-				<executions>
+					<execution>
+						<id>copy-log4j2-xml</id>
+						<phase>initialize</phase>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>cp</executable>
+							<arguments>
+								<argument>${project.basedir}/cli/conf/log4j2.xml</argument>
+								<argument>${nba.etl.install.dir}/conf</argument>
+							</arguments>
+						</configuration>
+					</execution>
 					<execution>
 						<id>copy-shell-scripts</id>
-						<phase>process-resources</phase>
+						<phase>initialize</phase>
 						<goals>
-							<goal>copy-resources</goal>
+							<goal>exec</goal>
 						</goals>
 						<configuration>
-							<outputDirectory>${nba.etl.install.dir}/sh</outputDirectory>
-							<overwrite>false</overwrite>
-							<resources>
-								<resource>
-									<directory>cli/sh</directory>
-									<filtering>true</filtering>
-								</resource>
-							</resources>
+							<executable>cp</executable>
+							<arguments>
+								<argument>-R</argument>
+								<argument>${project.basedir}/cli/sh</argument>
+								<argument>${nba.etl.install.dir}</argument>
+							</arguments>
 						</configuration>
 					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>exec-maven-plugin</artifactId>
-				<executions>
 					<execution>
 						<id>make-shell-scripts-executable</id>
-						<phase>process-resources</phase>
+						<phase>install</phase>
 						<goals>
 							<goal>exec</goal>
 						</goals>
@@ -236,31 +216,6 @@
 								<argument>ug+x</argument>
 								<argument>${nba.etl.install.dir}/sh</argument>
 							</arguments>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<artifactId>maven-resources-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>copy-log4j-xml</id>
-						<phase>install</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${nba.etl.install.dir}/conf</outputDirectory>
-							<overwrite>false</overwrite>
-							<resources>
-								<resource>
-									<directory>cli/conf</directory>
-									<includes>
-										<include>log4j2.xml</include>
-									</includes>
-									<filtering>false</filtering>
-								</resource>
-							</resources>
 						</configuration>
 					</execution>
 				</executions>

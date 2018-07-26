@@ -1,10 +1,8 @@
 #!/bin/bash
-#
-NBA_ETL_HOME=@nba.etl.install.dir@
 
-cnf_dir=${NBA_ETL_HOME}/conf
-lib_dir=${NBA_ETL_HOME}/lib
-log_dir=${NBA_ETL_HOME}/log
+cnf_dir="$(pwd)/../conf"
+lib_dir="$(pwd)/../lib"
+log_dir="$(pwd)/../log"
 
 # The java package that is the root of all NBA ETL code. Used by the
 # other scripts to specify fully qualified class names.

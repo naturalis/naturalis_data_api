@@ -99,7 +99,7 @@
 				<configuration>
 					<filesets>
 						<fileset>
-							<directory>${nba.v2.conf.dir}</directory>
+							<directory>${nba.api.install.dir}</directory>
 							<includes>
 								<include>**/*</include>
 							</includes>
@@ -117,16 +117,14 @@
 							<goal>copy-resources</goal>
 						</goals>
 						<configuration>
-							<outputDirectory>${nba.v2.conf.dir}</outputDirectory>
-							<overwrite>false</overwrite>
+							<outputDirectory>${nba.api.install.dir}</outputDirectory>
+							<overwrite>true</overwrite>
 							<resources>
 								<resource>
 									<directory>${project.basedir}/../</directory>
 									<includes>
 										<include>nba.properties</include>
-										<include>nba-test.properties</include>
 									</includes>
-									<filtering>true</filtering>
 								</resource>
 							</resources>
 						</configuration>
@@ -148,12 +146,50 @@
 							<arguments>
 								<argument>clone</argument>
 								<argument>https://github.com/naturalis/DWCAConfig</argument>
-								<argument>${nba.v2.conf.dir}/dwca</argument>
+								<argument>${nba.api.install.dir}/dwca</argument>
+							</arguments>
+						</configuration>
+					</execution>
+					<execution>
+						<id>clone-nba-fieldinfo-metadata-repo</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>git</executable>
+							<arguments>
+								<argument>clone</argument>
+								<argument>https://github.com/naturalis/nba-fieldinfo-metadata.git</argument>
+								<argument>${nba.api.install.dir}/metadata</argument>
 							</arguments>
 						</configuration>
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<forkCount>1</forkCount>
+					<reuseForks>false</reuseForks>
+					<redirectTestOutputToFile>true</redirectTestOutputToFile>
+					<argLine>-Xmx256m
+						-Dnba.conf.file=${project.basedir}/../nba-test.properties
+						-Dnba.conf.dir=${nba.api.install.dir}
+						-Dlog4jConfigurationFile=${project.basedir}/../log4j2-test.xml
+					</argLine>
+					<runOrder>random</runOrder>
+					<includes>
+						<include>**/*Test.java</include>
+					</includes>
+					<excludes>
+						<!-- Still no solid way to run test classes of Java client -->
+						<exclude>**/nl.naturalis.nba.client.*.java</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+
 		</plugins>
 	</build>
 

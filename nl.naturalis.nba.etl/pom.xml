@@ -11,7 +11,7 @@
 	</parent>
 
 	<artifactId>nl.naturalis.nba.etl</artifactId>
-	<name>NBA ETL</name>
+	<name>NBA ETL Module</name>
 
 	<dependencies>
 
@@ -109,42 +109,49 @@
 	<build>
 		<plugins>
 			<plugin>
-				<artifactId>maven-resources-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>copy-bash-scripts</id>
-						<phase>install</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${nba.etl.install.dir}/sh</outputDirectory>
-							<resources>
-								<resource>
-									<directory>cli/sh</directory>
-									<filtering>true</filtering>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-				</executions>
+				<artifactId>maven-clean-plugin</artifactId>
+				<configuration>
+					<filesets>
+						<fileset>
+							<directory>${nba.etl.install.dir}</directory>
+							<includes>
+								<include>**/*</include>
+							</includes>
+						</fileset>
+					</filesets>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>exec-maven-plugin</artifactId>
 				<executions>
 					<execution>
-						<id>make-bash-scripts-executable</id>
-						<phase>install</phase>
+						<id>make-etl-subdirs</id>
+						<phase>process-resources</phase>
 						<goals>
 							<goal>exec</goal>
 						</goals>
 						<configuration>
-							<executable>chmod</executable>
+							<executable>mkdir</executable>
 							<arguments>
-								<argument>-R</argument>
-								<argument>ug+x</argument>
 								<argument>${nba.etl.install.dir}/sh</argument>
+								<argument>${nba.etl.install.dir}/conf</argument>
+								<argument>${nba.etl.install.dir}/lib</argument>
+							</arguments>
+						</configuration>
+					</execution>
+					<execution>
+						<id>clone-dwca-config-repo</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>git</executable>
+							<arguments>
+								<argument>clone</argument>
+								<argument>https://github.com/naturalis/nba-brondata-bijzcol.git</argument>
+								<argument>${nba.etl.install.dir}/conf/thematic-search</argument>
 							</arguments>
 						</configuration>
 					</execution>
@@ -154,30 +161,8 @@
 				<artifactId>maven-resources-plugin</artifactId>
 				<executions>
 					<execution>
-						<id>copy-etl-config</id>
-						<phase>install</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${nba.etl.install.dir}/conf</outputDirectory>
-							<overwrite>false</overwrite>
-							<resources>
-								<resource>
-									<directory>cli/conf</directory>
-									<filtering>true</filtering>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<artifactId>maven-resources-plugin</artifactId>
-				<executions>
-					<execution>
 						<id>copy-nba-properties</id>
-						<phase>install</phase>
+						<phase>process-resources</phase>
 						<goals>
 							<goal>copy-resources</goal>
 						</goals>
@@ -196,6 +181,96 @@
 						</configuration>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-shell-scripts</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${nba.etl.install.dir}/sh</outputDirectory>
+							<overwrite>false</overwrite>
+							<resources>
+								<resource>
+									<directory>cli/sh</directory>
+									<filtering>true</filtering>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>make-shell-scripts-executable</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>chmod</executable>
+							<arguments>
+								<argument>-R</argument>
+								<argument>ug+x</argument>
+								<argument>${nba.etl.install.dir}/sh</argument>
+							</arguments>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-log4j-xml</id>
+						<phase>install</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${nba.etl.install.dir}/conf</outputDirectory>
+							<overwrite>false</overwrite>
+							<resources>
+								<resource>
+									<directory>cli/conf</directory>
+									<includes>
+										<include>log4j2.xml</include>
+									</includes>
+									<filtering>false</filtering>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<forkCount>1</forkCount>
+					<reuseForks>false</reuseForks>
+					<redirectTestOutputToFile>true</redirectTestOutputToFile>
+					<argLine>-Xmx256m
+						-Dnba.conf.file=${project.basedir}/../nba-test.properties
+						-Dnba.conf.dir=${nba.etl.install.dir}
+						-Dlog4jConfigurationFile=${project.basedir}/../log4j2-test.xml
+					</argLine>
+					<runOrder>random</runOrder>
+					<includes>
+						<include>**/*Test.java</include>
+					</includes>
+					<excludes>
+						<!-- Still no solid way to run test classes of Java client -->
+						<exclude>**/nl.naturalis.nba.client.*.java</exclude>
+					</excludes>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

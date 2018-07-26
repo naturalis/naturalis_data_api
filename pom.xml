@@ -567,17 +567,9 @@
 					<artifactId>maven-surefire-plugin</artifactId>
 					<version>${maven-surefire-plugin.version}</version>
 					<configuration>
-						<!-- Use a new forked process for each test See https://maven.apache.org/surefire/maven-surefire-plugin/examples/fork-options-and-parallel-execution.html -->
 						<forkCount>1</forkCount>
 						<reuseForks>false</reuseForks>
 						<redirectTestOutputToFile>true</redirectTestOutputToFile>
-						<argLine>-Xmx256m -Dnba.v2.conf.dir=${test.conf.dir}
-							-Dlog4jConfigurationFile=${test.conf.dir}/log4j2-test.xml
-							-Dnba.v2.conf.file=${project.basedir}/../nba-test.properties</argLine>
-						<runOrder>random</runOrder>
-						<includes>
-							<include>**/*Test.java</include>
-						</includes>
 						<excludes>
 							<!-- Still no solid way to run test classes of Java client -->
 							<exclude>**/nl.naturalis.nba.client.*.java</exclude>
@@ -589,19 +581,11 @@
 					<artifactId>versions-maven-plugin</artifactId>
 					<version>${versions-maven-plugin.version}</version>
 				</plugin>
-				<!--plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-release-plugin</artifactId>
-					<version>${maven-release-plugin.version}</version>
-					<configuration>
-						<goals>deploy</goals>
-						<preparationGoals>install</preparationGoals>
-						<resume>false</resume>
-						<useReleaseProfile>true</useReleaseProfile>
-						<releaseProfiles>col-release</releaseProfiles>
-						<tagNameFormat>${project.artifactId}-@{project.version}</tagNameFormat>
-					</configuration>
-				</plugin-->
+				<!--plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-release-plugin</artifactId> 
+					<version>${maven-release-plugin.version}</version> <configuration> <goals>deploy</goals> 
+					<preparationGoals>install</preparationGoals> <resume>false</resume> <useReleaseProfile>true</useReleaseProfile> 
+					<releaseProfiles>col-release</releaseProfiles> <tagNameFormat>${project.artifactId}-@{project.version}</tagNameFormat> 
+					</configuration> </plugin -->
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>exec-maven-plugin</artifactId>

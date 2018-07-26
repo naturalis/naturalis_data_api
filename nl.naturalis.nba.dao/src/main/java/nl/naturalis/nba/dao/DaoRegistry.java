@@ -1,7 +1,6 @@
 package nl.naturalis.nba.dao;
 
 import java.io.File;
-import java.io.IOException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import nl.naturalis.nba.dao.exception.InitializationException;
@@ -17,21 +16,21 @@ import nl.naturalis.nba.utils.FileUtil;
  */
 public class DaoRegistry {
 
-  /**
-   * Name of the main NBA configuration file (&#34;nba.properties&#34;).
+  /*
+   * The system property specifying the full path to the main configuration file (usually named
+   * nba.properties)
    */
-  public static final String CONFIG_FILE_NAME = "nba.properties";
-  /**
-   * Name of the system property pointing to the configuration directory
-   * (&#34;nba.v2.conf.dir&#34;). This directory must at least contain nba.properties, but may
-   * contain additional configuration-related resources.
+  private static final String SYSPROP_CONF_FILE = "nba.conf.file";
+  /*
+   * A system property that can optionally be passed to the JVM to indicate the top directory of the
+   * application's assets. Defaults to the directory containing the main configuration file.
    */
-  public static final String SYSPROP_CONFIG_DIR = "nba.v2.conf.dir";
+  private static final String SYSPROP_CONF_DIR = "nba.conf.dir";
 
   private static DaoRegistry instance;
 
-  private File cfgDir;
   private File cfgFile;
+  private File cfgDir;
   private ConfigObject config;
 
   private Logger logger = getLogger(getClass());
@@ -49,7 +48,6 @@ public class DaoRegistry {
   }
 
   private DaoRegistry() {
-    setConfDir();
     loadConfig();
     String encoding = System.getProperty("file.encoding");
     if (encoding == null || !encoding.equals("UTF-8")) {
@@ -73,10 +71,8 @@ public class DaoRegistry {
   }
 
   /**
-   * Returns the directory designated to contain the application's configuration files. This
-   * directory must be specified by a system property named "nba.v2.conf.dir". This directory must
-   * contain at least nba.properties, and may contain additional files and folders that the
-   * application expects to be there.
+   * Returns the top directory of the various assets used by the application. Currently this always
+   * is the directory containing nba.properties.
    * 
    * @return
    */
@@ -121,39 +117,30 @@ public class DaoRegistry {
     return LogManager.getLogger(cls);
   }
 
-  private void setConfDir() {
-    String path = System.getProperty(SYSPROP_CONFIG_DIR);
-    if (path == null) {
-      String msg = String.format("Missing system property \"%s\"", SYSPROP_CONFIG_DIR);
-      throw new InitializationException(msg);
-    }
-    File dir = new File(path);
-    if (!dir.isDirectory()) {
-      String fmt = "Invalid value for system property \"%s\": \"%s\" (no such directory)";
-      String msg = String.format(fmt, SYSPROP_CONFIG_DIR, path);
-      throw new InitializationException(msg);
-    }
-    try {
-      cfgDir = dir.getCanonicalFile();
-      logger.info("NBA configuration directory: " + cfgDir.getPath());
-    } catch (IOException e) {
-      throw new InitializationException(e);
-    }
-  }
-
   private void loadConfig() {
-    String sysprop = System.getProperty("nba.v2.conf.file");
-    if (sysprop == null) {
-      cfgFile = FileUtil.newFile(cfgDir, CONFIG_FILE_NAME);
-    } else {
-      cfgFile = new File(sysprop);
+    String path = System.getProperty(SYSPROP_CONF_FILE);
+    if (path == null) {
+      String msg = String.format("Missing system property: %s", SYSPROP_CONF_FILE);
+      throw new InitializationException(msg);
     }
-    logger.info("NBA configuration file: " + cfgFile.getPath());
+    cfgFile = new File(path);
     if (!cfgFile.isFile()) {
       String msg = String.format("Missing configuration file: %s", cfgFile.getPath());
       throw new InitializationException(msg);
     }
-    this.config = new ConfigObject(cfgFile);
+    logger.info("NBA configuration file: " + cfgFile.getPath());
+    config = new ConfigObject(cfgFile);
+    path = System.getProperty(SYSPROP_CONF_DIR);
+    if (path == null) {
+      cfgDir = cfgFile.getParentFile();
+    }
+    else {
+      cfgDir = new File(path);
+      if (!cfgDir.isDirectory()) {
+        String msg = String.format("No such directory: %s", cfgDir.getPath());
+        throw new InitializationException(msg);
+      }
+    }
   }
 
 }

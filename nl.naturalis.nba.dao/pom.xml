@@ -94,47 +94,29 @@
 
 	<build>
 		<plugins>
-			<plugin>
-				<artifactId>maven-clean-plugin</artifactId>
-				<configuration>
-					<filesets>
-						<fileset>
-							<directory>${nba.api.install.dir}</directory>
-							<includes>
-								<include>**/*</include>
-							</includes>
-						</fileset>
-					</filesets>
-				</configuration>
-			</plugin>
-			<plugin>
-				<artifactId>maven-resources-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>copy-nba-properties</id>
-						<phase>process-resources</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${nba.api.install.dir}</outputDirectory>
-							<overwrite>true</overwrite>
-							<resources>
-								<resource>
-									<directory>${project.basedir}/../</directory>
-									<includes>
-										<include>nba.properties</include>
-									</includes>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
+			<!--plugin> <artifactId>maven-clean-plugin</artifactId> <configuration> 
+				<filesets> <fileset> <directory>${nba.api.install.dir}</directory> <includes> 
+				<include>**/*</include> </includes> </fileset> </filesets> </configuration> 
+				</plugin -->
+
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>exec-maven-plugin</artifactId>
 				<executions>
+					<execution>
+						<id>delete-api-install-dir</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>rm</executable>
+							<arguments>
+								<argument>-rf</argument>
+								<argument>${nba.api.install.dir}</argument>
+							</arguments>
+						</configuration>
+					</execution>
 					<execution>
 						<id>clone-dwca-config-repo</id>
 						<phase>process-resources</phase>
@@ -162,6 +144,20 @@
 								<argument>clone</argument>
 								<argument>https://github.com/naturalis/nba-fieldinfo-metadata.git</argument>
 								<argument>${nba.api.install.dir}/metadata</argument>
+							</arguments>
+						</configuration>
+					</execution>
+					<execution>
+						<id>copy-nba-properties</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>cp</executable>
+							<arguments>
+								<argument>${project.basedir}/../nba.properties</argument>
+								<argument>${nba.api.install.dir}</argument>
 							</arguments>
 						</configuration>
 					</execution>

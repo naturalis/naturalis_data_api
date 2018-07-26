@@ -12,3 +12,5 @@ nl.naturalis.nda.elasticsearch.load/build
 /target/
 /.project
 /.settings/
+/nba-test.properties
+/nba.properties

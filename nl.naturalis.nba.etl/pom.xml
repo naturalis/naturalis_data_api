@@ -108,16 +108,23 @@
 
 	<build>
 		<plugins>
-			<!--plugin> <artifactId>maven-clean-plugin</artifactId> <configuration> 
-				<filesets> <fileset> <directory>${nba.etl.install.dir}</directory> <includes> 
-				<include>**/*</include> </includes> </fileset> </filesets> </configuration> 
-				</plugin -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>exec-maven-plugin</artifactId>
 				<executions>
 					<execution>
-						<id>delete-etl-install-dir</id>
+						<id>make-etl-top-dir</id>
+						<phase>initialize</phase>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>mkdir</executable>
+							<commandlineArgs>-p "${nba.etl.install.dir}"</commandlineArgs>
+						</configuration>
+					</execution>
+					<execution>
+						<id>delete-etl-dirs</id>
 						<phase>initialize</phase>
 						<goals>
 							<goal>exec</goal>
@@ -126,12 +133,14 @@
 							<executable>rm</executable>
 							<arguments>
 								<argument>-rf</argument>
-								<argument>${nba.etl.install.dir}</argument>
+								<argument>${nba.etl.install.dir}/sh</argument>
+								<argument>${nba.etl.install.dir}/lib</argument>
+								<argument>${nba.etl.install.dir}/conf</argument>
 							</arguments>
 						</configuration>
 					</execution>
 					<execution>
-						<id>make-etl-dirs</id>
+						<id>make-etl-subdirs</id>
 						<phase>initialize</phase>
 						<goals>
 							<goal>exec</goal>
@@ -139,7 +148,6 @@
 						<configuration>
 							<executable>mkdir</executable>
 							<arguments>
-								<argument>${nba.etl.install.dir}</argument>
 								<argument>${nba.etl.install.dir}/conf</argument>
 								<argument>${nba.etl.install.dir}/lib</argument>
 							</arguments>

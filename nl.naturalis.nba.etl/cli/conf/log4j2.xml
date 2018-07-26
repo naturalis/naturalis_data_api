@@ -12,10 +12,11 @@
 			<PatternLayout
 				pattern="%d{HH:mm:ss.SSS}|%-5level|%c{10}: %msg%n" />
 		</File>
-		<!-- File name="JSON" fileName="${sys:nl.naturalis.nba.logFileBaseName}.json"> 
-			<JSONLayout complete="false" compact="true" includeStacktrace="false" eventEol="true" 
-			/ -->
-	</File>
+		<!--File name="JSON"
+			fileName="${sys:nl.naturalis.nba.logFileBaseName}.json">
+			<JSONLayout complete="false" compact="true"
+				includeStacktrace="false" eventEol="true" />
+		</File-->
 	</Appenders>
 	<Loggers>
 		<Logger name="nl.naturalis" level="INFO" additivity="false">

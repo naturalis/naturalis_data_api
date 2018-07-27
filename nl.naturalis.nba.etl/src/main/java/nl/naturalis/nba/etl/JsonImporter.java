@@ -19,6 +19,7 @@ import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.utils.ConfigObject;
 import nl.naturalis.nba.utils.FileUtil;
 import nl.naturalis.nba.utils.IOUtil;
+import nl.naturalis.nba.common.json.JsonDeserializationException;
 
 /**
  * The JsonImporter class adds new documents from a file (or files) 
@@ -62,15 +63,28 @@ public class JsonImporter {
     Collection<T> batch = new ArrayList<>(batchSize);
     LineNumberReader lnr = null;
     int processed = 0;
+    int skipped = 0;
+    String msg = "";
     
     try {
       FileReader fr = new FileReader(file);
       lnr = new LineNumberReader(fr, 4096);
       String line;
+      int lineNumber = 0;
       while ((line = lnr.readLine()) != null) {
-        T documentObject = JsonUtil.deserialize(line, docType.getJavaType());
-        batch.add(documentObject);
-        processed++;
+        lineNumber++;
+        try {
+          T documentObject = JsonUtil.deserialize(line, docType.getJavaType());
+          batch.add(documentObject);
+          processed++;
+        } catch (RuntimeException e) {
+          skipped++;
+          if (e instanceof JsonDeserializationException) {
+            logger.error("The document at line {} is of invalid format. This document has been skipped!", lineNumber);
+          } else {
+            logger.error("An error occurred while processing the document at line {}. This document has been skipped!", lineNumber);
+          }
+        }
         if (batch.size() == batchSize) {
           if (!dryRun) {
             indexer.index(batch);
@@ -81,10 +95,17 @@ public class JsonImporter {
       }
       if (!batch.isEmpty()) {
         indexer.index(batch);
-        logger.info(docType.getName() + " documents imported: {}", processed);
       }
     } finally {
       IOUtil.close(lnr);
+      logger.info(docType.getName() + " documents skipped: {}", skipped);
+      logger.info(docType.getName() + " documents imported: {}", processed);
+      if (skipped > 0) {
+        msg = (skipped == 1) ? " document was skipped!" : " documents were skipped!";
+        System.out.println("WARNING: the file has been processed but with errors! " + skipped + msg);
+      }
+      msg = (processed == 1) ? " document was imported." : " documents were imported.";
+      System.out.println(processed + msg);
     }
   }
   

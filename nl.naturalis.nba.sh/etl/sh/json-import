@@ -15,5 +15,5 @@ then
     java -cp ${classpath} $JAVA_OPTS ${root_package}.JsonImporter Specimen
     java -cp ${classpath} $JAVA_OPTS ${root_package}.JsonImporter MultiMediaObject
 else
-    echo "USAGE: ${0} [ specimens | multimedia | all ]"
+    echo "USAGE: ${0} [ specimen | multimedia | all ]"
 fi

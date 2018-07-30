@@ -578,8 +578,11 @@
 					<artifactId>exec-maven-plugin</artifactId>
 					<version>${exec-maven-plugin.version}</version>
 				</plugin>
-				<!--This plugin's configuration is used to store Eclipse m2e settings 
-					only. It has no influence on the Maven build itself. -->
+				<plugin>
+					<groupId>org.wildfly.plugins</groupId>
+					<artifactId>wildfly-maven-plugin</artifactId>
+					<version>1.2.2.Final</version>
+				</plugin>
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>
@@ -648,56 +651,17 @@
 		</plugins>
 	</build>
 
-	<profiles>
-		<!-- automatically used by the release plugin -->
-		<profile>
-			<id>nba-release</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-enforcer-plugin</artifactId>
-						<executions>
-							<execution>
-								<goals>
-									<goal>enforce</goal>
-								</goals>
-							</execution>
-						</executions>
-						<configuration>
-							<rules>
-								<requireMavenVersion>
-									<version>[${minimumMavenVersion},)</version>
-								</requireMavenVersion>
-								<requireJavaVersion>
-									<version>[${jdkLevel},)</version>
-								</requireJavaVersion>
-								<requirePluginVersions>
-									<message>Best Practice is to always define plugin
-										versions!
-									</message>
-								</requirePluginVersions>
-								<requireReleaseDeps>
-									<message>No Snapshot dependencies allowed!</message>
-								</requireReleaseDeps>
-							</rules>
-						</configuration>
-					</plugin>
-					<plugin>
-						<artifactId>maven-source-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>attach-sources</id>
-								<goals>
-									<goal>jar-no-fork</goal>
-									<goal>test-jar-no-fork</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
+	<!--profiles> <profile> <id>nba-release</id> <build> <plugins> <plugin> 
+		<groupId>org.apache.maven.plugins</groupId> <artifactId>maven-enforcer-plugin</artifactId> 
+		<executions> <execution> <goals> <goal>enforce</goal> </goals> </execution> 
+		</executions> <configuration> <rules> <requireMavenVersion> <version>[${minimumMavenVersion},)</version> 
+		</requireMavenVersion> <requireJavaVersion> <version>[${jdkLevel},)</version> 
+		</requireJavaVersion> <requirePluginVersions> <message>Best Practice is to 
+		always define plugin versions! </message> </requirePluginVersions> <requireReleaseDeps> 
+		<message>No Snapshot dependencies allowed!</message> </requireReleaseDeps> 
+		</rules> </configuration> </plugin> <plugin> <artifactId>maven-source-plugin</artifactId> 
+		<executions> <execution> <id>attach-sources</id> <goals> <goal>jar-no-fork</goal> 
+		<goal>test-jar-no-fork</goal> </goals> </execution> </executions> </plugin> 
+		</plugins> </build> </profile> </profiles -->
 
 </project>

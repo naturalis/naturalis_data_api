@@ -11,6 +11,7 @@
 
 	<artifactId>nl.naturalis.nba.common</artifactId>
 	<name>NBA common</name>
+	<description>Common classes and interfaces used throughout the NBA code base</description>
 
 	<dependencies>
 

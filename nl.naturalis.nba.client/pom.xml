@@ -12,6 +12,7 @@
 
 	<artifactId>nl.naturalis.nba.client</artifactId>
 	<name>NBA Java Client</name>
+	<description>A Java Client for the NBA providing programmatic access to its functionality</description>
 
 	<dependencies>
 
@@ -65,4 +66,5 @@
 		</dependency>
 
 	</dependencies>
+
 </project>

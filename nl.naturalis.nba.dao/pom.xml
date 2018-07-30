@@ -12,6 +12,7 @@
 
 	<artifactId>nl.naturalis.nba.dao</artifactId>
 	<name>NBA DAO layer</name>
+	<description>The data access layer of the NBA. Regulates interaction with the Elasticsearch backend</description>
 
 	<dependencies>
 

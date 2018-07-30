@@ -12,6 +12,7 @@
 
 	<artifactId>nl.naturalis.nba.etl</artifactId>
 	<name>NBA ETL Module</name>
+	<description>Software for importing the various data sources feeding into the Naturalis Data Store (NDS)</description>
 
 	<dependencies>
 

@@ -13,6 +13,7 @@
 
 	<artifactId>nl.naturalis.nba.rest</artifactId>
 	<name>NBA REST layer</name>
+	<description>Desfines the REST API of the NBA</description>
 
 	<packaging>war</packaging>
 

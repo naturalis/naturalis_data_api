@@ -108,11 +108,9 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<!-- Needed for index.jsp (even if mvn dependency:analyze thinks you don't 
-				need it !) -->
+			<!-- Needed for index.jsp (even if mvn dependency:analyze says otherwise) -->
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
-			<version>2.5</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -121,21 +119,29 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>exec-maven-plugin</artifactId>
+				<groupId>pl.project13.maven</groupId>
+				<artifactId>git-commit-id-plugin</artifactId>
 				<executions>
 					<execution>
-						<id>generate-build-props</id>
-						<phase>generate-resources</phase>
+						<id>get-the-git-infos</id>
 						<goals>
-							<goal>exec</goal>
+							<goal>revision</goal>
 						</goals>
-						<configuration>
-							<executable>${basedir}/create-version-props.sh</executable>
-							<commandlineArgs>${project.basedir}/src/main/resources</commandlineArgs>
-						</configuration>
 					</execution>
 				</executions>
+				<configuration>
+					<dotGitDirectory>${project.basedir}/../.git</dotGitDirectory>
+					<prefix>git</prefix>
+					<verbose>false</verbose>
+					<generateGitPropertiesFile>true</generateGitPropertiesFile>
+					<generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
+					<format>properties</format>
+					<gitDescribe>
+						<skip>false</skip>
+						<always>false</always>
+						<dirty>-dirty</dirty>
+					</gitDescribe>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

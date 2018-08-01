@@ -11,10 +11,7 @@
 	<packaging>pom</packaging>
 
 	<name>Naturalis Biodiversity API (NBA)</name>
-	<description><![CDATA[
-		<p>This project contains the Java modules that make up the NBA.
-		For the javadocs, see <a href="apidocs/index.html">here</a>
-		]]></description>
+	<description>Parent prject for the NBA's Java code base</description>
 	<url>http://github.org/naturalis/naturalis_data_api</url>
 
 	<scm>
@@ -24,12 +21,6 @@
 		<tag>HEAD</tag>
 	</scm>
 
-	<distributionManagement>
-		<site>
-			<id>gh-pages</id>
-			<url>http://naturalis.github.io/naturalis_data_api/</url>
-		</site>
-	</distributionManagement>
 
 	<prerequisites>
 		<maven>${minimumMavenVersion}</maven>
@@ -44,18 +35,28 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
 		<!-- Library dependencies -->
-		<!-- Check for updates: mvn versions:display-dependency-updates -->
-		<!-- Check dependencies: mvn dependency:analyze -->
+		<!-- *** Check for updates: mvn versions:display-dependency-updates -->
+		<!-- *** Check dependencies: mvn dependency:analyze -->
+		<javax-mail.version>1.5.5</javax-mail.version>
+		<javax-activation.version>1.1</javax-activation.version>
+		<javax-persistence.version>2.1.0-RC2</javax-persistence.version>
+		<javax-jms.version>1.0.1.Final</javax-jms.version>
+		<javax.ws.rs-api.version>2.0.1</javax.ws.rs-api.version>
+		<javax-ejb.version>3.2</javax-ejb.version>
+		<javax-cdi-api.version>1.2</javax-cdi-api.version>
+		<javax-servlet-api.version>2.5</javax-servlet-api.version>
+
 		<jackson.version>2.8.5</jackson.version>
 		<geojson.version>1.8</geojson.version>
+
 		<apache-http-client.version>4.5.6</apache-http-client.version>
 		<apache-http-core.version>4.4.10</apache-http-core.version>
 		<apache-commons-io.version>2.6</apache-commons-io.version>
 		<apache-commons-lang3.version>3.5</apache-commons-lang3.version>
 		<apache-commons-text.version>1.1</apache-commons-text.version>
 		<apache-commons-csv.version>1.4</apache-commons-csv.version>
-		<apache-logging.version>2.7</apache-logging.version>
 		<apache-commons-compress.version>1.17</apache-commons-compress.version>
+		<apache-logging.version>2.7</apache-logging.version>
 
 		<elasticsearch.version>5.1.2</elasticsearch.version>
 		<apache-lucene.version>6.3.0</apache-lucene.version>
@@ -70,14 +71,7 @@
 		<stax2.version>3.1.4</stax2.version>
 		<woodstox.version>5.0.2</woodstox.version>
 		<fusesource.version>1.13</fusesource.version>
-		<javax-mail.version>1.5.5</javax-mail.version>
-		<javax-activation.version>1.1</javax-activation.version>
-		<javax-persistence.version>2.1.0-RC2</javax-persistence.version>
-		<javax-jms.version>1.0.1.Final</javax-jms.version>
-		<javax.ws.rs-api.version>2.0.1</javax.ws.rs-api.version>
-		<javax-ejb.version>3.2</javax-ejb.version>
-		<javax-cdi-api.version>1.2</javax-cdi-api.version>
-		<javax-servlet-api.version>2.5</javax-servlet-api.version>
+
 		<kafka-clients.version>0.10.0.1</kafka-clients.version>
 		<lz4.version>1.3.0</lz4.version>
 		<!-- snappy-java.version>1.1.7.2</snappy-java.version -->
@@ -99,7 +93,8 @@
 		<powermock-api-mockito.version>1.7.1</powermock-api-mockito.version>
 
 
-		<!-- Maven plugin versions. Check for available updates: mvn versions:display-plugin-updates -->
+		<!-- Maven plugin versions -->
+		<!-- *** Check for updates: mvn versions:display-plugin-updates -->
 		<maven-clean-plugin.version>3.1.0</maven-clean-plugin.version>
 		<maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
 		<maven-dependency-plugin.version>3.1.1</maven-dependency-plugin.version>
@@ -143,13 +138,21 @@
 		<module>nl.naturalis.nba.client</module>
 	</modules>
 
-	<!--distributionManagement> <repository> <id>gbif-release</id> <url>http://repository.gbif.org/content/repositories/releases</url> 
-		</repository> <snapshotRepository> <id>gbif-snapshot</id> <url>http://repository.gbif.org/content/repositories/snapshots</url> 
-		</snapshotRepository> </distributionManagement -->
+	<distributionManagement>
+		<repository>
+			<id>naturalis-releases</id>
+			<name>Internal Release Repository</name>
+			<url>http://145.136.242.169:8080/repository/internal/</url>
+		</repository>
+		<snapshotRepository>
+			<id>naturalis-snapshots</id>
+			<name>Internal Snapshot Repository</name>
+			<url>http://145.136.242.169:8080/repository/snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
 
 	<dependencyManagement>
 		<dependencies>
-
 			<!-- JACKSON / GEO JSON -->
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
@@ -186,7 +189,7 @@
 				<artifactId>geojson-jackson</artifactId>
 				<version>${geojson.version}</version>
 			</dependency>
-
+			
 			<!-- ELASTICSEARCH / LUCENE -->
 			<dependency>
 				<groupId>org.elasticsearch.client</groupId>
@@ -204,13 +207,10 @@
 				<version>6.3.0</version>
 			</dependency>
 			<dependency>
-				<!-- Needed b/c of Elasticsearch. We have no direct dependency on it 
-					any longer -->
 				<groupId>joda-time</groupId>
 				<artifactId>joda-time</artifactId>
 				<version>${joda-time.version}</version>
 			</dependency>
-
 
 			<!-- APACHE -->
 			<dependency>

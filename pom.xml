@@ -7,7 +7,7 @@
 
 	<groupId>nl.naturalis.nba</groupId>
 	<artifactId>nba-motherpom</artifactId>
-	<version>2-SNAPSHOT</version>
+	<version>2.16</version>
 	<packaging>pom</packaging>
 
 	<name>Naturalis Biodiversity API (NBA)</name>
@@ -20,7 +20,6 @@
 		<developerConnection>scm:git:git@github.com/naturalis/naturalis_data_api.git</developerConnection>
 		<tag>HEAD</tag>
 	</scm>
-
 
 	<prerequisites>
 		<maven>${minimumMavenVersion}</maven>
@@ -189,7 +188,7 @@
 				<artifactId>geojson-jackson</artifactId>
 				<version>${geojson.version}</version>
 			</dependency>
-			
+
 			<!-- ELASTICSEARCH / LUCENE -->
 			<dependency>
 				<groupId>org.elasticsearch.client</groupId>
@@ -582,11 +581,6 @@
 					<artifactId>versions-maven-plugin</artifactId>
 					<version>${versions-maven-plugin.version}</version>
 				</plugin>
-				<!--plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-release-plugin</artifactId> 
-					<version>${maven-release-plugin.version}</version> <configuration> <goals>deploy</goals> 
-					<preparationGoals>install</preparationGoals> <resume>false</resume> <useReleaseProfile>true</useReleaseProfile> 
-					<releaseProfiles>col-release</releaseProfiles> <tagNameFormat>${project.artifactId}-@{project.version}</tagNameFormat> 
-					</configuration> </plugin -->
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>exec-maven-plugin</artifactId>
@@ -643,20 +637,26 @@
 					</webResources>
 				</configuration>
 			</plugin>
-			<!--plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-javadoc-plugin</artifactId> 
-				<version>${maven-javadoc-plugin.version}</version> <configuration> <failOnError>false</failOnError> 
-				<additionalJOption>-Xdoclint:none</additionalJOption> <show>public</show> 
-				<excludes>src/test/**/*.java</excludes> </configuration> <executions> <execution> 
-				<id>attach-javadocs</id> <goals> <goal>jar</goal> </goals> </execution> </executions> 
-				</plugin -->
-			<!--plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-site-plugin</artifactId> 
-				<executions> <execution> <phase>site</phase> <goals> <goal>site</goal> </goals> 
-				</execution> </executions> </plugin -->
-			<!--plugin> <groupId>com.github.github</groupId> <artifactId>site-maven-plugin</artifactId> 
-				<version>0.12</version> <configuration> <message>Creating site for ${project.version}</message> 
-				<userName>ayco-at-naturalis</userName> <password>Holl1997@</password> </configuration> 
-				<executions> <execution> <inherited>false</inherited> <goals> <goal>site</goal> 
-				</goals> <phase>site</phase> </execution> </executions> </plugin -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>${maven-javadoc-plugin.version}</version>
+				<configuration>
+					<failOnError>false</failOnError>
+					<quiet>true</quiet>
+					<additionalJOption>-Xdoclint:none</additionalJOption>
+					<show>public</show>
+					<excludes>src/test/**/*.java</excludes>
+				</configuration>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 
@@ -734,18 +734,5 @@
 			</build>
 		</profile>
 	</profiles>
-
-	<!--profiles> <profile> <id>nba-release</id> <build> <plugins> <plugin> 
-		<groupId>org.apache.maven.plugins</groupId> <artifactId>maven-enforcer-plugin</artifactId> 
-		<executions> <execution> <goals> <goal>enforce</goal> </goals> </execution> 
-		</executions> <configuration> <rules> <requireMavenVersion> <version>[${minimumMavenVersion},)</version> 
-		</requireMavenVersion> <requireJavaVersion> <version>[${jdkLevel},)</version> 
-		</requireJavaVersion> <requirePluginVersions> <message>Best Practice is to 
-		always define plugin versions! </message> </requirePluginVersions> <requireReleaseDeps> 
-		<message>No Snapshot dependencies allowed!</message> </requireReleaseDeps> 
-		</rules> </configuration> </plugin> <plugin> <artifactId>maven-source-plugin</artifactId> 
-		<executions> <execution> <id>attach-sources</id> <goals> <goal>jar-no-fork</goal> 
-		<goal>test-jar-no-fork</goal> </goals> </execution> </executions> </plugin> 
-		</plugins> </build> </profile> </profiles -->
 
 </project>

@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>nl.naturalis.nba</groupId>
 		<artifactId>nba-motherpom</artifactId>
-		<version>2-SNAPSHOT</version>
+		<version>2.16</version>
 	</parent>
 
 	<artifactId>nl.naturalis.nba.client</artifactId>
@@ -19,17 +19,17 @@
 		<dependency>
 			<groupId>nl.naturalis.nba</groupId>
 			<artifactId>nl.naturalis.nba.api</artifactId>
-			<version>2-SNAPSHOT</version>
+			<version>2.16</version>
 		</dependency>
 		<dependency>
 			<groupId>nl.naturalis.nba</groupId>
 			<artifactId>nl.naturalis.nba.utils</artifactId>
-			<version>2-SNAPSHOT</version>
+			<version>2.16</version>
 		</dependency>
 		<dependency>
 			<groupId>nl.naturalis.nba</groupId>
 			<artifactId>nl.naturalis.nba.common</artifactId>
-			<version>2-SNAPSHOT</version>
+			<version>2.16</version>
 		</dependency>
 
 		<dependency>
@@ -66,5 +66,39 @@
 		</dependency>
 
 	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-clean-plugin</artifactId>
+				<configuration>
+					<filesets>
+						<fileset>
+							<directory>${project.basedir}/../java_client_download</directory>
+							<includes>*.jar</includes>
+						</fileset>
+					</filesets>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<configuration>
+					<outputDirectory>${project.basedir}/../java_client_download</outputDirectory>
+					<finalName>nba-java-client-v${project.version}</finalName>
+					<createSourcesJar>true</createSourcesJar>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 
 </project>

@@ -189,7 +189,7 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 				mmo.setCaption(title);
 				mmo.setMultiMediaPublic(bval(frmDigitaleBestandenElem, "abcd:MultiMediaPublic"));
 				mmo.setCreator(val(frmDigitaleBestandenElem, "dc:creator"));
-				mmo.setDateModified(getDateModified());
+				mmo.setDateLastEdited(getDateModified());
 				mmos.add(mmo);
 				stats.objectsAccepted++;
 			}

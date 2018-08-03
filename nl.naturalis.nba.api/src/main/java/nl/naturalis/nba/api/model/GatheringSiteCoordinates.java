@@ -25,7 +25,7 @@ public class GatheringSiteCoordinates implements INbaModelObject {
 	private String gridCellCode;
 	private String gridQualifier;
 	private Integer coordinateErrorDistanceInMeters;
-	private String spatialDatum;
+	private SpatialDatum spatialDatum;
 
 	public GatheringSiteCoordinates()
 	{
@@ -141,11 +141,11 @@ public class GatheringSiteCoordinates implements INbaModelObject {
     }
   }
 
-  public String getSpatialDatum() {
+  public SpatialDatum getSpatialDatum() {
     return spatialDatum;
   }
 
-  public void setSpatialDatum(String spatialDatum) {
+  public void setSpatialDatum(SpatialDatum spatialDatum) {
     this.spatialDatum = spatialDatum;
   }
 

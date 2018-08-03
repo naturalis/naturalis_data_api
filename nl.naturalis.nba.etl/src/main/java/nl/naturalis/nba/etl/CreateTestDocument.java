@@ -39,6 +39,7 @@ import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.ServiceAccessPoint;
 import nl.naturalis.nba.api.model.Sex;
 import nl.naturalis.nba.api.model.SourceSystem;
+import nl.naturalis.nba.api.model.SpatialDatum;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.api.model.SpecimenTypeStatus;
@@ -190,6 +191,9 @@ public class CreateTestDocument {
     specimen.setObjectPublic(true);
     specimen.setMultiMediaPublic(true);
     specimen.setAcquiredFrom(new Agent(reverseString("acquiredFrom.agentText")));
+    specimen.setInformationWithheld(reverseString("informationWithheld"));
+    specimen.setDataGeneralizations(reverseString("dataGeneralizations"));
+    specimen.setDateLastEdited(OffsetDateTime.now());
     
     specimen.setGatheringEvent(createGatheringEvent());
     specimen.setIdentifications(Arrays.asList(new SpecimenIdentification[] {createSpecimenIdentification(1), createSpecimenIdentification(2)}));
@@ -227,6 +231,11 @@ public class CreateTestDocument {
     multiMediaObject.setAssociatedSpecimenReference(reverseString("associatedSpecimenReference"));
     multiMediaObject.setAssociatedTaxonReference(reverseString("associatedTaxonReference"));
     multiMediaObject.setMultiMediaPublic(true);
+    multiMediaObject.setInformationWithheld(reverseString("informationWithheld"));
+    multiMediaObject.setDataGeneralizations(reverseString("dataGeneralizations"));
+    multiMediaObject.setRating((byte) 3);
+    multiMediaObject.setResourceCreationTechnique(reverseString("resourceCreationTechnique"));
+    multiMediaObject.setDateLastEdited(OffsetDateTime.now());
     
     multiMediaObject.setSubjectParts(Arrays.asList(new String[] {reverseString("subjectParts") + "_1", reverseString("subjectParts") + "_2"}));
     multiMediaObject.setSubjectOrientations(Arrays.asList(new String[] {reverseString("subjectOrientations") + "_1", reverseString("subjectOrientations") + "_2"}));
@@ -267,12 +276,16 @@ public class CreateTestDocument {
     gatheringEvent.setLocalityText(reverseString("gatheringEvent.localityText") + n);
     gatheringEvent.setDateTimeBegin(OffsetDateTime.now().minusYears(1));
     gatheringEvent.setDateTimeEnd(OffsetDateTime.now());
+    gatheringEvent.setDateText(reverseString("dateText") + n);
     gatheringEvent.setMethod(reverseString("method") + n);
     gatheringEvent.setAltitude(reverseString("altitude") + n);
     gatheringEvent.setAltitudeUnifOfMeasurement(reverseString("altitudeUnifOfMeasurement") + n);
     gatheringEvent.setBiotopeText(reverseString("biotopeText") + n);
     gatheringEvent.setDepth(reverseString("depth") + n);
     gatheringEvent.setDepthUnitOfMeasurement(reverseString("depthUnitOfMeasurement") + n);
+    gatheringEvent.setBehavior(reverseString("behavior") + n);
+    gatheringEvent.setCode(reverseString("code") + n);
+    gatheringEvent.setEstablishmentMeans(reverseString("establishmentMeans") + n);
     
     gatheringEvent.setGatheringPersons(Arrays.asList(new Person[] {createPerson(1), createPerson(2)}));
     gatheringEvent.setGatheringOrganizations(Arrays.asList(new Organization[] {createOrganization(3), createOrganization(4)}));
@@ -317,8 +330,10 @@ public class CreateTestDocument {
     siteCoordinates.setGridCellSystem(reverseString("gridCellSystem"));
     siteCoordinates.setGridLatitudeDecimal(Math.floor(lat));
     siteCoordinates.setGridLongitudeDecimal(Math.floor(lon));
+    siteCoordinates.setCoordinateErrorDistanceInMeters(rand.nextInt(100));
     siteCoordinates.setGridCellCode(reverseString("gridCellCode"));
     siteCoordinates.setGridQualifier(reverseString("gridQualifier"));
+    siteCoordinates.setSpatialDatum(SpatialDatum.parse("WGS84"));
     return siteCoordinates;
   }
   

@@ -51,7 +51,7 @@ public class MultiMediaObject extends NbaTraceableObject implements IDocumentObj
 	private String dataGeneralizations;
 	private Byte rating;
 	private String resourceCreationTechnique;
-	private OffsetDateTime dateModified;
+	private OffsetDateTime dateLastEdited;
 	
 	private List<String> subjectParts;
 	private List<String> subjectOrientations;
@@ -393,7 +393,7 @@ public class MultiMediaObject extends NbaTraceableObject implements IDocumentObj
    */
   public void setRating(Byte rating) {
     if (rating >= -1 && rating <= 5) {
-      this.rating = rating;      
+      this.rating = rating;
     }
   }
 
@@ -405,12 +405,12 @@ public class MultiMediaObject extends NbaTraceableObject implements IDocumentObj
     this.resourceCreationTechnique = resourceCreationTechnique;
   }
 
-  public OffsetDateTime getDateModified() {
-    return dateModified;
+  public OffsetDateTime getDateLastEdited() {
+    return dateLastEdited;
   }
 
-  public void setDateModified(OffsetDateTime dateModified) {
-    this.dateModified = dateModified;
+  public void setDateLastEdited(OffsetDateTime dateLastEdited) {
+    this.dateLastEdited = dateLastEdited;
   }
 
 }

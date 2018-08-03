@@ -329,13 +329,13 @@ public class EnrichmentUtilTest {
 
     String expectedId = "L.1911711_2107143681@BRAHMS";
     String expectedLicenseType = "Copyright";
-    License expectedLicense = License.CC0;
+    String expectedLicense = "CC0";
     String expectedCollectionType = "Botany";
     String expectedTitle = "RMNH.AVES";
 
     assertEquals("01", expectedId, actualObj.getItem().getId());
-    assertEquals("02", expectedLicenseType, actualObj.getItem().getLicenseType());
-    assertEquals("03", expectedLicense, actualObj.getItem().getLicense());
+    assertEquals("02", expectedLicenseType, actualObj.getItem().getLicenseType().toString());
+    assertEquals("03", expectedLicense, actualObj.getItem().getLicense().toString());
     assertEquals("03", expectedCollectionType, actualObj.getItem().getCollectionType());
     assertEquals("04", expectedTitle, actualObj.getItem().getTitle());
   }

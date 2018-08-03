@@ -9,6 +9,7 @@ import nl.naturalis.nba.api.model.DefaultClassification;
 import nl.naturalis.nba.api.model.GatheringEvent;
 import nl.naturalis.nba.api.model.GatheringSiteCoordinates;
 import nl.naturalis.nba.api.model.License;
+import nl.naturalis.nba.api.model.LicenseType;
 import nl.naturalis.nba.api.model.Monomial;
 import nl.naturalis.nba.api.model.MultiMediaContentIdentification;
 import nl.naturalis.nba.api.model.MultiMediaGatheringEvent;
@@ -36,7 +37,7 @@ public class DataMockUtil {
     multiMediaObject.setSourceInstitutionID("Naturalis Biodiversity Center");
     multiMediaObject.setSourceID("Brahms");
     multiMediaObject.setOwner("Naturalis Biodiversity Center");
-    multiMediaObject.setLicenseType("Copyright");
+    multiMediaObject.setLicenseType(LicenseType.parse("Copyright"));
     multiMediaObject.setLicense(License.parse("CC0"));
     multiMediaObject.setUnitID("L.1911711_2107143681");
     multiMediaObject.setCollectionType("Botany");
@@ -242,7 +243,7 @@ public class DataMockUtil {
     specimen.setSourceInstitutionID("Naturalis Biodiversity Center");
     specimen.setMultiMediaPublic(false);
     specimen.setObjectPublic(false);
-    specimen.setLicenseType("Copyright");
+    specimen.setLicenseType(LicenseType.parse("Copyright"));
     specimen.setUnitGUID("http://data.biodiversitydata.nl/naturalis/specimen/L.1911711");
     specimen.setGatheringEvent(gatheringEvent);
 

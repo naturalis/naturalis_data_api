@@ -24,7 +24,7 @@ public class MultiMediaObject extends NbaTraceableObject implements IDocumentObj
   private List<String> previousSourceID;
 	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String owner;
-	private String licenseType;
+	private LicenseType licenseType;
 	private License license;
 	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String unitID;
@@ -127,12 +127,12 @@ public class MultiMediaObject extends NbaTraceableObject implements IDocumentObj
 		this.owner = owner;
 	}
 
-	public String getLicenseType()
+	public LicenseType getLicenseType()
 	{
 		return licenseType;
 	}
 
-	public void setLicenseType(String licenseType)
+	public void setLicenseType(LicenseType licenseType)
 	{
 		this.licenseType = licenseType;
 	}

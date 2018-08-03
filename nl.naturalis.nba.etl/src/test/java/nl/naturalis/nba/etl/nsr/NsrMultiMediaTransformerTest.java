@@ -94,9 +94,9 @@ public class NsrMultiMediaTransformerTest {
     String expectedCaption = "Adult winter";
     String expectedDescription = "Adult winter";
     String expectedId = "D3KF0JNQ0UA_1011552535@NSR";
-    License expectedLicense = License.CCBYNCND; //"CC BY-NC-ND"
-    String expectedOwner = "Naturalis Biodiversity Center";
     String expectedLicenseType = "Copyright";
+    String expectedLicense = "CC BY-NC-ND";
+    String expectedOwner = "Naturalis Biodiversity Center";
     String expectedSourceId = "LNG NSR";
     String expectedSourceSystemId = "D3KF0JNQ0UA_1011552535";
     String expectedUnitId = "D3KF0JNQ0UA_1011552535";
@@ -107,9 +107,9 @@ public class NsrMultiMediaTransformerTest {
     assertEquals("04",expectedCaption, actual.get(0).getCaption());
     assertEquals("05",expectedDescription, actual.get(0).getDescription());
     assertEquals("06",expectedId, actual.get(0).getId());
-    assertEquals("07",expectedLicense, actual.get(0).getLicense());
-    assertEquals("08",expectedOwner, actual.get(0).getOwner());
-    assertEquals("09",expectedLicenseType, actual.get(0).getLicenseType());
+    assertEquals("07",expectedLicenseType, actual.get(0).getLicenseType().toString());
+    assertEquals("08",expectedLicense, actual.get(0).getLicense().toString());
+    assertEquals("09",expectedOwner, actual.get(0).getOwner());
     assertEquals("10",expectedSourceId, actual.get(0).getSourceID());
     assertEquals("12",expectedSourceSystemId, actual.get(0).getSourceSystemId());
     assertEquals("13",expectedUnitId, actual.get(0).getUnitID());
@@ -165,9 +165,9 @@ public class NsrMultiMediaTransformerTest {
     String expectedCaption = "Adult winter";
     String expectedDescription = "Adult winter";
     String expectedId = "D3KF0JNQ0UA_1011552535@NSR";
-    License expectedLicense = License.CCBYNCND; //"CC BY-NC-ND"
-    String expectedOwner = "Naturalis Biodiversity Center";
     String expectedLicenseType = "Copyright";
+    String expectedLicense = "CC BY-NC-ND";
+    String expectedOwner = "Naturalis Biodiversity Center";
     String expectedSourceId = "LNG NSR";
     String expectedSourceSystemId = "D3KF0JNQ0UA_1011552535";
     String expectedUnitId = "D3KF0JNQ0UA_1011552535";
@@ -178,9 +178,9 @@ public class NsrMultiMediaTransformerTest {
     assertEquals("03",expectedCaption, actual.getCaption());
     assertEquals("04",expectedDescription, actual.getDescription());
     assertEquals("05",expectedId, actual.getId());
-    assertEquals("06",expectedLicense, actual.getLicense());
-    assertEquals("07",expectedOwner, actual.getOwner());
-    assertEquals("08",expectedLicenseType, actual.getLicenseType());
+    assertEquals("06",expectedLicenseType, actual.getLicenseType().toString());
+    assertEquals("07",expectedLicense, actual.getLicense().toString());
+    assertEquals("08",expectedOwner, actual.getOwner());
     assertEquals("09",expectedSourceId, actual.getSourceID());
     assertEquals("10",expectedSourceSystemId, actual.getSourceSystemId());
     assertEquals("11",expectedUnitId, actual.getUnitID());

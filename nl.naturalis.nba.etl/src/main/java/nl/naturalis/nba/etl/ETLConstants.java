@@ -1,6 +1,7 @@
 package nl.naturalis.nba.etl;
 
 import nl.naturalis.nba.api.model.License;
+import nl.naturalis.nba.api.model.LicenseType;
 
 /**
  * Constants used throughout the import library.
@@ -82,7 +83,7 @@ public interface ETLConstants {
 	/**
 	 * Copyright
 	 */
-	String LICENCE_TYPE = "Copyright";
+	LicenseType LICENCE_TYPE = LicenseType.COPYRIGHT;
 	/**
 	 * CC0
 	 */

@@ -4,6 +4,10 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
 
+/**
+ * A type status assigned to a specimen if it is not known whether it's a
+ * holotype, paratype, lectotype, etc., but it is known to be one of those.
+ */
 public enum SpecimenTypeStatus implements INbaModelObject
 {
 
@@ -22,10 +26,6 @@ public enum SpecimenTypeStatus implements INbaModelObject
 	PARALECTOTYPE,
 	SYNTYPE,
 	TOPOTYPE,
-	/**
-	 * A type status assigned to a specimen if it is not known whether it's a
-	 * holotype, paratype, lectotype, etc., but it is known to be one of those.
-	 */
 	TYPE;
 
 	@JsonCreator

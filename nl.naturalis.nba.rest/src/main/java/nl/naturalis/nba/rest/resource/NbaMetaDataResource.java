@@ -36,10 +36,16 @@ import org.reflections.util.ConfigurationBuilder;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import nl.naturalis.nba.api.model.AreaClass;
+import nl.naturalis.nba.api.model.License;
+import nl.naturalis.nba.api.model.LicenseType;
 import nl.naturalis.nba.api.model.PhaseOrStage;
+import nl.naturalis.nba.api.model.ServiceAccessPoint;
 import nl.naturalis.nba.api.model.Sex;
 import nl.naturalis.nba.api.model.SourceSystem;
+import nl.naturalis.nba.api.model.SpatialDatum;
 import nl.naturalis.nba.api.model.SpecimenTypeStatus;
+import nl.naturalis.nba.api.model.TaxonRelationType;
 import nl.naturalis.nba.api.model.TaxonomicStatus;
 import nl.naturalis.nba.api.model.metadata.NbaSetting;
 import nl.naturalis.nba.api.model.metadata.RestService;
@@ -132,6 +138,70 @@ public class NbaMetaDataResource {
 		}
 	}
 
+  @GET
+  @Path("/getControlledList/AreaClass")
+  @ApiOperation(
+      value = "Get allowed values for the field 'AreaClass'", 
+      response = License[].class, 
+      notes = "")
+  @Produces(JSON_CONTENT_TYPE)
+  public AreaClass[] getControlledListAreaClass(@Context UriInfo uriInfo)
+  {
+    try {
+      return new NbaMetaDataDao().getControlledListAreaClass();
+    } catch (Throwable t) {
+      throw handleError(uriInfo, t);
+    }
+  }
+
+	@GET
+	@Path("/getControlledList/License")
+	@ApiOperation(
+	    value = "Get allowed values for the field 'License'", 
+	    response = License[].class, 
+	    notes = "")
+	@Produces(JSON_CONTENT_TYPE)
+	public License[] getControlledListLicense(@Context UriInfo uriInfo)
+	{
+	  try {
+	    return new NbaMetaDataDao().getControlledListLicense();
+	  } catch (Throwable t) {
+	    throw handleError(uriInfo, t);
+	  }
+	}
+	
+  @GET
+  @Path("/getControlledList/LicenseType")
+  @ApiOperation(
+      value = "Get allowed values for the field 'LicenseType'", 
+      response = LicenseType[].class, 
+      notes = "")
+  @Produces(JSON_CONTENT_TYPE)
+  public LicenseType[] getControlledListLicenseType(@Context UriInfo uriInfo)
+  {
+    try {
+      return new NbaMetaDataDao().getControlledListLicenseType();
+    } catch (Throwable t) {
+      throw handleError(uriInfo, t);
+    }
+  }
+  
+  @GET
+  @Path("/getControlledList/PhaseOrStage")
+  @ApiOperation(
+      value = "Get allowed values for the field 'PhaseOrStage' in a specimen document", 
+      response = PhaseOrStage[].class, 
+      notes = "")
+  @Produces(JSON_CONTENT_TYPE)
+  public PhaseOrStage[] getControlledListPhaseOrStage(@Context UriInfo uriInfo)
+  {
+    try {
+      return new NbaMetaDataDao().getControlledListPhaseOrStage();
+    } catch (Throwable t) {
+      throw handleError(uriInfo, t);
+    }
+  }
+  
 	@GET
 	@Path("/getControlledList/Sex")
 	@ApiOperation(
@@ -148,21 +218,53 @@ public class NbaMetaDataResource {
 		}
 	}
 
-	@GET
-	@Path("/getControlledList/PhaseOrStage")
-	@ApiOperation(
-	    value = "Get allowed values for the field 'PhaseOrStage' in a specimen document", 
-	    response = PhaseOrStage[].class, 
-	    notes = "")
-	@Produces(JSON_CONTENT_TYPE)
-	public PhaseOrStage[] getControlledListPhaseOrStage(@Context UriInfo uriInfo)
-	{
-		try {
-			return new NbaMetaDataDao().getControlledListPhaseOrStage();
-		} catch (Throwable t) {
-			throw handleError(uriInfo, t);
-		}
-	}
+	 @GET
+	  @Path("/getControlledList/SpatialDatum")
+	  @ApiOperation(
+	      value = "Get allowed values for the field 'SpatialDatum'", 
+	      response = SpatialDatum[].class, 
+	      notes = "")
+	  @Produces(JSON_CONTENT_TYPE)
+	  public SpatialDatum[] getControlledListSpatialDatum(@Context UriInfo uriInfo)
+	  {
+	    try {
+	      return new NbaMetaDataDao().getControlledListSpatialDatum();
+	    } catch (Throwable t) {
+	      throw handleError(uriInfo, t);
+	    }
+	  }
+	 
+	 @GET
+	 @Path("/getControlledList/SpecimenTypeStatus")
+	 @ApiOperation(
+	     value = "Get allowed values for the field 'SpecimenTypeStatus' in a specimen document", 
+	     response = SpecimenTypeStatus[].class, 
+	     notes = "")
+	 @Produces(JSON_CONTENT_TYPE)
+	 public SpecimenTypeStatus[] getControlledListSpecimenTypeStatus(@Context UriInfo uriInfo)
+	 {
+	   try {
+	     return new NbaMetaDataDao().getControlledListSpecimenTypeStatus();
+	   } catch (Throwable t) {
+	     throw handleError(uriInfo, t);
+	   }
+	 }
+	 
+	 @GET
+	 @Path("/getControlledList/RelationType")
+	 @ApiOperation(
+	     value = "Get allowed values for the field 'Relationtype'", 
+	     response = TaxonRelationType[].class, 
+	     notes = "")
+	 @Produces(JSON_CONTENT_TYPE)
+	 public TaxonRelationType[] getControlledListTaxonRelationType(@Context UriInfo uriInfo)
+	 {
+	   try {
+	     return new NbaMetaDataDao().getControlledListTaxonRelationType();
+	   } catch (Throwable t) {
+	     throw handleError(uriInfo, t);
+	   }
+	 }
 
 	@GET
 	@Path("/getControlledList/TaxonomicStatus")
@@ -180,22 +282,22 @@ public class NbaMetaDataResource {
 		}
 	}
 
-	@GET
-	@Path("/getControlledList/SpecimenTypeStatus")
-	@ApiOperation(
-	    value = "Get allowed values for the field 'SpecimenTypeStatus' in a specimen document", 
-	    response = SpecimenTypeStatus[].class, 
-	    notes = "")
-	@Produces(JSON_CONTENT_TYPE)
-	public SpecimenTypeStatus[] getControlledListSpecimenTypeStatus(@Context UriInfo uriInfo)
-	{
-		try {
-			return new NbaMetaDataDao().getControlledListSpecimenTypeStatus();
-		} catch (Throwable t) {
-			throw handleError(uriInfo, t);
-		}
-	}
-
+	 @GET
+	  @Path("/getControlledList/Variant")
+	  @ApiOperation(
+	      value = "Get allowed values for the field 'associatedMultiMediaUris.variant' in specimen documents", 
+	      response = ServiceAccessPoint.Variant[].class, 
+	      notes = "")
+	  @Produces(JSON_CONTENT_TYPE)
+	  public ServiceAccessPoint.Variant[] getControlledListVariant(@Context UriInfo uriInfo)
+	  {
+	    try {
+	      return new NbaMetaDataDao().getControlledListVariant();
+	    } catch (Throwable t) {
+	      throw handleError(uriInfo, t);
+	    }
+	  }
+	
 	@GET
 	@Path("/getAllowedDateFormats")
 	@ApiOperation(

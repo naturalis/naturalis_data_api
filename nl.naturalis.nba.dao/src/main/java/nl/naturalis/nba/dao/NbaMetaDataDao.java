@@ -8,12 +8,18 @@ import static nl.naturalis.nba.common.json.JsonUtil.readField;
 import java.io.InputStream;
 import java.util.EnumMap;
 import java.util.Map;
-
+import javax.management.relation.RelationType;
 import nl.naturalis.nba.api.INbaMetaData;
+import nl.naturalis.nba.api.model.AreaClass;
+import nl.naturalis.nba.api.model.License;
+import nl.naturalis.nba.api.model.LicenseType;
 import nl.naturalis.nba.api.model.PhaseOrStage;
+import nl.naturalis.nba.api.model.ServiceAccessPoint;
 import nl.naturalis.nba.api.model.Sex;
 import nl.naturalis.nba.api.model.SourceSystem;
+import nl.naturalis.nba.api.model.SpatialDatum;
 import nl.naturalis.nba.api.model.SpecimenTypeStatus;
+import nl.naturalis.nba.api.model.TaxonRelationType;
 import nl.naturalis.nba.api.model.TaxonomicStatus;
 import nl.naturalis.nba.api.model.metadata.NbaSetting;
 import nl.naturalis.nba.common.es.ESDateInput;
@@ -54,31 +60,68 @@ public class NbaMetaDataDao implements INbaMetaData {
 	@Override
 	public String[] getControlledLists()
 	{
-		return new String[] { "PhaseOrStage", "Sex", "SpecimenTypeStatus", "TaxonomicStatus" };
+		return new String[] { "AreaClass", "License", "LicenseType", "PhaseOrStage", "RelationType", 
+		                      "Sex", "SpatialDatum", "SpecimenTypeStatus", "TaxonomicStatus" };
 	}
 
+  @Override
+  public AreaClass[] getControlledListAreaClass()
+  {
+    return AreaClass.values();
+  }
+  
 	@Override
-	public Sex[] getControlledListSex()
+	public License[] getControlledListLicense()
 	{
-		return Sex.values();
+	  return License.values();
 	}
-
+	
+	@Override
+	public LicenseType[] getControlledListLicenseType()
+	{
+	  return LicenseType.values();
+	}
+	
 	@Override
 	public PhaseOrStage[] getControlledListPhaseOrStage()
 	{
 		return PhaseOrStage.values();
 	}
-
+	
+	@Override
+	public Sex[] getControlledListSex()
+	{
+	  return Sex.values();
+	}
+	
+	@Override
+	public SpatialDatum[] getControlledListSpatialDatum()
+	{
+	  return SpatialDatum.values();
+	}
+	
+	@Override
+	public SpecimenTypeStatus[] getControlledListSpecimenTypeStatus()
+	{
+	  return SpecimenTypeStatus.values();
+	}
+	
+	@Override
+	public TaxonRelationType[] getControlledListTaxonRelationType()
+	{
+	  return TaxonRelationType.values();
+	}
+	
 	@Override
 	public TaxonomicStatus[] getControlledListTaxonomicStatus()
 	{
 		return TaxonomicStatus.values();
 	}
-
+	
 	@Override
-	public SpecimenTypeStatus[] getControlledListSpecimenTypeStatus()
+	public ServiceAccessPoint.Variant[] getControlledListVariant()
 	{
-		return SpecimenTypeStatus.values();
+	  return ServiceAccessPoint.Variant.values();
 	}
 
 	@Override

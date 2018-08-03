@@ -13,6 +13,7 @@ import java.util.List;
 
 import nl.naturalis.nba.api.model.GatheringEvent;
 import nl.naturalis.nba.api.model.GatheringSiteCoordinates;
+import nl.naturalis.nba.api.model.License;
 import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
@@ -58,7 +59,7 @@ public class NdffSpecimenTransformer extends AbstractCSVTransformer<NdffCsvField
 			specimen.setSourceID("NDFF");
 			specimen.setOwner("Dutch Butterfly Conservation");
 			specimen.setLicenseType("Copyright");
-			specimen.setLicense("CC-BY-NC");
+			specimen.setLicense(License.CCBYNC); // "CC BY-NC"
 			specimen.setCollectionType("Dutch Butterfly Conservation");
 
 			SpecimenIdentification si = new SpecimenIdentification();

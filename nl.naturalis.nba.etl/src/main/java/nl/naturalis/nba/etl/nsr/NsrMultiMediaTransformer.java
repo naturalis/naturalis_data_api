@@ -20,7 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.w3c.dom.Element;
-
+import nl.naturalis.nba.api.model.License;
 import nl.naturalis.nba.api.model.MultiMediaContentIdentification;
 import nl.naturalis.nba.api.model.MultiMediaGatheringEvent;
 import nl.naturalis.nba.api.model.MultiMediaObject;
@@ -128,7 +128,7 @@ class NsrMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 			mmo.setCreator(val(e, "photographer_name"));
 			mmo.setCopyrightText(val(e, "copyright"));
 			mmo.setLicenseType(val(e, "licence_type"));
-			mmo.setLicense(val(e, "licence"));
+			mmo.setLicense(License.parse( val(e, "licence") ));
 			mmo.setDescription(val(e, "short_description"));
 			mmo.setCaption(mmo.getDescription());
 			String date = val(e, "date_taken");

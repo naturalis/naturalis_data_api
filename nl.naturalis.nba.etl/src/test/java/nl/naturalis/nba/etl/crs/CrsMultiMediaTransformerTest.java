@@ -15,6 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Element;
 import nl.naturalis.nba.api.model.GatheringEvent;
+import nl.naturalis.nba.api.model.License;
 import nl.naturalis.nba.api.model.MultiMediaContentIdentification;
 import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.api.model.ScientificName;
@@ -86,7 +87,7 @@ public class CrsMultiMediaTransformerTest {
       expectedMmo.setSourceID("CRS");
       expectedMmo.setOwner("Naturalis Biodiversity Center");
       expectedMmo.setUnitID("RMNH.INS.867435");
-      expectedMmo.setLicense("CC0");
+      expectedMmo.setLicense(License.parse("CC0"));
       expectedMmo.setCollectionType("Diptera");
       expectedMmo.setTitle("RMNH.INS.867435");
       expectedMmo.setAssociatedSpecimenReference("RMNH.INS.867435@CRS");
@@ -144,7 +145,7 @@ public class CrsMultiMediaTransformerTest {
     expectedMmo.setSourceInstitutionID("Naturalis Biodiversity Center");
     expectedMmo.setSourceID("CRS");
     expectedMmo.setOwner("Naturalis Biodiversity Center");
-    expectedMmo.setLicense("CC0");
+    expectedMmo.setLicense(License.parse("CC0"));
     expectedMmo.setCollectionType("Diptera");
     expectedMmo.setAssociatedSpecimenReference("RMNH.INS.867435@CRS");
     expectedMmo.setMultiMediaPublic(false);

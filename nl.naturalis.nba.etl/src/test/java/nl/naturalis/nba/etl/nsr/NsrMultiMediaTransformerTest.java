@@ -12,6 +12,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Element;
+import nl.naturalis.nba.api.model.License;
 import nl.naturalis.nba.api.model.MultiMediaContentIdentification;
 import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.api.model.Taxon;
@@ -93,7 +94,7 @@ public class NsrMultiMediaTransformerTest {
     String expectedCaption = "Adult winter";
     String expectedDescription = "Adult winter";
     String expectedId = "D3KF0JNQ0UA_1011552535@NSR";
-    String expectedLicense = "CC BY-NC-ND";
+    License expectedLicense = License.CCBYNCND; //"CC BY-NC-ND"
     String expectedOwner = "Naturalis Biodiversity Center";
     String expectedLicenseType = "Copyright";
     String expectedSourceId = "LNG NSR";
@@ -164,7 +165,7 @@ public class NsrMultiMediaTransformerTest {
     String expectedCaption = "Adult winter";
     String expectedDescription = "Adult winter";
     String expectedId = "D3KF0JNQ0UA_1011552535@NSR";
-    String expectedLicense = "CC BY-NC-ND";
+    License expectedLicense = License.CCBYNCND; //"CC BY-NC-ND"
     String expectedOwner = "Naturalis Biodiversity Center";
     String expectedLicenseType = "Copyright";
     String expectedSourceId = "LNG NSR";

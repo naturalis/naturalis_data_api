@@ -14,6 +14,7 @@ import org.junit.Before;
 import org.junit.Test;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QueryResultItem;
+import nl.naturalis.nba.api.model.License;
 import nl.naturalis.nba.api.model.MultiMediaContentIdentification;
 import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.api.model.ScientificName;
@@ -327,12 +328,14 @@ public class EnrichmentUtilTest {
     QueryResultItem<MultiMediaObject> actualObj = result.get(0);
 
     String expectedId = "L.1911711_2107143681@BRAHMS";
-    String expectedLicenseName = "Copyright";
+    String expectedLicenseType = "Copyright";
+    License expectedLicense = License.CC0;
     String expectedCollectionType = "Botany";
     String expectedTitle = "RMNH.AVES";
 
     assertEquals("01", expectedId, actualObj.getItem().getId());
-    assertEquals("02", expectedLicenseName, actualObj.getItem().getLicense());
+    assertEquals("02", expectedLicenseType, actualObj.getItem().getLicenseType());
+    assertEquals("03", expectedLicense, actualObj.getItem().getLicense());
     assertEquals("03", expectedCollectionType, actualObj.getItem().getCollectionType());
     assertEquals("04", expectedTitle, actualObj.getItem().getTitle());
   }

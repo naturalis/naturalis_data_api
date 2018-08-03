@@ -1,5 +1,7 @@
 package nl.naturalis.nba.etl;
 
+import nl.naturalis.nba.api.model.License;
+
 /**
  * Constants used throughout the import library.
  * 
@@ -84,7 +86,7 @@ public interface ETLConstants {
 	/**
 	 * CC0
 	 */
-	String LICENCE = "CC0";
+	License LICENCE = License.CC0;
 	/**
 	 * http://data.biodiversitydata.nl
 	 */

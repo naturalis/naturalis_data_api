@@ -8,6 +8,7 @@ import java.util.List;
 import nl.naturalis.nba.api.model.DefaultClassification;
 import nl.naturalis.nba.api.model.GatheringEvent;
 import nl.naturalis.nba.api.model.GatheringSiteCoordinates;
+import nl.naturalis.nba.api.model.License;
 import nl.naturalis.nba.api.model.Monomial;
 import nl.naturalis.nba.api.model.MultiMediaContentIdentification;
 import nl.naturalis.nba.api.model.MultiMediaGatheringEvent;
@@ -35,7 +36,8 @@ public class DataMockUtil {
     multiMediaObject.setSourceInstitutionID("Naturalis Biodiversity Center");
     multiMediaObject.setSourceID("Brahms");
     multiMediaObject.setOwner("Naturalis Biodiversity Center");
-    multiMediaObject.setLicense("Copyright");
+    multiMediaObject.setLicenseType("Copyright");
+    multiMediaObject.setLicense(License.parse("CC0"));
     multiMediaObject.setUnitID("L.1911711_2107143681");
     multiMediaObject.setCollectionType("Botany");
     multiMediaObject.setTitle("RMNH.AVES");
@@ -236,7 +238,7 @@ public class DataMockUtil {
     specimen.setSex(sex);
     specimen.setPhaseOrStage(phaseOrStage);
     specimen.setSourceSystem(sourceSystem);
-    specimen.setLicense("CC0");
+    specimen.setLicense(License.parse("CC0"));
     specimen.setSourceInstitutionID("Naturalis Biodiversity Center");
     specimen.setMultiMediaPublic(false);
     specimen.setObjectPublic(false);

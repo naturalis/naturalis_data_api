@@ -26,7 +26,7 @@ public class Specimen extends NbaTraceableObject implements IDocumentObject {
 	private List<String> previousSourceID;
 	private String owner;
 	private String licenseType;
-	private String license;
+	private License license;
 	private String recordBasis;
 	private String kindOfUnit;
 	private String collectionType;
@@ -165,12 +165,12 @@ public class Specimen extends NbaTraceableObject implements IDocumentObject {
 		this.licenseType = licenseType;
 	}
 
-	public String getLicense()
+	public License getLicense()
 	{
 		return license;
 	}
 
-	public void setLicense(String license)
+	public void setLicense(License license)
 	{
 		this.license = license;
 	}

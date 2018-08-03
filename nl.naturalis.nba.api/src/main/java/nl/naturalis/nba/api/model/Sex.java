@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 public enum Sex implements INbaModelObject
 {
 
-	MALE, FEMALE, MIXED, HERMAPHRODITE;
+	MALE, FEMALE, MIXED, HERMAPHRODITE, UNKNOWABLE, UNDETERMINED;
 
 	@JsonCreator
 	public static Sex parse(@JsonProperty("name") String name)

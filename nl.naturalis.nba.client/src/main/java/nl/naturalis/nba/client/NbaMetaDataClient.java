@@ -9,10 +9,16 @@ import java.util.Map;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import nl.naturalis.nba.api.INbaMetaData;
+import nl.naturalis.nba.api.model.AreaClass;
+import nl.naturalis.nba.api.model.License;
+import nl.naturalis.nba.api.model.LicenseType;
 import nl.naturalis.nba.api.model.PhaseOrStage;
+import nl.naturalis.nba.api.model.ServiceAccessPoint.Variant;
 import nl.naturalis.nba.api.model.Sex;
 import nl.naturalis.nba.api.model.SourceSystem;
+import nl.naturalis.nba.api.model.SpatialDatum;
 import nl.naturalis.nba.api.model.SpecimenTypeStatus;
+import nl.naturalis.nba.api.model.TaxonRelationType;
 import nl.naturalis.nba.api.model.TaxonomicStatus;
 import nl.naturalis.nba.api.model.metadata.NbaSetting;
 import nl.naturalis.nba.utils.http.SimpleHttpRequest;
@@ -120,6 +126,66 @@ public class NbaMetaDataClient extends Client implements INbaMetaData {
 			throw newServerException(status, request.getResponseBody());
 		}
 		return getObject(request.getResponseBody(), TaxonomicStatus[].class);
+	}
+
+	@Override
+	public AreaClass[] getControlledListAreaClass() {
+    SimpleHttpRequest request = getJson("getControlledListAreaClass");
+    int status = request.getStatus();
+    if (status != HTTP_OK) {
+      throw newServerException(status, request.getResponseBody());
+    }
+    return getObject(request.getResponseBody(), AreaClass[].class);
+	}
+	
+	@Override
+	public License[] getControlledListLicense() {
+    SimpleHttpRequest request = getJson("getControlledListLicense");
+    int status = request.getStatus();
+    if (status != HTTP_OK) {
+      throw newServerException(status, request.getResponseBody());
+    }
+    return getObject(request.getResponseBody(), License[].class);
+	}
+	
+	@Override
+	public LicenseType[] getControlledListLicenseType() {
+    SimpleHttpRequest request = getJson("getControlledListLicenseType");
+    int status = request.getStatus();
+    if (status != HTTP_OK) {
+      throw newServerException(status, request.getResponseBody());
+    }
+    return getObject(request.getResponseBody(), LicenseType[].class);
+	}
+	
+	@Override
+	public SpatialDatum[] getControlledListSpatialDatum() {
+    SimpleHttpRequest request = getJson("getControlledListSpatialDatum");
+    int status = request.getStatus();
+    if (status != HTTP_OK) {
+      throw newServerException(status, request.getResponseBody());
+    }
+    return getObject(request.getResponseBody(), SpatialDatum[].class);
+	}
+	
+	@Override
+	public TaxonRelationType[] getControlledListTaxonRelationType() {
+    SimpleHttpRequest request = getJson("getControlledListTaxonRelationType");
+    int status = request.getStatus();
+    if (status != HTTP_OK) {
+      throw newServerException(status, request.getResponseBody());
+    }
+    return getObject(request.getResponseBody(), TaxonRelationType[].class);
+	}
+	
+	@Override
+	public Variant[] getControlledListVariant() {
+    SimpleHttpRequest request = getJson("getControlledListVariant");
+    int status = request.getStatus();
+    if (status != HTTP_OK) {
+      throw newServerException(status, request.getResponseBody());
+    }
+    return getObject(request.getResponseBody(), Variant[].class);
 	}
 
 	@Override

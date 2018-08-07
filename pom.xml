@@ -489,24 +489,6 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-enforcer-plugin</artifactId>
 					<version>${maven-enforcer-plugin.version}</version>
-					<executions>
-						<execution>
-							<id>enforce-maven-3</id>
-							<goals>
-								<goal>enforce</goal>
-							</goals>
-							<configuration>
-								<rules>
-									<requireMavenVersion>
-										<version>[${minimumMavenVersion},)</version>
-									</requireMavenVersion>
-									<requireJavaVersion>
-										<version>[${jdkLevel},)</version>
-									</requireJavaVersion>
-								</rules>
-							</configuration>
-						</execution>
-					</executions>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -533,14 +515,6 @@
 							</manifest>
 						</archive>
 					</configuration>
-					<executions>
-						<execution>
-							<id>attach-test-jar</id>
-							<goals>
-								<goal>test-jar</goal>
-							</goals>
-						</execution>
-					</executions>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -551,15 +525,6 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-source-plugin</artifactId>
 					<version>${maven-source-plugin.version}</version>
-					<executions>
-						<execution>
-							<id>attach-sources</id>
-							<phase>package</phase>
-							<goals>
-								<goal>jar-no-fork</goal>
-							</goals>
-						</execution>
-					</executions>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -603,6 +568,24 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-enforcer-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>enforce-maven-3</id>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<requireMavenVersion>
+									<version>[${minimumMavenVersion},)</version>
+								</requireMavenVersion>
+								<requireJavaVersion>
+									<version>[${jdkLevel},)</version>
+								</requireJavaVersion>
+							</rules>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<artifactId>maven-jar-plugin</artifactId>
@@ -620,7 +603,7 @@
 					<execution>
 						<id>attach-sources</id>
 						<goals>
-							<goal>jar</goal>
+							<goal>jar-no-fork</goal>
 						</goals>
 					</execution>
 				</executions>
@@ -646,7 +629,7 @@
 					<quiet>true</quiet>
 					<additionalJOption>-Xdoclint:none</additionalJOption>
 					<show>public</show>
-					<excludes>src/test/**/*.java</excludes>
+					<excludes>src/test/**/*</excludes>
 				</configuration>
 				<executions>
 					<execution>
@@ -655,39 +638,141 @@
 							<goal>jar</goal>
 						</goals>
 					</execution>
+					<execution>
+						<id>aggregate-client-javadocs</id>
+						<inherited>false</inherited>
+						<phase>install</phase>
+						<goals>
+							<goal>aggregate</goal>
+						</goals>
+						<configuration>
+							<detectLinks>true</detectLinks>
+							<doctitle>Naturalis Biodiversity API (NBA)
+								V${project.version} -
+								Java client</doctitle>
+							<sourcepath> nl.naturalis.nba.api/src/main/java:
+								nl.naturalis.nba.client/src/main/java:
+								nl.naturalis.nba.common/src/main/java:
+								nl.naturalis.nba.util/src/main/java
+							</sourcepath>
+							<destDir>client</destDir>
+						</configuration>
+					</execution>
+					<execution>
+						<id>aggregate-all-javadocs</id>
+						<inherited>false</inherited>
+						<phase>install</phase>
+						<goals>
+							<goal>aggregate</goal>
+						</goals>
+						<configuration>
+							<detectLinks>true</detectLinks>
+							<doctitle>Naturalis
+								Biodiversity API (NBA) V${project.version} -
+								Developer documentation</doctitle>
+							<sourcepath> nl.naturalis.nba.api/src/main/java:
+								nl.naturalis.nba.client/src/main/java:
+								nl.naturalis.nba.common/src/main/java:
+								nl.naturalis.nba.util/src/main/java:
+								nl.naturalis.nba.dao/src/main/java:
+								nl.naturalis.nba.etl/src/main/java:
+								nl.naturalis.nba.rest/src/main/java
+							</sourcepath>
+							<destDir>all</destDir>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>delete-nba-gh-pages</id>
+						<phase>deploy</phase>
+						<inherited>false</inherited>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>rm</executable>
+							<arguments>
+								<argument>-rf</argument>
+								<argument>${project.basedir}/../nba-gh-pages</argument>
+							</arguments>
+						</configuration>
+					</execution>
+					<execution>
+						<id>clone-nba-gh-pages-repo</id>
+						<phase>deploy</phase>
+						<inherited>false</inherited>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>git</executable>
+							<arguments>
+								<argument>clone</argument>
+								<argument>--single-branch</argument>
+								<argument>-b</argument>
+								<argument>gh-pages</argument>
+								<argument>https://github.com/naturalis/naturalis_data_api.git</argument>
+								<argument>${project.basedir}/../nba-gh-pages</argument>
+							</arguments>
+						</configuration>
+					</execution>
+					<execution>
+						<id>delete-nba-gh-pages-subfolder</id>
+						<phase>deploy</phase>
+						<inherited>false</inherited>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>rm</executable>
+							<arguments>
+								<argument>-rf</argument>
+								<argument>${project.basedir}/../nba-gh-pages/javadoc/v2/client</argument>
+								<argument>${project.basedir}/../nba-gh-pages/javadoc/v2/all</argument>
+							</arguments>
+						</configuration>
+					</execution>
+					<execution>
+						<id>copy-client-javadocs</id>
+						<phase>deploy</phase>
+						<inherited>false</inherited>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>cp</executable>
+							<arguments>
+								<argument>-r</argument>
+								<argument>${project.build.directory}/site/apidocs/client</argument>
+								<argument>${project.basedir}/../nba-gh-pages/javadoc/v2/client</argument>
+							</arguments>
+						</configuration>
+					</execution>
+					<execution>
+						<id>copy-all-javadocs</id>
+						<phase>deploy</phase>
+						<inherited>false</inherited>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>cp</executable>
+							<arguments>
+								<argument>-r</argument>
+								<argument>${project.build.directory}/site/apidocs/all</argument>
+								<argument>${project.basedir}/../nba-gh-pages/javadoc/v2/all</argument>
+							</arguments>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 		</plugins>
 	</build>
-
-	<reporting>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<configuration>
-					<failOnError>false</failOnError>
-					<additionalJOption>-Xdoclint:none</additionalJOption>
-					<show>public</show>
-					<excludes>**/*Test.java,**/*AllTests.java</excludes>
-				</configuration>
-				<reportSets>
-					<reportSet>
-						<reports>
-							<report>javadoc</report>
-						</reports>
-					</reportSet>
-					<reportSet>
-						<id>aggregate</id>
-						<inherited>false</inherited>
-						<reports>
-							<report>aggregate</report>
-						</reports>
-					</reportSet>
-				</reportSets>
-			</plugin>
-		</plugins>
-	</reporting>
 
 	<profiles>
 		<profile>
@@ -717,7 +802,7 @@
 												</goals>
 											</pluginExecutionFilter>
 											<action>
-												<execute />
+												<ignore />
 											</action>
 										</pluginExecution>
 									</pluginExecutions>

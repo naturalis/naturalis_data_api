@@ -86,7 +86,7 @@
 				<artifactId>maven-shade-plugin</artifactId>
 				<configuration>
 					<outputDirectory>${project.basedir}/../java_client_download</outputDirectory>
-					<finalName>nba-java-client-v${project.version}</finalName>
+					<finalName>nba-java-client</finalName>
 					<createSourcesJar>true</createSourcesJar>
 				</configuration>
 				<executions>

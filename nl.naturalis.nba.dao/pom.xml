@@ -95,18 +95,13 @@
 
 	<build>
 		<plugins>
-			<!--plugin> <artifactId>maven-clean-plugin</artifactId> <configuration> 
-				<filesets> <fileset> <directory>${nba.api.install.dir}</directory> <includes> 
-				<include>**/*</include> </includes> </fileset> </filesets> </configuration> 
-				</plugin -->
-
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>exec-maven-plugin</artifactId>
 				<executions>
 					<execution>
 						<id>delete-api-install-dir</id>
-						<phase>process-resources</phase>
+						<phase>clean</phase>
 						<goals>
 							<goal>exec</goal>
 						</goals>
@@ -120,7 +115,7 @@
 					</execution>
 					<execution>
 						<id>clone-dwca-config-repo</id>
-						<phase>process-resources</phase>
+						<phase>clean</phase>
 						<goals>
 							<goal>exec</goal>
 						</goals>
@@ -135,7 +130,7 @@
 					</execution>
 					<execution>
 						<id>clone-nba-fieldinfo-metadata-repo</id>
-						<phase>process-resources</phase>
+						<phase>clean</phase>
 						<goals>
 							<goal>exec</goal>
 						</goals>
@@ -150,7 +145,7 @@
 					</execution>
 					<execution>
 						<id>copy-nba-properties</id>
-						<phase>process-resources</phase>
+						<phase>install</phase>
 						<goals>
 							<goal>exec</goal>
 						</goals>

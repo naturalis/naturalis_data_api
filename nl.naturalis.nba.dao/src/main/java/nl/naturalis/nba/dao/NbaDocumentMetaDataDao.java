@@ -9,16 +9,18 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import org.apache.logging.log4j.Logger;
-import com.opencsv.CSVParser;
-import com.opencsv.CSVParserBuilder;
-import com.opencsv.CSVReader;
-import com.opencsv.CSVReaderBuilder;
+import com.univocity.parsers.common.TextParsingException;
+import com.univocity.parsers.common.record.Record;
+import com.univocity.parsers.csv.CsvParser;
+import com.univocity.parsers.csv.CsvParserSettings;
 import nl.naturalis.nba.api.ComparisonOperator;
 import nl.naturalis.nba.api.INbaDocumentMetaData;
 import nl.naturalis.nba.api.NoSuchFieldException;
@@ -128,29 +130,27 @@ public abstract class NbaDocumentMetaDataDao<T extends IDocumentObject>
     return new MappingInfo<>(dt.getMapping()).getPathStrings(sorted);
   }
 
-  public Map<String, String> getMetaData() throws IOException {
+  private Map<String, String> getMetaData() throws IOException {
     Map<String, String> metadata = new HashMap<>();
     String fileName = "/" + dt.getName().concat("-metadata.csv").toLowerCase();
     File dir = getMetadataDir();
     File file = new File(dir, fileName);
-    CSVParser parser = new CSVParserBuilder().withSeparator(',').withIgnoreQuotations(true).build();
     InputStream is = new FileInputStream(file);
     if (is != null) {
-      CSVReader reader = new CSVReaderBuilder(new InputStreamReader(is)).withSkipLines(1)
-          .withCSVParser(parser).build();
-      String[] record = null;
-      while ((record = reader.readNext()) != null) {
-        try {
-          if (record[0] != null)
-            metadata.put(record[0], record[1]);
-        } catch (ArrayIndexOutOfBoundsException e) {
-          logger.debug("Error in csv file: " + file.toString());
-          metadata = null;
-          break;
-        }          
+      CsvParserSettings settings = new CsvParserSettings();
+      settings.getFormat().setLineSeparator("\n");
+      settings.setHeaderExtractionEnabled(true);
+      CsvParser parser = new CsvParser(settings);      
+      try {
+        List<Record> allRecords = parser.parseAllRecords(new InputStreamReader(is, "UTF-8"));
+        for (Record record : allRecords) {
+          metadata.put(record.getString("field"), record.getString("reference"));
+        }        
+      } catch (UnsupportedEncodingException | TextParsingException e) {
+        logger.debug("Error in csv file: " + file.toString() + " File will be ignored.");
+        metadata = null;
       }
-      is.close();
-    }
+    }    
     return metadata;
   }
 

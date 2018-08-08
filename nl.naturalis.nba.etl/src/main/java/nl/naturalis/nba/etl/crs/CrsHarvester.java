@@ -200,7 +200,7 @@ public class CrsHarvester {
 
 	private static File getAdminFile(String type)
 	{
-		File dir = DaoRegistry.getInstance().getConfigurationDirectory();
+		File dir = DaoRegistry.getInstance().getConfiguration().getDirectory("nba.etl.install.dir");
 		return FileUtil.newFile(dir, ".crs-" + type + ".oai");
 	}
 

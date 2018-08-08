@@ -102,7 +102,7 @@ public abstract class NbaDocumentMetaDataDao<T extends IDocumentObject>
         }
       }
       info.setAllowedOperators(allowed);
-      String description = (metadata != null) ? metadata.get(field) : null; 
+      String description = (metadata != null) ? metadata.get(field) : null;
       if (description != null && description.length() > 0) {
         info.setDescription(description);
       }
@@ -147,7 +147,7 @@ public abstract class NbaDocumentMetaDataDao<T extends IDocumentObject>
           logger.debug("Error in csv file: " + file.toString());
           metadata = null;
           break;
-        }          
+        }
       }
       is.close();
     }
@@ -155,7 +155,7 @@ public abstract class NbaDocumentMetaDataDao<T extends IDocumentObject>
   }
 
   private static File getMetadataDir() {
-    File root = DaoRegistry.getInstance().getConfigurationDirectory();
+    File root = DaoRegistry.getInstance().getConfiguration().getDirectory("nba.api.install.dir");
     return FileUtil.newFile(root, "metadata/");
   }
 

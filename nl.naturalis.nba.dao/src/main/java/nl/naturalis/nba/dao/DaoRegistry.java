@@ -21,17 +21,11 @@ public class DaoRegistry {
    * nba.properties)
    */
   private static final String SYSPROP_CONF_FILE = "nba.conf.file";
-  /*
-   * A system property that can optionally be passed to the JVM to indicate the top directory of the
-   * application's assets. Defaults to the directory containing the main configuration file.
-   */
-  private static final String SYSPROP_CONF_DIR = "nba.conf.dir";
 
   private static DaoRegistry instance;
 
-  private File cfgFile;
-  private File cfgDir;
-  private ConfigObject config;
+  private final File cfgFile;
+  private final ConfigObject config;
 
   private Logger logger = getLogger(getClass());
 
@@ -48,7 +42,18 @@ public class DaoRegistry {
   }
 
   private DaoRegistry() {
-    loadConfig();
+    String path = System.getProperty(SYSPROP_CONF_FILE);
+    if (path == null) {
+      String msg = String.format("Missing system property: %s", SYSPROP_CONF_FILE);
+      throw new InitializationException(msg);
+    }
+    cfgFile = new File(path);
+    if (!cfgFile.isFile()) {
+      String msg = String.format("Missing configuration file: %s", cfgFile.getPath());
+      throw new InitializationException(msg);
+    }
+    logger.info("NBA configuration file: " + cfgFile.getPath());
+    config = new ConfigObject(cfgFile);
     String encoding = System.getProperty("file.encoding");
     if (encoding == null || !encoding.equals("UTF-8")) {
       String msg = "NBA boot failure. Java VM must be started with "
@@ -76,8 +81,12 @@ public class DaoRegistry {
    * 
    * @return
    */
-  public File getConfigurationDirectory() {
-    return cfgDir;
+//  public File getConfigurationDirectory() {
+//    return config.getDirectory("nba.api.install.dir");
+//  }
+
+  public File getEtlInstallDirectory() {
+    return config.getDirectory("nba.etl.install.dir");
   }
 
   /**
@@ -97,9 +106,9 @@ public class DaoRegistry {
    * @param relativePath The path of the file relative to the configuration directory.
    * @return
    */
-  public File getFile(String relativePath) {
-    return FileUtil.newFile(cfgDir, relativePath);
-  }
+//  public File getFile(String relativePath) {
+//    return FileUtil.newFile(getConfigurationDirectory(), relativePath);
+//  }
 
   /**
    * Get a logger for the specified class. All classes should use this method to get hold of a
@@ -115,32 +124,6 @@ public class DaoRegistry {
      * nightmare that it is, that might change in the future.
      */
     return LogManager.getLogger(cls);
-  }
-
-  private void loadConfig() {
-    String path = System.getProperty(SYSPROP_CONF_FILE);
-    if (path == null) {
-      String msg = String.format("Missing system property: %s", SYSPROP_CONF_FILE);
-      throw new InitializationException(msg);
-    }
-    cfgFile = new File(path);
-    if (!cfgFile.isFile()) {
-      String msg = String.format("Missing configuration file: %s", cfgFile.getPath());
-      throw new InitializationException(msg);
-    }
-    logger.info("NBA configuration file: " + cfgFile.getPath());
-    config = new ConfigObject(cfgFile);
-    path = System.getProperty(SYSPROP_CONF_DIR);
-    if (path == null) {
-      cfgDir = cfgFile.getParentFile();
-    }
-    else {
-      cfgDir = new File(path);
-      if (!cfgDir.isDirectory()) {
-        String msg = String.format("No such directory: %s", cfgDir.getPath());
-        throw new InitializationException(msg);
-      }
-    }
   }
 
 }

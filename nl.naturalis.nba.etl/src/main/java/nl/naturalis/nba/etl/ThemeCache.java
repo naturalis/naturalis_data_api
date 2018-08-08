@@ -252,8 +252,8 @@ public class ThemeCache {
 
 	private static File getThematicSearchDir()
 	{
-		File f = DaoRegistry.getInstance().getConfigurationDirectory();
-		return FileUtil.newFile(f, "thematic-search");
+    File dir = DaoRegistry.getInstance().getConfiguration().getDirectory("nba.etl.install.dir");
+		return FileUtil.newFile(dir, "conf/thematic-search");
 	}
 
 }

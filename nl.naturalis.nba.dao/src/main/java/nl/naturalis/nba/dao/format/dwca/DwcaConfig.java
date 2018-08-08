@@ -245,7 +245,7 @@ public class DwcaConfig {
 
 	private File getHome() throws DataSetConfigurationException
 	{
-		File root = DaoRegistry.getInstance().getConfigurationDirectory();
+		File root = DaoRegistry.getInstance().getConfiguration().getDirectory("nba.api.install.dir");
 		String subdir = "dwca/" + dataSetType.name().toLowerCase();
 		File home = FileUtil.newFile(root, subdir);
 		if (!home.isDirectory()) {

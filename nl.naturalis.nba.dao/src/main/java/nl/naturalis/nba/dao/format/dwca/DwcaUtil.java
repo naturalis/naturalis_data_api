@@ -30,7 +30,7 @@ public class DwcaUtil {
 	 */
 	public static File getDwcaConfigurationDirectory(DwcaDataSetType dataSetType)
 	{
-		File root = DaoRegistry.getInstance().getConfigurationDirectory();
+		File root = DaoRegistry.getInstance().getConfiguration().getDirectory("nba.api.install.dir");
 		String dirName = dataSetType.name().toLowerCase();
 		return FileUtil.newFile(root, "dwca/" + dirName);
 	}

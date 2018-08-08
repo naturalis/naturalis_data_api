@@ -7,10 +7,18 @@
 # for production and testing respectively.
 
 # IMPORTANT: For nba-test.properties you MUST modify the index
-# names, e.g. specimen_integration_test, taxon_integration_test, etc.
-# Otherwise you will erase data from the production indexes when
-# maven starts the integration tests.
+# names. Otherwise you will erase data from the production indexes
+# when maven starts the integration tests. Choose any name you
+# like, e.g. specimen_integration_test.
 
+# The top directory for configuration files and other assets used
+# by the NBA REST service. This directory will contain the "dwca"
+# "metadata" subdirectories required by the REST service.
+nba.api.install.dir=/etc/nba
+# The top directory for configuration files and other assets used
+# by the ETL software. This directory will contain the "sh", "conf"
+# and "lib" subdirectories required to run the ETL software.
+nba.etl.install.dir=/path/to/nba/import/dir
 
 
 # ***************

@@ -14,6 +14,11 @@
 	<name>NBA Java Client</name>
 	<description>A Java Client for the NBA providing programmatic access to its functionality</description>
 
+
+	<properties>
+		<main.basedir>${project.parent.basedir}</main.basedir>
+	</properties>
+	
 	<dependencies>
 
 		<dependency>

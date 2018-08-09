@@ -14,6 +14,11 @@
 	<name>NBA DAO layer</name>
 	<description>The data access layer of the NBA. Regulates interaction with the Elasticsearch backend</description>
 
+	
+	<properties>
+			<main.basedir>${project.parent.basedir}</main.basedir>
+	</properties>
+
 	<dependencies>
 
 		<dependency>
@@ -95,24 +100,6 @@
 
 	<build>
 		<plugins>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>properties-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>load-nba-properties</id>
-						<phase>clean</phase>
-						<goals>
-							<goal>read-project-properties</goal>
-						</goals>
-						<configuration>
-							<files>
-								<file>${project.basedir}/../nba.properties</file>
-							</files>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>exec-maven-plugin</artifactId>

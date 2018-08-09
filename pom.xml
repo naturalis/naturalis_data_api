@@ -26,6 +26,8 @@
 	</prerequisites>
 
 	<properties>
+	
+		<main.basedir>${project.basedir}</main.basedir>
 
 		<!-- build settings -->
 		<minimumMavenVersion>3.3</minimumMavenVersion>
@@ -589,6 +591,36 @@
 									<version>[${jdkLevel},)</version>
 								</requireJavaVersion>
 							</rules>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>properties-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>load-nba-properties1</id>
+						<phase>clean</phase>
+						<goals>
+							<goal>read-project-properties</goal>
+						</goals>
+						<configuration>
+							<files>
+								<file>${main.basedir}/nba.properties</file>
+							</files>
+						</configuration>
+					</execution>
+					<execution>
+						<id>load-nba-properties2</id>
+						<phase>initialize</phase>
+						<goals>
+							<goal>read-project-properties</goal>
+						</goals>
+						<configuration>
+							<files>
+								<file>${main.basedir}/nba.properties</file>
+							</files>
 						</configuration>
 					</execution>
 				</executions>

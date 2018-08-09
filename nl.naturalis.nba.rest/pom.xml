@@ -17,6 +17,10 @@
 
 	<packaging>war</packaging>
 
+	
+	<properties>
+			<main.basedir>${project.parent.basedir}</main.basedir>
+	</properties>
 
 	<dependencies>
 
@@ -143,7 +147,7 @@
 					</gitDescribe>
 				</configuration>
 			</plugin>
-			<plugin>
+			<!--plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>properties-maven-plugin</artifactId>
 				<executions>
@@ -160,7 +164,7 @@
 						</configuration>
 					</execution>
 				</executions>
-			</plugin>
+			</plugin-->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>exec-maven-plugin</artifactId>

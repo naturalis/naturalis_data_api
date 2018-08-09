@@ -13,6 +13,10 @@
 	<artifactId>nl.naturalis.nba.api</artifactId>
 	<name>NBA API</name>
 	<description>Defines the Java interface for interacting with the Naturalis Data Store (NDS)</description>
+	
+	<properties>
+			<main.basedir>${project.parent.basedir}</main.basedir>
+	</properties>
 
 	<dependencies>
 		<dependency>

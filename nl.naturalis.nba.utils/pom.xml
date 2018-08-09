@@ -14,6 +14,11 @@
 	<name>NBA utils</name>
 	<description>Generic utility library</description>
 
+	
+	<properties>
+			<main.basedir>${project.parent.basedir}</main.basedir>
+	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>

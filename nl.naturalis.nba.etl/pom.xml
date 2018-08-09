@@ -242,9 +242,9 @@
 					<reuseForks>false</reuseForks>
 					<redirectTestOutputToFile>true</redirectTestOutputToFile>
 					<argLine>-Xmx256m
-						-Dnba.conf.file=${project.basedir}/../nba-test.properties
+						-Dnba.conf.file=${main.basedir}/nba-test.properties
 						-Dnba.conf.dir=${nba.etl.install.dir}
-						-Dlog4jConfigurationFile=${project.basedir}/../log4j2-test.xml
+						-Dlog4jConfigurationFile=${main.basedir}/log4j2-test.xml
 					</argLine>
 					<runOrder>random</runOrder>
 					<includes>

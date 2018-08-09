@@ -787,7 +787,7 @@
 							<arguments>
 								<argument>-r</argument>
 								<argument>${project.build.directory}/site/apidocs/client</argument>
-								<argument>${project.basedir}/../nba-gh-pages/javadoc/v2/client</argument>
+								<argument>${main.basedir}/../nba-gh-pages/javadoc/v2/client</argument>
 							</arguments>
 						</configuration>
 					</execution>
@@ -803,7 +803,7 @@
 							<arguments>
 								<argument>-r</argument>
 								<argument>${project.build.directory}/site/apidocs/all</argument>
-								<argument>${project.basedir}/../nba-gh-pages/javadoc/v2/all</argument>
+								<argument>${main.basedir}/../nba-gh-pages/javadoc/v2/all</argument>
 							</arguments>
 						</configuration>
 					</execution>

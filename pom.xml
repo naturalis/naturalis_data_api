@@ -847,8 +847,6 @@
 								</lifecycleMappingMetadata>
 							</configuration>
 						</plugin>
-						<!--plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>jxr-maven-plugin</artifactId> 
-							<version>2.0-beta-1</version> </plugin -->
 					</plugins>
 				</pluginManagement>
 			</build>

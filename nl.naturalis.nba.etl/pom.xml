@@ -14,9 +14,9 @@
 	<name>NBA ETL Module</name>
 	<description>Software for importing the various data sources feeding into the Naturalis Data Store (NDS)</description>
 
-	
+
 	<properties>
-			<main.basedir>${project.parent.basedir}</main.basedir>
+		<main.basedir>${project.parent.basedir}</main.basedir>
 	</properties>
 
 	<dependencies>
@@ -242,8 +242,8 @@
 					<reuseForks>false</reuseForks>
 					<redirectTestOutputToFile>true</redirectTestOutputToFile>
 					<argLine>-Xmx256m
-						-Dnba.conf.file=${main.basedir}/nba-test.properties
-						-Dnba.conf.dir=${nba.etl.install.dir}
+						-Dnba.conf.file=${main.basedir}/nba.properties
+						-Delasticsearch.index.default.suffix=_integration_test
 						-Dlog4jConfigurationFile=${main.basedir}/log4j2-test.xml
 					</argLine>
 					<runOrder>random</runOrder>

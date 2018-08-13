@@ -156,10 +156,10 @@
 				<configuration>
 					<forkCount>1</forkCount>
 					<reuseForks>false</reuseForks>
-					<redirectTestOutputToFile>true</redirectTestOutputToFile>
+					<redirectTestOutputToFile>false</redirectTestOutputToFile>
 					<argLine>-Xmx256m
-						-Dnba.conf.file=${project.basedir}/../nba-test.properties
-						-Dnba.conf.dir=${nba.api.install.dir}
+						-Dnba.conf.file=${project.basedir}/../nba.properties
+						-Delasticsearch.index.default.suffix=_integration_test
 						-Dlog4jConfigurationFile=${project.basedir}/../log4j2-test.xml
 					</argLine>
 					<runOrder>random</runOrder>

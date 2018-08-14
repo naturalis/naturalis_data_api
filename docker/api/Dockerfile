@@ -1,4 +1,4 @@
-FROM jboss/wildfly
+FROM naturalis/wildfly-nba:prod
 USER root
 ENV LANG en_US.UTF-8
 RUN mkdir /etc/nba

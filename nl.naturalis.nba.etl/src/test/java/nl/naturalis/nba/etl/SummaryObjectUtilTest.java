@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import nl.naturalis.nba.api.model.DefaultClassification;
 import nl.naturalis.nba.api.model.Expert;
@@ -44,6 +45,7 @@ import nl.naturalis.nba.utils.reflect.ReflectionUtil;
  *
  */
 @SuppressWarnings({"static-method", "unchecked"})
+@Ignore
 public class SummaryObjectUtilTest {
 
   /**

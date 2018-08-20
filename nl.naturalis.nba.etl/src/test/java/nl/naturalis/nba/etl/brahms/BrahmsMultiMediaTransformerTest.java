@@ -8,6 +8,7 @@ import java.net.URI;
 import java.util.List;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.mockito.PowerMockito;
@@ -30,6 +31,7 @@ import nl.naturalis.nba.etl.utils.CommonReflectionUtil;
 @PrepareForTest({CSVRecordInfo.class})
 @PowerMockIgnore("javax.management.*")
 @SuppressWarnings({"static-method", "unchecked"})
+@Ignore
 public class BrahmsMultiMediaTransformerTest {
 
 

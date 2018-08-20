@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# Sets the synonyms and/or vernacular names and/or literature
+# references of all Taxon documents from the Catalogue of Life
+# to null. Useful if you want re-import, for example, synonyms,
+# but leave everything else intact.
+# USAGE: col-nullify [-s|-r|-v]
+# -s	: nullify synonyms
+# -r	: nullify references
+# -v	: nullify vernacular names
+# Without arguments, all three entities are nullified. You can
+# combine the -s, -r and -v options.
+
+. ./include.sh
+
+java -cp ${classpath} ${JAVA_OPTS} ${root_package}.col.CoLNullifier $@

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.Specimen;
@@ -55,6 +56,7 @@ public class SpecimenMultimediaEnricherTest {
    * Test method to verify enrichSpecimens method returns an expected List<Specimen> object
    */
   @Test
+  @Ignore
   public void enrichSpecimens() {
 
     ScientificName scientificName = new ScientificName();

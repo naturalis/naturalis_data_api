@@ -1,1 +1,8 @@
 /build/
+/target/
+/.classpath
+/.settings/
+/.project
+/bin/
+/dependency-reduced-pom.xml
+/pom.xml.versionsBackup

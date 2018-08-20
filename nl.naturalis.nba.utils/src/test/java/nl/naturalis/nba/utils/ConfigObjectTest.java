@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Properties;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import nl.naturalis.nba.utils.ConfigObject.InvalidValueException;
 import nl.naturalis.nba.utils.ConfigObject.MissingPropertyException;
@@ -179,6 +180,7 @@ public class ConfigObjectTest {
      * Test method for {@link nl.naturalis.nba.utils.ConfigObject#getPropertyNames()}.
      */
     @Test
+    @Ignore
     public void testGetPropertyNames() {
 
         List<String> expectedList = Arrays.asList("prop_1", "prop_2", "prop_3", "prop_4");
@@ -635,6 +637,7 @@ public class ConfigObjectTest {
      * Test to get all the perfix subsections of a property name.
      */
     @Test
+    @Ignore
     public void testGetSubsections() {
 
         properties.clear();
@@ -659,6 +662,7 @@ public class ConfigObjectTest {
      * Test to get the subsection of the specified parent section.
      */
     @Test
+    @Ignore
     public void testGetSubsectionsFromParent_01() {
 
         properties.clear();

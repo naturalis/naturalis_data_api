@@ -1,0 +1,27 @@
+#!/bin/bash
+
+. ./include.sh
+
+action="${1}"
+file="${2}"
+
+if [ "$action" = specimens ]
+then
+    java -cp ${classpath} ${JAVA_OPTS} ${root_package}.brahms.BrahmsSpecimenImporter ${file}
+	echo "WARNING: When loading only specimens or only multimedia file backup is disabled"
+elif [ "$action" = multimedia ]
+then
+    java -cp ${classpath} ${JAVA_OPTS} ${root_package}.brahms.BrahmsMultiMediaImporter ${file}
+	echo "WARNING: When not loading only specimens or only multimedia file backup is disabled"
+elif [ "$action" = backup ]
+then
+    java -cp ${classpath} ${JAVA_OPTS} ${root_package}.brahms.BrahmsImportAll backup
+elif [ "$action" = reset ]
+then
+    java -cp ${classpath} ${JAVA_OPTS} ${root_package}.brahms.BrahmsImportAll reset
+elif [ "x$action" = x ]
+then
+    java -cp ${classpath} ${JAVA_OPTS} ${root_package}.brahms.BrahmsImportAll
+else
+    echo "Don't know how to import/execute \"$action\"."
+fi

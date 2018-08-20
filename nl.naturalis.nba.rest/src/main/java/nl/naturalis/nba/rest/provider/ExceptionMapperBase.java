@@ -24,6 +24,7 @@ public class ExceptionMapperBase implements ExceptionMapper<Throwable> {
   @Override
   public Response toResponse(Throwable e) {
 
+
     /*
      * In the code below we not only check the type of the Throwable, but also the type of the cause
      * of the Throwable, because the REST framework may wrap any custom Exception into something of

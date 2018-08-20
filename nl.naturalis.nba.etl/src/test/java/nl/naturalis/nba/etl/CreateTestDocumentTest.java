@@ -18,6 +18,7 @@ public class CreateTestDocumentTest {
   @SuppressWarnings("static-method")
   @Test
   public void testCreateTestDocs() throws Exception {
+
     Specimen specimen = CreateTestDocument.generateSpecimen();
     String actual = JsonUtil.toPrettyJson(specimen).trim();
     String file = "specimen-test-doc.json";

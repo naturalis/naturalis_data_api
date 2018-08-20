@@ -66,32 +66,29 @@ public class HomeResource {
     NbaDao.ping();
     try {
       InputStream in = getClass().getResourceAsStream("welcome.html");
-      String s = new String(IOUtil.readAllBytes(in));
+      String template = new String(IOUtil.readAllBytes(in));
       in.close();
-      in = getClass().getResourceAsStream("/version.properties");
-      ConfigObject cfg;
+      in = getClass().getResourceAsStream("/git.properties");
+      ConfigObject values;
       if (in == null) {
         /*
-         * We are inside an ear file that was not built by our ant scripts; we're most likely
-         * running within Eclipse.
+         * We have not been built by maven; we're most likely running within Eclipse.
          */
         Properties props = new Properties();
         props.setProperty("git.branch", "test");
-        props.setProperty("git.tag", "test");
-        props.setProperty("git.commit", "test");
-        props.setProperty("build.date", "test");
-        props.setProperty("build.number", "test");
-        cfg = new ConfigObject(props);
+        props.setProperty("git.closest.tag.name", "test");
+        props.setProperty("git.commit.id", "test");
+        props.setProperty("git.build.time", "test");
+        values = new ConfigObject(props);
       } else {
-        cfg = new ConfigObject(in);
+        values = new ConfigObject(in);
         in.close();
       }
-      s = s.replace("%git.branch%", cfg.get("git.branch"));
-      s = s.replace("%git.tag%", cfg.get("git.tag"));
-      s = s.replace("%git.commit%", cfg.get("git.commit"));
-      s = s.replace("%build.date%", cfg.get("build.date"));
-      s = s.replace("%build.number%", cfg.get("build.number"));
-      return s;
+      template = template.replace("%git.branch%", values.get("git.branch"));
+      template = template.replace("%git.closest.tag.name%", values.get("git.closest.tag.name"));
+      template = template.replace("%git.commit.id%", values.get("git.commit.id"));
+      template = template.replace("%git.build.time%", values.get("git.build.time"));
+      return template;
     } catch (Throwable t) {
       throw handleError(uriInfo, t);
     }

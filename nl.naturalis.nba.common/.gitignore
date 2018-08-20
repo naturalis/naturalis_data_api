@@ -1,2 +1,7 @@
 /build/
 /target/
+/.classpath
+/.settings/
+/.project
+/bin/
+/pom.xml.versionsBackup

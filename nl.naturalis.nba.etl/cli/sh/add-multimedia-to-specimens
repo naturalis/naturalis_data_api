@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# Multimedia enrichment of specimens
+
+. ./include.sh
+
+# The number of specimen documents to be read and processed
+# at once
+read_batch_size=5000
+
+# The number of enriched specimen documents to re-index at
+# once. Not all documents can be taxonomically enriched. Only
+# once we have built up a buffer of ${write_batch_size} enriched
+# documents, a re-index action will take place.
+write_batch_size=5000
+
+action="${1}"
+
+if [ "${action}" = nullify ]
+then
+	java -cp ${classpath} $JAVA_OPTS ${root_package}.enrich.SpecimenEnrichmentNullifier -m
+else
+	JAVA_OPTS="$JAVA_OPTS -Dnl.naturalis.nba.etl.enrich.readBatchSize=${read_batch_size}"
+	JAVA_OPTS="$JAVA_OPTS -Dnl.naturalis.nba.etl.enrich.writeBatchSize=${write_batch_size}"
+	java -cp ${classpath} $JAVA_OPTS ${root_package}.enrich.SpecimenMultimediaEnricher
+fi

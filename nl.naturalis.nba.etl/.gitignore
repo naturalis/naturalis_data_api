@@ -1,3 +1,8 @@
 /build/
-/classpath/
-/ivy.xml
+/target/
+/.classpath
+/.settings/
+/.project
+/bin/
+/dependency-reduced-pom.xml
+/pom.xml.versionsBackup

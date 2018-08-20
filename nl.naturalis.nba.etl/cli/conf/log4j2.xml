@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+	<Appenders>
+		<Console name="CONSOLE">
+			<PatternLayout
+				pattern="%d{HH:mm:ss.SSS}|%-5level|%c{10}: %msg%n" />
+		</Console>
+		<!-- N.B. nl.naturalis.nba.logFileBaseName is the name of a Java system 
+			property that is set in include.sh (under the sh directory) -->
+		<File name="FILE"
+			fileName="${sys:nl.naturalis.nba.logFileBaseName}.log">
+			<PatternLayout
+				pattern="%d{HH:mm:ss.SSS}|%-5level|%c{10}: %msg%n" />
+		</File>
+		<!--File name="JSON"
+			fileName="${sys:nl.naturalis.nba.logFileBaseName}.json">
+			<JSONLayout complete="false" compact="true"
+				includeStacktrace="false" eventEol="true" />
+		</File-->
+	</Appenders>
+	<Loggers>
+		<Logger name="nl.naturalis" level="INFO" additivity="false">
+			<AppenderRef ref="FILE" />
+			<AppenderRef ref="CONSOLE" />
+			<!-- AppenderRef ref="JSON" / -->
+		</Logger>
+		<Root level="ERROR">
+			<AppenderRef ref="FILE" />
+			<AppenderRef ref="CONSOLE" />
+			<!-- AppenderRef ref="JSON" / -->
+		</Root>
+	</Loggers>
+</Configuration>

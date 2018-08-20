@@ -1,0 +1,128 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>nl.naturalis.nba</groupId>
+		<artifactId>nba-motherpom</artifactId>
+		<version>2.16</version>
+	</parent>
+
+	<artifactId>nl.naturalis.nba.client</artifactId>
+	<name>NBA Java Client</name>
+	<description>A Java Client for the NBA providing programmatic access to its functionality</description>
+
+
+	<properties>
+		<main.basedir>${project.parent.basedir}</main.basedir>
+	</properties>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>nl.naturalis.nba</groupId>
+			<artifactId>nl.naturalis.nba.api</artifactId>
+			<version>2.16</version>
+		</dependency>
+		<dependency>
+			<groupId>nl.naturalis.nba</groupId>
+			<artifactId>nl.naturalis.nba.utils</artifactId>
+			<version>2.16</version>
+		</dependency>
+		<dependency>
+			<groupId>nl.naturalis.nba</groupId>
+			<artifactId>nl.naturalis.nba.common</artifactId>
+			<version>2.16</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-annotations</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>de.grundid.opendatalab</groupId>
+			<artifactId>geojson-jackson</artifactId>
+		</dependency>
+
+		<!-- TEST -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-compress</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+	</dependencies>
+
+	<build>
+		<plugins>
+			<!--plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>delete-java-download-jars</id>
+						<phase>deploy</phase>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>rm</executable>
+							<arguments>
+								<argument>${main.basedir}/java_client_download/*.jar</argument>
+							</arguments>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin-->
+			<!--plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-clean-plugin</artifactId>
+				<configuration>
+					<filesets>
+						<fileset>
+							<directory>${project.basedir}/../java_client_download</directory>
+							<includes>*.jar</includes>
+						</fileset>
+					</filesets>
+				</configuration>
+			</plugin-->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<configuration>
+					<outputDirectory>${main.basedir}/java_client_download/${project.version}</outputDirectory>
+					<finalName>nba-java-client</finalName>
+					<createSourcesJar>true</createSourcesJar>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>deploy</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

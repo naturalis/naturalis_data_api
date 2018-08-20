@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -39,6 +40,7 @@ import nl.naturalis.nba.etl.CSVRecordInfo;;
 @PrepareForTest({BrahmsImportUtil.class,CSVRecordInfo.class})
 @PowerMockIgnore("javax.management.*")
 @SuppressWarnings({"static-method", "static-access"})
+@Ignore
 public class BrahmsImportUtilTest {
 
   /**

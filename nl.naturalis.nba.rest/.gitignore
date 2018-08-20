@@ -1,1 +1,9 @@
 /build/
+/target/
+/.settings/
+/.classpath
+/.project
+/.tern-project
+/.buildno
+/bin/
+/pom.xml.versionsBackup

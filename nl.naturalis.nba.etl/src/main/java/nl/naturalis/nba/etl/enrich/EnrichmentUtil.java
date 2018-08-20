@@ -4,17 +4,13 @@ import static nl.naturalis.nba.etl.ETLUtil.getLogger;
 import static nl.naturalis.nba.etl.SummaryObjectUtil.copyScientificName;
 import static nl.naturalis.nba.etl.SummaryObjectUtil.copySourceSystem;
 import static nl.naturalis.nba.etl.SummaryObjectUtil.copySummaryVernacularName;
-
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.logging.log4j.Logger;
-
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QueryResult;

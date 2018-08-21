@@ -104,10 +104,11 @@ class EnrichmentUtil {
 
 	static File createTempFile(String prefix) throws IOException
 	{
-		File tmpDir = DaoRegistry.getInstance().getFile("../tmp").getCanonicalFile();
-		if (!tmpDir.isDirectory()) {
-			tmpDir.mkdir();
-		}
+	    File dir = DaoRegistry.getInstance().getConfiguration().getDirectory("nba.etl.install.dir");
+	    File tmpDir = FileUtil.newFile(dir, "tmp");
+	    if (!tmpDir.isDirectory()) {
+	      tmpDir.mkdir();
+	    }
 		StringBuilder name = new StringBuilder(100);
 		name.append(prefix);
 		name.append(".");

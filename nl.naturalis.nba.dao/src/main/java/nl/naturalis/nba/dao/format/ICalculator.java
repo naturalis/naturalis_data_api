@@ -1,6 +1,7 @@
 package nl.naturalis.nba.dao.format;
 
 import java.util.Map;
+import nl.naturalis.nba.api.model.IDocumentObject;
 
 /**
  * An {@code ICalculator} is used to determine the value for a calculated field
@@ -25,6 +26,14 @@ public interface ICalculator {
 	 * element within a DwCA configuration file.
 	 */
 	void initialize(Map<String, String> args) throws CalculatorInitializationException;
+	
+	/**
+	 * Initialiser for a calculator that needs to be aware of the document type.
+	 * @param cls
+	 * @param args
+	 * @throws CalculatorInitializationException
+	 */
+	default void initialize(Class<? extends IDocumentObject> cls, Map<String, String> args) throws CalculatorInitializationException {};
 
 	/**
 	 * Calculates a values. The specified entity object may or may not be used

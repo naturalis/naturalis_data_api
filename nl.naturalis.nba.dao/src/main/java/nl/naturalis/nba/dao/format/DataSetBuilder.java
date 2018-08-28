@@ -190,6 +190,12 @@ public class DataSetBuilder {
 		int i = 0;
 		for (FieldXmlConfig field : fieldConfigs) {
 			try {
+			  
+			  String value = "Calculator? ";
+			  if (field.getPath() != null) value = field.getPath().getValue();
+			  System.out.println(">>> " + value + " (" + field.getName() + ")");
+
+			  
 				fields[i++] = fieldBuilder.build(field);
 			}
 			catch (FieldConfigurationException e0) {

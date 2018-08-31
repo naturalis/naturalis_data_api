@@ -92,9 +92,6 @@ class FieldBuilder {
 		URI term = getTerm(fieldConfig);
 		String className = fieldConfig.getCalculator().getJavaClass();
 		ICalculator calculator = getCalculator(name, className);
-		
-		System.out.println("Mapping: " + dataSource.getMapping().getMappedClass());
-		
 		Map<String, String> args = null;
 		List<PluginParamXmlConfig> argConfigs = fieldConfig.getCalculator().getArg();
 		if (argConfigs != null) {

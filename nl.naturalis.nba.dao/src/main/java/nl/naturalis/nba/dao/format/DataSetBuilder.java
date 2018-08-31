@@ -8,14 +8,9 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
-
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.dao.format.config.DataSetXmlConfig;
 import nl.naturalis.nba.dao.format.config.DataSourceXmlConfig;
@@ -46,9 +41,6 @@ public class DataSetBuilder {
 	private static String ERR_BAD_ENTITY = "Entity %s: %s";
 	private static String ERR_NO_FIELD_FACTORY = "Entity %s: configuration requires a default or dedicated instance of IFieldFactory";
 	private static String ERR_BAD_FIELD = "Entity %s, field %s: %s";
-
-	@SuppressWarnings("unused")
-	private static Logger logger = LogManager.getLogger(DataSetBuilder.class);
 
 	private InputStream config;
 
@@ -179,8 +171,7 @@ public class DataSetBuilder {
 	{
 		MappingXmlConfig mappingConfig = entityConfig.getMapping();
 		if (mappingConfig == null) {
-			String msg = format(ERR_BAD_ENTITY, entityConfig.getName(),
-					"Missing required element: <mapping>");
+			String msg = format(ERR_BAD_ENTITY, entityConfig.getName(), "Missing required element: <mapping>");
 			throw new DataSetConfigurationException(msg);
 		}
 		List<FieldXmlConfig> fieldConfigs = mappingConfig.getField();
@@ -190,17 +181,10 @@ public class DataSetBuilder {
 		int i = 0;
 		for (FieldXmlConfig field : fieldConfigs) {
 			try {
-			  
-			  String value = "Calculator? ";
-			  if (field.getPath() != null) value = field.getPath().getValue();
-			  System.out.println(">>> " + value + " (" + field.getName() + ")");
-
-			  
 				fields[i++] = fieldBuilder.build(field);
 			}
 			catch (FieldConfigurationException e0) {
-				String msg = format(ERR_BAD_FIELD, entityConfig.getName(), e0.getField(),
-						e0.getMessage());
+				String msg = format(ERR_BAD_FIELD, entityConfig.getName(), e0.getField(), e0.getMessage());
 				throw new DataSetConfigurationException(msg);
 			}
 			catch (DataSetConfigurationException e1) {

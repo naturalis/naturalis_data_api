@@ -1,7 +1,7 @@
 package nl.naturalis.nba.dao.format.calc;
 
 import java.util.Map;
-
+import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.dao.format.CalculationException;
@@ -20,10 +20,10 @@ import nl.naturalis.nba.dao.format.ICalculator;
  */
 public class SynonymIdCalculator implements ICalculator {
 
-	@Override
-	public void initialize(Map<String, String> args) throws CalculatorInitializationException
-	{
-	}
+  @Override
+  public void initialize(Class<? extends IDocumentObject> docType, Map<String, String> args) throws CalculatorInitializationException
+  {
+  }
 
 	@Override
 	public Object calculateValue(EntityObject entity) throws CalculationException

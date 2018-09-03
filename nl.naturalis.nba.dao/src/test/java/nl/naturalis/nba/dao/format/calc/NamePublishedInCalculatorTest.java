@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-
+import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.dao.format.CalculatorInitializationException;
 
 public class NamePublishedInCalculatorTest {
@@ -19,11 +19,11 @@ public class NamePublishedInCalculatorTest {
 		forAcceptedName = new NamePublishedInCalculator();
 		Map<String, String> args = new HashMap<>();
 		args.put("type", "accepted name");
-		forAcceptedName.initialize(args);
+		forAcceptedName.initialize(Taxon.class, args);
 		forSynonym = new NamePublishedInCalculator();
 		args = new HashMap<>();
 		args.put("type", "synonym");
-		forSynonym.initialize(args);
+		forSynonym.initialize(Taxon.class, args);
 	}
 
 	@Test

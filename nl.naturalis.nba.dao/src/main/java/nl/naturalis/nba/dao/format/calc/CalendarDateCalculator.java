@@ -39,10 +39,6 @@ public class CalendarDateCalculator implements ICalculator {
   private static Logger logger = LogManager.getLogger(CalendarDateCalculator.class);
   
   @Override
-  public void initialize(Map<String, String> args) throws CalculatorInitializationException {
-  }
-
-  @Override
   public void initialize(Class<? extends IDocumentObject> docType, Map<String, String> args) throws CalculatorInitializationException {
     
     String dateField = args.get(null);

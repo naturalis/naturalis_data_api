@@ -8,7 +8,6 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
 import nl.naturalis.nba.api.NoSuchFieldException;
 import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.api.model.IDocumentObject;
@@ -23,7 +22,13 @@ import nl.naturalis.nba.dao.format.EntityObject;
 import nl.naturalis.nba.dao.format.ICalculator;
 
 /**
- * RegularTimeCalculator is a calculator that ....
+ * RegularTimeCalculator is a calculator that extracts the time from a any DateTime field 
+ * and returns it in the format HH:mm. The DateTime field to be examined needs to passed
+ * as a parameter in the config file.
+ * 
+ * NOTE: since the DateTime field may be part of a nested document, this calculator
+ * will only consider the given field in the first nested document. Values in any
+ * other nested documents will be ignored. 
  */
 public class RegularTimeCalculator  implements ICalculator {
 
@@ -31,10 +36,6 @@ public class RegularTimeCalculator  implements ICalculator {
 
   private static Logger logger = LogManager.getLogger(RegularTimeCalculator.class);
   
-  @Override
-  public void initialize(Map<String, String> args) throws CalculatorInitializationException {
-  }
-
   @Override
   public void initialize(Class<? extends IDocumentObject> docType, Map<String, String> args) throws CalculatorInitializationException {
     

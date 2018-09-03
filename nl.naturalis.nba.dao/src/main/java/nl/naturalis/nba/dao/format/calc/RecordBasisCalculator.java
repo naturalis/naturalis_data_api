@@ -3,7 +3,7 @@ package nl.naturalis.nba.dao.format.calc;
 import static nl.naturalis.nba.dao.format.FormatUtil.EMPTY_STRING;
 
 import java.util.Map;
-
+import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.dao.format.CalculationException;
 import nl.naturalis.nba.dao.format.CalculatorInitializationException;
@@ -20,10 +20,10 @@ import nl.naturalis.nba.dao.format.ICalculator;
  */
 public class RecordBasisCalculator implements ICalculator {
 
-	@Override
-	public void initialize(Map<String, String> args) throws CalculatorInitializationException
-	{
-	}
+  @Override
+  public void initialize(Class<? extends IDocumentObject> docType, Map<String, String> args) throws CalculatorInitializationException
+  {
+  }
 
 	@Override
 	public Object calculateValue(EntityObject entity) throws CalculationException

@@ -5,7 +5,7 @@ import static nl.naturalis.nba.dao.format.FormatUtil.formatDate;
 
 import java.time.OffsetDateTime;
 import java.util.Map;
-
+import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.dao.format.CalculatorInitializationException;
 import nl.naturalis.nba.dao.format.EntityObject;
@@ -21,10 +21,10 @@ import nl.naturalis.nba.dao.format.ICalculator;
  */
 public class VerbatimEventDateCalculator implements ICalculator {
 
-	@Override
-	public void initialize(Map<String, String> args) throws CalculatorInitializationException
-	{
-	}
+  @Override
+  public void initialize(Class<? extends IDocumentObject> docType, Map<String, String> args) throws CalculatorInitializationException
+  {
+  }
 
 	@Override
 	public Object calculateValue(EntityObject entity)

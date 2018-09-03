@@ -5,6 +5,7 @@ import static nl.naturalis.nba.dao.format.FormatUtil.EMPTY_STRING;
 import java.util.Map;
 
 import nl.naturalis.nba.api.model.DefaultClassification;
+import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
@@ -23,8 +24,8 @@ import nl.naturalis.nba.dao.format.ICalculator;
  */
 public class HigherClassificationCalculator implements ICalculator {
 
-	@Override
-	public void initialize(Map<String, String> args) throws CalculatorInitializationException
+  @Override
+	public void initialize(Class<? extends IDocumentObject> docType, Map<String, String> args) throws CalculatorInitializationException
 	{
 	}
 
@@ -68,5 +69,5 @@ public class HigherClassificationCalculator implements ICalculator {
 			sb.append(value);
 		}
 	}
-
+	
 }

@@ -16,24 +16,22 @@ import nl.naturalis.nba.api.model.IDocumentObject;
 public interface ICalculator {
 
 	/**
-	 * Initializes the calculator with the specified values. The keys of the map
+	 * Initializes the calculator with the specified values. The docType 
+	 * (document type or index of the documents) is needed for those calculators 
+	 * that can be used for creating archives of any type. The keys of the map
 	 * are parameter names, the values of the map are parameter values. This
 	 * method is called just once, right after instantiation of the calculator.
-	 */
-	/*
+	 *
 	 * Although this interface is oblivious to it, in practice these
 	 * initialization values come from <arg> elements within a <calculator>
 	 * element within a DwCA configuration file.
-	 */
-	void initialize(Map<String, String> args) throws CalculatorInitializationException;
-	
-	/**
+	 *
 	 * Initialiser for a calculator that needs to be aware of the document type.
-	 * @param cls
+	 * @param docType
 	 * @param args
 	 * @throws CalculatorInitializationException
 	 */
-	default void initialize(Class<? extends IDocumentObject> cls, Map<String, String> args) throws CalculatorInitializationException {};
+	void initialize(Class<? extends IDocumentObject> docType, Map<String, String> args) throws CalculatorInitializationException;
 
 	/**
 	 * Calculates a values. The specified entity object may or may not be used

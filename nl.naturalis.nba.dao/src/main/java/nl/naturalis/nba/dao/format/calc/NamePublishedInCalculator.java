@@ -5,7 +5,7 @@ import static nl.naturalis.nba.dao.format.FormatUtil.EMPTY_STRING;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
-
+import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.api.model.Reference;
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.dao.format.CalculationException;
@@ -32,9 +32,9 @@ public class NamePublishedInCalculator implements ICalculator {
 
 	private int type;
 
-	@Override
-	public void initialize(Map<String, String> args) throws CalculatorInitializationException
-	{
+  @Override
+  public void initialize(Class<? extends IDocumentObject> docType, Map<String, String> args) throws CalculatorInitializationException
+  {
 		String type = args.get("type");
 		if (type == null) {
 			String msg = "Missing required element <arg name=\"type\">";

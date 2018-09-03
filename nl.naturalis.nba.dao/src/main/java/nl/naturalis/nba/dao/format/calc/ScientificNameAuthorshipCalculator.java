@@ -3,7 +3,7 @@ package nl.naturalis.nba.dao.format.calc;
 import static nl.naturalis.nba.dao.format.FormatUtil.EMPTY_STRING;
 
 import java.util.Map;
-
+import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.dao.format.CalculationException;
@@ -28,9 +28,9 @@ public class ScientificNameAuthorshipCalculator implements ICalculator {
 
 	private int type;
 
-	@Override
-	public void initialize(Map<String, String> args) throws CalculatorInitializationException
-	{
+  @Override
+  public void initialize(Class<? extends IDocumentObject> docType, Map<String, String> args) throws CalculatorInitializationException
+  {
 		String type = args.get("type");
 		if (type == null) {
 			String msg = "Missing required element <arg name=\"type\">";

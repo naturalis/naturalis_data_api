@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import nl.naturalis.nba.api.model.Agent;
+import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.dao.format.CalculationException;
@@ -23,10 +24,10 @@ import nl.naturalis.nba.dao.format.ICalculator;
  */
 public class IdentifiedByCalculator implements ICalculator {
 
-	@Override
-	public void initialize(Map<String, String> args) throws CalculatorInitializationException
-	{
-	}
+  @Override
+  public void initialize(Class<? extends IDocumentObject> docType, Map<String, String> args) throws CalculatorInitializationException
+  {
+  }
 
 	@Override
 	public Object calculateValue(EntityObject entity) throws CalculationException

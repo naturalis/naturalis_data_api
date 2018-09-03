@@ -5,6 +5,7 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import nl.naturalis.nba.api.NoSuchFieldException;
@@ -61,9 +62,8 @@ public class CalendarDateCalculator implements ICalculator {
       Object obj = pathValueReader.read(entity.getDocument());
       if (obj != null) {
         String str = obj.toString();
-        str = str.substring(0, 10);
+        DateTime dt = new DateTime(str).withZone(DateTimeZone.UTC);
         DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd");
-        DateTime dt = fmt.parseDateTime(str);
         return dt.toString(fmt);
       }
     } catch (InvalidPathException e1) {

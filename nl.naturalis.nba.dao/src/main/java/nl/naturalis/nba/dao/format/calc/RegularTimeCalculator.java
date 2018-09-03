@@ -5,8 +5,10 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 import nl.naturalis.nba.api.NoSuchFieldException;
 import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.api.model.IDocumentObject;
@@ -52,10 +54,9 @@ public class RegularTimeCalculator  implements ICalculator {
       Object obj = pathValueReader.read(entity.getDocument());
       if (obj != null) {
         String str = obj.toString();
-        str = str.substring(0, 10);
-        DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd");
-        DateTime dt = fmt.parseDateTime(str);
-        return dt.toString(fmt);
+        DateTime dateTime = new DateTime(str).withZone(DateTimeZone.UTC);
+        DateTimeFormatter format = DateTimeFormat.forPattern("HH:mm");
+        return dateTime.toString(format);
       }
     } catch (InvalidPathException e1) {
       // A check for the validity of this field has been done in the initialiser, 

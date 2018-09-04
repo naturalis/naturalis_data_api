@@ -14,26 +14,26 @@ import nl.naturalis.nba.dao.format.EntityObject;
 import nl.naturalis.nba.dao.format.ICalculator;
 
 /**
- * The HigherGeographyCalculator extracts and concatenates the value(s) from the
+ * The MunicipalityCalculator extracts and concatenates the value(s) from the
  * field gatheringEvent.namedAreas.areaName for all instances where the value of
- * gatheringEvent.namedArea.areaClass = 'higherGeography'
- *
+ * gatheringEvent.namedArea.areaClass = 'municipality'
+ * 
  */
-public class HigherGeographyCalculator implements ICalculator {
+public class MunicipalityCalculator implements ICalculator {
 
   @Override
   public void initialize(Class<? extends IDocumentObject> docType, Map<String, String> args)
       throws CalculatorInitializationException {
     if (docType != Specimen.class) {
-      throw new CalculatorInitializationException("HigherGeographyCalculator can only be used with specimen documents");
+      throw new CalculatorInitializationException("MunicipalityCalculator can only be used with specimen documents");
     }
   }
 
   @Override
   public Object calculateValue(EntityObject entity) throws CalculationException {
-    String areaName = "";
     Specimen specimen = (Specimen) entity.getDocument();
-
+    String municipality = "";
+    
     GatheringEvent gatheringEvent = specimen.getGatheringEvent();
     if (gatheringEvent == null) {
       return "";
@@ -47,12 +47,12 @@ public class HigherGeographyCalculator implements ICalculator {
     Iterator<NamedArea> areas = namedAreas.iterator();
     while (areas.hasNext()) {
       NamedArea area = areas.next();
-      if (area.getAreaClass() != null && area.getAreaClass().equals(AreaClass.HIGHERGEOGRAPHY.name()) && area.getAreaName() != null) {
-        if (areaName.length() > 0) areaName += " | ";
-        areaName += area.getAreaName();        
+      if (area.getAreaClass() != null && area.getAreaClass().equals(AreaClass.MUNICIPALITY.name()) && area.getAreaName() != null) {
+        if (municipality.length() > 0) municipality += " | ";
+        municipality += area.getAreaName();
       }
     }
-    return areaName;
+    return municipality;
   }
 
 }

@@ -14,8 +14,8 @@ import nl.naturalis.nba.dao.format.EntityObject;
 import nl.naturalis.nba.dao.format.ICalculator;
 
 /**
- * The HigherGeographyCalculator extracts and concatenates the value(s) from the
- * field gatheringEvent.namedAreas.areaName for all instances where the value of
+ * The HigherGeographyCalculator extracts and concatenates the value(s) from the field
+ * gatheringEvent.namedAreas.areaName for all instances where the value of
  * gatheringEvent.namedArea.areaClass = 'higherGeography'
  *
  */
@@ -25,7 +25,8 @@ public class HigherGeographyCalculator implements ICalculator {
   public void initialize(Class<? extends IDocumentObject> docType, Map<String, String> args)
       throws CalculatorInitializationException {
     if (docType != Specimen.class) {
-      throw new CalculatorInitializationException("HigherGeographyCalculator can only be used with specimen documents");
+      throw new CalculatorInitializationException(
+          "HigherGeographyCalculator can only be used with specimen documents");
     }
   }
 
@@ -38,18 +39,21 @@ public class HigherGeographyCalculator implements ICalculator {
     if (gatheringEvent == null) {
       return "";
     }
-    
+
     List<NamedArea> namedAreas = gatheringEvent.getNamedAreas();
     if (namedAreas == null) {
       return "";
     }
-    
+
     Iterator<NamedArea> areas = namedAreas.iterator();
     while (areas.hasNext()) {
       NamedArea area = areas.next();
-      if (area.getAreaClass() != null && area.getAreaClass().equals(AreaClass.HIGHERGEOGRAPHY.name()) && area.getAreaName() != null) {
-        if (areaName.length() > 0) areaName += " | ";
-        areaName += area.getAreaName();        
+      if (area.getAreaClass() != null
+          && area.getAreaClass().equals(AreaClass.HIGHERGEOGRAPHY.name())
+          && area.getAreaName() != null) {
+        if (areaName.length() > 0)
+          areaName += " | ";
+        areaName += area.getAreaName();
       }
     }
     return areaName;

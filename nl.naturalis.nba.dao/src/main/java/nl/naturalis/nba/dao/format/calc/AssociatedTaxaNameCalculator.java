@@ -40,11 +40,10 @@ public class AssociatedTaxaNameCalculator implements ICalculator {
     List<AssociatedTaxon> taxaList = gatheringEvent.getAssociatedTaxa();
     if (taxaList == null) return associatedTaxa;
     
-    Iterator<AssociatedTaxon> iter = taxaList.iterator();
-    while (iter.hasNext()) {
-      AssociatedTaxon taxon = iter.next();
+    for (AssociatedTaxon taxon : taxaList) {
+      if (taxon.getRelationType() != null && taxon.getName() != null) {}
+      if (associatedTaxa.length() > 0) associatedTaxa += " | ";
       associatedTaxa += taxon.getRelationType() + ": " + taxon.getName();
-      if (iter.hasNext()) associatedTaxa += " | ";
     }
     return associatedTaxa;
   }

@@ -14,8 +14,8 @@ import nl.naturalis.nba.dao.format.EntityObject;
 import nl.naturalis.nba.dao.format.ICalculator;
 
 /**
- * The MunicipalityCalculator extracts and concatenates the value(s) from the
- * field gatheringEvent.namedAreas.areaName for all instances where the value of
+ * The MunicipalityCalculator extracts and concatenates the value(s) from the field
+ * gatheringEvent.namedAreas.areaName for all instances where the value of
  * gatheringEvent.namedArea.areaClass = 'municipality'
  * 
  */
@@ -25,7 +25,8 @@ public class MunicipalityCalculator implements ICalculator {
   public void initialize(Class<? extends IDocumentObject> docType, Map<String, String> args)
       throws CalculatorInitializationException {
     if (docType != Specimen.class) {
-      throw new CalculatorInitializationException("MunicipalityCalculator can only be used with specimen documents");
+      throw new CalculatorInitializationException(
+          "MunicipalityCalculator can only be used with specimen documents");
     }
   }
 
@@ -33,22 +34,24 @@ public class MunicipalityCalculator implements ICalculator {
   public Object calculateValue(EntityObject entity) throws CalculationException {
     Specimen specimen = (Specimen) entity.getDocument();
     String municipality = "";
-    
+
     GatheringEvent gatheringEvent = specimen.getGatheringEvent();
     if (gatheringEvent == null) {
       return "";
     }
-    
+
     List<NamedArea> namedAreas = gatheringEvent.getNamedAreas();
     if (namedAreas == null) {
       return "";
     }
-    
+
     Iterator<NamedArea> areas = namedAreas.iterator();
     while (areas.hasNext()) {
       NamedArea area = areas.next();
-      if (area.getAreaClass() != null && area.getAreaClass().equals(AreaClass.MUNICIPALITY.name()) && area.getAreaName() != null) {
-        if (municipality.length() > 0) municipality += " | ";
+      if (area.getAreaClass() != null && area.getAreaClass().equals(AreaClass.MUNICIPALITY.name())
+          && area.getAreaName() != null) {
+        if (municipality.length() > 0)
+          municipality += " | ";
         municipality += area.getAreaName();
       }
     }

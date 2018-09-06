@@ -117,12 +117,6 @@ public class NbaMetaDataDao implements INbaMetaData {
 	}
 	
 	@Override
-	public ServiceAccessPoint.Variant[] getControlledListVariant()
-	{
-	  return ServiceAccessPoint.Variant.values();
-	}
-
-	@Override
 	public String[] getAllowedDateFormats()
 	{
 		return ESDateInput.getAcceptedDateFormats();

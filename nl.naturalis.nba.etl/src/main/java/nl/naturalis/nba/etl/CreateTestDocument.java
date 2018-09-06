@@ -554,10 +554,8 @@ public class CreateTestDocument {
   private static ServiceAccessPoint createServiceAccessPoint(int n) throws URISyntaxException {
     ServiceAccessPoint serviceAccessPoint = new ServiceAccessPoint();
     serviceAccessPoint.setAccessUri(new URI("https://www.example.org/abc_" + n));
-    serviceAccessPoint.setFormat(reverseString("format") + "_" + n);
-    Random rand = new Random();
-    int item = rand.nextInt(ServiceAccessPoint.Variant.values().length - 1);    
-    serviceAccessPoint.setVariant(Arrays.asList(ServiceAccessPoint.Variant.values()).get(item));
+    serviceAccessPoint.setFormat(reverseString("format") + "_" + n);    
+    serviceAccessPoint.setVariant("MEDIUM_QUALITY");
     return serviceAccessPoint;
   }
   

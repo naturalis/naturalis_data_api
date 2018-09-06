@@ -68,7 +68,7 @@ public class MultiMediaObject extends NbaTraceableObject implements IDocumentObj
 	private Taxon associatedTaxon;
 
 	@SuppressWarnings("unused")
-  public void addServiceAccessPoint(String uri, String format, ServiceAccessPoint.Variant variant)
+  public void addServiceAccessPoint(String uri, String format, String variant)
 	{
 		if (serviceAccessPoints == null) {
 			serviceAccessPoints = new ArrayList<ServiceAccessPoint>();

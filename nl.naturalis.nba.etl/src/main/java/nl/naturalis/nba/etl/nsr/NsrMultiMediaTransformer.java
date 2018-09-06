@@ -1,6 +1,5 @@
 package nl.naturalis.nba.etl.nsr;
 
-import static nl.naturalis.nba.api.model.ServiceAccessPoint.Variant.MEDIUM_QUALITY;
 import static nl.naturalis.nba.api.model.SourceSystem.NSR;
 import static nl.naturalis.nba.dao.util.es.ESUtil.getElasticsearchId;
 import static nl.naturalis.nba.etl.ETLConstants.SOURCE_INSTITUTION_ID;
@@ -10,7 +9,6 @@ import static nl.naturalis.nba.etl.TransformUtil.guessMimeType;
 import static nl.naturalis.nba.etl.nsr.NsrImportUtil.val;
 import static nl.naturalis.nba.utils.xml.DOMUtil.getDescendants;
 import static nl.naturalis.nba.utils.xml.DOMUtil.getValue;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.OffsetDateTime;
@@ -18,7 +16,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import org.w3c.dom.Element;
 import nl.naturalis.nba.api.model.License;
 import nl.naturalis.nba.api.model.LicenseType;
@@ -125,7 +122,7 @@ class NsrMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 				}
 				format = guessMimeType(uri.toString());
 			}
-			mmo.addServiceAccessPoint(new ServiceAccessPoint(uri, format, MEDIUM_QUALITY));
+			mmo.addServiceAccessPoint(new ServiceAccessPoint(uri, format, "MEDIUM_QUALITY"));
 			mmo.setCreator(val(e, "photographer_name"));
 			mmo.setCopyrightText(val(e, "copyright"));
 			mmo.setLicenseType(LicenseType.parse( val(e, "licence_type") ));

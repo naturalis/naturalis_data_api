@@ -3,17 +3,13 @@ package nl.naturalis.nba.client;
 import static nl.naturalis.nba.client.ClientUtil.getObject;
 import static nl.naturalis.nba.client.ServerException.newServerException;
 import static nl.naturalis.nba.utils.http.SimpleHttpRequest.HTTP_OK;
-
 import java.util.Map;
-
 import com.fasterxml.jackson.core.type.TypeReference;
-
 import nl.naturalis.nba.api.INbaMetaData;
 import nl.naturalis.nba.api.model.AreaClass;
 import nl.naturalis.nba.api.model.License;
 import nl.naturalis.nba.api.model.LicenseType;
 import nl.naturalis.nba.api.model.PhaseOrStage;
-import nl.naturalis.nba.api.model.ServiceAccessPoint.Variant;
 import nl.naturalis.nba.api.model.Sex;
 import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nba.api.model.SpatialDatum;
@@ -178,16 +174,6 @@ public class NbaMetaDataClient extends Client implements INbaMetaData {
     return getObject(request.getResponseBody(), TaxonRelationType[].class);
 	}
 	
-	@Override
-	public Variant[] getControlledListVariant() {
-    SimpleHttpRequest request = getJson("getControlledListVariant");
-    int status = request.getStatus();
-    if (status != HTTP_OK) {
-      throw newServerException(status, request.getResponseBody());
-    }
-    return getObject(request.getResponseBody(), Variant[].class);
-	}
-
 	@Override
 	public String[] getAllowedDateFormats()
 	{

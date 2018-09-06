@@ -7,31 +7,26 @@ import nl.naturalis.nba.api.annotations.NotIndexed;
 
 public class ServiceAccessPoint implements INbaModelObject {
 
-	public static enum Variant
-	{
-		THUMBNAIL, TRAILER, LOWER_QUALITY, MEDIUM_QUALITY, GOOD_QUALITY, BEST_QUALITY, OFFLINE
-	}
-
 	@NotIndexed
 	private URI accessUri;
 	@Analyzers({})
 	private String format;
 	@Analyzers({})
-	private Variant variant;
+	private String variant;
 
 	public ServiceAccessPoint()
 	{
 		// Commentaar
 	}
 
-	public ServiceAccessPoint(URI uri, String format, Variant variant)
+	public ServiceAccessPoint(URI uri, String format, String variant)
 	{
 		this.accessUri = uri;
 		this.format = format;
 		this.variant = variant;
 	}
 
-	public ServiceAccessPoint(String uri, String format, Variant variant)
+	public ServiceAccessPoint(String uri, String format, String variant)
 	{
 		this.accessUri = URI.create(uri);
 		this.format = format;
@@ -58,12 +53,12 @@ public class ServiceAccessPoint implements INbaModelObject {
 		this.format = format;
 	}
 
-	public Variant getVariant()
+	public String getVariant()
 	{
 		return variant;
 	}
 
-	public void setVariant(Variant variant)
+	public void setVariant(String variant)
 	{
 		this.variant = variant;
 	}

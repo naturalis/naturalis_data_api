@@ -1,0 +1,188 @@
+15:46:00.432|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Extracting QuerySpec object from request
+15:46:00.439|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Processing parameter sourceSystem.code: "CRS"
+15:46:00.440|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Processing parameter querySpec: "test"
+15:46:00.442|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Extracting QuerySpec object from request
+15:46:00.442|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Processing parameter collectionType: "Aves"
+15:46:00.442|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Processing parameter _logicalOperator: "AND"
+15:46:00.443|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Processing parameter sourceSystem.code: "CRS"
+15:46:00.445|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Extracting QuerySpec object from request
+15:46:00.446|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Processing parameter collectionType: "Aves"
+15:46:00.446|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Processing parameter _logicalOperator: "&&"
+15:46:00.446|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Processing parameter sourceSystem.code: "CRS"
+15:46:00.446|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Extracting QuerySpec object from request
+15:46:00.446|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Processing parameter collectionType: "Aves"
+15:46:00.447|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Processing parameter _logicalOperator: "OR"
+15:46:00.447|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Processing parameter sourceSystem.code: "CRS"
+15:46:00.447|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Extracting QuerySpec object from request
+15:46:00.447|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Processing parameter collectionType: "Aves"
+15:46:00.447|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Processing parameter _logicalOperator: "||"
+15:46:00.447|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Processing parameter sourceSystem.code: "CRS"
+15:46:00.447|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Extracting QuerySpec object from request
+15:46:00.447|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Processing parameter collectionType: "Aves"
+15:46:00.447|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Processing parameter _logicalOperator: "FAIL"
+15:46:00.448|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Extracting QuerySpec object from request
+15:46:00.448|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Processing parameter collectionType: "Aves"
+15:46:00.448|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Processing parameter sourceSystem.code: "CRS"
+15:46:00.448|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Processing parameter _fields: "unitID, recordBasis,gatheringEvent.country ,identifications.defaultClassification.genus"
+15:46:00.449|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Extracting QuerySpec object from request
+15:46:00.449|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Processing parameter collectionType: "@NOT_NULL@"
+15:46:00.449|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Processing parameter kindOfUnit: "@NULL@"
+15:46:00.449|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Processing parameter sourceSystem.code: "BRAHMS"
+15:46:00.451|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Extracting QuerySpec object from request
+15:46:00.451|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Processing parameter _size: "10"
+15:46:00.451|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Processing parameter collectionType: "Hymenoptera"
+15:46:00.451|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Processing parameter _ignoreCase: "true"
+15:46:00.451|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Processing parameter _from: "25"
+15:46:00.451|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Processing parameter kindOfUnit: "WholeOrganism"
+15:46:00.451|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Processing parameter _logicalOperator: "AND"
+15:46:00.451|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Processing parameter sourceSystem.code: "CRS"
+15:46:00.452|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Processing parameter gatheringEvent.country: "Greece"
+15:46:00.452|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Processing parameter _fields: "sourceSystemId,identifications.scientificName.fullScientificName"
+15:46:00.452|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Processing parameter _sortFields: "id,identifications.scientificName.fullScientificName:DESC"
+15:46:00.454|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Extracting QuerySpec object from request
+15:46:00.454|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Processing parameter collectionType: "Aves"
+15:46:00.454|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Processing parameter sourceSystem.code: "CRS"
+15:46:00.454|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Processing parameter _sortFields: "unitID:ASC,id:DESC,sourceSystemId:ASC,id:DESC"
+15:46:00.455|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Extracting QuerySpec object from request
+15:46:00.455|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Extracting QuerySpec object from request
+15:46:00.455|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Processing parameter collectionType: "Botany"
+15:46:00.455|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Processing parameter license: "CC0"
+15:46:00.456|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Processing parameter _ignoreCase: "true"
+15:46:00.456|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Processing parameter sourceSystem.code: "BRAHMS"
+15:46:00.456|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Processing parameter _fields: "unitID,recordBasis,gatheringEvent.country"
+15:46:00.456|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Extracting QuerySpec object from request
+15:46:00.456|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Processing parameter collectionType: "Botany"
+15:46:00.457|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Processing parameter license: "CC0"
+15:46:00.457|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Processing parameter _ignoreCase: ""
+15:46:00.457|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Processing parameter sourceSystem.code: "BRAHMS"
+15:46:00.457|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Processing parameter _fields: "unitID,recordBasis,gatheringEvent.country"
+15:46:00.457|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Extracting QuerySpec object from request
+15:46:00.458|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Processing parameter collectionType: "@NULL@"
+15:46:00.458|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Processing parameter sourceSystem.code: "BRAHMS"
+15:46:00.458|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Extracting QuerySpec object from request
+15:46:00.459|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Extracting QuerySpec object from request
+15:46:00.459|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Processing parameter _size: "100"
+15:46:00.459|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Processing parameter _from: "100"
+15:46:00.459|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Processing parameter sourceSystem.code: "BRAHMS"
+15:46:00.460|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Extracting QuerySpec object from request
+15:46:00.460|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Processing parameter _size: "test"
+15:46:00.460|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Extracting QuerySpec object from request
+15:46:00.460|INFO |nl.naturalis.nba.rest.util.HttpQuerySpecBuilder: Processing parameter _test: "test"
+15:46:00.462|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Extracting NameGroupQuerySpec object from request
+15:46:00.462|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter sourceSystem.code: "CRS"
+15:46:00.463|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter querySpec: "test"
+15:46:00.463|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Extracting NameGroupQuerySpec object from request
+15:46:00.463|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter collectionType: "Aves"
+15:46:00.463|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter _groupFilter: ""
+15:46:00.463|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter sourceSystem.code: "CRS"
+15:46:00.463|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Extracting NameGroupQuerySpec object from request
+15:46:00.464|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter collectionType: "Aves"
+15:46:00.464|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter _groupFilter: ".*"
+15:46:00.464|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter sourceSystem.code: "CRS"
+15:46:00.464|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Extracting NameGroupQuerySpec object from request
+15:46:00.465|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter collectionType: "Aves"
+15:46:00.465|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter _groupFilter: "larus fuscus,larus ridibundus"
+15:46:00.465|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter sourceSystem.code: "CRS"
+15:46:00.465|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Extracting NameGroupQuerySpec object from request
+15:46:00.466|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter collectionType: "Aves"
+15:46:00.466|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter _logicalOperator: "AND"
+15:46:00.466|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter sourceSystem.code: "CRS"
+15:46:00.466|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Extracting NameGroupQuerySpec object from request
+15:46:00.466|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter collectionType: "Aves"
+15:46:00.466|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter _logicalOperator: "&&"
+15:46:00.466|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter sourceSystem.code: "CRS"
+15:46:00.467|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Extracting NameGroupQuerySpec object from request
+15:46:00.467|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter collectionType: "Aves"
+15:46:00.467|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter _logicalOperator: "OR"
+15:46:00.467|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter sourceSystem.code: "CRS"
+15:46:00.467|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Extracting NameGroupQuerySpec object from request
+15:46:00.467|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter collectionType: "Aves"
+15:46:00.467|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter _logicalOperator: "||"
+15:46:00.467|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter sourceSystem.code: "CRS"
+15:46:00.468|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Extracting NameGroupQuerySpec object from request
+15:46:00.468|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter collectionType: "Aves"
+15:46:00.468|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter _logicalOperator: "FAIL"
+15:46:00.469|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Extracting NameGroupQuerySpec object from request
+15:46:00.469|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter collectionType: "Aves"
+15:46:00.469|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter sourceSystem.code: "CRS"
+15:46:00.469|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter _fields: "unitID, recordBasis,gatheringEvent.country ,identifications.defaultClassification.genus"
+15:46:00.470|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Extracting NameGroupQuerySpec object from request
+15:46:00.470|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter collectionType: "Aves"
+15:46:00.470|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter sourceSystem.code: "CRS"
+15:46:00.470|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter _noTaxa: "null"
+15:46:00.470|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Extracting NameGroupQuerySpec object from request
+15:46:00.470|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter collectionType: "Aves"
+15:46:00.471|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter sourceSystem.code: "CRS"
+15:46:00.471|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter _noTaxa: "null"
+15:46:00.471|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Extracting NameGroupQuerySpec object from request
+15:46:00.471|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter collectionType: "Aves"
+15:46:00.471|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter sourceSystem.code: "CRS"
+15:46:00.471|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter _noTaxa: "null"
+15:46:00.472|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Extracting NameGroupQuerySpec object from request
+15:46:00.472|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter collectionType: "@NOT_NULL@"
+15:46:00.472|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter kindOfUnit: "@NULL@"
+15:46:00.472|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter sourceSystem.code: "BRAHMS"
+15:46:00.473|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Extracting NameGroupQuerySpec object from request
+15:46:00.473|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter _groupSort: "NAME_DESC"
+15:46:00.474|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter _from: "25"
+15:46:00.474|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter kindOfUnit: "WholeOrganism"
+15:46:00.474|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter _fields: "sourceSystemId,identifications.scientificName.fullScientificName"
+15:46:00.475|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter _size: "10"
+15:46:00.475|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter collectionType: "Hymenoptera"
+15:46:00.475|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter _ignoreCase: "true"
+15:46:00.475|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter _logicalOperator: "AND"
+15:46:00.475|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter _groupFilter: "larus.*"
+15:46:00.475|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter sourceSystem.code: "CRS"
+15:46:00.475|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter gatheringEvent.country: "Greece"
+15:46:00.475|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter _sortFields: "id,identifications.scientificName.fullScientificName:DESC"
+15:46:00.475|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter _noTaxa: "yes"
+15:46:00.476|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Extracting NameGroupQuerySpec object from request
+15:46:00.476|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter _groupSort: "NAME_DESC"
+15:46:00.476|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter _from: "25"
+15:46:00.476|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter kindOfUnit: "WholeOrganism"
+15:46:00.476|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter _fields: "sourceSystemId,identifications.scientificName.fullScientificName"
+15:46:00.476|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter _size: "10"
+15:46:00.476|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter collectionType: "Hymenoptera"
+15:46:00.476|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter _ignoreCase: "true"
+15:46:00.477|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter _logicalOperator: "AND"
+15:46:00.477|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter _groupFilter: "larus fuscus,larus ridibundus"
+15:46:00.477|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter sourceSystem.code: "CRS"
+15:46:00.477|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter gatheringEvent.country: "Greece"
+15:46:00.477|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter _sortFields: "id,identifications.scientificName.fullScientificName:DESC"
+15:46:00.477|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter _noTaxa: "yes"
+15:46:00.478|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Extracting NameGroupQuerySpec object from request
+15:46:00.478|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter collectionType: "Aves"
+15:46:00.478|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter sourceSystem.code: "CRS"
+15:46:00.478|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter _sortFields: "unitID:ASC,id:DESC,sourceSystemId:ASC,id:DESC"
+15:46:00.478|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Extracting NameGroupQuerySpec object from request
+15:46:00.479|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter collectionType: "Aves"
+15:46:00.479|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter sourceSystem.code: "CRS"
+15:46:00.479|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter _sortFields: "unitID:ASC,id:test,id:ASC"
+15:46:00.479|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Extracting NameGroupQuerySpec object from request
+15:46:00.480|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter collectionType: "Aves"
+15:46:00.480|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter _groupSort: ""
+15:46:00.480|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Extracting NameGroupQuerySpec object from request
+15:46:00.481|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Extracting NameGroupQuerySpec object from request
+15:46:00.481|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter collectionType: "Botany"
+15:46:00.481|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter license: "CC0"
+15:46:00.481|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter _ignoreCase: "true"
+15:46:00.481|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter sourceSystem.code: "BRAHMS"
+15:46:00.481|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter _fields: "unitID,recordBasis,gatheringEvent.country"
+15:46:00.482|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Extracting NameGroupQuerySpec object from request
+15:46:00.482|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter collectionType: "Botany"
+15:46:00.482|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter license: "CC0"
+15:46:00.482|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter _ignoreCase: ""
+15:46:00.482|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter sourceSystem.code: "BRAHMS"
+15:46:00.482|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter _fields: "unitID,recordBasis,gatheringEvent.country"
+15:46:00.483|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Extracting NameGroupQuerySpec object from request
+15:46:00.483|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter collectionType: "@NULL@"
+15:46:00.483|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter sourceSystem.code: "BRAHMS"
+15:46:00.483|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Extracting NameGroupQuerySpec object from request
+15:46:00.484|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Extracting NameGroupQuerySpec object from request
+15:46:00.484|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter _size: "100"
+15:46:00.484|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter _from: "100"
+15:46:00.484|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter sourceSystem.code: "BRAHMS"
+15:46:00.485|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Extracting NameGroupQuerySpec object from request
+15:46:00.485|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter _size: "test"
+15:46:00.485|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Extracting NameGroupQuerySpec object from request
+15:46:00.485|INFO |nl.naturalis.nba.rest.util.HttpGroupByScientificNameQuerySpecBuilder: Processing parameter _test: "test"

@@ -1,0 +1,165 @@
+15:45:44.100|INFO |nl.naturalis.nba.dao.DaoRegistry: NBA configuration directory: /home/tom/git/nba-v2.17/naturalis_data_api/nl.naturalis.nba.build/proto.conf.dir
+15:45:44.106|INFO |nl.naturalis.nba.dao.DaoRegistry: NBA configuration file: /home/tom/git/nba-v2.17/naturalis_data_api/nl.naturalis.nba.build/proto.conf.dir/nba.properties
+15:45:44.109|INFO |nl.naturalis.nba.dao.RegistryTest: Starting tests
+15:45:44.111|INFO |nl.naturalis.nba.dao.DocumentType: Retrieving info for document type "Specimen"
+15:45:44.274|INFO |nl.naturalis.nba.dao.DocumentType: Retrieving info for document type "Taxon"
+15:45:44.278|INFO |nl.naturalis.nba.dao.DocumentType: Retrieving info for document type "MultiMediaObject"
+15:45:44.286|INFO |nl.naturalis.nba.dao.DocumentType: Retrieving info for document type "GeoArea"
+15:45:44.287|INFO |nl.naturalis.nba.dao.DocumentType: Processing section elasticsearch.index.0 of /home/tom/git/nba-v2.17/naturalis_data_api/nl.naturalis.nba.build/proto.conf.dir/nba.properties
+15:45:44.288|INFO |nl.naturalis.nba.dao.IndexInfo: Retrieving info for index "nba_integration_test"
+15:45:44.288|INFO |nl.naturalis.nba.dao.IndexInfo: -> Number of shards: 1
+15:45:44.288|INFO |nl.naturalis.nba.dao.IndexInfo: -> Number of replicas: 0
+15:45:44.288|INFO |nl.naturalis.nba.dao.IndexInfo: -> Document type(s): Specimen,Taxon,MultiMediaObject,GeoArea
+15:45:44.294|INFO |nl.naturalis.nba.dao.ESClientManager: Connecting to Elasticsearch cluster
+15:45:44.294|INFO |nl.naturalis.nba.dao.ESClientManager: Host(s): 127.0.0.1
+15:45:44.294|INFO |nl.naturalis.nba.dao.ESClientManager: Port(s): 9300
+15:45:44.297|INFO |nl.naturalis.nba.dao.ESClientManager: Cluster: mycluster
+15:45:45.723|INFO |nl.naturalis.nba.dao.ESClientManager: Connected
+15:45:45.790|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Deleting index nba_integration_test
+15:45:45.856|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Index deleted
+15:45:45.856|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating index nba_integration_test
+15:45:46.022|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating type Specimen in index nba_integration_test
+15:45:46.169|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating type Taxon in index nba_integration_test
+15:45:46.260|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating type MultiMediaObject in index nba_integration_test
+15:45:46.337|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating type GeoArea in index nba_integration_test
+15:45:46.495|INFO |nl.naturalis.nba.dao.util.SwapOutputStreamTest: Finish
+15:45:46.496|INFO |nl.naturalis.nba.dao.util.SwapOutputStreamTest: Start
+15:45:46.742|INFO |nl.naturalis.nba.dao.SpecimenDaoTest_Aggregations: Starting tests
+15:45:46.742|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Deleting index nba_integration_test
+15:45:46.773|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Index deleted
+15:45:46.774|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating index nba_integration_test
+15:45:46.886|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating type Specimen in index nba_integration_test
+15:45:46.936|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating type Taxon in index nba_integration_test
+15:45:46.981|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating type MultiMediaObject in index nba_integration_test
+15:45:47.039|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating type GeoArea in index nba_integration_test
+15:45:47.100|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Disabling auto-refresh for index nba_integration_test
+15:45:47.814|INFO |nl.naturalis.nba.dao.aggregation.GetDistinctValuesFieldPerGroupAggregation: Preparing aggregation query
+15:45:47.825|INFO |nl.naturalis.nba.dao.aggregation.GetDistinctValuesNestedFieldPerGroupAggregation: Preparing aggregation query
+15:45:47.836|INFO |nl.naturalis.nba.dao.aggregation.GetDistinctValuesFieldPerNestedGroupAggregation: Preparing aggregation query
+15:45:47.849|INFO |nl.naturalis.nba.dao.aggregation.GetDistinctValuesNestedFieldPerNestedGroupAggregation: Preparing aggregation query
+15:45:47.859|INFO |nl.naturalis.nba.dao.aggregation.GetDistinctValuesFieldPerGroupAggregation: Preparing aggregation query
+15:45:47.916|INFO |nl.naturalis.nba.dao.SpecimenDaoTest_Aggregations: Test finished. Removing test specimens
+15:45:47.917|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Deleting index nba_integration_test
+15:45:47.945|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Index deleted
+15:45:47.946|INFO |nl.naturalis.nba.dao.SpecimenDaoTest_Between: Start
+15:45:47.946|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Deleting index nba_integration_test
+15:45:48.004|INFO |nl.naturalis.nba.dao.util.es.ESUtil: No such index "nba_integration_test" (nothing deleted)
+15:45:48.004|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating index nba_integration_test
+15:45:48.075|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating type Specimen in index nba_integration_test
+15:45:48.127|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating type Taxon in index nba_integration_test
+15:45:48.180|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating type MultiMediaObject in index nba_integration_test
+15:45:48.227|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating type GeoArea in index nba_integration_test
+15:45:48.286|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Disabling auto-refresh for index nba_integration_test
+15:45:48.743|INFO |nl.naturalis.nba.dao.SpecimenDaoTest_Equals: Starting tests
+15:45:48.743|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Deleting index nba_integration_test
+15:45:48.768|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Index deleted
+15:45:48.768|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating index nba_integration_test
+15:45:48.863|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating type Specimen in index nba_integration_test
+15:45:48.900|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating type Taxon in index nba_integration_test
+15:45:48.934|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating type MultiMediaObject in index nba_integration_test
+15:45:48.999|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating type GeoArea in index nba_integration_test
+15:45:49.093|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Disabling auto-refresh for index nba_integration_test
+15:45:49.293|INFO |nl.naturalis.nba.dao.SpecimenDaoTest_GeoQueries: Starting tests
+15:45:49.293|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Deleting index nba_integration_test
+15:45:49.315|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Index deleted
+15:45:49.315|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating index nba_integration_test
+15:45:49.402|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating type Specimen in index nba_integration_test
+15:45:49.435|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating type Taxon in index nba_integration_test
+15:45:49.467|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating type MultiMediaObject in index nba_integration_test
+15:45:49.508|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating type GeoArea in index nba_integration_test
+15:45:49.558|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Disabling auto-refresh for index nba_integration_test
+15:45:50.047|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Disabling auto-refresh for index nba_integration_test
+15:45:52.029|INFO |nl.naturalis.nba.dao.SpecimenDaoTest_In: Starting tests
+15:45:52.029|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Deleting index nba_integration_test
+15:45:52.067|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Index deleted
+15:45:52.067|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating index nba_integration_test
+15:45:52.159|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating type Specimen in index nba_integration_test
+15:45:52.215|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating type Taxon in index nba_integration_test
+15:45:52.261|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating type MultiMediaObject in index nba_integration_test
+15:45:52.359|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating type GeoArea in index nba_integration_test
+15:45:52.420|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Disabling auto-refresh for index nba_integration_test
+15:45:52.634|INFO |nl.naturalis.nba.dao.SpecimenDaoTest_IsNotNull: Starting tests
+15:45:52.634|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Deleting index nba_integration_test
+15:45:52.656|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Index deleted
+15:45:52.657|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating index nba_integration_test
+15:45:52.748|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating type Specimen in index nba_integration_test
+15:45:52.821|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating type Taxon in index nba_integration_test
+15:45:52.873|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating type MultiMediaObject in index nba_integration_test
+15:45:52.955|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating type GeoArea in index nba_integration_test
+15:45:53.014|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Disabling auto-refresh for index nba_integration_test
+15:45:53.219|INFO |nl.naturalis.nba.dao.SpecimenDaoTest_IsNull: Start
+15:45:53.219|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Deleting index nba_integration_test
+15:45:53.242|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Index deleted
+15:45:53.242|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating index nba_integration_test
+15:45:53.343|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating type Specimen in index nba_integration_test
+15:45:53.402|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating type Taxon in index nba_integration_test
+15:45:53.461|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating type MultiMediaObject in index nba_integration_test
+15:45:53.519|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating type GeoArea in index nba_integration_test
+15:45:53.567|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Disabling auto-refresh for index nba_integration_test
+15:45:53.759|INFO |nl.naturalis.nba.dao.SpecimenDaoTest_LessThan: Starting tests
+15:45:53.759|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Deleting index nba_integration_test
+15:45:53.777|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Index deleted
+15:45:53.777|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating index nba_integration_test
+15:45:53.852|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating type Specimen in index nba_integration_test
+15:45:53.894|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating type Taxon in index nba_integration_test
+15:45:53.932|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating type MultiMediaObject in index nba_integration_test
+15:45:53.990|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating type GeoArea in index nba_integration_test
+15:45:54.040|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Disabling auto-refresh for index nba_integration_test
+15:45:54.287|INFO |nl.naturalis.nba.dao.SpecimenDaoTest_Like: Starting tests
+15:45:54.287|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Deleting index nba_integration_test
+15:45:54.324|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Index deleted
+15:45:54.324|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating index nba_integration_test
+15:45:54.398|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating type Specimen in index nba_integration_test
+15:45:54.471|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating type Taxon in index nba_integration_test
+15:45:54.511|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating type MultiMediaObject in index nba_integration_test
+15:45:54.568|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating type GeoArea in index nba_integration_test
+15:45:54.608|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Disabling auto-refresh for index nba_integration_test
+15:45:54.850|INFO |nl.naturalis.nba.dao.SpecimenDaoTest_Matches: Starting tests
+15:45:54.850|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Deleting index nba_integration_test
+15:45:54.885|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Index deleted
+15:45:54.886|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating index nba_integration_test
+15:45:54.972|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating type Specimen in index nba_integration_test
+15:45:55.013|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating type Taxon in index nba_integration_test
+15:45:55.055|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating type MultiMediaObject in index nba_integration_test
+15:45:55.102|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating type GeoArea in index nba_integration_test
+15:45:55.138|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Disabling auto-refresh for index nba_integration_test
+15:45:55.269|INFO |nl.naturalis.nba.dao.SpecimenDaoTest_Miscellaneous: Starting tests
+15:45:55.269|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Deleting index nba_integration_test
+15:45:55.283|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Index deleted
+15:45:55.284|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating index nba_integration_test
+15:45:55.392|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating type Specimen in index nba_integration_test
+15:45:55.426|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating type Taxon in index nba_integration_test
+15:45:55.464|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating type MultiMediaObject in index nba_integration_test
+15:45:55.505|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating type GeoArea in index nba_integration_test
+15:45:55.545|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Disabling auto-refresh for index nba_integration_test
+15:45:55.754|INFO |nl.naturalis.nba.dao.SpecimenDaoTest_SortingSizingPaging: Starting tests
+15:45:55.754|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Deleting index nba_integration_test
+15:45:55.779|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Index deleted
+15:45:55.779|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating index nba_integration_test
+15:45:55.851|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating type Specimen in index nba_integration_test
+15:45:55.893|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating type Taxon in index nba_integration_test
+15:45:55.917|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating type MultiMediaObject in index nba_integration_test
+15:45:55.968|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating type GeoArea in index nba_integration_test
+15:45:56.004|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Disabling auto-refresh for index nba_integration_test
+15:45:56.187|INFO |nl.naturalis.nba.dao.SpecimenDaoTest_DwcaTest: Start
+15:45:56.187|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Deleting index nba_integration_test
+15:45:56.209|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Index deleted
+15:45:56.209|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating index nba_integration_test
+15:45:56.282|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating type Specimen in index nba_integration_test
+15:45:56.315|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating type Taxon in index nba_integration_test
+15:45:56.350|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating type MultiMediaObject in index nba_integration_test
+15:45:56.388|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Creating type GeoArea in index nba_integration_test
+15:45:56.434|INFO |nl.naturalis.nba.dao.util.es.ESUtil: Disabling auto-refresh for index nba_integration_test
+15:45:56.540|INFO |nl.naturalis.nba.dao.format.dwca.DwcaConfig: Configuring DwCA download for "dynamic"
+15:45:56.540|INFO |nl.naturalis.nba.dao.format.dwca.DwcaConfig: Searching for dynamic.dataset-config.xml in /home/tom/git/nba-v2.17/naturalis_data_api/nl.naturalis.nba.build/proto.conf.dir/dwca/specimen
+15:45:56.659|INFO |nl.naturalis.nba.dao.format.dwca.DwcaConfig: Creating DwCA writer
+15:45:56.660|INFO |nl.naturalis.nba.dao.format.dwca.SingleDataSourceDwcaWriter: Generating DarwinCore archive for user-defined query
+15:45:56.661|INFO |nl.naturalis.nba.dao.format.dwca.DwcaPreparator: Preparing eml.xml
+15:45:56.712|INFO |nl.naturalis.nba.dao.format.dwca.DwcaPreparator: Preparing meta.xml
+15:45:56.732|INFO |nl.naturalis.nba.dao.format.dwca.SingleDataSourceDwcaWriter: Writing CSV file(s)
+15:45:56.755|INFO |nl.naturalis.nba.dao.format.dwca.SingleDataSourceSearchHitHandler: Documents processed: 4
+15:45:56.755|INFO |nl.naturalis.nba.dao.format.dwca.SingleDataSourceSearchHitHandler: Records written for entity specimen  : 4
+15:45:56.755|INFO |nl.naturalis.nba.dao.format.dwca.SingleDataSourceSearchHitHandler: Records rejected for entity specimen : 0
+15:45:56.755|INFO |nl.naturalis.nba.dao.format.dwca.SingleDataSourceDwcaWriter: Writing meta.xml
+15:45:56.756|INFO |nl.naturalis.nba.dao.format.dwca.SingleDataSourceDwcaWriter: Writing eml.xml (/home/tom/git/nba-v2.17/naturalis_data_api/nl.naturalis.nba.build/proto.conf.dir/dwca/specimen/dynamic/eml.xml)
+15:45:56.756|INFO |nl.naturalis.nba.dao.format.dwca.SingleDataSourceDwcaWriter: DarwinCore archive generated (took 00:00:00)

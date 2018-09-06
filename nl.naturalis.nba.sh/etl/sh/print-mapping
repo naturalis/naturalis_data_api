@@ -1,7 +1,0 @@
-#!/bin/bash
-
-. ./include.sh
-
-type="${1}"
-
-java -cp ${classpath} $JAVA_OPTS ${root_package}.PrintMapping ${type}

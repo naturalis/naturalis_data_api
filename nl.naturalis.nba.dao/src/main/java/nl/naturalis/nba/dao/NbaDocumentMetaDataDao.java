@@ -138,19 +138,23 @@ public abstract class NbaDocumentMetaDataDao<T extends IDocumentObject>
     InputStream is = new FileInputStream(file);
     if (is != null) {
 
-      CSVReader reader = new CSVReaderBuilder(new InputStreamReader(is)).withSkipLines(1)
-          .withCSVParser(parser).build();
-      String[] record = null;
-      while ((record = reader.readNext()) != null) {
-        try {
-          if (record[0] != null)
-            metadata.put(record[0], record[1]);
-        } catch (ArrayIndexOutOfBoundsException e) {
-          logger.debug("Error in csv file: " + file.toString());
-          metadata = null;
-          break;
-        }
-      /** V2.17_dev
+// opencsv.com version
+      
+//      CSVReader reader = new CSVReaderBuilder(new InputStreamReader(is)).withSkipLines(1)
+//          .withCSVParser(parser).build();
+//      String[] record = null;
+//      while ((record = reader.readNext()) != null) {
+//        try {
+//          if (record[0] != null)
+//            metadata.put(record[0], record[1]);
+//        } catch (ArrayIndexOutOfBoundsException e) {
+//          logger.debug("Error in csv file: " + file.toString());
+//          metadata = null;
+//          break;
+//        }
+
+// univocity version
+      
       CsvParserSettings settings = new CsvParserSettings();
       settings.getFormat().setLineSeparator("\n");
       settings.setHeaderExtractionEnabled(true);
@@ -163,7 +167,6 @@ public abstract class NbaDocumentMetaDataDao<T extends IDocumentObject>
       } catch (UnsupportedEncodingException | TextParsingException e) {
         logger.debug("Error in csv file: " + file.toString() + " File will be ignored.");
         metadata = null;
-      */
       }
     }    
     return metadata;

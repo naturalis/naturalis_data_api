@@ -1,10 +1,5 @@
 language: shell
 
-branches:
-  only:
-  - V2.16_dev_travis_maven
-
-
 notifications:
   slack: naturalis:ezcm1O2U6hlcJ5tWsWrBAqRF
 

@@ -217,7 +217,7 @@ abstract class BrahmsTransformer<T extends IDocumentObject>
 			}
 			LocalDate date;
 			if (dayInt == -1) {
-				if (lastDayOfMonth) {
+				if (!lastDayOfMonth) {
 					date = LocalDate.of(yearInt, monthInt, 1);
 				}
 				else {

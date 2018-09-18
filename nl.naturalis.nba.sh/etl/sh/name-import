@@ -1,9 +1,0 @@
-#!/bin/bash
-
-. ./include.sh
-
-timeout=60000
-batchSize=500
-
-
-java -cp ${classpath} $JAVA_OPTS -Dtimeout=${timeout} -DbatchSize=${batchSize} ${root_package}.name.NameImportAll $@

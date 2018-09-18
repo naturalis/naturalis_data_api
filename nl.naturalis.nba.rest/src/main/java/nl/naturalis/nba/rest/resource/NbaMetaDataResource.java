@@ -281,22 +281,6 @@ public class NbaMetaDataResource {
 			throw handleError(uriInfo, t);
 		}
 	}
-
-	 @GET
-	  @Path("/getControlledList/Variant")
-	  @ApiOperation(
-	      value = "Get allowed values for the field 'associatedMultiMediaUris.variant' in specimen documents", 
-	      response = ServiceAccessPoint.Variant[].class, 
-	      notes = "")
-	  @Produces(JSON_CONTENT_TYPE)
-	  public ServiceAccessPoint.Variant[] getControlledListVariant(@Context UriInfo uriInfo)
-	  {
-	    try {
-	      return new NbaMetaDataDao().getControlledListVariant();
-	    } catch (Throwable t) {
-	      throw handleError(uriInfo, t);
-	    }
-	  }
 	
 	@GET
 	@Path("/getAllowedDateFormats")

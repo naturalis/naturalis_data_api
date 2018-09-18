@@ -84,6 +84,7 @@ public class JsonImporter {
           } else {
             logger.error("An error occurred while processing the document at line {}. This document has been skipped!", lineNumber);
           }
+          logger.error("Reason: \n" + e.getMessage());
         }
         if (batch.size() == batchSize) {
           if (!dryRun) {

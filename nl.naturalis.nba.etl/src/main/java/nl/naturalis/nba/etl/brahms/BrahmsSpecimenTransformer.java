@@ -1,6 +1,5 @@
 package nl.naturalis.nba.etl.brahms;
 
-import static nl.naturalis.nba.api.model.ServiceAccessPoint.Variant.MEDIUM_QUALITY;
 import static nl.naturalis.nba.api.model.SourceSystem.BRAHMS;
 import static nl.naturalis.nba.dao.DocumentType.SPECIMEN;
 import static nl.naturalis.nba.dao.util.es.ESUtil.getElasticsearchId;
@@ -214,7 +213,7 @@ class BrahmsSpecimenTransformer extends BrahmsTransformer<Specimen> {
       String url = urls[i].trim().replaceAll(" ", "%20");
       try {
         URI uri = new URI(url);
-        saps.add(new ServiceAccessPoint(uri, "image/jpeg", MEDIUM_QUALITY));
+        saps.add(new ServiceAccessPoint(uri, "image/jpeg", "MEDIUM_QUALITY"));
       }
       catch (URISyntaxException e) {
         if (!suppressErrors) {

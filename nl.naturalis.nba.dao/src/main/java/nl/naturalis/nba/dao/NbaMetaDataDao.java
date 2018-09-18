@@ -4,11 +4,9 @@ import static nl.naturalis.nba.api.model.metadata.NbaSetting.OPERATOR_CONTAINS_M
 import static nl.naturalis.nba.api.model.metadata.NbaSetting.OPERATOR_CONTAINS_MIN_TERM_LENGTH;
 import static nl.naturalis.nba.common.json.JsonUtil.deserialize;
 import static nl.naturalis.nba.common.json.JsonUtil.readField;
-
 import java.io.InputStream;
 import java.util.EnumMap;
 import java.util.Map;
-import javax.management.relation.RelationType;
 import nl.naturalis.nba.api.INbaMetaData;
 import nl.naturalis.nba.api.model.AreaClass;
 import nl.naturalis.nba.api.model.License;
@@ -118,12 +116,6 @@ public class NbaMetaDataDao implements INbaMetaData {
 		return TaxonomicStatus.values();
 	}
 	
-	@Override
-	public ServiceAccessPoint.Variant[] getControlledListVariant()
-	{
-	  return ServiceAccessPoint.Variant.values();
-	}
-
 	@Override
 	public String[] getAllowedDateFormats()
 	{

@@ -17,16 +17,15 @@ import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.api.model.Organization;
 import nl.naturalis.nba.api.model.Person;
 import nl.naturalis.nba.api.model.PhaseOrStage;
+import nl.naturalis.nba.api.model.ResourceType;
 import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.ServiceAccessPoint;
-import nl.naturalis.nba.api.model.ServiceAccessPoint.Variant;
 import nl.naturalis.nba.api.model.Sex;
 import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.api.model.SpecimenTypeStatus;
 import nl.naturalis.nba.api.model.TaxonomicEnrichment;
-import nl.naturalis.nba.api.model.ResourceType;
 
 public class DataMockUtil {
 
@@ -48,12 +47,11 @@ public class DataMockUtil {
     multiMediaObject.setSourceSystem(sourceSystem);
 
     URI uri = new URI("http://medialib.naturalis.nl/file/id/L.1911711/format/large");
-    Variant variant = Variant.MEDIUM_QUALITY;
 
     ServiceAccessPoint serviceAccessPoint = new ServiceAccessPoint();
     serviceAccessPoint.setAccessUri(uri);
     serviceAccessPoint.setFormat("image/jpeg");
-    serviceAccessPoint.setVariant(variant);
+    serviceAccessPoint.setVariant("GOOD_QUALITY");
     List<ServiceAccessPoint> serviceAccessPoints = new ArrayList<>();
     serviceAccessPoints.add(serviceAccessPoint);
 

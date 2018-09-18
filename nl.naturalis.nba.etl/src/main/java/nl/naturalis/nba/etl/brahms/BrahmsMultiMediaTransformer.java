@@ -14,20 +14,17 @@ import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.VERNACULAR;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.YEARIDENT;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getDefaultClassification;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getScientificName;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import nl.naturalis.nba.api.model.DefaultClassification;
 import nl.naturalis.nba.api.model.MultiMediaContentIdentification;
 import nl.naturalis.nba.api.model.MultiMediaGatheringEvent;
 import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.ServiceAccessPoint;
-import nl.naturalis.nba.api.model.ServiceAccessPoint.Variant;
 import nl.naturalis.nba.api.model.VernacularName;
 import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.ETLStatistics;
@@ -147,7 +144,7 @@ class BrahmsMultiMediaTransformer extends BrahmsTransformer<MultiMediaObject> {/
 
 	private static ServiceAccessPoint newServiceAccessPoint(URI uri)
 	{
-		return new ServiceAccessPoint(uri, "image/jpeg", Variant.MEDIUM_QUALITY);
+		return new ServiceAccessPoint(uri, "image/jpeg", "MEDIUM_QUALITY");
 	}
 
 }

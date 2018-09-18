@@ -1,6 +1,5 @@
 package nl.naturalis.nba.etl.crs;
 
-import static nl.naturalis.nba.api.model.ServiceAccessPoint.Variant.MEDIUM_QUALITY;
 import static nl.naturalis.nba.api.model.SourceSystem.CRS;
 import static nl.naturalis.nba.dao.DocumentType.MULTI_MEDIA_OBJECT;
 import static nl.naturalis.nba.dao.util.es.ESUtil.getElasticsearchId;
@@ -9,21 +8,19 @@ import static nl.naturalis.nba.etl.ETLConstants.LICENCE_TYPE;
 import static nl.naturalis.nba.etl.ETLConstants.SOURCE_INSTITUTION_ID;
 import static nl.naturalis.nba.etl.ETLUtil.getTestGenera;
 import static nl.naturalis.nba.etl.MimeTypeCache.MEDIALIB_URL_START;
-import static nl.naturalis.nba.etl.normalize.Normalizer.NOT_MAPPED;
 import static nl.naturalis.nba.etl.TransformUtil.getSystemClassification;
+import static nl.naturalis.nba.etl.normalize.Normalizer.NOT_MAPPED;
 import static nl.naturalis.nba.utils.StringUtil.rpad;
 import static nl.naturalis.nba.utils.xml.DOMUtil.getChild;
 import static nl.naturalis.nba.utils.xml.DOMUtil.getDescendant;
 import static nl.naturalis.nba.utils.xml.DOMUtil.getDescendantValue;
 import static nl.naturalis.nba.utils.xml.DOMUtil.getDescendants;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import org.w3c.dom.Element;
 import nl.naturalis.nba.api.model.DefaultClassification;
 import nl.naturalis.nba.api.model.GatheringSiteCoordinates;
@@ -172,7 +169,7 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 				}
 				MultiMediaObject mmo = initialize(oaiDcElem, identifications);
 				ServiceAccessPoint sap;
-				sap = new ServiceAccessPoint(info.url, info.mimeType, MEDIUM_QUALITY);
+				sap = new ServiceAccessPoint(info.url, info.mimeType, "MEDIUM_QUALITY");
 				mmo.addServiceAccessPoint(sap);
 				String unitID;
 				if (info.medialibId == null) {

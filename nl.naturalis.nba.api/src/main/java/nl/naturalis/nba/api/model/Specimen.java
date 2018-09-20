@@ -40,7 +40,7 @@ public class Specimen extends NbaTraceableObject implements IDocumentObject {
 	private Integer numberOfSpecimen;
 	private Boolean fromCaptivity;
 	private boolean objectPublic;
-	private boolean multiMediaPublic;
+	private Boolean multiMediaPublic;
 
 	private Agent acquiredFrom;
 	private GatheringEvent gatheringEvent;
@@ -294,12 +294,12 @@ public class Specimen extends NbaTraceableObject implements IDocumentObject {
 		this.objectPublic = objectPublic;
 	}
 
-	public boolean isMultiMediaPublic()
+	public Boolean isMultiMediaPublic()
 	{
 		return multiMediaPublic;
 	}
 
-	public void setMultiMediaPublic(boolean multiMediaPublic)
+	public void setMultiMediaPublic(Boolean multiMediaPublic)
 	{
 		this.multiMediaPublic = multiMediaPublic;
 	}

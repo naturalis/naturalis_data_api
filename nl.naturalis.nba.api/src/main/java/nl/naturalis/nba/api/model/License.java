@@ -11,14 +11,53 @@ import com.fasterxml.jackson.annotation.JsonValue;
  *
  */
 public enum License implements INbaModelObject {
-  CCBY     ("CC BY"),
-  CCBYSA   ("CC BY-SA"), 
-  CCBYND   ("CC BY-ND"),
-  CCBYNC   ("CC BY-NC"),
-  CCBYNCSA ("CC BY-NC-SA"),
-  CCBYNCND ("CC BY-NC-ND"),
-  CC0      ("CC0"),
-  PUBLICDOMAIN ("Public Domain Mark");
+  CCBY        ("CC BY"),
+  CCBYSA      ("CC BY-SA"), 
+  CCBYND      ("CC BY-ND"),
+  CCBYNC      ("CC BY-NC"),
+  CCBYNCSA    ("CC BY-NC-SA"),
+  CCBYNCND    ("CC BY-NC-ND"),
+  CC0         ("CC0"),
+  
+  CCBY_10     ("CC BY 1.0"),
+  CCBYSA_10   ("CC BY-SA 1.0"), 
+  CCBYND_10   ("CC BY-ND 1.0"),
+  CCBYNC_10   ("CC BY-NC 1.0"),
+  CCBYNCSA_10 ("CC BY-NC-SA 1.0"),
+  CCBYNCND_10 ("CC BY-NC-ND 1.0"),
+  CC0_10      ("CC0 1.0"),
+  
+  CCBY_20     ("CC BY 2.0"),
+  CCBYSA_20   ("CC BY-SA 2.0"), 
+  CCBYND_20   ("CC BY-ND 2.0"),
+  CCBYNC_20   ("CC BY-NC 2.0"),
+  CCBYNCSA_20 ("CC BY-NC-SA 2.0"),
+  CCBYNCND_20 ("CC BY-NC-ND 2.0"),
+  CC0_20      ("CC0 2.0"),
+  
+  CCBY_25     ("CC BY 2.5"),
+  CCBYSA_25   ("CC BY-SA 2.5"), 
+  CCBYND_25   ("CC BY-ND 2.5"),
+  CCBYNC_25   ("CC BY-NC 2.5"),
+  CCBYNCSA_25 ("CC BY-NC-SA 2.5"),
+  CCBYNCND_25 ("CC BY-NC-ND 2.5"),
+  CC0_25      ("CC0 2.5"),
+  
+  CCBY_30     ("CC BY 3.0"),
+  CCBYSA_30   ("CC BY-SA 3.0"), 
+  CCBYND_30   ("CC BY-ND 3.0"),
+  CCBYNC_30   ("CC BY-NC 3.0"),
+  CCBYNCSA_30 ("CC BY-NC-SA 3.0"),
+  CCBYNCND_30 ("CC BY-NC-ND 3.0"),
+  CC0_30      ("CC0 3.0"),
+  
+  CCBY_40     ("CC BY 4.0"),
+  CCBYSA_40   ("CC BY-SA 4.0"), 
+  CCBYND_40   ("CC BY-ND 4.0"),
+  CCBYNC_40   ("CC BY-NC 4.0"),
+  CCBYNCSA_40 ("CC BY-NC-SA 4.0"),
+  CCBYNCND_40 ("CC BY-NC-ND 4.0"),
+  CC0_40      ("CC0 4.0");
 
   private String name;
   

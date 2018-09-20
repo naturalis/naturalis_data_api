@@ -87,7 +87,7 @@ public interface ETLConstants {
 	/**
 	 * CC0
 	 */
-	License LICENCE = License.CC0;
+	License LICENCE = License.CC0_40;
 	/**
 	 * http://data.biodiversitydata.nl
 	 */

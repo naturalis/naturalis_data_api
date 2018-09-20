@@ -46,7 +46,7 @@ public class MultiMediaObject extends NbaTraceableObject implements IDocumentObj
 	private String copyrightText;
 	private String associatedSpecimenReference;
 	private String associatedTaxonReference;
-	private boolean multiMediaPublic;
+	private Boolean multiMediaPublic;
 	private String informationWithheld;
 	private String dataGeneralizations;
 	private Byte rating;
@@ -67,8 +67,7 @@ public class MultiMediaObject extends NbaTraceableObject implements IDocumentObj
 	@NotStored
 	private Taxon associatedTaxon;
 
-	@SuppressWarnings("unused")
-  public void addServiceAccessPoint(String uri, String format, String variant)
+	public void addServiceAccessPoint(String uri, String format, String variant)
 	{
 		if (serviceAccessPoints == null) {
 			serviceAccessPoints = new ArrayList<ServiceAccessPoint>();
@@ -76,8 +75,7 @@ public class MultiMediaObject extends NbaTraceableObject implements IDocumentObj
 		serviceAccessPoints.add(new ServiceAccessPoint(uri, format, variant));
 	}
 
-	@SuppressWarnings("unused")
-  public void addServiceAccessPoint(ServiceAccessPoint sap)
+	public void addServiceAccessPoint(ServiceAccessPoint sap)
 	{
 		if (serviceAccessPoints == null) {
 			serviceAccessPoints = new ArrayList<ServiceAccessPoint>();

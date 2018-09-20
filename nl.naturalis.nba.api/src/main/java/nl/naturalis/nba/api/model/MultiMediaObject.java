@@ -265,12 +265,12 @@ public class MultiMediaObject extends NbaTraceableObject implements IDocumentObj
 		this.associatedTaxonReference = associatedTaxonReference;
 	}
 
-	public boolean isMultiMediaPublic()
+	public Boolean isMultiMediaPublic()
 	{
 		return multiMediaPublic;
 	}
 
-	public void setMultiMediaPublic(boolean multiMediaPublic)
+	public void setMultiMediaPublic(Boolean multiMediaPublic)
 	{
 		this.multiMediaPublic = multiMediaPublic;
 	}

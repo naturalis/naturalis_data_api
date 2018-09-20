@@ -38,7 +38,7 @@ public class Specimen extends NbaTraceableObject implements IDocumentObject {
 	private String preparationType;
 	private String previousUnitsText;
 	private Integer numberOfSpecimen;
-	private boolean fromCaptivity;
+	private Boolean fromCaptivity;
 	private boolean objectPublic;
 	private boolean multiMediaPublic;
 
@@ -274,12 +274,12 @@ public class Specimen extends NbaTraceableObject implements IDocumentObject {
 		this.numberOfSpecimen = numberOfSpecimen;
 	}
 
-	public boolean isFromCaptivity()
+	public Boolean isFromCaptivity()
 	{
 		return fromCaptivity;
 	}
 
-	public void setFromCaptivity(boolean fromCaptivity)
+	public void setFromCaptivity(Boolean fromCaptivity)
 	{
 		this.fromCaptivity = fromCaptivity;
 	}

@@ -57,7 +57,9 @@ public enum License implements INbaModelObject {
   CCBYNC_40   ("CC BY-NC 4.0"),
   CCBYNCSA_40 ("CC BY-NC-SA 4.0"),
   CCBYNCND_40 ("CC BY-NC-ND 4.0"),
-  CC0_40      ("CC0 4.0");
+  CC0_40      ("CC0 4.0"),
+  
+  ALL_RIGHTS_RESERVED ("All rights reserved") ;
 
   private String name;
   

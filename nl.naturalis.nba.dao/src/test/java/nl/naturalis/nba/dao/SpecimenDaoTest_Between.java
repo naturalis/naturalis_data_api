@@ -5,24 +5,22 @@ import static nl.naturalis.nba.api.ComparisonOperator.NOT_BETWEEN;
 import static nl.naturalis.nba.dao.util.es.ESUtil.createIndex;
 import static nl.naturalis.nba.dao.util.es.ESUtil.deleteIndex;
 import static org.junit.Assert.assertEquals;
-
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
-
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.logging.log4j.Logger;
 import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QueryResult;
-import nl.naturalis.nba.api.QueryResultItem;
 import nl.naturalis.nba.api.QuerySpec;
+import nl.naturalis.nba.api.SortField;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.mock.SpecimenMock;
-import nl.naturalis.nba.dao.translate.QuerySpecTranslator;
 
 @SuppressWarnings("static-method")
 public class SpecimenDaoTest_Between {
@@ -255,8 +253,11 @@ public class SpecimenDaoTest_Between {
 		String field = "numberOfSpecimen";
 		Integer[] range = new Integer[] { null, 2 };
 		QueryCondition condition = new QueryCondition(field, NOT_BETWEEN, range);
+		List<SortField> sortFields = new ArrayList<>();
+		sortFields.add(new SortField("unitID"));
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
+		qs.setSortFields(sortFields);
 		SpecimenDao dao = new SpecimenDao();
 		QueryResult<Specimen> result = dao.query(qs);
 		// lFuscus2

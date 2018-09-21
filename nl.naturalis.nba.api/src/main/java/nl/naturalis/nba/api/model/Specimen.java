@@ -31,7 +31,7 @@ public class Specimen extends NbaTraceableObject implements IDocumentObject {
 	private String kindOfUnit;
 	private String collectionType;
 	private Sex sex;
-	private PhaseOrStage phaseOrStage;
+	private String phaseOrStage;
 	private String title;
 	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String notes;
@@ -215,12 +215,12 @@ public class Specimen extends NbaTraceableObject implements IDocumentObject {
 		this.sex = sex;
 	}
 
-	public PhaseOrStage getPhaseOrStage()
+	public String getPhaseOrStage()
 	{
 		return phaseOrStage;
 	}
 
-	public void setPhaseOrStage(PhaseOrStage phaseOrStage)
+	public void setPhaseOrStage(String phaseOrStage)
 	{
 		this.phaseOrStage = phaseOrStage;
 	}

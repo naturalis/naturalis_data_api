@@ -2,7 +2,6 @@ package nl.naturalis.nba.etl;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import nl.naturalis.nba.api.model.GatheringEvent;
 import nl.naturalis.nba.api.model.GatheringSiteCoordinates;
 import nl.naturalis.nba.api.model.Organization;

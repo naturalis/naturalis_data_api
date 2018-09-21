@@ -24,7 +24,6 @@ import nl.naturalis.nba.api.model.GatheringEvent;
 import nl.naturalis.nba.api.model.LithoStratigraphy;
 import nl.naturalis.nba.api.model.Monomial;
 import nl.naturalis.nba.api.model.NamedArea;
-import nl.naturalis.nba.api.model.PhaseOrStage;
 import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.Sex;
 import nl.naturalis.nba.api.model.Specimen;
@@ -438,7 +437,7 @@ public class CrsSpecimenTransformerTest {
   public void testGetPhaseOrStage() throws Exception {
 
     ETLStatistics etlStatistics = new ETLStatistics();
-    PhaseOrStage orStage = null;
+    String orStage = null;
     CrsSpecimenTransformer crsSpecimenTransformer = new CrsSpecimenTransformer(etlStatistics);
     CrsExtractor extractor = new CrsExtractor(specimenFile, etlStatistics);
 
@@ -447,7 +446,7 @@ public class CrsSpecimenTransformerTest {
       CommonReflectionUtil.setField(AbstractTransformer.class, crsSpecimenTransformer, "input", extracted);
 
       Object returned = CommonReflectionUtil.callMethod(null, null, crsSpecimenTransformer, "getPhaseOrStage");
-      orStage = (PhaseOrStage) returned;
+      orStage = (String) returned;
       if (orStage != null)
         break;
     }

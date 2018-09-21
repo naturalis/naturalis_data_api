@@ -159,6 +159,10 @@ public class SpecimenDaoTest_Aggregations {
 
     // 3. QuerySpec == null && simple field && nested group
     querySpec = null;
+    querySpec = new QuerySpec();
+    List<SortField> sortFields = new ArrayList<>();
+    sortFields.add(new SortField("identifications.defaultClassification.className"));
+    querySpec.setSortFields(sortFields);
     field = "sourceSystem.code";
     group = "identifications.defaultClassification.className";
     actual = dao.countDistinctValuesPerGroup(group, field, querySpec);
@@ -185,9 +189,9 @@ public class SpecimenDaoTest_Aggregations {
 
     // 6. QuerySpec != null && sort = desc
     SortField sortField = new SortField(group, ASC);
-    List<SortField> sortFields = new ArrayList<>();
-    sortFields.add(sortField);
-    querySpec.setSortFields(sortFields);
+    List<SortField> sortFlds = new ArrayList<>();
+    sortFlds.add(sortField);
+    querySpec.setSortFields(sortFlds);
     actual = dao.countDistinctValuesPerGroup(group, field, querySpec);
     jsonFile = "CountDistinctValuesPerGroupTest__testResult__06.json";
     assertTrue("06", jsonListEquals(this.getClass(), actual.toString(), jsonFile));
@@ -379,8 +383,7 @@ public class SpecimenDaoTest_Aggregations {
       throws JsonParseException, JsonMappingException, IOException {
     InputStream input = unitTestClass.getResourceAsStream(jsonFile);
     ObjectMapper objectMapper = new ObjectMapper();
-    List<Map<String, Object>> expected =
-        objectMapper.readValue(input, new TypeReference<List<Map<String, Object>>>() {});
+    List<Map<String, Object>> expected = objectMapper.readValue(input, new TypeReference<List<Map<String, Object>>>() {});
     return actual.equals(expected.toString());
   }
 

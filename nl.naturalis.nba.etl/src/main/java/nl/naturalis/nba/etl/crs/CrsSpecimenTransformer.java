@@ -29,7 +29,6 @@ import nl.naturalis.nba.api.model.LithoStratigraphy;
 import nl.naturalis.nba.api.model.Monomial;
 import nl.naturalis.nba.api.model.NamedArea;
 import nl.naturalis.nba.api.model.Person;
-import nl.naturalis.nba.api.model.PhaseOrStage;
 import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.Sex;
 import nl.naturalis.nba.api.model.Specimen;
@@ -596,10 +595,11 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
       return null;
   }
 
-    private PhaseOrStage getPhaseOrStage() {
+    @SuppressWarnings("deprecation")
+    private String getPhaseOrStage() {
         String raw = val(input.getRecord(), "abcd:PhaseOrStage");
         try {
-            return posNormalizer.map(raw);
+            return posNormalizer.map(raw).toString();
         } catch (UnmappedValueException e) {
             if (logger.isDebugEnabled()) {
                 debug(e.getMessage());

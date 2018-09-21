@@ -16,7 +16,6 @@ import nl.naturalis.nba.api.model.GatheringSiteCoordinates;
 import nl.naturalis.nba.api.model.Monomial;
 import nl.naturalis.nba.api.model.Organization;
 import nl.naturalis.nba.api.model.Person;
-import nl.naturalis.nba.api.model.PhaseOrStage;
 import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.Sex;
 import nl.naturalis.nba.api.model.SourceSystem;
@@ -104,7 +103,7 @@ public class SummaryObjectUtilTest {
     SourceSystem sourceSystem = SourceSystem.getInstance("COL", "Species 2000 - Catalogue Of Life");
     Sex sex = Sex.MIXED;
 
-    PhaseOrStage phaseOrStage = PhaseOrStage.PUPA;
+    String phaseOrStage = "pupa";
 
     OffsetDateTime time = OffsetDateTime.parse("2011-12-03T10:15:30Z");
 

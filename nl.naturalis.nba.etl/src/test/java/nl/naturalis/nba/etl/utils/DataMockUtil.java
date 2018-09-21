@@ -16,7 +16,6 @@ import nl.naturalis.nba.api.model.MultiMediaGatheringEvent;
 import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.api.model.Organization;
 import nl.naturalis.nba.api.model.Person;
-import nl.naturalis.nba.api.model.PhaseOrStage;
 import nl.naturalis.nba.api.model.ResourceType;
 import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.ServiceAccessPoint;
@@ -193,7 +192,7 @@ public class DataMockUtil {
     SourceSystem sourceSystem = SourceSystem.getInstance("BRAHMS", "Naturalis - Botany catalogues");
     Sex sex = Sex.MIXED;
 
-    PhaseOrStage phaseOrStage = PhaseOrStage.PUPA;
+    String phaseOrStage = "pupa";
 
     OffsetDateTime time = OffsetDateTime.parse("2011-12-03T10:15:30Z");
 

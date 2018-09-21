@@ -1,18 +1,13 @@
 package nl.naturalis.nba.dao.mock;
 
-import static nl.naturalis.nba.api.model.PhaseOrStage.ADULT;
-import static nl.naturalis.nba.api.model.PhaseOrStage.EGG;
-import static nl.naturalis.nba.api.model.PhaseOrStage.JUVENILE;
 import static nl.naturalis.nba.api.model.Sex.FEMALE;
 import static nl.naturalis.nba.api.model.Sex.MALE;
 import static nl.naturalis.nba.api.model.SourceSystem.BRAHMS;
 import static nl.naturalis.nba.api.model.SourceSystem.CRS;
 import static nl.naturalis.nba.api.model.SourceSystem.NDFF;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import nl.naturalis.nba.api.model.DefaultClassification;
 import nl.naturalis.nba.api.model.GatheringEvent;
 import nl.naturalis.nba.api.model.GatheringSiteCoordinates;
@@ -38,7 +33,7 @@ public class SpecimenMock {
 		specimen.setSourceSystem(CRS);
 		String[] collections = new String[] { "Altenburg", "Living Dinos" };
 		specimen.setTheme(Arrays.asList(collections));
-		specimen.setPhaseOrStage(ADULT);
+		specimen.setPhaseOrStage("adult");
 		specimen.setSex(MALE);
 		specimen.setRecordBasis("Preserved specimen");
 		specimen.setNumberOfSpecimen(0);
@@ -96,7 +91,7 @@ public class SpecimenMock {
 		specimen.setSourceSystem(CRS);
 		String[] collections = new String[] { "Altenburg", "Living Dinos" };
 		specimen.setTheme(Arrays.asList(collections));
-		specimen.setPhaseOrStage(JUVENILE);
+		specimen.setPhaseOrStage("juvenile");
 		specimen.setSex(MALE);
 		specimen.setRecordBasis("Preserved specimen");
 		specimen.setNumberOfSpecimen(1);
@@ -154,7 +149,7 @@ public class SpecimenMock {
 		Specimen specimen = new Specimen();
 		specimen.setUnitID("309801857");
 		specimen.setSourceSystem(NDFF);
-		specimen.setPhaseOrStage(EGG);
+		specimen.setPhaseOrStage("egg");
 		specimen.setNumberOfSpecimen(4);
 		GatheringEvent gathering = new GatheringEvent();
 		gathering.setCountry("Netherlands");
@@ -209,7 +204,7 @@ public class SpecimenMock {
 		specimen.setUnitID("RMNH.100");
 		specimen.setSourceSystem(CRS);
 		specimen.setTheme(Arrays.asList("Living Dinos"));
-		specimen.setPhaseOrStage(ADULT);
+		specimen.setPhaseOrStage("adult");
 		specimen.setSex(FEMALE);
 		specimen.setRecordBasis("FossileSpecimen");
 		GatheringEvent gathering = new GatheringEvent();
@@ -265,7 +260,7 @@ public class SpecimenMock {
 		specimen.setSourceSystem(BRAHMS);
 		String[] collections = new String[] { "Strange Plants" };
 		specimen.setTheme(Arrays.asList(collections));
-		specimen.setPhaseOrStage(ADULT);
+		specimen.setPhaseOrStage("adult");
 		specimen.setSex(FEMALE);
 		specimen.setRecordBasis("Herbarium sheet");
 		GatheringEvent gathering = new GatheringEvent();

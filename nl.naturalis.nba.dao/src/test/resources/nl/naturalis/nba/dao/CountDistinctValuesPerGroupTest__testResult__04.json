@@ -8,11 +8,11 @@
     "identifications.scientificName.genusOrMonomial": 1
   },
   {
-    "identifications.defaultClassification.className": "Gastropoda",
+    "identifications.defaultClassification.className": "Bivalvia",
     "identifications.scientificName.genusOrMonomial": 1
   },
   {
-    "identifications.defaultClassification.className": "Bivalvia",
+    "identifications.defaultClassification.className": "Gastropoda",
     "identifications.scientificName.genusOrMonomial": 1
   },
   {

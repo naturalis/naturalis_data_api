@@ -1,10 +1,10 @@
 [
   {
-    "identifications.defaultClassification.className": "Cephalopoda",
+    "identifications.defaultClassification.className": "Bivalvia",
     "sourceSystem.code": 1
   },
   {
-    "identifications.defaultClassification.className": "Insecta",
+    "identifications.defaultClassification.className": "Cephalopoda",
     "sourceSystem.code": 1
   },
   {
@@ -12,7 +12,7 @@
     "sourceSystem.code": 1
   },
   {
-    "identifications.defaultClassification.className": "Bivalvia",
+    "identifications.defaultClassification.className": "Insecta",
     "sourceSystem.code": 1
   },
   {

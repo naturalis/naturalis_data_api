@@ -3,17 +3,14 @@ package nl.naturalis.nba.api.model.summary;
 import static nl.naturalis.nba.api.annotations.Analyzer.CASE_INSENSITIVE;
 import static nl.naturalis.nba.api.annotations.Analyzer.DEFAULT;
 import static nl.naturalis.nba.api.annotations.Analyzer.LIKE;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-
 import nl.naturalis.nba.api.annotations.Analyzers;
 import nl.naturalis.nba.api.annotations.NotIndexed;
 import nl.naturalis.nba.api.model.INbaModelObject;
-import nl.naturalis.nba.api.model.PhaseOrStage;
 import nl.naturalis.nba.api.model.Sex;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
@@ -30,7 +27,7 @@ public class SummarySpecimen implements INbaModelObject {
 	private String assemblageID;
 	private String collectionType;
 	private Sex sex;
-	private PhaseOrStage phaseOrStage;
+	private String phaseOrStage;
 	private SummaryGatheringEvent gatheringEvent;
 	private List<SummarySpecimenIdentification> matchingIdentifications;
 	private List<SummarySpecimenIdentification> otherIdentifications;
@@ -196,12 +193,12 @@ public class SummarySpecimen implements INbaModelObject {
 		this.sex = sex;
 	}
 
-	public PhaseOrStage getPhaseOrStage()
+	public String getPhaseOrStage()
 	{
 		return phaseOrStage;
 	}
 
-	public void setPhaseOrStage(PhaseOrStage phaseOrStage)
+	public void setPhaseOrStage(String phaseOrStage)
 	{
 		this.phaseOrStage = phaseOrStage;
 	}

@@ -28,7 +28,7 @@ import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.dao.DocumentType;
 
-public class CountDistinctValuesFieldPerNestedGroupAggregation<T extends IDocumentObject, U>
+public class CountDistinctValuesFieldPerNestedGroupAggregation<T extends IDocumentObject>
     extends CountDistinctValuesPerGroupAggregation<T, List<Map<String, Object>>> {
 
   private static final Logger logger =

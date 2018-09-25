@@ -25,7 +25,7 @@ import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.dao.DocumentType;
 
-public class GetDistinctValuesNestedFieldAggregation<T extends IDocumentObject, U>
+public class GetDistinctValuesNestedFieldAggregation<T extends IDocumentObject>
     extends GetDistinctValuesAggregation<T, Map<String, Long>> {
 
   private static final Logger logger = getLogger(GetDistinctValuesNestedFieldAggregation.class);

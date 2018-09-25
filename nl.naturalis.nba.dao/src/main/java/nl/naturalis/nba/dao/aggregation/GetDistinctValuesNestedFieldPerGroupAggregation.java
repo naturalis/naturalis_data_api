@@ -29,7 +29,7 @@ import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.dao.DocumentType;
 
-public class GetDistinctValuesNestedFieldPerGroupAggregation<T extends IDocumentObject, U>
+public class GetDistinctValuesNestedFieldPerGroupAggregation<T extends IDocumentObject>
     extends GetDistinctValuesPerGroupAggregation<T, List<Map<String, Object>>> {
 
   private static final Logger logger =

@@ -38,7 +38,6 @@ public class Person {
     this.age = age;
   }
 
-  @SuppressWarnings("unused")
   public double calculateMinimumWage(int multiplier, boolean withBonus) {
     return (age * multiplier) + (withBonus ? 1000 : 0);
   }

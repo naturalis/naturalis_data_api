@@ -16,12 +16,12 @@ import nl.naturalis.nba.common.mock.TestPerson;
 @SuppressWarnings("static-method")
 public class MappingInfoTest {
 
-	private static MappingInfo personInfo;
+	private static MappingInfo<TestPerson> personInfo;
 
 	@BeforeClass
 	public static void setup()
 	{
-		personInfo = new MappingInfo(MappingFactory.getMapping(TestPerson.class));
+		personInfo = new MappingInfo<>(MappingFactory.getMapping(TestPerson.class));
 	}
 
 	@Test(expected = NoSuchFieldException.class)

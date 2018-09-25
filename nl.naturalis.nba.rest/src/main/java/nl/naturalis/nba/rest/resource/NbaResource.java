@@ -1,6 +1,5 @@
 package nl.naturalis.nba.rest.resource;
 
-import static nl.naturalis.nba.rest.util.ResourceUtil.JSON_CONTENT_TYPE;
 import static nl.naturalis.nba.rest.util.ResourceUtil.handleError;
 import java.io.IOException;
 import java.io.OutputStream;

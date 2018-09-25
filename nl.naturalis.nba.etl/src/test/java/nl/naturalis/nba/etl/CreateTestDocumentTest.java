@@ -24,15 +24,15 @@ public class CreateTestDocumentTest {
     String file = "specimen-test-doc.json";
     InputStream is = CreateTestDocumentTest.class.getResourceAsStream(file);
     String expected = FileUtil.getContents(is).trim();
-    // assertEquals("01", actual, expected);
+//      assertEquals("01", actual, expected);
     
     MultiMediaObject multimedia = CreateTestDocument.generateMultiMediaObject();
-    //System.out.println(JsonUtil.toPrettyJson(multimedia));
+    System.out.println(JsonUtil.toPrettyJson(multimedia));
     actual = JsonUtil.toPrettyJson(multimedia).trim();
     file = "multimedia-test-doc.json";
     is = CreateTestDocumentTest.class.getResourceAsStream(file);
     expected = FileUtil.getContents(is).trim();
-    // assertEquals("02", actual, expected);
+//    assertEquals("02", actual, expected);
 
   }
   

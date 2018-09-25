@@ -21,7 +21,7 @@ import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.dao.DocumentType;
 
-public class GetDistinctValuesFieldAggregation<T extends IDocumentObject, U>
+public class GetDistinctValuesFieldAggregation<T extends IDocumentObject>
     extends GetDistinctValuesAggregation<T, Map<String, Long>> {
 
   private static final Logger logger = getLogger(GetDistinctValuesFieldAggregation.class);

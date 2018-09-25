@@ -2,7 +2,7 @@ package nl.naturalis.nba.etl;
 
 import static nl.naturalis.nba.utils.StringUtil.lchop;
 import static nl.naturalis.nba.utils.StringUtil.lpad;
-import static org.apache.commons.io.Charsets.UTF_8;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.File;
 import java.io.FileInputStream;

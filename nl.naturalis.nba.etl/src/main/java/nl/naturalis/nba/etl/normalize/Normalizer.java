@@ -237,7 +237,9 @@ public class Normalizer<T extends Enum<T>> {
 	}
 
 	 /**
-   * Maps the specified found-in-the-wild value to an enum constant of type T.
+   * Maps the specified found-in-the-wild value to an enum constant to a String.
+   * This method can be used for normalizers that use an internal enum, like the
+   * PhaseOrStageNormalizer.
    * 
    * @param input
    * @return

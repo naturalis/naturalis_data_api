@@ -5,7 +5,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import nl.naturalis.nba.dao.exception.InitializationException;
 import nl.naturalis.nba.utils.ConfigObject;
-import nl.naturalis.nba.utils.FileUtil;
 
 /**
  * Class providing centralized access to common resources and services for the DAO module and

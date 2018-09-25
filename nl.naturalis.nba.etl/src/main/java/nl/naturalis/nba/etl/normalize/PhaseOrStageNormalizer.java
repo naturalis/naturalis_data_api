@@ -6,9 +6,13 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import nl.naturalis.nba.api.model.INbaModelObject;
 
 /**
- * Normalizes different names for the various life stages.
+ * Normalizes different names for the various life stages. The enum 
+ * PhaseOrStage used to be part of the NBA document model, but has 
+ * been deprecated later on.
  * 
- * @author Ayco Holleman
+ * The ETL transformers for CRS documents still use this normalizer. 
+ * Because of that, the PhaseOrStage enum is kept alive, but only as 
+ * an internal enum. 
  *
  */
 public class PhaseOrStageNormalizer extends ClasspathMappingFileNormalizer<PhaseOrStage> {

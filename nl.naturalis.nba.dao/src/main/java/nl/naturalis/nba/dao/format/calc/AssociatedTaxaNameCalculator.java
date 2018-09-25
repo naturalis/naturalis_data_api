@@ -1,6 +1,5 @@
 package nl.naturalis.nba.dao.format.calc;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import nl.naturalis.nba.api.model.AssociatedTaxon;

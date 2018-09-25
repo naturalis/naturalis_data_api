@@ -1,10 +1,10 @@
 package nl.naturalis.nba.api;
 
 import java.util.Map;
+import javax.management.relation.RelationType;
 import nl.naturalis.nba.api.model.AreaClass;
 import nl.naturalis.nba.api.model.License;
 import nl.naturalis.nba.api.model.LicenseType;
-import nl.naturalis.nba.api.model.ServiceAccessPoint;
 import nl.naturalis.nba.api.model.Sex;
 import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nba.api.model.SpatialDatum;

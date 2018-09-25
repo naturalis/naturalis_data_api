@@ -1,6 +1,6 @@
 package nl.naturalis.nba.etl;
 
-import static org.apache.commons.io.Charsets.UTF_8;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.BufferedOutputStream;
 import java.io.File;

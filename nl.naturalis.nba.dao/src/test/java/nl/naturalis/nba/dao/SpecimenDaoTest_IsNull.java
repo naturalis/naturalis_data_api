@@ -5,18 +5,15 @@ import static nl.naturalis.nba.api.UnaryBooleanOperator.NOT;
 import static nl.naturalis.nba.dao.util.es.ESUtil.createIndex;
 import static nl.naturalis.nba.dao.util.es.ESUtil.deleteIndex;
 import static org.junit.Assert.assertEquals;
-
 import org.apache.logging.log4j.Logger;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.dao.mock.SpecimenMock;
-import nl.naturalis.nba.dao.translate.QuerySpecTranslator;
 
 @SuppressWarnings("static-method")
 public class SpecimenDaoTest_IsNull {
@@ -117,7 +114,6 @@ public class SpecimenDaoTest_IsNull {
   @Test
   public void test__05() throws InvalidQueryException {
     
-    DocumentType<Specimen> dt = DocumentType.SPECIMEN;
     QueryCondition condition01 = new QueryCondition("gatheringEvent.siteCoordinates.latitudeDecimal", ">", 0);
     QueryCondition condition02 = new QueryCondition("gatheringEvent.siteCoordinates.longitudeDecimal", ">", 100);
 
@@ -125,7 +121,6 @@ public class SpecimenDaoTest_IsNull {
     
     QuerySpec query = new QuerySpec();
     query.addCondition(condition01);
-    QuerySpecTranslator translator = new QuerySpecTranslator(query, dt);
     
     SpecimenDao dao = new SpecimenDao();
     QueryResult<Specimen> result = dao.query(query);

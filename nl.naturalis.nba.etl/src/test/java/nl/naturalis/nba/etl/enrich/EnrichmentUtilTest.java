@@ -14,7 +14,6 @@ import org.junit.Before;
 import org.junit.Test;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QueryResultItem;
-import nl.naturalis.nba.api.model.License;
 import nl.naturalis.nba.api.model.MultiMediaContentIdentification;
 import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.api.model.ScientificName;

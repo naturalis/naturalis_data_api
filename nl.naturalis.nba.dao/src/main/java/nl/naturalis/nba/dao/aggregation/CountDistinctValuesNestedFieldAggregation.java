@@ -16,7 +16,7 @@ import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.dao.DocumentType;
 
-public class CountDistinctValuesNestedFieldAggregation<T extends IDocumentObject, U>
+public class CountDistinctValuesNestedFieldAggregation<T extends IDocumentObject>
     extends CountDistinctValuesAggregation<T, Long> {
 
   private static final Logger logger = getLogger(CountDistinctValuesNestedFieldAggregation.class);

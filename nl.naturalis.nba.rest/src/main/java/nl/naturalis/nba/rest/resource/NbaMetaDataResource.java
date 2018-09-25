@@ -39,7 +39,6 @@ import io.swagger.annotations.ApiParam;
 import nl.naturalis.nba.api.model.AreaClass;
 import nl.naturalis.nba.api.model.License;
 import nl.naturalis.nba.api.model.LicenseType;
-import nl.naturalis.nba.api.model.PhaseOrStage;
 import nl.naturalis.nba.api.model.ServiceAccessPoint;
 import nl.naturalis.nba.api.model.Sex;
 import nl.naturalis.nba.api.model.SourceSystem;
@@ -181,22 +180,6 @@ public class NbaMetaDataResource {
   {
     try {
       return new NbaMetaDataDao().getControlledListLicenseType();
-    } catch (Throwable t) {
-      throw handleError(uriInfo, t);
-    }
-  }
-  
-  @GET
-  @Path("/getControlledList/PhaseOrStage")
-  @ApiOperation(
-      value = "Get allowed values for the field 'PhaseOrStage' in a specimen document", 
-      response = PhaseOrStage[].class, 
-      notes = "")
-  @Produces(JSON_CONTENT_TYPE)
-  public PhaseOrStage[] getControlledListPhaseOrStage(@Context UriInfo uriInfo)
-  {
-    try {
-      return new NbaMetaDataDao().getControlledListPhaseOrStage();
     } catch (Throwable t) {
       throw handleError(uriInfo, t);
     }

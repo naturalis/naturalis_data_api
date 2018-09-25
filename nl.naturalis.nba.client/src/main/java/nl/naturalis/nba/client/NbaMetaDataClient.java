@@ -9,7 +9,6 @@ import nl.naturalis.nba.api.INbaMetaData;
 import nl.naturalis.nba.api.model.AreaClass;
 import nl.naturalis.nba.api.model.License;
 import nl.naturalis.nba.api.model.LicenseType;
-import nl.naturalis.nba.api.model.PhaseOrStage;
 import nl.naturalis.nba.api.model.Sex;
 import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nba.api.model.SpatialDatum;
@@ -78,17 +77,6 @@ public class NbaMetaDataClient extends Client implements INbaMetaData {
 			throw newServerException(status, request.getResponseBody());
 		}
 		return getObject(request.getResponseBody(), String[].class);
-	}
-
-	@Override
-	public PhaseOrStage[] getControlledListPhaseOrStage()
-	{
-		SimpleHttpRequest request = getJson("getControlledListPhaseOrStage");
-		int status = request.getStatus();
-		if (status != HTTP_OK) {
-			throw newServerException(status, request.getResponseBody());
-		}
-		return getObject(request.getResponseBody(), PhaseOrStage[].class);
 	}
 
 	@Override

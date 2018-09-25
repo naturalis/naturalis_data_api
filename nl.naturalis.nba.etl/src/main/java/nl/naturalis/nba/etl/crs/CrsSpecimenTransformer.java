@@ -595,11 +595,10 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
       return null;
   }
 
-    @SuppressWarnings("deprecation")
     private String getPhaseOrStage() {
         String raw = val(input.getRecord(), "abcd:PhaseOrStage");
         try {
-            return posNormalizer.map(raw).toString();
+            return posNormalizer.mapToString(raw).toString();
         } catch (UnmappedValueException e) {
             if (logger.isDebugEnabled()) {
                 debug(e.getMessage());

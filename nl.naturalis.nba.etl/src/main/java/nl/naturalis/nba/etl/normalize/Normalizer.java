@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-import nl.naturalis.nba.api.model.PhaseOrStage;
 import nl.naturalis.nba.api.model.Sex;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.etl.ETLRuntimeException;
@@ -237,6 +236,30 @@ public class Normalizer<T extends Enum<T>> {
 		throw new UnmappedValueException(input, enumClass);
 	}
 
+	 /**
+   * Maps the specified found-in-the-wild value to an enum constant of type T.
+   * 
+   * @param input
+   * @return
+   */
+  public String mapToString(String input) throws UnmappedValueException
+  {
+    if (input != null) {
+      input = input.toLowerCase();
+    }
+    if (mappings.containsKey(input)) {
+      return mappings.get(input).toString();
+    }
+    IntHolder ih = badValues.get(input);
+    if (ih == null) {
+      badValues.put(input, new IntHolder());
+    }
+    else {
+      ih.i++;
+    }
+    throw new UnmappedValueException(input, enumClass);
+  }
+	
 	/**
 	 * Resets the rogue value counters.
 	 */

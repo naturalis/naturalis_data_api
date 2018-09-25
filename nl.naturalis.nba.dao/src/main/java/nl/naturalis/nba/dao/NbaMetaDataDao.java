@@ -11,7 +11,6 @@ import nl.naturalis.nba.api.INbaMetaData;
 import nl.naturalis.nba.api.model.AreaClass;
 import nl.naturalis.nba.api.model.License;
 import nl.naturalis.nba.api.model.LicenseType;
-import nl.naturalis.nba.api.model.PhaseOrStage;
 import nl.naturalis.nba.api.model.ServiceAccessPoint;
 import nl.naturalis.nba.api.model.Sex;
 import nl.naturalis.nba.api.model.SourceSystem;
@@ -79,13 +78,7 @@ public class NbaMetaDataDao implements INbaMetaData {
 	{
 	  return LicenseType.values();
 	}
-	
-	@Override
-	public PhaseOrStage[] getControlledListPhaseOrStage()
-	{
-		return PhaseOrStage.values();
-	}
-	
+		
 	@Override
 	public Sex[] getControlledListSex()
 	{

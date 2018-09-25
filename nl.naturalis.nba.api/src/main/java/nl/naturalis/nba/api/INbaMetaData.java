@@ -4,7 +4,6 @@ import java.util.Map;
 import nl.naturalis.nba.api.model.AreaClass;
 import nl.naturalis.nba.api.model.License;
 import nl.naturalis.nba.api.model.LicenseType;
-import nl.naturalis.nba.api.model.PhaseOrStage;
 import nl.naturalis.nba.api.model.ServiceAccessPoint;
 import nl.naturalis.nba.api.model.Sex;
 import nl.naturalis.nba.api.model.SourceSystem;
@@ -147,23 +146,6 @@ public interface INbaMetaData {
    * @return
    */
   LicenseType[] getControlledListLicenseType();
-
-  /**
-   * Returns all valid values within the list controlling {@link PhaseOrStage} fields.
-   * </p>
-   * <h5>REST API</h5>
-   * <p>
-   * The NBA REST API exposes this method through a GET request with the following end point:
-   * </p>
-   * <p>
-   * <code>
-   * http://api.biodiversitydata.nl/v2/metadata/getControlledList/PhaseOrStage
-   * </code>
-   * </p>
-   * 
-   * @return
-   */
-  PhaseOrStage[] getControlledListPhaseOrStage();
   
   /**
    * Returns all valid values within the list controlling {@link Sex} fields.

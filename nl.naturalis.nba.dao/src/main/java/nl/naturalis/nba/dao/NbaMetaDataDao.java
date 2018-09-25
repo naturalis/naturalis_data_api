@@ -56,7 +56,7 @@ public class NbaMetaDataDao implements INbaMetaData {
 	@Override
 	public String[] getControlledLists()
 	{
-		return new String[] { "AreaClass", "License", "LicenseType", "PhaseOrStage", "RelationType", 
+		return new String[] { "AreaClass", "License", "LicenseType", "RelationType", 
 		                      "Sex", "SpatialDatum", "SpecimenTypeStatus", "TaxonomicStatus" };
 	}
 

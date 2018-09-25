@@ -1,4 +1,3 @@
----
 language: shell
 
 notifications:
@@ -17,12 +16,10 @@ before_install:
       -e ES_JAVA_OPTS="-Xms512m -Xmx512m" \
       elasticsearch:5.1.2 elasticsearch -Ecluster.name="nba-cluster" -Enetwork.host="_site_"
   - mkdir -p {api-output,etl-output}
-    #  - mkdir payload/data
   - mkdir -p payload/data/{geo,brahms,crs,col,nsr,ndff,medialib}
   - cp docker/resources/bp_areas.csv payload/data/geo/
   - cp docker/resources/L_6_13-10-2017_at_09-25-11.CSV payload/data/brahms/
   - cp docker/resources/mimetypes.zip payload/data/medialib/
-
 
 before_script:
   - sleep 10

@@ -17,9 +17,9 @@
 
 	<packaging>war</packaging>
 
-	
+
 	<properties>
-			<main.basedir>${project.parent.basedir}</main.basedir>
+		<main.basedir>${project.parent.basedir}</main.basedir>
 	</properties>
 
 	<dependencies>
@@ -122,34 +122,22 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>pl.project13.maven</groupId>
-				<artifactId>git-commit-id-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>get-the-git-infos</id>
-						<goals>
-							<goal>revision</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<dotGitDirectory>${project.basedir}/../.git</dotGitDirectory>
-					<prefix>git</prefix>
-					<verbose>false</verbose>
-					<generateGitPropertiesFile>true</generateGitPropertiesFile>
-					<generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
-					<format>properties</format>
-					<gitDescribe>
-						<skip>false</skip>
-						<always>false</always>
-						<dirty>-dirty</dirty>
-					</gitDescribe>
-				</configuration>
-			</plugin>
-			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>exec-maven-plugin</artifactId>
 				<executions>
+					<execution>
+						<id>generate-git-properties</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>${project.basedir}/git-info.sh</executable>
+							<arguments>
+								<argument>${project.basedir}</argument>
+							</arguments>
+						</configuration>
+					</execution>
 					<execution>
 						<id>copy-nba-properties</id>
 						<phase>install</phase>

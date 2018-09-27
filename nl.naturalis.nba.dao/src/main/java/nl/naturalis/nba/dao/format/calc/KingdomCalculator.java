@@ -1,10 +1,8 @@
 package nl.naturalis.nba.dao.format.calc;
 
 import static nl.naturalis.nba.dao.format.FormatUtil.EMPTY_STRING;
-
 import java.util.Map;
 import nl.naturalis.nba.api.model.IDocumentObject;
-import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.dao.format.CalculationException;
@@ -36,12 +34,6 @@ public class KingdomCalculator implements ICalculator {
 			return EMPTY_STRING;
 		}
 		String kingdom = si.getDefaultClassification().getKingdom();
-		if (specimen.getSourceSystem() == SourceSystem.BRAHMS) {
-			if (kingdom == null || !kingdom.toLowerCase().contains("fungi")) {
-				return "Plantae";
-			}
-			return "Fungi";
-		}
 		return kingdom == null ? EMPTY_STRING : kingdom;
 	}
 

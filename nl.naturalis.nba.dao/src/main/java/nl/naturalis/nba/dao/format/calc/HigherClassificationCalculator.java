@@ -39,24 +39,15 @@ public class HigherClassificationCalculator implements ICalculator {
 			return EMPTY_STRING;
 		}
 		StringBuilder sb = new StringBuilder(100);
-		if (specimen.getSourceSystem() == SourceSystem.CRS) {
-			append(sb, dc.getKingdom());
-			append(sb, dc.getClassName());
-			append(sb, dc.getOrder());
-			append(sb, dc.getFamily());
+		if (specimen.getSourceSystem() == SourceSystem.XC) {
+			append(sb, "Animalia");
 		}
 		else {
-			String kingdom = dc.getKingdom();
-			if (kingdom != null && kingdom.toLowerCase().contains("fungi")) {
-				append(sb, "Fungi");
-			}
-			else {
-				append(sb, "Plantae");
-			}
-			append(sb, dc.getClassName());
-			append(sb, dc.getOrder());
-			append(sb, dc.getFamily());
-		}
+      append(sb, dc.getKingdom());
+    }
+    append(sb, dc.getClassName());
+    append(sb, dc.getOrder());
+    append(sb, dc.getFamily());
 		return sb.toString();
 	}
 

@@ -120,7 +120,9 @@ public class CreateTestDocument {
     logger.info("");
     logger.info("The following test documents have been created:");
     if (!specimenId.equals(""))
+    {
       logger.info("Specimen:         " + specimenId);
+    }
     if (!multimediaId.equals(""))
     logger.info("MultiMediaObject: " + multimediaId);
     logger.info("");
@@ -211,7 +213,8 @@ public class CreateTestDocument {
     multiMediaObject.setId(multiMediaObject.getSourceSystemId() + "@" + sourceSystem);
     multiMediaObject.setSourceInstitutionID(ETLConstants.SOURCE_INSTITUTION_ID);
     multiMediaObject.setSourceID(sourceSystem.getCode());
-        
+    multiMediaObject.setPreviousSourceID( Arrays.asList(new String[] {reverseString("previousSourceID.001"), reverseString("previousSourceID.002"), reverseString("previousSourceID.003")}));;
+    multiMediaObject.setPreviousUnitsText(reverseString("previousUnitsText"));    
     multiMediaObject.setOwner(reverseString("owner"));
     multiMediaObject.setLicenseType(ETLConstants.LICENCE_TYPE);
     multiMediaObject.setLicense(ETLConstants.LICENCE);
@@ -352,6 +355,7 @@ public class CreateTestDocument {
     ChronoStratigraphy chronoStratigraphy = new ChronoStratigraphy();
     chronoStratigraphy.setYoungRegionalSubstage(reverseString("youngRegionalSubstage") + "_" + n);
     chronoStratigraphy.setYoungRegionalStage(reverseString("youngRegionalStage") + "_" + n);
+    chronoStratigraphy.setYoungRegionalSeries(reverseString("youngRegionalSeries") + "_" + n);
     chronoStratigraphy.setYoungDatingQualifier(reverseString("youngDatingQualifier") + "_" + n);
     chronoStratigraphy.setYoungInternSystem(reverseString("youngInternSystem") + "_" + n);
     chronoStratigraphy.setYoungInternSubstage(reverseString("youngInternSubstage") + "_" + n);
@@ -361,6 +365,7 @@ public class CreateTestDocument {
     chronoStratigraphy.setYoungInternEonothem(reverseString("youngInternEonothem") + "_" + n);
     chronoStratigraphy.setYoungChronoName(reverseString("youngChronoName") + "_" + n);
     chronoStratigraphy.setYoungCertainty(reverseString("youngCertainty") + "_" + n);
+    chronoStratigraphy.setOldDatingQualifier(reverseString("oldDatingQualifier"));
     boolean flag = (n == 1) ? true : false;
     chronoStratigraphy.setChronoPreferredFlag(flag);
     

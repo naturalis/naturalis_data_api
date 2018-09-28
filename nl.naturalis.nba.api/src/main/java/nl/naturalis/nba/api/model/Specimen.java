@@ -264,6 +264,7 @@ public class Specimen extends NbaTraceableObject implements IDocumentObject {
 	{
 	  this.previousUnitsText = previousUnitsText;
 	}
+	
 	public Integer getNumberOfSpecimen()
 	{
 		return numberOfSpecimen;

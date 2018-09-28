@@ -115,6 +115,26 @@ public class MultiMediaObject extends NbaTraceableObject implements IDocumentObj
 		this.sourceID = sourceID;
 	}
 
+  public List<String> getPreviousSourceID()
+  {
+    return previousSourceID;
+  }
+  
+  public void setPreviousSourceID(List<String> previousSourceID)
+  {
+    this.previousSourceID = previousSourceID;
+  }
+
+  public String getPreviousUnitsText()
+  {
+    return previousUnitsText;
+  }
+  
+  public void setPreviousUnitsText(String previousUnitsText)
+  {
+    this.previousUnitsText = previousUnitsText;
+  }
+  
 	public String getOwner()
 	{
 		return owner;

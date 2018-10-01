@@ -1,3 +1,4 @@
+---
 language: shell
 
 notifications:
@@ -25,13 +26,13 @@ before_script:
   - cp docker/builder/build.nba.properties.maven ./nba.properties
   - >
     docker run --name builder \
-	    --detach \
-	    --link build-es:build-es \
-	    --volume $(pwd)/api-output:/api-output \
-	    --volume $(pwd)/etl-output:/etl-output \
-	    --volume $(pwd):/repo \
-	    --workdir /repo \
-	    maven:3-jdk-8-alpine mvn clean install
+      --detach \
+      --link build-es:build-es \
+      --volume $(pwd)/api-output:/api-output \
+      --volume $(pwd)/etl-output:/etl-output \
+      --volume $(pwd):/repo \
+      --workdir /repo \
+      maven:3-jdk-8-alpine mvn clean install
 
 script:
   - sudo mv api-output/*.war docker/api/nba.war

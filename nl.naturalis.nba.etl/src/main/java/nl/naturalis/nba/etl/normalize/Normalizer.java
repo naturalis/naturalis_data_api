@@ -250,7 +250,9 @@ public class Normalizer<T extends Enum<T>> {
       input = input.toLowerCase();
     }
     if (mappings.containsKey(input)) {
-      return mappings.get(input).toString();
+      if (mappings.get(input) != null) 
+        return mappings.get(input).toString();
+      return null;
     }
     IntHolder ih = badValues.get(input);
     if (ih == null) {

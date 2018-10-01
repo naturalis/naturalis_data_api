@@ -72,7 +72,7 @@ public class CreateTestDocumentTest {
           path.equals("gatheringEvent.siteCoordinates.geoShape")
          ) continue;  // unitGUID, identifications.taxonomicEnrichments.taxonId and associatedMultiMediaUris.accessUri are not indexed
                       // gatheringEvent.siteCoordinates.geoShape cannot be searched with EQUALS
-      logger.info("> " + path);
+      
       qs.addCondition(condition_id);
       qs.addCondition(new QueryCondition(path, NOT_EQUALS, null));
       qs.setLogicalOperator(AND);
@@ -115,7 +115,7 @@ public class CreateTestDocumentTest {
           path.equals("identifications.taxonomicEnrichments.taxonId")
          ) continue;  // unitGUID, identifications.taxonomicEnrichments.taxonId and associatedMultiMediaUris.accessUri are not indexed
                       // gatheringEvent.siteCoordinates.geoShape cannot be searched with EQUALS
-      logger.info("> " + path);
+      
       qs.addCondition(condition_id);
       qs.addCondition(new QueryCondition(path, NOT_EQUALS, null));
       qs.setLogicalOperator(AND);

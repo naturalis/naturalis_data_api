@@ -1,4 +1,3 @@
----
 language: shell
 
 notifications:
@@ -10,36 +9,41 @@ services:
 before_install:
   - sudo /sbin/sysctl -w vm.max_map_count=262144
   - docker pull maven:3-jdk-8-alpine
-  - docker run --name es -d -e ES_JAVA_OPTS="-Xms512m -Xmx512m" elasticsearch:5.1.2 elasticsearch -Ecluster.name="nba-cluster" -Enetwork.host="_site_"
+  - >
+    docker run \
+      --name build-es \
+      --detach \
+      -e ES_JAVA_OPTS="-Xms512m -Xmx512m" \
+      elasticsearch:5.1.2 elasticsearch -Ecluster.name="nba-cluster" -Enetwork.host="_site_"
   - mkdir -p {api-output,etl-output}
-  - mkdir payload/data
   - mkdir -p payload/data/{geo,brahms,crs,col,nsr,ndff,medialib}
   - cp docker/resources/bp_areas.csv payload/data/geo/
   - cp docker/resources/L_6_13-10-2017_at_09-25-11.CSV payload/data/brahms/
   - cp docker/resources/mimetypes.zip payload/data/medialib/
 
-
 before_script:
   - sleep 10
-  - docker logs es
+  - docker logs build-es
   - echo $BUILD_CMD
   - cp docker/builder/build.nba.properties.maven ./nba.properties
   - >
-    docker run --name builder \
-      --detach \
+    docker run \
+      --name builder \
       --link build-es:build-es \
       --volume $(pwd)/api-output:/api-output \
       --volume $(pwd)/etl-output:/etl-output \
       --volume $(pwd):/repo \
+      --volume $(pwd)/payload:/payload \
       --workdir /repo \
-      maven:3-jdk-8-alpine mvn clean install
+      maven:3-jdk-8-alpine /bin/sh -c "apk add --no-cache git && mvn clean install"
 
 script:
-  - sudo mv api-output/*.war docker/api/nba.war
+  - sudo mv nl.naturalis.nba.rest/target/*.war docker/api/nba.war
+  - sudo cp api-output/etc-nba/nba.properties docker/api/
   - sudo mv etl-output docker/etl/software
   - REV=$(git rev-parse --short HEAD)
-  - (cd docker/api ; docker build -t naturalis/nba-api:$TRAVIS_BRANCH-$REV)
-  - (cd docker/etl ; docker build -t naturalis/nba-etl:$TRAVIS_BRANCH-$REV)
+  - ( cd docker/api ; docker build -t naturalis/nba-api:$TRAVIS_BRANCH-$REV . )
+  - ( cd docker/etl ; docker build -t naturalis/nba-etl:$TRAVIS_BRANCH-$REV . )
 
 after_success:
   - docker login -u atzedevries -p $DOCKER_PASS

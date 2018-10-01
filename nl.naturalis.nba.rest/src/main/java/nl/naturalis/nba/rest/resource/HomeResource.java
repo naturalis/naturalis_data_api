@@ -2,6 +2,8 @@ package nl.naturalis.nba.rest.resource;
 
 import static nl.naturalis.nba.dao.util.es.ESUtil.getNbaMetadata;
 import static nl.naturalis.nba.rest.util.ResourceUtil.handleError;
+
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 import java.util.Properties;
@@ -89,7 +91,7 @@ public class HomeResource {
       template = template.replace("%git.commit.id%", values.get("git.commit.id"));
       template = template.replace("%git.build.time%", values.get("git.build.time"));
       return template;
-    } catch (Throwable t) {
+    } catch (IOException t) {
       throw handleError(uriInfo, t);
     }
   }

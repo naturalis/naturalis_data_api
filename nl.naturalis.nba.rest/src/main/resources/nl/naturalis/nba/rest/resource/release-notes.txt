@@ -1,3 +1,10 @@
+RELEASE NOTES v 2.16
+* This release is for shear technical purposes: we
+  have moved from ant as build tool to maven. This
+  gives us improved dependency control, transparant
+  configuration and better integrated (unit) 
+  testing.
+
 RELEASE NOTES v 2.15
 * Several new fields have been added to the document 
   types Specimen and MultiMediaObject allowing for 

@@ -20,7 +20,6 @@ public class MultiMediaObject extends NbaTraceableObject implements IDocumentObj
 	private String id;
 	private String sourceInstitutionID;
 	private String sourceID;
-	@SuppressWarnings("unused")
   private List<String> previousSourceID;
 	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String owner;
@@ -28,7 +27,6 @@ public class MultiMediaObject extends NbaTraceableObject implements IDocumentObj
 	private License license;
 	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String unitID;
-	@SuppressWarnings("unused")
   private String previousUnitsText;
 	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String collectionType;

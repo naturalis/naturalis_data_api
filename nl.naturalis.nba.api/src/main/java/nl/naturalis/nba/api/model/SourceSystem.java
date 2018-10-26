@@ -12,7 +12,7 @@ public class SourceSystem implements INbaModelObject {
 	private static final String CODE_GEO    = "GEO";
 	private static final String CODE_NDFF   = "NDFF";
 	private static final String CODE_XC     = "XC";
-	private static final String CODE_WRNNL  = "WRNNL";
+	private static final String CODE_OBS    = "OBS";
 
 	private static final String NAME_CRS    = "Naturalis - Zoology and Geology catalogues";
 	private static final String NAME_BRAHMS = "Naturalis - Botany catalogues";
@@ -21,7 +21,7 @@ public class SourceSystem implements INbaModelObject {
 	private static final String NAME_GEO    = "Naturalis - Geo Areas";
 	private static final String NAME_NDFF   = "NDFF - Nationale Databank Flora en Fauna";
 	private static final String NAME_XC     = "xeno-canto.org - Bird sounds";
-	private static final String NAME_WRNNL  = "waarneming.nl - Species observations in the Netherlands";
+	private static final String NAME_OBS    = "Observation.org - Nature observations";
 
 	public static final SourceSystem CRS    = new SourceSystem(CODE_CRS, NAME_CRS);
 	public static final SourceSystem BRAHMS = new SourceSystem(CODE_BRAHMS, NAME_BRAHMS);
@@ -30,11 +30,11 @@ public class SourceSystem implements INbaModelObject {
 	public static final SourceSystem GEO    = new SourceSystem(CODE_GEO, NAME_GEO);
 	public static final SourceSystem NDFF   = new SourceSystem(CODE_NDFF, NAME_NDFF);
 	public static final SourceSystem XC     = new SourceSystem(CODE_XC, NAME_XC);
-	public static final SourceSystem WRNNL  = new SourceSystem(CODE_WRNNL, NAME_WRNNL);
+	public static final SourceSystem OBS    = new SourceSystem(CODE_OBS, NAME_OBS);
 
 	public static SourceSystem[] getAllSourceSystems()
 	{
-		return new SourceSystem[] { BRAHMS, COL, CRS, GEO, NDFF, NSR, XC, WRNNL };
+		return new SourceSystem[] { BRAHMS, COL, CRS, GEO, NDFF, NSR, XC, OBS };
 	}
 
 	@JsonCreator
@@ -57,8 +57,8 @@ public class SourceSystem implements INbaModelObject {
 					return GEO;
 				case CODE_XC:
 				  return XC;
-				case CODE_WRNNL:
-				  return WRNNL;
+				case CODE_OBS:
+				  return OBS;
 			}
 			throw new IllegalArgumentException("No such source system: " + code);
 		}
@@ -77,8 +77,8 @@ public class SourceSystem implements INbaModelObject {
 				return GEO;
 			case NAME_XC:
 			  return XC;
-			case NAME_WRNNL:
-			  return WRNNL;
+			case NAME_OBS:
+			  return OBS;
 		}
 		throw new IllegalArgumentException("No such source system: " + name);
 	}

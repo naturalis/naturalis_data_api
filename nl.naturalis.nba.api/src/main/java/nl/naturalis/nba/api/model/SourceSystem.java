@@ -20,7 +20,7 @@ public class SourceSystem implements INbaModelObject {
 	private static final String NAME_NSR    = "Naturalis - Dutch Species Register";
 	private static final String NAME_GEO    = "Naturalis - Geo Areas";
 	private static final String NAME_NDFF   = "NDFF - Nationale Databank Flora en Fauna";
-	private static final String NAME_XC     = "xeno-canto.org - Bird sounds";
+	private static final String NAME_XC     = "Xeno-canto.org - Bird sounds";
 	private static final String NAME_OBS    = "Observation.org - Nature observations";
 
 	public static final SourceSystem CRS    = new SourceSystem(CODE_CRS, NAME_CRS);

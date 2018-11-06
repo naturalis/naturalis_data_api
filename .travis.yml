@@ -14,7 +14,7 @@ before_install:
       --name build-es \
       --detach \
       -e ES_JAVA_OPTS="-Xms512m -Xmx512m" \
-      elasticsearch:5.2.2 elasticsearch -Ecluster.name="nba-cluster" -Enetwork.host="_site_"
+      elasticsearch:5.3.0 elasticsearch -Ecluster.name="nba-cluster" -Enetwork.host="_site_"
   - mkdir -p {api-output,etl-output}
   - mkdir -p payload/data/{geo,brahms,crs,col,nsr,ndff,medialib}
   - cp docker/resources/bp_areas.csv payload/data/geo/

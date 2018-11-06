@@ -182,6 +182,5 @@
       "adjust_pure_negative" : true,
       "boost" : 1.0
     }
-  },
-  "ext" : { }
+  }
 }

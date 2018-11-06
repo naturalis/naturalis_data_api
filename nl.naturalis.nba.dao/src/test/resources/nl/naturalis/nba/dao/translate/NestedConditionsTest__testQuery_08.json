@@ -16,6 +16,5 @@
       "score_mode" : "avg",
       "boost" : 1.0
     }
-  },
-  "ext" : { }
+  }
 }

@@ -1,11 +1,12 @@
 package nl.naturalis.nba.dao.translate;
 
-import static nl.naturalis.nba.api.LogicalOperator.OR;
 import static nl.naturalis.nba.api.ComparisonOperator.EQUALS;
 import static nl.naturalis.nba.api.ComparisonOperator.NOT_EQUALS;
+import static nl.naturalis.nba.api.LogicalOperator.OR;
 import static nl.naturalis.nba.api.UnaryBooleanOperator.NOT;
 import static nl.naturalis.nba.dao.DaoTestUtil.jsonEquals;
 import static org.junit.Assert.assertTrue;
+//import org.apache.logging.log4j.Logger;
 import org.junit.Test;
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.Path;
@@ -21,6 +22,8 @@ import nl.naturalis.nba.dao.DocumentType;
  * a nested path or not, into a correct Elasticsearch query.
  */
 public class ConditionTranslatorTranslateTest {
+  
+  // private static final Logger logger = DaoRegistry.getInstance().getLogger(ConditionTranslatorTranslateTest.class);
 
   @Test
   public void test_01() throws InvalidQueryException {

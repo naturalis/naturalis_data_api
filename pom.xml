@@ -59,7 +59,7 @@
 		<apache-commons-compress.version>1.17</apache-commons-compress.version>
 		<apache-logging.version>2.7</apache-logging.version>
 
-		<elasticsearch.version>5.3.0</elasticsearch.version>
+		<elasticsearch.version>5.3.3</elasticsearch.version>
 		<apache-lucene.version>6.4.1</apache-lucene.version>
 
 		<osgi.version>4.3.1</osgi.version>
@@ -260,7 +260,6 @@
 				<artifactId>log4j-core</artifactId>
 				<version>${apache-logging.version}</version>
 			</dependency>
-
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-api</artifactId>

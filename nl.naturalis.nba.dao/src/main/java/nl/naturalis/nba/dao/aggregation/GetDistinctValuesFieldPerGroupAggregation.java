@@ -79,7 +79,7 @@ public class GetDistinctValuesFieldPerGroupAggregation<T extends IDocumentObject
     SearchResponse response = executeQuery();
 
     Terms groupTerms = response.getAggregations().get("GROUP");
-    List<Bucket> buckets = groupTerms.getBuckets();
+    List<? extends Bucket> buckets = groupTerms.getBuckets();
 
     // If there are no groupTerms, we'll return a map with "null"-results
     if (buckets.size() == 0) {
@@ -99,7 +99,7 @@ public class GetDistinctValuesFieldPerGroupAggregation<T extends IDocumentObject
       List<Map<String, Object>> fieldTermsList = new LinkedList<>();
       if (bucket.getAggregations().get("FIELD") instanceof StringTerms) {
         StringTerms fieldTerms = bucket.getAggregations().get("FIELD");
-        List<StringTerms.Bucket> innerBuckets = fieldTerms.getBucketsInternal();
+        List<StringTerms.Bucket> innerBuckets = fieldTerms.getBuckets();
         for (Bucket innerBucket : innerBuckets) {
           Map<String, Object> aggregate = new LinkedHashMap<>(2);
           aggregate.put(field, innerBucket.getKeyAsString());
@@ -110,7 +110,7 @@ public class GetDistinctValuesFieldPerGroupAggregation<T extends IDocumentObject
         }
       } else {
         LongTerms fieldTerms = bucket.getAggregations().get("FIELD");
-        List<LongTerms.Bucket> innerBuckets = fieldTerms.getBucketsInternal();
+        List<LongTerms.Bucket> innerBuckets = fieldTerms.getBuckets();
         for (Bucket innerBucket : innerBuckets) {
           Map<String, Object> aggregate = new LinkedHashMap<>(2);
           aggregate.put(field, innerBucket.getKeyAsString());

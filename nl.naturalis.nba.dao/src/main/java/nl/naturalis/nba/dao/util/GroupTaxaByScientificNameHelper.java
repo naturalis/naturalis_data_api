@@ -94,7 +94,7 @@ public class GroupTaxaByScientificNameHelper {
 		SearchResponse response = executeSearchRequest(request);
 		Terms terms = response.getAggregations().get("TERMS");
 		result.setSumOfOtherDocCounts(terms.getSumOfOtherDocCounts());
-		List<Bucket> buckets = terms.getBuckets();
+		List<? extends Bucket> buckets = terms.getBuckets();
 		result.setTotalSize(buckets.size());
 		/*
 		 * With taxa we can have at most 2 Taxon documents per scientific name

@@ -80,7 +80,7 @@ public class CountDistinctValuesFieldPerGroupAggregation<T extends IDocumentObje
     List<Map<String, Object>> result = new LinkedList<>();
 
     Terms groupTerms = response.getAggregations().get("GROUP");
-    List<Bucket> buckets = groupTerms.getBuckets();
+    List<? extends Bucket> buckets = groupTerms.getBuckets();
     int counter = 0;
     for (Bucket bucket : buckets) {
       if (from > 0 && counter++ < from) continue;

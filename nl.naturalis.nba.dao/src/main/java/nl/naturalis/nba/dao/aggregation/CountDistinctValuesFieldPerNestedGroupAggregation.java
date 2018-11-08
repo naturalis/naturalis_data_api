@@ -90,7 +90,7 @@ public class CountDistinctValuesFieldPerNestedGroupAggregation<T extends IDocume
 
     InternalNested nestedGroup = response.getAggregations().get("NESTED_GROUP");
     Terms groupTerms = nestedGroup.getAggregations().get("GROUP");
-    List<Bucket> buckets = groupTerms.getBuckets();
+    List<? extends Bucket> buckets = groupTerms.getBuckets();
     int counter = 0;
     for (Bucket bucket : buckets) {
       if (from > 0 && counter++ < from) continue;

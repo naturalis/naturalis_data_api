@@ -101,7 +101,7 @@ public class GroupSpecimensByScientificNameHelper {
 		Nested nested = response.getAggregations().get("NESTED");
 		Terms terms = nested.getAggregations().get("TERMS");
 		result.setSumOfOtherDocCounts(terms.getSumOfOtherDocCounts());
-		List<Bucket> buckets = terms.getBuckets();
+		List<? extends Bucket> buckets = terms.getBuckets();
 		result.setTotalSize(buckets.size());
 		// Morph the query into a regular Specimen query:
 		queryCopy.setFrom(queryCopy.getSpecimensFrom());

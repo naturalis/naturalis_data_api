@@ -98,7 +98,7 @@ public class GetDistinctValuesNestedFieldPerNestedGroupAggregation<T extends IDo
 
     Nested nestedGroup = response.getAggregations().get("NESTED_GROUP");
     Terms groupTerms = nestedGroup.getAggregations().get("GROUP");
-    List<Bucket> buckets = groupTerms.getBuckets();
+    List<? extends Bucket> buckets = groupTerms.getBuckets();
 
     // If there are no groupTerms, we'll return a map with "null"-results
     if (buckets.size() == 0) {
@@ -117,7 +117,7 @@ public class GetDistinctValuesNestedFieldPerNestedGroupAggregation<T extends IDo
       InternalReverseNested reverseNestedField =
           bucket.getAggregations().get("REVERSE_NESTED_FIELD");
       Nested nestedField = reverseNestedField.getAggregations().get("NESTED_FIELD");
-      List<Bucket> innerBuckets;
+      List<? extends Bucket> innerBuckets;
       if (nestedField.getAggregations().get("FIELD") instanceof StringTerms) {
         StringTerms fieldTerms = nestedField.getAggregations().get("FIELD");
         innerBuckets = fieldTerms.getBuckets();

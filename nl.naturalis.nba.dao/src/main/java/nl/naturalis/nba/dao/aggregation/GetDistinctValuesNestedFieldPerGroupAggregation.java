@@ -88,7 +88,7 @@ public class GetDistinctValuesNestedFieldPerGroupAggregation<T extends IDocument
     SearchResponse response = executeQuery();
 
     Terms groupTerms = response.getAggregations().get("GROUP");
-    List<Bucket> buckets = groupTerms.getBuckets();
+    List<? extends Bucket> buckets = groupTerms.getBuckets();
 
     // If there are no groupTerms, we'll return a map with "null"-results
     if (buckets.size() == 0) {
@@ -106,7 +106,7 @@ public class GetDistinctValuesNestedFieldPerGroupAggregation<T extends IDocument
         continue;
       Nested nestedField = bucket.getAggregations().get("NESTED_FIELD");
 
-      List<Bucket> innerBuckets;
+      List<? extends Bucket> innerBuckets;
       if (nestedField.getAggregations().get("FIELD") instanceof StringTerms) {
         StringTerms fieldTerms = nestedField.getAggregations().get("FIELD");
         innerBuckets = fieldTerms.getBuckets();

@@ -3,8 +3,6 @@ language: shell
 notifications:
   slack: naturalis:ezcm1O2U6hlcJ5tWsWrBAqRF
 
-sudo: required
-
 services:
   - docker
 

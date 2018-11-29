@@ -29,10 +29,12 @@
 
 	<xs:complexType name="DataSourceXmlConfig">
 		<xs:sequence>
+		<!--
 			<xs:choice minOccurs="0">
-				<xs:element name="document" type="xs:string" />
 				<xs:element name="java-class" type="xs:string" />
 			</xs:choice>
+		-->
+			<xs:element name="document" type="xs:string" minOccurs="0" maxOccurs="1" />
 			<xs:element name="query-spec" type="self:QuerySpecXmlConfig" minOccurs="0" />
 		</xs:sequence>
 	</xs:complexType>

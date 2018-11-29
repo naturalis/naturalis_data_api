@@ -45,12 +45,10 @@ class SingleDataSourceDwcaWriter implements IDwcaWriter {
 	}
 
 	/**
-	 * Writes a DwCA archive for a user-defined query (a&#46;k&#46;a&#46;
-	 * "dynamic DwCA").
+	 * Writes a DwCA archive for a user-defined query (a&#46;k&#46;a&#46; "dynamic DwCA").
 	 */
 	@Override
-	public void writeDwcaForQuery(QuerySpec query)
-			throws InvalidQueryException, DataSetConfigurationException, DataSetWriteException
+	public void writeDwcaForQuery(QuerySpec query) throws InvalidQueryException, DataSetConfigurationException, DataSetWriteException
 	{
 		long start = System.currentTimeMillis();
 		logger.info("Generating DarwinCore archive for user-defined query");
@@ -150,6 +148,8 @@ class SingleDataSourceDwcaWriter implements IDwcaWriter {
 			}
 			return;
 		}
+
+		// And finally add eml and meta xml files ...
 		try {
 			ZipOutputStream zos = rezos.mergeEntries();
 			logger.info("Writing meta.xml");
@@ -168,11 +168,11 @@ class SingleDataSourceDwcaWriter implements IDwcaWriter {
 		}
 	}
 
-	private RandomEntryZipOutputStream createRandomEntryZipOutputStream()
-			throws DataSetConfigurationException, DataSetWriteException
+	private RandomEntryZipOutputStream createRandomEntryZipOutputStream() throws DataSetConfigurationException, DataSetWriteException
 	{
 		Entity coreEntity = cfg.getCoreEntity();
 		String fileName = cfg.getCsvFileName(coreEntity);
+		logger.info("First fileName for RandomEntryZipOutputStream: " + fileName);
 		RandomEntryZipOutputStream rezos = null;
 		try {
 			rezos = new RandomEntryZipOutputStream(out, fileName);

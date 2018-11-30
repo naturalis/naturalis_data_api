@@ -1,11 +1,14 @@
 package nl.naturalis.nba.dao.format.dwca;
 
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
+
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.search.SearchHit;
+
 import nl.naturalis.nba.api.NbaException;
 import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.dao.DocumentType;
@@ -24,20 +27,20 @@ class MultiDataSourceSearchHitHandler implements SearchHitHandler {
 
   private static final Logger logger = getLogger(MultiDataSourceSearchHitHandler.class);
 
+  private RandomEntryZipOutputStream zip;
   private final Entity entity;
   private final String fileName;
-  private final DocumentFlattener flattener;
   private final CsvRecordWriter printer;
-  private RandomEntryZipOutputStream zip;
+  private final DocumentFlattener flattener;
 
   private int processed = 0;
   private int written = 0;
   private int filtered = 0;
 
   MultiDataSourceSearchHitHandler(Entity entity, String fileName, RandomEntryZipOutputStream rezos) {
+    this.zip = rezos;
     this.entity = entity;
     this.fileName = fileName;
-    this.zip = rezos;
     this.printer = getPrinter(rezos);
     Path path = entity.getDataSource().getPath();
     flattener = new DocumentFlattener(path);

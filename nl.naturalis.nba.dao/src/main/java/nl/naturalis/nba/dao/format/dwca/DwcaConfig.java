@@ -91,9 +91,10 @@ public class DwcaConfig {
 			String msg = String.format(fmt, type);
 			throw new DataSetConfigurationException(msg);
 		}
-		this.dataSet = buildDataSet();
+		DataSet dataSet = buildDataSet();
 		if (dataSet.getSharedDataSource() == null && dataSetName.equals("dynamic"))
 		  throw new DataSetConfigurationException("A dynamic DwCA download is only possible for a single shared-data-source");
+		this.dataSet = dataSet;
 	}
 
 	/**

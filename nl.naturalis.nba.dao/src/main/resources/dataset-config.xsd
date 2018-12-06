@@ -29,11 +29,9 @@
 
 	<xs:complexType name="DataSourceXmlConfig">
 		<xs:sequence>
-		<!--
 			<xs:choice minOccurs="0">
 				<xs:element name="java-class" type="xs:string" />
 			</xs:choice>
-		-->
 			<xs:element name="document" type="xs:string" minOccurs="0" maxOccurs="1" />
 			<xs:element name="query-spec" type="self:QuerySpecXmlConfig" minOccurs="0" />
 		</xs:sequence>
@@ -55,6 +53,7 @@
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:string" use="required" />
 		<xs:attribute name="term" type="xs:anyURI" />
+		<xs:attribute name="isCoreId" type="xs:boolean" />
 	</xs:complexType>
 
 	<xs:complexType name="PathXmlConfig">

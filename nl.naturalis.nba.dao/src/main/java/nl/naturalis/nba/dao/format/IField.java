@@ -60,6 +60,11 @@ public interface IField {
 	 * to a strictly defined concept.
 	 */
 	URI getTerm();
+	
+	/**
+	 * 
+	 */
+	Boolean getIsCoreId();
 
 	/**
 	 * The value to be written to the data set, formatted and escaped as

@@ -22,9 +22,9 @@ class EntityField extends AbstractField {
 
 	private PathValueReader pvr;
 
-	EntityField(String name, URI term, Path path)
+	EntityField(String name, URI term, Boolean isCoreId, Path path)
 	{
-		super(name, term);
+		super(name, term, isCoreId);
 		this.pvr = new PathValueReader(path);
 	}
 

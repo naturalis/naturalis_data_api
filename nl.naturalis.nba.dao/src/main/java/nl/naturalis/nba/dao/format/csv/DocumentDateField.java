@@ -23,9 +23,9 @@ class DocumentDateField extends AbstractField {
 
 	private PathValueReader pvr;
 
-	DocumentDateField(String name, URI term, Path path)
+	DocumentDateField(String name, URI term, Boolean isCoreId, Path path)
 	{
-		super(name, term);
+		super(name, term, isCoreId);
 		this.pvr = new PathValueReader(path);
 	}
 

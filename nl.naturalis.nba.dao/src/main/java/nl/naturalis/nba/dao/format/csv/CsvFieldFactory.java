@@ -30,7 +30,7 @@ import nl.naturalis.nba.dao.format.IFieldFactory;
 public class CsvFieldFactory implements IFieldFactory {
 
 	@Override
-	public IField createEntityDataField(String name, URI term, Path path, DataSource dataSource)
+	public IField createEntityDataField(String name, URI term, Boolean isCoreId, Path path, DataSource dataSource)
 			throws FieldConfigurationException
 	{
 		MappingInfo<?> mappingInfo = new MappingInfo<>(dataSource.getMapping());
@@ -41,13 +41,13 @@ public class CsvFieldFactory implements IFieldFactory {
 		}
 		catch (NoSuchFieldException e) { /* Won't happen */ }
 		if (esField.getType() == ESDataType.DATE) {
-			return new EntityDateField(name, term, path);
+			return new EntityDateField(name, term, isCoreId, path);
 		}
-		return new EntityField(name, term, path);
+		return new EntityField(name, term, isCoreId, path);
 	}
 
 	@Override
-	public IField createDocumentDataField(String name, URI term, Path path, DataSource dataSource)
+	public IField createDocumentDataField(String name, URI term, Boolean isCoreId, Path path, DataSource dataSource)
 			throws FieldConfigurationException
 	{
 		MappingInfo<?> mappingInfo = new MappingInfo<>(dataSource.getMapping());
@@ -57,23 +57,23 @@ public class CsvFieldFactory implements IFieldFactory {
 		}
 		catch (NoSuchFieldException e) { /* Won't happen */ }
 		if (esField.getType() == ESDataType.DATE) {
-			return new DocumentDateField(name, term, path);
+			return new DocumentDateField(name, term, isCoreId, path);
 		}
-		return new DocumentField(name, term, path);
+		return new DocumentField(name, term, isCoreId, path);
 	}
 
 	@Override
-	public IField createConstantField(String name, URI term, String constant)
+	public IField createConstantField(String name, URI term, Boolean isCoreId, String constant)
 			throws FieldConfigurationException
 	{
-		return new ConstantField(name, term, constant);
+		return new ConstantField(name, term, isCoreId, constant);
 	}
 
 	@Override
-	public IField createdCalculatedField(String name, URI term, ICalculator calculator)
+	public IField createdCalculatedField(String name, URI term, Boolean isCoreId, ICalculator calculator)
 			throws FieldConfigurationException
 	{
-		return new CalculatedField(name, term, calculator);
+		return new CalculatedField(name, term, isCoreId, calculator);
 	}
 
 }

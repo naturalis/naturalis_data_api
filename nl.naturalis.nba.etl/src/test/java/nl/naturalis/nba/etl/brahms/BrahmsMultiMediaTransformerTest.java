@@ -4,17 +4,19 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
+import java.lang.reflect.Method;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.powermock.reflect.Whitebox;
 import nl.naturalis.nba.api.model.MultiMediaContentIdentification;
 import nl.naturalis.nba.api.model.MultiMediaGatheringEvent;
 import nl.naturalis.nba.api.model.MultiMediaObject;
@@ -31,18 +33,14 @@ import nl.naturalis.nba.etl.utils.CommonReflectionUtil;
 @PrepareForTest({CSVRecordInfo.class})
 @PowerMockIgnore("javax.management.*")
 @SuppressWarnings({"static-method", "unchecked"})
-@Ignore
 public class BrahmsMultiMediaTransformerTest {
 
 
     @Before
-    public void setUp() throws Exception {
-    }
+    public void setUp() throws Exception {}
 
     @After
     public void tearDown() throws Exception {}
-
-
 
     /**
      * Test method for {@link nl.naturalis.nba.etl.brahms.BrahmsMultiMediaTransformer#doTransform()}.
@@ -52,7 +50,6 @@ public class BrahmsMultiMediaTransformerTest {
      *         Test to verify the do Transform object returns the correct {@List<MultiMediaObject>}
      *         object
      */
-
     @Test
     public void testDoTransform() throws Exception {
 
@@ -113,7 +110,6 @@ public class BrahmsMultiMediaTransformerTest {
      * 
      *         Test to verify the transform One object returns the correct {@MultiMediaObject} object
      */
-
     @Test
     public void testTransformOne() throws Exception {
 
@@ -177,7 +173,6 @@ public class BrahmsMultiMediaTransformerTest {
      *         Test to verify the getIdentification() method returns the correct
      *         {@MultiMediaContentIdentification} object
      */
-
     @Test
     public void testGetIdentification() throws Exception {
 
@@ -242,7 +237,6 @@ public class BrahmsMultiMediaTransformerTest {
      *         Test to verify the getMultiMediaGatheringEvent One object returns the correct
      *         {@MultiMediaGatheringEvent} object
      */
-
     @Test
     public void testGetMultiMediaGatheringEvent() throws Exception {
 
@@ -278,31 +272,27 @@ public class BrahmsMultiMediaTransformerTest {
      * 
      * @throws Exception
      * 
-     *         Test to verify the getUri One object returns the correct {@URI} object
+     *         Test to verify the getUri method returns the correct {@URI} object
      */
-
-    @Test
+    @Test(expected = URISyntaxException.class)
     public void testGetUri() throws Exception {
 
-        ETLStatistics etlStatistics = new ETLStatistics();
-        CSVRecordInfo<BrahmsCsvField> record = PowerMockito.mock(CSVRecordInfo.class);
-        when(record.get(BrahmsCsvField.IMAGELIST)).thenReturn("http://medialib.naturalis.nl/file/id/L.3355550/format/large/");
+        String urlStr = "http://medialib.naturalis.nl/file/id/Test URL/L. 3355 550/format/large";
+        String urlStrEncoded = "http://medialib.naturalis.nl/file/id/Test%20URL/L.%203355%20550/format/large";
+        URI uriExpected = new URI(urlStrEncoded);
+        
+        Method testGetUri = Whitebox.getMethod(BrahmsMultiMediaTransformer.class, "getUri", String.class);
+        URI uriActual = (URI) testGetUri.invoke(null, urlStr);
+        assertEquals("01", uriActual, uriExpected);
 
-        BrahmsMultiMediaTransformer brahmsMultiMediaTransformer = new BrahmsMultiMediaTransformer(etlStatistics);
-        CommonReflectionUtil.setField(AbstractTransformer.class, brahmsMultiMediaTransformer, "objectID", "L.3355550");
-        CommonReflectionUtil.setField(AbstractTransformer.class, brahmsMultiMediaTransformer, "input", record);
-
-        String url = "http://medialib.naturalis.nl/file/id/Test URL/L.3355550/format/large";
-        String expectedPath = "/file/id/Test URL/L.3355550/format/large";
-        String expectedHost = "medialib.naturalis.nl";
-
-        Object obj = CommonReflectionUtil.callMethod(url, String.class, brahmsMultiMediaTransformer, "getUri");
-
-        URI uri = (URI) obj;
-        assertNotNull("01",uri);
-        assertEquals("02",expectedPath, uri.getPath());
-        assertEquals("03",expectedHost, uri.getHost());
-
+        urlStr = "http://medialib.naturalis.nl/file/id/Test_URL/L.3355550/format/large";
+        urlStrEncoded = new String(urlStr);
+        uriExpected = new URI(urlStrEncoded);
+        uriActual = (URI) testGetUri.invoke(null, urlStr);
+        assertEquals("02", uriActual, uriExpected);
+        
+        String illegalUriStr = "&#12288;quatsch&#12288;";
+        testGetUri.invoke(null, illegalUriStr); // Throws URISyntaxException
     }
 
     /**
@@ -314,7 +304,6 @@ public class BrahmsMultiMediaTransformerTest {
      *         Test to verify the newServiceAccessPoint One object returns the correct
      *         {@ServiceAccessPoint} object
      */
-
     @Test
     public void testNewServiceAccessPoint() throws Exception {
 
@@ -326,19 +315,16 @@ public class BrahmsMultiMediaTransformerTest {
         CommonReflectionUtil.setField(AbstractTransformer.class, brahmsMultiMediaTransformer, "objectID", "L.3355550");
         CommonReflectionUtil.setField(AbstractTransformer.class, brahmsMultiMediaTransformer, "input", record);
 
-
         URI uri = new URI("http://medialib.naturalis.nl/file/id/L.3355550/format/large");
-
         Object obj = CommonReflectionUtil.callMethod(uri, URI.class, brahmsMultiMediaTransformer, "newServiceAccessPoint");
-
         ServiceAccessPoint serviceAccessPoint = (ServiceAccessPoint) obj;
 
-        assertNotNull("01",obj);
-        assertEquals("02",ServiceAccessPoint.class, serviceAccessPoint.getClass());
-        assertEquals("03",uri, serviceAccessPoint.getAccessUri());
+        assertNotNull("01", obj);
+        assertEquals("02", ServiceAccessPoint.class, serviceAccessPoint.getClass());
+        assertEquals("03", uri, serviceAccessPoint.getAccessUri());
+        assertEquals("04", "image/jpeg", serviceAccessPoint.getFormat());
+        assertEquals("05", "MEDIUM_QUALITY", serviceAccessPoint.getVariant());
 
     }
-
-
 
 }

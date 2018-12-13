@@ -4,27 +4,30 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
+
 import java.util.List;
+
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.mockito.internal.util.reflection.Whitebox;
-import static org.mockito.Mockito.*;
 
 import nl.naturalis.nba.api.model.DefaultClassification;
 import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.api.model.TaxonomicStatus;
+
 import nl.naturalis.nba.etl.AbstractTransformer;
 import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.utils.CommonReflectionUtil;
+
 import nl.naturalis.nba.utils.reflect.ReflectionUtil;
 
 /**
@@ -33,7 +36,7 @@ import nl.naturalis.nba.utils.reflect.ReflectionUtil;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(CSVRecordInfo.class)
 @PowerMockIgnore("javax.management.*")
-@SuppressWarnings({"static-method", "unchecked"})
+@SuppressWarnings({"unchecked"})
 public class CoLTaxonTransformerTest {
 
   /**
@@ -106,7 +109,6 @@ public class CoLTaxonTransformerTest {
     String expectedFullScientificName = "Bombus affinis Cresson, 1863";
     String expectedGenusOrMonomial = "Bombus";
     String expectedSpcificEpithet = "affinis";
-    //
 
     assertNotNull("01", list);
     assertTrue("02", list.size() == 1);
@@ -313,27 +315,8 @@ public class CoLTaxonTransformerTest {
     CommonReflectionUtil.setField(AbstractTransformer.class, colTaxonTransformer, "input", record);
 
     Object returned = ReflectionUtil.call(colTaxonTransformer, "isTestSetGenus", new Class[] {}, new Object[] {});
-
     boolean isTestGenus = (boolean) returned;
-
     assertTrue(isTestGenus);
-  }
-  
-  @Test
-  public void testDemo() {
-    
-    List<String> mockedList = mock(List.class);
-    mockedList.add("one");
-    mockedList.contains(anyString());
-    when(mockedList.get(0)).thenReturn("first");
-    mockedList.get(anyInt());
-    mockedList.clear();
-    
-    verify(mockedList).add("one");
-    verify(mockedList).contains(anyString());
-    verify(mockedList).get(anyInt());
-    verify(mockedList).clear();
-    
   }
 
 }

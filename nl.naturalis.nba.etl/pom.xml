@@ -1,115 +1,115 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-	<modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>nl.naturalis.nba</groupId>
-		<artifactId>nba-motherpom</artifactId>
-		<version>2.18-SNAPSHOT</version>
-	</parent>
+    <parent>
+        <groupId>nl.naturalis.nba</groupId>
+        <artifactId>nba-motherpom</artifactId>
+        <version>2.18-SNAPSHOT</version>
+    </parent>
 
-	<artifactId>nl.naturalis.nba.etl</artifactId>
-	<name>NBA ETL Module</name>
-	<description>Software for importing the various data sources feeding into the Naturalis Data Store (NDS)</description>
+    <artifactId>nl.naturalis.nba.etl</artifactId>
+    <name>NBA ETL Module</name>
+    <description>Software for importing the various data sources feeding into the Naturalis Data Store (NDS)</description>
 
-	<properties>
-		<main.basedir>${project.parent.basedir}</main.basedir>
-	</properties>
+    <properties>
+        <main.basedir>${project.parent.basedir}</main.basedir>
+    </properties>
 
-	<dependencies>
+    <dependencies>
 
-		<dependency>
-			<groupId>nl.naturalis.nba</groupId>
-			<artifactId>nl.naturalis.nba.api</artifactId>
-			<version>2.18-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>nl.naturalis.nba</groupId>
-			<artifactId>nl.naturalis.nba.utils</artifactId>
-			<version>2.18-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>nl.naturalis.nba</groupId>
-			<artifactId>nl.naturalis.nba.common</artifactId>
-			<version>2.18-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>nl.naturalis.nba</groupId>
-			<artifactId>nl.naturalis.nba.dao</artifactId>
-			<version>2.18-SNAPSHOT</version>
-		</dependency>
+        <dependency>
+            <groupId>nl.naturalis.nba</groupId>
+            <artifactId>nl.naturalis.nba.api</artifactId>
+            <version>2.18-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>nl.naturalis.nba</groupId>
+            <artifactId>nl.naturalis.nba.utils</artifactId>
+            <version>2.18-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>nl.naturalis.nba</groupId>
+            <artifactId>nl.naturalis.nba.common</artifactId>
+            <version>2.18-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>nl.naturalis.nba</groupId>
+            <artifactId>nl.naturalis.nba.dao</artifactId>
+            <version>2.18-SNAPSHOT</version>
+        </dependency>
 
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-csv</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.elasticsearch</groupId>
-			<artifactId>elasticsearch</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>joda-time</groupId>
-			<artifactId>joda-time</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpcore</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-databind</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>de.grundid.opendatalab</groupId>
-			<artifactId>geojson-jackson</artifactId>
-		</dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-csv</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.elasticsearch</groupId>
+            <artifactId>elasticsearch</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpcore</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.grundid.opendatalab</groupId>
+            <artifactId>geojson-jackson</artifactId>
+        </dependency>
 
-		<!-- TEST -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-all</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.powermock</groupId>
-			<artifactId>powermock-core</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.powermock</groupId>
-			<artifactId>powermock-module-junit4</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.powermock</groupId>
-			<artifactId>powermock-api-mockito</artifactId>
-			<scope>test</scope>
-		</dependency>
+        <!-- TEST -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-module-junit4</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-api-mockito</artifactId>
+            <scope>test</scope>
+        </dependency>
 
-	</dependencies>
+    </dependencies>
 
 	<build>
 		<plugins>

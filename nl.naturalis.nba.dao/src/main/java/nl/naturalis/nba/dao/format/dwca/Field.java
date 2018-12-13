@@ -1,7 +1,6 @@
 package nl.naturalis.nba.dao.format.dwca;
 
 import java.net.URI;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -20,40 +19,45 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 class Field {
 
-	@XmlAttribute(name = "index")
-	private String index;
+  @XmlAttribute(name = "index")
+  private String index;
 
-	@XmlAttribute(name = "term")
-	private String term;
+  @XmlAttribute(name = "term")
+  private String term;
 
-	Field()
-	{
-	}
+  @XmlAttribute(name = "isCoreId")
+  private Boolean isCoreId;
 
-	Field(int index, URI term)
-	{
-		this.index = String.valueOf(index);
-		this.term = term.toString();
-	}
+  Field() {}
 
-	String getIndex()
-	{
-		return index;
-	}
+  Field(int index, URI term) {
+    this.index = String.valueOf(index);
+    this.term = term.toString();
+  }
 
-	void setIndex(String index)
-	{
-		this.index = index;
-	}
+  String getIndex() {
+    return index;
+  }
 
-	String getTerm()
-	{
-		return term;
-	}
+  void setIndex(String index) {
+    this.index = index;
+  }
 
-	void setTerm(String term)
-	{
-		this.term = term;
-	}
+  String getTerm() {
+    return term;
+  }
+
+  void setTerm(String term) {
+    this.term = term;
+  }
+
+  public Boolean isCoreId() {
+    return isCoreId;
+  }
+  
+  public void setIsCoreId(Boolean isCoreId) {
+    this.isCoreId = isCoreId;
+  }
 
 }
+

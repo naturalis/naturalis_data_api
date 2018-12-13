@@ -37,6 +37,7 @@ public class SpecimenMock {
 		specimen.setSex(MALE);
 		specimen.setRecordBasis("Preserved specimen");
 		specimen.setNumberOfSpecimen(0);
+		specimen.setCollectionType("Aves");
 		GatheringEvent gathering = new GatheringEvent();
 		gathering.setProjectTitle("Vogels der Lage Landen");
 		gathering.setLocalityText("Duinen, nabij Uitgeest");
@@ -95,6 +96,7 @@ public class SpecimenMock {
 		specimen.setSex(MALE);
 		specimen.setRecordBasis("Preserved specimen");
 		specimen.setNumberOfSpecimen(1);
+		specimen.setCollectionType("Aves");
 		GatheringEvent gathering = new GatheringEvent();
 		gathering.setProjectTitle("Vogels der Lage Landen");
 		gathering.setLocalityText("In de bossen nabij Aalten");

@@ -24,7 +24,7 @@ public interface IFieldFactory {
 	 * @param constant
 	 * @return
 	 */
-	IField createConstantField(String name, URI term, String constant)
+	IField createConstantField(String name, URI term, Boolean isCoreId, String constant)
 			throws FieldConfigurationException;
 
 	/**
@@ -37,7 +37,7 @@ public interface IFieldFactory {
 	 * @param args
 	 * @return
 	 */
-	IField createdCalculatedField(String name, URI term, ICalculator calculator)
+	IField createdCalculatedField(String name, URI term, Boolean isCoreId, ICalculator calculator)
 			throws FieldConfigurationException;
 
 	/**
@@ -51,7 +51,7 @@ public interface IFieldFactory {
 	 * @param path
 	 * @param dataSource
 	 */
-	IField createEntityDataField(String name, URI term, Path path, DataSource dataSource)
+	IField createEntityDataField(String name, URI term, Boolean isCoreId, Path path, DataSource dataSource)
 			throws FieldConfigurationException;
 
 	/**
@@ -67,6 +67,6 @@ public interface IFieldFactory {
 	 * @param path
 	 * @param dataSource
 	 */
-	IField createDocumentDataField(String name, URI term, Path path, DataSource dataSource)
+	IField createDocumentDataField(String name, URI term, Boolean isCoreId, Path path, DataSource dataSource)
 			throws FieldConfigurationException;
 }

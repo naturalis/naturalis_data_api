@@ -4,24 +4,30 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
+
 import java.util.List;
+
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.internal.util.reflection.Whitebox;
+
 import nl.naturalis.nba.api.model.DefaultClassification;
 import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.api.model.TaxonomicStatus;
+
 import nl.naturalis.nba.etl.AbstractTransformer;
 import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.utils.CommonReflectionUtil;
+
 import nl.naturalis.nba.utils.reflect.ReflectionUtil;
 
 /**
@@ -30,8 +36,7 @@ import nl.naturalis.nba.utils.reflect.ReflectionUtil;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(CSVRecordInfo.class)
 @PowerMockIgnore("javax.management.*")
-@SuppressWarnings({"static-method", "unchecked"})
-@Ignore
+@SuppressWarnings({"unchecked"})
 public class CoLTaxonTransformerTest {
 
   /**
@@ -62,11 +67,9 @@ public class CoLTaxonTransformerTest {
     ETLStatistics etlStatistics = new ETLStatistics();
 
     when(record.get(CoLTaxonCsvField.taxonID)).thenReturn("6931872");
-    when(record.get(CoLTaxonCsvField.identifier)).thenReturn(
-        "urn:lsid:catalogueoflife.org:taxon:6703cbb5-e478-11e5-86e7-bc764e092680:col20150315");
+    when(record.get(CoLTaxonCsvField.identifier)).thenReturn("urn:lsid:catalogueoflife.org:taxon:6703cbb5-e478-11e5-86e7-bc764e092680:col20150315");
     when(record.get(CoLTaxonCsvField.datasetID)).thenReturn("67");
-    when(record.get(CoLTaxonCsvField.datasetName))
-        .thenReturn("ITIS Bees in Species 2000 & ITIS Catalogue of Life: 23rd March 2016");
+    when(record.get(CoLTaxonCsvField.datasetName)).thenReturn("ITIS Bees in Species 2000 & ITIS Catalogue of Life: 23rd March 2016");
     when(record.get(CoLTaxonCsvField.acceptedNameUsageID)).thenReturn("6931872");
     when(record.get(CoLTaxonCsvField.parentNameUsageID)).thenReturn("27000241");
     when(record.get(CoLTaxonCsvField.taxonomicStatus)).thenReturn("accepted name");
@@ -89,44 +92,33 @@ public class CoLTaxonTransformerTest {
     when(record.get(CoLTaxonCsvField.description)).thenReturn("test_desc");
     when(record.get(CoLTaxonCsvField.taxonConceptID)).thenReturn("test_taxonConceptID");
     when(record.get(CoLTaxonCsvField.scientificNameID)).thenReturn("ITS-714782");
-    when(record.get(CoLTaxonCsvField.references)).thenReturn(
-        "http://www.catalogueoflife.org/annual-checklist/details/species/id/39ed89a52a61ef3a59eef66b9ce8ad7e");
+    when(record.get(CoLTaxonCsvField.references)).thenReturn("http://www.catalogueoflife.org/annual-checklist/details/species/id/39ed89a52a61ef3a59eef66b9ce8ad7e");
 
     CoLTaxonTransformer coLTaxonTransformer = new CoLTaxonTransformer(etlStatistics);
 
-    CommonReflectionUtil.setField(AbstractTransformer.class, coLTaxonTransformer, "objectID",
-        "6931872");
+    CommonReflectionUtil.setField(AbstractTransformer.class, coLTaxonTransformer, "objectID", "6931872");
     CommonReflectionUtil.setField(AbstractTransformer.class, coLTaxonTransformer, "input", record);
-    Object returned =
-        ReflectionUtil.call(coLTaxonTransformer, "doTransform", new Class[] {}, new Object[] {});
+    Object returned = ReflectionUtil.call(coLTaxonTransformer, "doTransform", new Class[] {}, new Object[] {});
 
     List<Taxon> list = (List<Taxon>) returned;
 
     String expectedId = "6931872@COL";
-    String expectedRecordURI =
-        "http://www.catalogueoflife.org/annual-checklist/null/details/species/id/39ed89a52a61ef3a59eef66b9ce8ad7e";
+    String expectedRecordURI = "http://www.catalogueoflife.org/annual-checklist/null/details/species/id/39ed89a52a61ef3a59eef66b9ce8ad7e";
     String expectedAuthorshipVerbatim = "Cresson, 1863";
     String expectedScientificNameGroup = "bombus affinis test_infraspecificepithet";
     String expectedFullScientificName = "Bombus affinis Cresson, 1863";
     String expectedGenusOrMonomial = "Bombus";
     String expectedSpcificEpithet = "affinis";
-    //
 
-    assertNotNull("01",list);
-    assertTrue("02",list.size() == 1);
-    assertEquals("03",expectedId, list.stream().map(i -> i.getId()).findFirst().get());
-    assertEquals("04",expectedRecordURI,
-        list.stream().map(i -> i.getRecordURI()).findFirst().get().toString());
-    assertEquals("05",expectedAuthorshipVerbatim, list.stream()
-        .map(i -> i.getAcceptedName().getAuthorshipVerbatim()).findFirst().get().toString());
-    assertEquals("06",expectedFullScientificName, list.stream()
-        .map(i -> i.getAcceptedName().getFullScientificName()).findFirst().get().toString());
-    assertEquals("07",expectedScientificNameGroup, list.stream()
-        .map(i -> i.getAcceptedName().getScientificNameGroup()).findFirst().get().toString());
-    assertEquals("08",expectedGenusOrMonomial, list.stream()
-        .map(i -> i.getAcceptedName().getGenusOrMonomial()).findFirst().get().toString());
-    assertEquals("09",expectedSpcificEpithet, list.stream()
-        .map(i -> i.getAcceptedName().getSpecificEpithet()).findFirst().get().toString());
+    assertNotNull("01", list);
+    assertTrue("02", list.size() == 1);
+    assertEquals("03", expectedId, list.stream().map(i -> i.getId()).findFirst().get());
+    assertEquals("04", expectedRecordURI, list.stream().map(i -> i.getRecordURI()).findFirst().get().toString());
+    assertEquals("05", expectedAuthorshipVerbatim, list.stream().map(i -> i.getAcceptedName().getAuthorshipVerbatim()).findFirst().get().toString());
+    assertEquals("06", expectedFullScientificName, list.stream().map(i -> i.getAcceptedName().getFullScientificName()).findFirst().get().toString());
+    assertEquals("07", expectedScientificNameGroup, list.stream().map(i -> i.getAcceptedName().getScientificNameGroup()).findFirst().get().toString());
+    assertEquals("08", expectedGenusOrMonomial, list.stream().map(i -> i.getAcceptedName().getGenusOrMonomial()).findFirst().get().toString());
+    assertEquals("09", expectedSpcificEpithet, list.stream().map(i -> i.getAcceptedName().getSpecificEpithet()).findFirst().get().toString());
   }
 
   /**
@@ -143,11 +135,9 @@ public class CoLTaxonTransformerTest {
     ETLStatistics etlStatistics = new ETLStatistics();
 
     when(record.get(CoLTaxonCsvField.taxonID)).thenReturn("6931872");
-    when(record.get(CoLTaxonCsvField.identifier)).thenReturn(
-        "urn:lsid:catalogueoflife.org:taxon:6703cbb5-e478-11e5-86e7-bc764e092680:col20150315");
+    when(record.get(CoLTaxonCsvField.identifier)).thenReturn("urn:lsid:catalogueoflife.org:taxon:6703cbb5-e478-11e5-86e7-bc764e092680:col20150315");
     when(record.get(CoLTaxonCsvField.datasetID)).thenReturn("67");
-    when(record.get(CoLTaxonCsvField.datasetName))
-        .thenReturn("ITIS Bees in Species 2000 & ITIS Catalogue of Life: 23rd March 2016");
+    when(record.get(CoLTaxonCsvField.datasetName)).thenReturn("ITIS Bees in Species 2000 & ITIS Catalogue of Life: 23rd March 2016");
     when(record.get(CoLTaxonCsvField.acceptedNameUsageID)).thenReturn("test_acceptedNameUsageID");
     when(record.get(CoLTaxonCsvField.parentNameUsageID)).thenReturn("27000241");
     when(record.get(CoLTaxonCsvField.taxonomicStatus)).thenReturn("accepted name");
@@ -171,17 +161,14 @@ public class CoLTaxonTransformerTest {
     when(record.get(CoLTaxonCsvField.description)).thenReturn("test_desc");
     when(record.get(CoLTaxonCsvField.taxonConceptID)).thenReturn("test_taxonConceptID");
     when(record.get(CoLTaxonCsvField.scientificNameID)).thenReturn("ITS-714782");
-    when(record.get(CoLTaxonCsvField.references)).thenReturn(
-        "http://www.catalogueoflife.org/annual-checklist/details/species/id/39ed89a52a61ef3a59eef66b9ce8ad7e");
+    when(record.get(CoLTaxonCsvField.references)).thenReturn("http://www.catalogueoflife.org/annual-checklist/details/species/id/39ed89a52a61ef3a59eef66b9ce8ad7e");
 
     CoLTaxonTransformer coLTaxonTransformer = new CoLTaxonTransformer(etlStatistics);
 
-    CommonReflectionUtil.setField(AbstractTransformer.class, coLTaxonTransformer, "objectID",
-        "6931872");
+    CommonReflectionUtil.setField(AbstractTransformer.class, coLTaxonTransformer, "objectID", "6931872");
     CommonReflectionUtil.setField(AbstractTransformer.class, coLTaxonTransformer, "input", record);
 
-    Object returned = ReflectionUtil.call(coLTaxonTransformer, "getClassification", new Class[] {},
-        new Object[] {});
+    Object returned = ReflectionUtil.call(coLTaxonTransformer, "getClassification", new Class[] {}, new Object[] {});
 
     DefaultClassification defaultClassification = (DefaultClassification) returned;
 
@@ -195,15 +182,15 @@ public class CoLTaxonTransformerTest {
     expected.setSubgenus("test_subgenus");
     expected.setSpecificEpithet("affinis");
 
-    assertNotNull("01",returned);
-    assertEquals("02",expected.getKingdom(), defaultClassification.getKingdom());
-    assertEquals("03",expected.getPhylum(), defaultClassification.getPhylum());
-    assertEquals("04",expected.getClassName(), defaultClassification.getClassName());
-    assertEquals("05",expected.getSuperFamily(), defaultClassification.getSuperFamily());
-    assertEquals("06",expected.getFamily(), defaultClassification.getFamily());
-    assertEquals("07",expected.getGenus(), defaultClassification.getGenus());
-    assertEquals("08",expected.getSubgenus(), defaultClassification.getSubgenus());
-    assertEquals("09",expected.getSpecificEpithet(), defaultClassification.getSpecificEpithet());
+    assertNotNull("01", returned);
+    assertEquals("02", expected.getKingdom(), defaultClassification.getKingdom());
+    assertEquals("03", expected.getPhylum(), defaultClassification.getPhylum());
+    assertEquals("04", expected.getClassName(), defaultClassification.getClassName());
+    assertEquals("05", expected.getSuperFamily(), defaultClassification.getSuperFamily());
+    assertEquals("06", expected.getFamily(), defaultClassification.getFamily());
+    assertEquals("07", expected.getGenus(), defaultClassification.getGenus());
+    assertEquals("08", expected.getSubgenus(), defaultClassification.getSubgenus());
+    assertEquals("09", expected.getSpecificEpithet(), defaultClassification.getSpecificEpithet());
   }
 
   /**
@@ -220,11 +207,9 @@ public class CoLTaxonTransformerTest {
     ETLStatistics etlStatistics = new ETLStatistics();
 
     when(record.get(CoLTaxonCsvField.taxonID)).thenReturn("6931872");
-    when(record.get(CoLTaxonCsvField.identifier)).thenReturn(
-        "urn:lsid:catalogueoflife.org:taxon:6703cbb5-e478-11e5-86e7-bc764e092680:col20150315");
+    when(record.get(CoLTaxonCsvField.identifier)).thenReturn("urn:lsid:catalogueoflife.org:taxon:6703cbb5-e478-11e5-86e7-bc764e092680:col20150315");
     when(record.get(CoLTaxonCsvField.datasetID)).thenReturn("67");
-    when(record.get(CoLTaxonCsvField.datasetName))
-        .thenReturn("ITIS Bees in Species 2000 & ITIS Catalogue of Life: 23rd March 2016");
+    when(record.get(CoLTaxonCsvField.datasetName)).thenReturn("ITIS Bees in Species 2000 & ITIS Catalogue of Life: 23rd March 2016");
     when(record.get(CoLTaxonCsvField.acceptedNameUsageID)).thenReturn("test_acceptedNameUsageID");
     when(record.get(CoLTaxonCsvField.parentNameUsageID)).thenReturn("27000241");
     when(record.get(CoLTaxonCsvField.taxonomicStatus)).thenReturn("accepted name");
@@ -248,17 +233,14 @@ public class CoLTaxonTransformerTest {
     when(record.get(CoLTaxonCsvField.description)).thenReturn("test_desc");
     when(record.get(CoLTaxonCsvField.taxonConceptID)).thenReturn("test_taxonConceptID");
     when(record.get(CoLTaxonCsvField.scientificNameID)).thenReturn("ITS-714782");
-    when(record.get(CoLTaxonCsvField.references)).thenReturn(
-        "http://www.catalogueoflife.org/annual-checklist/details/species/id/39ed89a52a61ef3a59eef66b9ce8ad7e");
+    when(record.get(CoLTaxonCsvField.references)).thenReturn("http://www.catalogueoflife.org/annual-checklist/details/species/id/39ed89a52a61ef3a59eef66b9ce8ad7e");
 
     CoLTaxonTransformer coLTaxonTransformer = new CoLTaxonTransformer(etlStatistics);
 
-    CommonReflectionUtil.setField(AbstractTransformer.class, coLTaxonTransformer, "objectID",
-        "6931872");
+    CommonReflectionUtil.setField(AbstractTransformer.class, coLTaxonTransformer, "objectID", "6931872");
     CommonReflectionUtil.setField(AbstractTransformer.class, coLTaxonTransformer, "input", record);
 
-    Object returned = ReflectionUtil.call(coLTaxonTransformer, "getScientificName", new Class[] {},
-        new Object[] {});
+    Object returned = ReflectionUtil.call(coLTaxonTransformer, "getScientificName", new Class[] {}, new Object[] {});
 
     ScientificName name = (ScientificName) returned;
 
@@ -272,15 +254,15 @@ public class CoLTaxonTransformerTest {
     expected.setTaxonomicStatus(TaxonomicStatus.ACCEPTED_NAME);
     expected.setScientificNameGroup("bombus affinis test_infraspecificepithet");
 
-    assertNotNull("01",returned);
-    assertEquals("02",expected.getFullScientificName(), name.getFullScientificName());
-    assertEquals("03",expected.getGenusOrMonomial(), name.getGenusOrMonomial());
-    assertEquals("04",expected.getSubgenus(), name.getSubgenus());
-    assertEquals("05",expected.getSpecificEpithet(), name.getSpecificEpithet());
-    assertEquals("06",expected.getInfraspecificEpithet(), name.getInfraspecificEpithet());
-    assertEquals("07",expected.getAuthorshipVerbatim(), name.getAuthorshipVerbatim());
-    assertEquals("08",expected.getTaxonomicStatus(), name.getTaxonomicStatus());
-    assertEquals("09",expected.getScientificNameGroup(), name.getScientificNameGroup());
+    assertNotNull("01", returned);
+    assertEquals("02", expected.getFullScientificName(), name.getFullScientificName());
+    assertEquals("03", expected.getGenusOrMonomial(), name.getGenusOrMonomial());
+    assertEquals("04", expected.getSubgenus(), name.getSubgenus());
+    assertEquals("05", expected.getSpecificEpithet(), name.getSpecificEpithet());
+    assertEquals("06", expected.getInfraspecificEpithet(), name.getInfraspecificEpithet());
+    assertEquals("07", expected.getAuthorshipVerbatim(), name.getAuthorshipVerbatim());
+    assertEquals("08", expected.getTaxonomicStatus(), name.getTaxonomicStatus());
+    assertEquals("09", expected.getScientificNameGroup(), name.getScientificNameGroup());
   }
 
   /**
@@ -297,11 +279,9 @@ public class CoLTaxonTransformerTest {
     ETLStatistics etlStatistics = new ETLStatistics();
 
     when(record.get(CoLTaxonCsvField.taxonID)).thenReturn("6931872");
-    when(record.get(CoLTaxonCsvField.identifier)).thenReturn(
-        "urn:lsid:catalogueoflife.org:taxon:6703cbb5-e478-11e5-86e7-bc764e092680:col20150315");
+    when(record.get(CoLTaxonCsvField.identifier)).thenReturn("urn:lsid:catalogueoflife.org:taxon:6703cbb5-e478-11e5-86e7-bc764e092680:col20150315");
     when(record.get(CoLTaxonCsvField.datasetID)).thenReturn("67");
-    when(record.get(CoLTaxonCsvField.datasetName))
-        .thenReturn("ITIS Bees in Species 2000 & ITIS Catalogue of Life: 23rd March 2016");
+    when(record.get(CoLTaxonCsvField.datasetName)).thenReturn("ITIS Bees in Species 2000 & ITIS Catalogue of Life: 23rd March 2016");
     when(record.get(CoLTaxonCsvField.acceptedNameUsageID)).thenReturn("test_acceptedNameUsageID");
     when(record.get(CoLTaxonCsvField.parentNameUsageID)).thenReturn("27000241");
     when(record.get(CoLTaxonCsvField.taxonomicStatus)).thenReturn("accepted name");
@@ -325,20 +305,17 @@ public class CoLTaxonTransformerTest {
     when(record.get(CoLTaxonCsvField.description)).thenReturn("test_desc");
     when(record.get(CoLTaxonCsvField.taxonConceptID)).thenReturn("test_taxonConceptID");
     when(record.get(CoLTaxonCsvField.scientificNameID)).thenReturn("ITS-714782");
-    when(record.get(CoLTaxonCsvField.references)).thenReturn(
-        "http://www.catalogueoflife.org/annual-checklist/details/species/id/39ed89a52a61ef3a59eef66b9ce8ad7e");
+    when(record.get(CoLTaxonCsvField.references)).thenReturn("http://www.catalogueoflife.org/annual-checklist/details/species/id/39ed89a52a61ef3a59eef66b9ce8ad7e");
 
-    CoLTaxonTransformer coLTaxonTransformer = new CoLTaxonTransformer(etlStatistics);
+    CoLTaxonTransformer colTaxonTransformer = new CoLTaxonTransformer(etlStatistics);
+    String[] testGenera = new String[] {"malus", "parus", "larus", "bombus", "rhododendron", "felix", "tulipa", "rosa", "canis", "passer", "trientalis"};
+    Whitebox.setInternalState(colTaxonTransformer, "testGenera", testGenera);
 
-    CommonReflectionUtil.setField(AbstractTransformer.class, coLTaxonTransformer, "objectID",
-        "6931872");
-    CommonReflectionUtil.setField(AbstractTransformer.class, coLTaxonTransformer, "input", record);
+    CommonReflectionUtil.setField(AbstractTransformer.class, colTaxonTransformer, "objectID", "6931872");
+    CommonReflectionUtil.setField(AbstractTransformer.class, colTaxonTransformer, "input", record);
 
-    Object returned =
-        ReflectionUtil.call(coLTaxonTransformer, "isTestSetGenus", new Class[] {}, new Object[] {});
-
+    Object returned = ReflectionUtil.call(colTaxonTransformer, "isTestSetGenus", new Class[] {}, new Object[] {});
     boolean isTestGenus = (boolean) returned;
-
     assertTrue(isTestGenus);
   }
 

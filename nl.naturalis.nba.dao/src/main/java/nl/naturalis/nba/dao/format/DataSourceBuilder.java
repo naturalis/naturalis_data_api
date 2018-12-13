@@ -23,6 +23,7 @@ class DataSourceBuilder {
 		DataSource dataSource = new DataSource();
 		dataSource.setMapping(getMapping());
 		dataSource.setQuerySpec(getQuerySpec());
+		dataSource.setDocumentType(getDocument());
 		return dataSource;
 	}
 
@@ -77,6 +78,10 @@ class DataSourceBuilder {
 		if (querySpecConfig == null)
 			return null;
 		return new QuerySpecBuilder(querySpecConfig).build();
+	}
+	
+	private String getDocument() {
+	  return dataSourceConfig.getDocument();
 	}
 
 }

@@ -72,6 +72,8 @@ class FieldBuilder {
 	{
 		String name = fieldConfig.getName();
 		URI term = getTerm(fieldConfig);
+		Boolean isCoreId = fieldConfig.isIsCoreId();
+		
 		Path path = new Path(fieldConfig.getPath().getValue());
 		boolean relative = hasRelativePath(fieldConfig);
 		if (dataSource.getMapping() != null) {
@@ -81,15 +83,16 @@ class FieldBuilder {
 			if (dataSource.getPath() == null) {
 				throw new FieldConfigurationException(name, ERR_RELATIVE_PATH);
 			}
-			return fieldFactory.createEntityDataField(name, term, path, dataSource);
+			return fieldFactory.createEntityDataField(name, term, isCoreId, path, dataSource);
 		}
-		return fieldFactory.createDocumentDataField(name, term, path, dataSource);
+		return fieldFactory.createDocumentDataField(name, term, isCoreId, path, dataSource);
 	}
 
 	IField createCalculatedField(FieldXmlConfig fieldConfig) throws DataSetConfigurationException
 	{
 		String name = fieldConfig.getName();
 		URI term = getTerm(fieldConfig);
+		Boolean isCoreId = fieldConfig.isIsCoreId();
 		String className = fieldConfig.getCalculator().getJavaClass();
 		ICalculator calculator = getCalculator(name, className);
 		Map<String, String> args = null;
@@ -106,15 +109,16 @@ class FieldBuilder {
 				throw new FieldConfigurationException(name, e.getMessage());
 			}
 		}
-		return fieldFactory.createdCalculatedField(name, term, calculator);
+		return fieldFactory.createdCalculatedField(name, term, isCoreId, calculator);
 	}
 
 	IField createConstantField(FieldXmlConfig fieldConfig) throws FieldConfigurationException
 	{
 		String name = fieldConfig.getName();
 		URI term = getTerm(fieldConfig);
+		Boolean isCoreId = fieldConfig.isIsCoreId();
 		String value = fieldConfig.getConstant();
-		return fieldFactory.createConstantField(name, term, value);
+		return fieldFactory.createConstantField(name, term, isCoreId, value);
 	}
 
 	private void validatePath(Path path, boolean relative, String fieldName)

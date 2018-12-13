@@ -136,7 +136,8 @@ class DwcaPreparator {
 	{
 		IField[] entityFields = entity.getFields();
 		List<Field> metaXmlFields = new ArrayList<>(entityFields.length);
-		for (int i = 0; i < entityFields.length; i++) {
+		// Skip the first field by default to prevent adding the id column to the meta.xml file 
+		for (int i = 1; i < entityFields.length; i++) {
 			IField entityField = entityFields[i];
 			URI term = entityField.getTerm();
 			if (term == null) {

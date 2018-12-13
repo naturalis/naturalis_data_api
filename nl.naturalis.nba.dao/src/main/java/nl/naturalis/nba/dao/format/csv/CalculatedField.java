@@ -18,9 +18,9 @@ class CalculatedField extends AbstractField {
 
 	private ICalculator calculator;
 
-	CalculatedField(String name, URI term, ICalculator calculator)
+	CalculatedField(String name, URI term, Boolean isCoreId, ICalculator calculator)
 	{
-		super(name, term);
+		super(name, term, isCoreId);
 		this.calculator = calculator;
 	}
 

@@ -6,6 +6,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 import nl.naturalis.nba.dao.format.DocumentFlattenerTest;
 import nl.naturalis.nba.dao.format.calc.NamePublishedInCalculatorTest;
+import nl.naturalis.nba.dao.format.dwca.DwcaWriterTest;
 import nl.naturalis.nba.dao.translate.BetweenConditionTranslatorTest;
 import nl.naturalis.nba.dao.translate.ConditionCollectorTest;
 import nl.naturalis.nba.dao.translate.ConditionTranslatorFactoryTest;
@@ -54,7 +55,8 @@ import nl.naturalis.nba.dao.util.es.ESUtilTest;
 	SpecimenDaoTest_Matches.class,
 	SpecimenDaoTest_Miscellaneous.class,
 	SpecimenDaoTest_SortingSizingPaging.class,
-	SpecimenDaoTest_DwcaTest.class
+	SpecimenDaoTest_DwcaTest.class,
+	DwcaWriterTest.class
 })
 //@formatter:on
 public class AllTests {

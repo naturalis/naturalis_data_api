@@ -23,9 +23,9 @@ class EntityDateField extends AbstractField {
 
 	private PathValueReader pvr;
 
-	EntityDateField(String name, URI term, Path path)
+	EntityDateField(String name, URI term, Boolean isCoreId, Path path)
 	{
-		super(name, term);
+		super(name, term, isCoreId);
 		this.pvr = new PathValueReader(path);
 	}
 

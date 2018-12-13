@@ -14,9 +14,9 @@
 	<name>NBA DAO layer</name>
 	<description>The data access layer of the NBA. Regulates interaction with the Elasticsearch backend</description>
 
-	
+
 	<properties>
-			<main.basedir>${project.parent.basedir}</main.basedir>
+		<main.basedir>${project.parent.basedir}</main.basedir>
 	</properties>
 
 	<dependencies>
@@ -79,10 +79,10 @@
 			<artifactId>opencsv</artifactId>
 		</dependency>
 		<dependency>
-		    <groupId>com.univocity</groupId>
-		    <artifactId>univocity-parsers</artifactId>
-		    <version>2.7.5</version>
-		</dependency>		
+			<groupId>com.univocity</groupId>
+			<artifactId>univocity-parsers</artifactId>
+			<version>2.7.5</version>
+		</dependency>
 		<dependency>
 			<!-- Needed b/c elasticsearch doesn't hide it behind its API -->
 			<groupId>org.apache.lucene</groupId>
@@ -99,6 +99,26 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-all</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-core</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-module-junit4</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-api-mockito</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

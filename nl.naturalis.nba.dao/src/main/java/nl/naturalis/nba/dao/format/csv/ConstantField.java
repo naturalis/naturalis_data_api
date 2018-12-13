@@ -17,9 +17,9 @@ class ConstantField extends AbstractField {
 
 	private String value;
 
-	ConstantField(String name, URI term, String value)
+	ConstantField(String name, URI term, Boolean isCoreId, String value)
 	{
-		super(name, term);
+		super(name, term, isCoreId);
 		this.value = value;
 	}
 

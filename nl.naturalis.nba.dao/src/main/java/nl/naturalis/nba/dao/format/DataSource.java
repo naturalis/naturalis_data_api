@@ -3,6 +3,7 @@ package nl.naturalis.nba.dao.format;
 import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.common.es.map.Mapping;
+import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.format.config.DataSourceXmlConfig;
 
 /**
@@ -22,6 +23,7 @@ public class DataSource {
 	private Mapping<?> mapping;
 	private Path path;
 	private QuerySpec querySpec;
+	private DocumentType<?> dt;
 
 	DataSource()
 	{
@@ -62,5 +64,14 @@ public class DataSource {
 	{
 		this.querySpec = querySpec;
 	}
+
+  public DocumentType<?> getDocumentType() {
+    return dt;
+  }
+
+  public void setDocumentType(String document) {
+    
+    this.dt = DocumentType.forName(document);
+  }
 
 }

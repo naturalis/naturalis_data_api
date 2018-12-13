@@ -26,7 +26,7 @@ import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.SpecimenTypeStatus;
 import nl.naturalis.nba.api.model.VernacularName;
-import nl.naturalis.nba.common.json.JsonUtil;
+
 import nl.naturalis.nba.etl.AbstractTransformer;
 import nl.naturalis.nba.etl.AllTests;
 import nl.naturalis.nba.etl.ETLStatistics;

@@ -1,3 +1,9 @@
+RELEASE NOTES v 2.18
+* NBA now uses Elasticsearch version 5.6.13 as its
+  document store and search engine
+* The download service of Darwin Core Archives (DwCA)
+  has been extended to include multimedia  
+
 RELEASE NOTES v 2.17
 * Several (minor) modifications to the data model
   to meet data requirements of two new data sets.

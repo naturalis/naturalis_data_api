@@ -4,7 +4,7 @@ import static nl.naturalis.nba.api.model.Sex.FEMALE;
 import static nl.naturalis.nba.api.model.Sex.MALE;
 import static nl.naturalis.nba.api.model.SourceSystem.BRAHMS;
 import static nl.naturalis.nba.api.model.SourceSystem.CRS;
-import static nl.naturalis.nba.api.model.SourceSystem.NDFF;
+import static nl.naturalis.nba.api.model.SourceSystem.OBS;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -150,7 +150,7 @@ public class SpecimenMock {
 	{
 		Specimen specimen = new Specimen();
 		specimen.setUnitID("309801857");
-		specimen.setSourceSystem(NDFF);
+		specimen.setSourceSystem(OBS);
 		specimen.setPhaseOrStage("egg");
 		specimen.setNumberOfSpecimen(4);
 		GatheringEvent gathering = new GatheringEvent();

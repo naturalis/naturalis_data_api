@@ -10,7 +10,6 @@ public class SourceSystem implements INbaModelObject {
 	private static final String CODE_COL    = "COL";
 	private static final String CODE_NSR    = "NSR";
 	private static final String CODE_GEO    = "GEO";
-	private static final String CODE_NDFF   = "NDFF";
 	private static final String CODE_XC     = "XC";
 	private static final String CODE_OBS    = "OBS";
 
@@ -19,7 +18,6 @@ public class SourceSystem implements INbaModelObject {
 	private static final String NAME_COL    = "Species 2000 - Catalogue Of Life";
 	private static final String NAME_NSR    = "Naturalis - Dutch Species Register";
 	private static final String NAME_GEO    = "Naturalis - Geo Areas";
-	private static final String NAME_NDFF   = "NDFF - Nationale Databank Flora en Fauna";
 	private static final String NAME_XC     = "Xeno-canto.org - Bird sounds";
 	private static final String NAME_OBS    = "Observation.org - Nature observations";
 
@@ -28,13 +26,12 @@ public class SourceSystem implements INbaModelObject {
 	public static final SourceSystem COL    = new SourceSystem(CODE_COL, NAME_COL);
 	public static final SourceSystem NSR    = new SourceSystem(CODE_NSR, NAME_NSR);
 	public static final SourceSystem GEO    = new SourceSystem(CODE_GEO, NAME_GEO);
-	public static final SourceSystem NDFF   = new SourceSystem(CODE_NDFF, NAME_NDFF);
 	public static final SourceSystem XC     = new SourceSystem(CODE_XC, NAME_XC);
 	public static final SourceSystem OBS    = new SourceSystem(CODE_OBS, NAME_OBS);
 
 	public static SourceSystem[] getAllSourceSystems()
 	{
-		return new SourceSystem[] { BRAHMS, COL, CRS, GEO, NDFF, NSR, XC, OBS };
+		return new SourceSystem[] { BRAHMS, COL, CRS, GEO, NSR, XC, OBS };
 	}
 
 	@JsonCreator
@@ -51,8 +48,6 @@ public class SourceSystem implements INbaModelObject {
 					return COL;
 				case CODE_NSR:
 					return NSR;
-				case CODE_NDFF:
-					return NDFF;
 				case CODE_GEO:
 					return GEO;
 				case CODE_XC:
@@ -71,8 +66,6 @@ public class SourceSystem implements INbaModelObject {
 				return COL;
 			case NAME_NSR:
 				return NSR;
-			case NAME_NDFF:
-				return NDFF;
 			case NAME_GEO:
 				return GEO;
 			case NAME_XC:

@@ -7,7 +7,6 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.api.model.DefaultClassification;
@@ -35,14 +34,6 @@ public class SynonymIdCalculatorTest {
   @Before
   public void init() throws URISyntaxException
   {
-    /*
-     * nsr data:
-     * <nsr_id>11E0A704FE3</nsr_id>                                                                                                               
-     * <nsr_id_parent>E0CCED34D8E</nsr_id_parent>
-     * <url>http://nederlandsesoorten.nl/nsr/concept/011E0A704FE3</url>
-     *   
-     * nba-test: http://145.136.242.167:8080/v2/taxon/find/11E0A704FE3@NSR
-     */
     String nsr_id = "11E0A704FE3";
     String nsr_parent_id = "E0CCED34D8E";
     String nsr_url = "http://nederlandsesoorten.nl/nsr/concept/011E0A704FE3";
@@ -104,19 +95,16 @@ public class SynonymIdCalculatorTest {
     taxon.setSynonyms(synonyms);
   }
 
-  @Ignore
   @Test
   public void testCalculateValue() throws CalculationException
   {
-    DocumentFlattener df = new DocumentFlattener(new Path("synonyms"), 1);
-    List<EntityObject> synonyms = df.flatten(taxon);
-    EntityObject synonym = synonyms.get(0);
+    long expected = 0xFFFFFE18DB5D1287L;                      
 
+    DocumentFlattener df = new DocumentFlattener(new Path("synonyms"), 1);
+    List<EntityObject> entities = df.flatten(taxon);
+    EntityObject entity = entities.get(0);
     SynonymIdCalculator calculator = new SynonymIdCalculator();
-    long expected = 0xFFFFFE18FF84458AL;  // Calculated
-    long gbif = 0xFFFFFE18EF453AB3L;      // Gbif "FFFFFE18EF453AB3"
-    assertEquals("01", Long.toHexString(expected).toUpperCase(), calculator.calculateValue(synonym));
-    
+    assertEquals("01", Long.toHexString(expected).toUpperCase(), calculator.calculateValue(entity));    
   }
 
 }

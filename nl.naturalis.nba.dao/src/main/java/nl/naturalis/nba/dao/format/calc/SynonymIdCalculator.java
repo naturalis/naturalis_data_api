@@ -32,7 +32,11 @@ public class SynonymIdCalculator implements ICalculator {
 		ScientificName synonym = (ScientificName) entity.getEntity();
 		long hash = taxon.getSourceSystemId().hashCode();
 		hash = (hash * 31) + hash(synonym.getFullScientificName());
-		hash = (hash * 31) + hash(synonym.getTaxonomicStatus());
+		// NOTE: Enum uses the hashCode method of Object. This means the hash will
+		// change. To get a stable hash code we use the ordinal instead.
+		if (synonym.getTaxonomicStatus() != null) {
+		  hash = (hash * 31) + synonym.getTaxonomicStatus().ordinal() + 1;		  
+		}
 		return Long.toHexString(hash).toUpperCase();
 	}
 

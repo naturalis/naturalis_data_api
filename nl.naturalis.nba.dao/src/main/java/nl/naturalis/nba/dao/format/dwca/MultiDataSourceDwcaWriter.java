@@ -91,11 +91,11 @@ class MultiDataSourceDwcaWriter implements IDwcaWriter {
 
   private void writeCsvFilesForDataSet(RandomEntryZipOutputStream rezos) throws DataSetConfigurationException, DataSetWriteException, IOException {
 
-    logger.info(">>> Number of csv files to create: " + cfg.getDataSet().getEntities().length);
-
+    HashSet<String> done = new HashSet<>(); // Keeps track of whether the header for an entity has been printed already
+    
     for (Entity entity : cfg.getDataSet().getEntities()) {
       String fileName = cfg.getCsvFileName(entity);
-      logger.info(">>> Creating csv file for entity {} ({})", entity.getName(), entity.getDataSource().getDocumentType());
+      logger.info("Writing csv file for entity {} ({})", entity.getName(), entity.getDataSource().getDocumentType());
 
       QuerySpec query = entity.getDataSource().getQuerySpec();
       DocumentType<?> dt = entity.getDataSource().getDocumentType();
@@ -107,11 +107,14 @@ class MultiDataSourceDwcaWriter implements IDwcaWriter {
       } catch (InvalidQueryException e) {
         throw new DataSetConfigurationException(e);
       }
-
+      
       MultiDataSourceSearchHitHandler handler = new MultiDataSourceSearchHitHandler(entity, fileName, rezos);
-      logger.info("Writing csv file for " + entity.getName());
       try {
-        handler.printHeaders();
+        if (!done.contains(fileName)) // Check if the header for this csv file has been printed already 
+        {
+          handler.printHeaders();
+          done.add(fileName);
+        }
         scroller.scroll(handler);
         handler.logStatistics();
         rezos.flush();

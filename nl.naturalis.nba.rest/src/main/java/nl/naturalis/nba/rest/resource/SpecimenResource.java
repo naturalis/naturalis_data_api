@@ -1,6 +1,7 @@
 package nl.naturalis.nba.rest.resource;
 
 import static nl.naturalis.nba.rest.util.ResourceUtil.JSON_CONTENT_TYPE;
+import static nl.naturalis.nba.rest.util.ResourceUtil.NDJSON_CONTENT_TYPE;
 import static nl.naturalis.nba.rest.util.ResourceUtil.TEXT_CONTENT_TYPE;
 import static nl.naturalis.nba.rest.util.ResourceUtil.ZIP_CONTENT_TYPE;
 import static nl.naturalis.nba.rest.util.ResourceUtil.handleError;
@@ -50,7 +51,6 @@ import nl.naturalis.nba.rest.util.HttpQuerySpecBuilder;
 @Api(value = "specimen")
 @Path("/specimen")
 @Produces({"application/json", "application/xml"})
-@SuppressWarnings("static-method")
 public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
 
   private static final Logger logger = LogManager.getLogger(SpecimenResource.class);
@@ -68,7 +68,7 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
       value = "Dynamic download service: Query for specimens and return result as a stream ...",
       response = Response.class,
       notes = "Query with query parameters or querySpec JSON. ...")
-  @Produces(JSON_CONTENT_TYPE)
+  @Produces(NDJSON_CONTENT_TYPE)
   @ApiImplicitParams({@ApiImplicitParam(
       name = "collectionType", 
       value = "Example query param",
@@ -88,7 +88,7 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
       response = Response.class,
       notes = "Query with query parameters or querySpec JSON. ...")
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-  @Produces(JSON_CONTENT_TYPE)
+  @Produces(NDJSON_CONTENT_TYPE)
   @ApiImplicitParams({@ApiImplicitParam(
       name = "collectionType", 
       value = "Example query param",
@@ -110,7 +110,7 @@ public class SpecimenResource extends NbaResource<Specimen, SpecimenDao> {
       response = Response.class,
       notes = "Query with query parameters or querySpec JSON. ...")
   @Consumes(JSON_CONTENT_TYPE)
-  @Produces(JSON_CONTENT_TYPE)
+  @Produces(NDJSON_CONTENT_TYPE)
   @ApiImplicitParams({@ApiImplicitParam(
       name = "collectionType", 
       value = "Example query param",

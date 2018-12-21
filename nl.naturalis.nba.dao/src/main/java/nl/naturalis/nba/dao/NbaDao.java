@@ -222,15 +222,17 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
     DirtyDocumentIterator<T> iterator = new DirtyDocumentIterator<>(dt, querySpec);
     Writer writer = new BufferedWriter(new OutputStreamWriter(out), 4096);
 
+    /*
+     * The output will be in NDJSON format which means:
+     * - no square brackets (at beginning / end)
+     * - one object per line, 
+     * - delimited by a new line character
+     */
     try {
-      writer.write("[");
       while (iterator.hasNext()) {
         writer.write(JsonUtil.toJson(iterator.next()));
         if (iterator.hasNext()) {
-          writer.write(",");
-        }
-        else {
-          writer.write("]");          
+          writer.write(System.lineSeparator());
         }
         writer.flush();
       }

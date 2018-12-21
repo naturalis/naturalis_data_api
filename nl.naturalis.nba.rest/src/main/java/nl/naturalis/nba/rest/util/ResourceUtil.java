@@ -19,6 +19,16 @@ public class ResourceUtil {
 	 * constant does not include the charset specification.
 	 */
 	public static final String JSON_CONTENT_TYPE = "application/json;charset=UTF-8";
+	
+	/**
+	 * The NDJSON format (also called Newline delimited JSON) is a convenient 
+	 * format for storing or streaming structured data that may be processed one record 
+	 * at a time. Its specs ({@link Produces https://github.com/ndjson/ndjson-spec#33-mediatype-and-file-extensions}) 
+	 * define the media-type as: "application/x-ndjson". We have chosen to follow the specs,
+	 * although there appears to be some discussion over whether the type shouldn't be 
+	 * defined as: "application/ndjson".
+	 */
+	public static final String NDJSON_CONTENT_TYPE = "application/x-ndjson;charset=UTF-8";
 
 	public static final String TEXT_CONTENT_TYPE = "text/plain;charset=UTF-8";
 	

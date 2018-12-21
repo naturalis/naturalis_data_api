@@ -43,7 +43,7 @@ public class CreateTestDocumentTest {
   @Test
   public void testCreateSpecimenTestDoc() throws Exception {
     
-    logger.info(">>> Specimen test document");
+    // Creating and deleting a Specimen test document
     
     Specimen specimen = CreateTestDocument.generateSpecimen();
     String id = specimen.getId();
@@ -51,8 +51,6 @@ public class CreateTestDocumentTest {
     specimen.setId(null);
     ETLDaoUtil.saveObject(id, null, specimen, true);
    
-    logger.info("Specimen test id: " + id);
-    
     SpecimenMetaDataDao specimenMetaDataDao = new SpecimenMetaDataDao();
     String[] paths = specimenMetaDataDao.getPaths(false);
 
@@ -86,7 +84,7 @@ public class CreateTestDocumentTest {
   @Test
   public void testCreateMultiMediaObjectTestDoc() throws Exception {
     
-    logger.info("MultiMediaObject test document");
+    // Creating and deleting a MultiMediaObject test document
     
     MultiMediaObject multimedia = CreateTestDocument.generateMultiMediaObject();
     String id = multimedia.getId();
@@ -94,8 +92,6 @@ public class CreateTestDocumentTest {
     multimedia.setId(null);
     ETLDaoUtil.saveObject(id, null, multimedia, true);
    
-    logger.info("MultiMediaObject test id: " + id);
-    
     MultiMediaObjectMetaDataDao multimediaMetaDataDao = new MultiMediaObjectMetaDataDao();
     String[] paths = multimediaMetaDataDao.getPaths(false);
 
@@ -115,7 +111,6 @@ public class CreateTestDocumentTest {
           path.equals("identifications.taxonomicEnrichments.taxonId")
          ) continue;  // unitGUID, identifications.taxonomicEnrichments.taxonId and associatedMultiMediaUris.accessUri are not indexed
                       // gatheringEvent.siteCoordinates.geoShape cannot be searched with EQUALS
-      
       qs.addCondition(condition_id);
       qs.addCondition(new QueryCondition(path, NOT_EQUALS, null));
       qs.setLogicalOperator(AND);
@@ -125,5 +120,4 @@ public class CreateTestDocumentTest {
     dao.delete(id, true);
   }
 
-  
 }

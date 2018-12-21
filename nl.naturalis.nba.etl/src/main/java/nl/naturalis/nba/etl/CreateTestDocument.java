@@ -90,8 +90,7 @@ public class CreateTestDocument {
       docCreator.createTestDocs();      
     }
   }
-  
-  @SuppressWarnings("static-method")
+
   public void createTestDocs() {
 
     Specimen specimen;
@@ -128,7 +127,6 @@ public class CreateTestDocument {
     logger.info("");
   }
   
-  @SuppressWarnings("static-method")
   public void deleteTestDocs() {
     
     Client client = ESUtil.esClient();

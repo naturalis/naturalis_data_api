@@ -32,6 +32,7 @@ import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.IndicesAdminClient;
 import org.elasticsearch.common.bytes.BytesReference;
+import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.IdsQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
@@ -188,7 +189,7 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
     }
     IndexRequestBuilder request = ESUtil.esClient().prepareIndex(index, type, id);
     byte[] source = JsonUtil.serialize(apiObject);
-    request.setSource(source);
+    request.setSource(source, XContentType.JSON);
     IndexResponse response = request.execute().actionGet();
     if (immediate) {
       IndicesAdminClient iac = ESUtil.esClient().admin().indices();
@@ -212,13 +213,12 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
     return response.getResult() == Result.DELETED;
   }
 
-  public void downloadQuery(QuerySpec querySpec, OutputStream out)
-      throws InvalidQueryException, IOException {
+  public void downloadQuery(QuerySpec querySpec, OutputStream out) throws InvalidQueryException, IOException {
+
     if (logger.isDebugEnabled()) {
       logger.debug(printCall("downloadQuery", querySpec, out));
     }
 
-    //querySpec.setSize(100);
     DirtyDocumentIterator<T> iterator = new DirtyDocumentIterator<>(dt, querySpec);
     Writer writer = new BufferedWriter(new OutputStreamWriter(out), 4096);
 
@@ -263,7 +263,7 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
   private QueryResult<T> createSearchResult(SearchRequestBuilder request) {
     SearchResponse response = executeSearchRequest(request);
     QueryResult<T> result = new QueryResult<>();
-    result.setTotalSize(response.getHits().totalHits());
+    result.setTotalSize(response.getHits().getTotalHits());
     result.setResultSet(createItems(response));
     return result;
   }

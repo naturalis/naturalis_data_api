@@ -6,14 +6,18 @@ import static nl.naturalis.nba.api.SortOrder.ASC;
 import static nl.naturalis.nba.api.SortOrder.DESC;
 import static nl.naturalis.nba.dao.util.es.ESUtil.createIndex;
 import static nl.naturalis.nba.dao.util.es.ESUtil.deleteIndex;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import org.apache.logging.log4j.Logger;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -22,6 +26,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QuerySpec;
@@ -29,11 +34,16 @@ import nl.naturalis.nba.api.SortField;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.dao.mock.AggregationSpecimensMock;
 
-@SuppressWarnings("static-method")
+/**
+ * Class containing unit tests for the aggregation methods:
+ * - count()
+ * - countDistinctValues()
+ * - getDistinctValues()
+ *
+ */
 public class SpecimenDaoTest_Aggregations {
 
-  private static final Logger logger =
-      DaoRegistry.getInstance().getLogger(SpecimenDaoTest_Aggregations.class);
+  private static final Logger logger = DaoRegistry.getInstance().getLogger(SpecimenDaoTest_Aggregations.class);
 
   static Specimen specimen01;
   static Specimen specimen02;
@@ -68,8 +78,19 @@ public class SpecimenDaoTest_Aggregations {
     specimen10 = AggregationSpecimensMock.specimen10();
     specimen11 = AggregationSpecimensMock.specimen11();
     specimen12 = AggregationSpecimensMock.specimen12();
-    DaoTestUtil.saveSpecimens(specimen01, specimen02, specimen03, specimen04, specimen05,
-        specimen06, specimen07, specimen08, specimen09, specimen10, specimen11, specimen12);
+    DaoTestUtil.saveSpecimens(
+        specimen01, 
+        specimen02, 
+        specimen03, 
+        specimen04, 
+        specimen05, 
+        specimen06, 
+        specimen07, 
+        specimen08, 
+        specimen09, 
+        specimen10,
+        specimen11, 
+        specimen12);
   }
 
   @AfterClass
@@ -132,8 +153,7 @@ public class SpecimenDaoTest_Aggregations {
    * Test countDistinctValuesPerGroup
    */
   @Test
-  public void testCountDistinctValuesPerGroup()
-      throws JsonParseException, JsonMappingException, IOException, InvalidQueryException {
+  public void testCountDistinctValuesPerGroup() throws JsonParseException, JsonMappingException, IOException, InvalidQueryException {
     SpecimenDao dao = new SpecimenDao();
     QuerySpec querySpec;
     String field;
@@ -202,26 +222,23 @@ public class SpecimenDaoTest_Aggregations {
    */
   @Test
   public void testGetDistinctValues_01() throws InvalidQueryException {
+
     SpecimenDao dao = new SpecimenDao();
     Map<String, Long> result = dao.getDistinctValues("recordBasis", null);
 
-    assertEquals("01", 5, result.size());
-    Iterator<Map.Entry<String, Long>> entries = result.entrySet().iterator();
-    Map.Entry<String, Long> entry = entries.next();
-    assertEquals("02", "PreservedSpecimen", entry.getKey());
-    assertEquals("03", new Long(5), entry.getValue());
-    entry = entries.next();
-    assertEquals("04", "OtherSpecimen", entry.getKey());
-    assertEquals("05", new Long(2), entry.getValue());
-    entry = entries.next();
-    assertEquals("06", "Wood sample", entry.getKey());
-    assertEquals("07", new Long(2), entry.getValue());
-    entry = entries.next();
-    assertEquals("08", "Herbarium sheet", entry.getKey());
-    assertEquals("09", new Long(2), entry.getValue());
-    entry = entries.next();
-    assertEquals("10", "FossilSpecimen", entry.getKey());
-    assertEquals("11", new Long(1), entry.getValue());
+    Map<String, Long> expectedResult = new HashMap<String, Long>();
+    expectedResult.put("PreservedSpecimen", new Long(5));
+    expectedResult.put("Herbarium sheet", new Long(2));
+    expectedResult.put("OtherSpecimen", new Long(2));
+    expectedResult.put("Wood sample", new Long(2));
+    expectedResult.put("FossilSpecimen", new Long(1));
+
+    assertEquals("01", expectedResult.size(), result.size());
+    int i = 1;
+    for (Entry<String, Long> partialResult : expectedResult.entrySet()) {
+      assertTrue("0" + i++, result.keySet().contains(partialResult.getKey()));
+      assertEquals("0" + i++, partialResult.getValue(), result.get(partialResult.getKey()));
+    }
   }
 
   /*
@@ -229,26 +246,24 @@ public class SpecimenDaoTest_Aggregations {
    */
   @Test
   public void testGetDistinctValues_02() throws InvalidQueryException {
+
     SpecimenDao dao = new SpecimenDao();
     String field = "identifications.defaultClassification.family";
     Map<String, Long> result = dao.getDistinctValues(field, null);
-    assertEquals("01", 5, result.size());
-    Iterator<Map.Entry<String, Long>> entries = result.entrySet().iterator();
-    Map.Entry<String, Long> entry = entries.next();
-    assertEquals("02", "Compositae", entry.getKey());
-    assertEquals("03", new Long(6), entry.getValue());
-    entry = entries.next();
-    assertEquals("04", "Apidae", entry.getKey());
-    assertEquals("05", new Long(1), entry.getValue());
-    entry = entries.next();
-    assertEquals("05", "Ussuritidae", entry.getKey());
-    assertEquals("06", new Long(1), entry.getValue());
-    entry = entries.next();
-    assertEquals("07", "Mytilidae", entry.getKey());
-    assertEquals("08", new Long(1), entry.getValue());
-    entry = entries.next();
-    assertEquals("09", "Naticidae", entry.getKey());
-    assertEquals("10", new Long(1), entry.getValue());
+
+    Map<String, Long> expectedResult = new HashMap<String, Long>();
+    expectedResult.put("Compositae", new Long(6));
+    expectedResult.put("Apidae", new Long(1));
+    expectedResult.put("Mytilidae", new Long(1));
+    expectedResult.put("Naticidae", new Long(1));
+    expectedResult.put("Ussuritidae", new Long(1));
+
+    assertEquals("01", expectedResult.size(), result.size());
+    int i = 1;
+    for (Entry<String, Long> partialResult : expectedResult.entrySet()) {
+      assertTrue("0" + i++, result.keySet().contains(partialResult.getKey()));
+      assertEquals("0" + i++, partialResult.getValue(), result.get(partialResult.getKey()));
+    }
   }
 
   /*
@@ -256,6 +271,7 @@ public class SpecimenDaoTest_Aggregations {
    */
   @Test
   public void testGetDistinctValues_03() throws InvalidQueryException {
+
     SpecimenDao dao = new SpecimenDao();
     String field = "identifications.defaultClassification.family";
     QuerySpec querySpec = new QuerySpec();
@@ -263,23 +279,19 @@ public class SpecimenDaoTest_Aggregations {
     querySpec.addCondition(condition);
     Map<String, Long> result = dao.getDistinctValues(field, querySpec);
 
-    assertEquals("01", 5, result.size());
-    Iterator<Map.Entry<String, Long>> entries = result.entrySet().iterator();
-    Map.Entry<String, Long> entry = entries.next();
-    assertEquals("02", "Compositae", entry.getKey());
-    assertEquals("03", new Long(6), entry.getValue());
-    entry = entries.next();
-    assertEquals("04", "Apidae", entry.getKey());
-    assertEquals("05", new Long(1), entry.getValue());
-    entry = entries.next();
-    assertEquals("05", "Ussuritidae", entry.getKey());
-    assertEquals("06", new Long(1), entry.getValue());
-    entry = entries.next();
-    assertEquals("07", "Mytilidae", entry.getKey());
-    assertEquals("08", new Long(1), entry.getValue());
-    entry = entries.next();
-    assertEquals("09", "Naticidae", entry.getKey());
-    assertEquals("10", new Long(1), entry.getValue());
+    Map<String, Long> expectedResult = new HashMap<String, Long>();
+    expectedResult.put("Compositae", new Long(6));
+    expectedResult.put("Apidae", new Long(1));
+    expectedResult.put("Ussuritidae", new Long(1));
+    expectedResult.put("Mytilidae", new Long(1));
+    expectedResult.put("Naticidae", new Long(1));
+
+    assertEquals("01", expectedResult.size(), result.size());
+    int i = 1;
+    for (Entry<String, Long> partialResult : expectedResult.entrySet()) {
+      assertTrue("0" + i++, result.keySet().contains(partialResult.getKey()));
+      assertEquals("0" + i++, partialResult.getValue(), result.get(partialResult.getKey()));
+    }
   }
 
   /*
@@ -321,8 +333,7 @@ public class SpecimenDaoTest_Aggregations {
    * Test getDistinctValuesPerGroup
    */
   @Test
-  public void testGetDistinctValuesPerGroup()
-      throws JsonParseException, JsonMappingException, IOException, InvalidQueryException {
+  public void testGetDistinctValuesPerGroup() throws JsonParseException, JsonMappingException, IOException, InvalidQueryException {
     SpecimenDao dao = new SpecimenDao();
     String field;
     String group;
@@ -381,6 +392,7 @@ public class SpecimenDaoTest_Aggregations {
 
   public static boolean jsonListEquals(Class<?> unitTestClass, String actual, String jsonFile)
       throws JsonParseException, JsonMappingException, IOException {
+
     InputStream input = unitTestClass.getResourceAsStream(jsonFile);
     ObjectMapper objectMapper = new ObjectMapper();
     List<Map<String, Object>> expected = objectMapper.readValue(input, new TypeReference<List<Map<String, Object>>>() {});

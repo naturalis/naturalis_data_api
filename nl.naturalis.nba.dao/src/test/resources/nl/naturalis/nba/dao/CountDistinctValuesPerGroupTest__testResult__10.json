@@ -1,60 +1,60 @@
 [
-  {
-    "identifications.defaultClassification.className": "Magnoliopsida",
-    "count": 6,
-    "values": [
-      {
-        "identifications.scientificName.genusOrMonomial": "Taraxacum",
-        "count": 3
-      },
-      {
-        "identifications.scientificName.genusOrMonomial": "Stevia",
-        "count": 2
-      },
-      {
-        "identifications.scientificName.genusOrMonomial": "Filago",
-        "count": 1
-      }
-    ]
-  },
-  {
-    "identifications.defaultClassification.className": "Insecta",
-    "count": 1,
-    "values": [
-      {
-        "identifications.scientificName.genusOrMonomial": "Bombus",
-        "count": 1
-      }
-    ]
-  },
-  {
-    "identifications.defaultClassification.className": "Bivalvia",
-    "count": 1,
-    "values": [
-      {
-        "identifications.scientificName.genusOrMonomial": "Musculus",
-        "count": 1
-      }
-    ]
-  },
-  {
-    "identifications.defaultClassification.className": "Gastropoda",
-    "count": 1,
-    "values": [
-      {
-        "identifications.scientificName.genusOrMonomial": "Tectonatica",
-        "count": 1
-      }
-    ]
-  },
-  {
-    "identifications.defaultClassification.className": "Cephalopoda",
-    "count": 1,
-    "values": [
-      {
-        "identifications.scientificName.genusOrMonomial": "Ussurites",
-        "count": 1
-      }
-    ]
-  }
+    {
+        "identifications.defaultClassification.className" : "Magnoliopsida",
+        "count" : 6,
+        "values" : [
+            {
+                "identifications.scientificName.genusOrMonomial" : "Taraxacum",
+                "count" : 3
+            },
+            {
+                "identifications.scientificName.genusOrMonomial" : "Stevia",
+                "count" : 2
+            },
+            {
+                "identifications.scientificName.genusOrMonomial" : "Filago",
+                "count" : 1
+            }
+        ]
+    },
+    {
+        "identifications.defaultClassification.className" : "Bivalvia",
+        "count" : 1,
+        "values" : [
+            {
+                "identifications.scientificName.genusOrMonomial" : "Musculus",
+                "count" : 1
+            }
+        ]
+    },
+    {
+        "identifications.defaultClassification.className" : "Cephalopoda",
+        "count" : 1,
+        "values" : [
+            {
+                "identifications.scientificName.genusOrMonomial" : "Ussurites",
+                "count" : 1
+            }
+        ]
+    },
+    {
+        "identifications.defaultClassification.className" : "Gastropoda",
+        "count" : 1,
+        "values" : [
+            {
+                "identifications.scientificName.genusOrMonomial" : "Tectonatica",
+                "count" : 1
+            }
+        ]
+    },
+    {
+        "identifications.defaultClassification.className" : "Insecta",
+        "count" : 1,
+        "values" : [
+            {
+                "identifications.scientificName.genusOrMonomial" : "Bombus",
+                "count" : 1
+            }
+        ]
+    }
 ]

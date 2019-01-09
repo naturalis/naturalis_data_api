@@ -8,6 +8,8 @@ package nl.naturalis.nba.dao.exception;
  */
 public class InitializationException extends DaoException {
 
+  private static final long serialVersionUID = 1L;
+  
 	/**
 	 * @param message
 	 */

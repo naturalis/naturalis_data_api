@@ -32,7 +32,7 @@ public class CountAggregation<T extends IDocumentObject> extends AggregationQuer
   @Override
   public Long getResult() throws InvalidQueryException {
     SearchResponse response = executeQuery();
-    return new Long(response.getHits().totalHits());
+    return new Long(response.getHits().getTotalHits());
   }
 
 }

@@ -21,6 +21,8 @@ import java.util.Set;
 public class ConfigObject {
 
 	public static class ConfigObjectException extends RuntimeException {
+	  
+	  private static final long serialVersionUID = 1L;
 
 		public ConfigObjectException(String message)
 		{
@@ -32,6 +34,8 @@ public class ConfigObject {
 	 * Exception thrown when a required property turns out to be missing
 	 */
 	public static class MissingPropertyException extends ConfigObjectException {
+	  
+	  private static final long serialVersionUID = 1L;
 
 		private MissingPropertyException(String property)
 		{
@@ -45,6 +49,8 @@ public class ConfigObject {
 	 */
 	public static class PropertyNotSetException extends ConfigObjectException {
 
+	  private static final long serialVersionUID = 1L;
+	  
 		private PropertyNotSetException(String property)
 		{
 			super("Property not set: " + property);
@@ -57,6 +63,8 @@ public class ConfigObject {
 	 */
 	public static class InvalidValueException extends RuntimeException {
 
+	  private static final long serialVersionUID = 1L;
+	  
 		private InvalidValueException(String property, String value)
 		{
 			super(String.format("Invalid value specified for property %s: \"%s\"", property,

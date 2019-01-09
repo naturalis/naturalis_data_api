@@ -91,9 +91,12 @@ public class GeoImporter {
 		GeoLoader loader = null;
 		try {
 			extractor = createExtractor(f, fileStats);
+		  // Watch out: the geojson column can be very (very!) wide
+			extractor.setMaxCharsPerColumn(10000000); 
 			transformer = new GeoTransformer(fileStats);
 			loader = new GeoLoader(fileStats, esBulkRequestSize);
 			for (CSVRecordInfo<GeoCsvField> rec : extractor) {
+			  if (rec == null) continue;
 				loader.queue(transformer.transform(rec));
 				if (fileStats.recordsProcessed != 0 && fileStats.recordsProcessed % 100 == 0) {
 					logger.info("Records processed: {}", fileStats.recordsProcessed);

@@ -15,6 +15,8 @@ import nl.naturalis.nba.api.model.TaxonomicRank;
  */
 public class NameMismatchException extends Exception {
 
+  private static final long serialVersionUID = 1L;
+  
 	private static final String MSG_PAT = "Mismatch between %s in classification and scientific name: \"%s\", \"%s\"";
 
 	/**

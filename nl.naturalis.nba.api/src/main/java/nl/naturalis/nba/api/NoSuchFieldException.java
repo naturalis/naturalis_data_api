@@ -11,7 +11,9 @@ import static java.lang.String.format;
  */
 public class NoSuchFieldException extends NbaException {
 
-	private Path path;
+  private static final long serialVersionUID = 7239043960633546032L;
+
+  private Path path;
 	private Path element;
 
 	public NoSuchFieldException(Path path)

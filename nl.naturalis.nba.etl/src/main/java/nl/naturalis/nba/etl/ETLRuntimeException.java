@@ -9,7 +9,9 @@ package nl.naturalis.nba.etl;
  */
 public class ETLRuntimeException extends RuntimeException {
 
-	public ETLRuntimeException()
+  private static final long serialVersionUID = 1L;
+
+  public ETLRuntimeException()
 	{
 	}
 

@@ -1,30 +1,32 @@
 package nl.naturalis.nba.etl;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static nl.naturalis.nba.utils.StringUtil.lchop;
 import static nl.naturalis.nba.utils.StringUtil.lpad;
-import static java.nio.charset.StandardCharsets.UTF_8;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
-import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.util.Iterator;
 
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
 import org.apache.logging.log4j.Logger;
+
+import com.univocity.parsers.common.record.Record;
+import com.univocity.parsers.csv.CsvFormat;
+import com.univocity.parsers.csv.CsvParser;
+import com.univocity.parsers.csv.CsvParserSettings;
+import com.univocity.parsers.common.TextParsingException;
 
 import nl.naturalis.nba.utils.IOUtil;
 
 /**
  * A generic CSV extraction component taking raw CSV lines as input and
- * outputting commons-csv {@code CSVRecordInfo} instances.
+ * outputting {@code CSVRecordInfo} instances.
  * 
  * @author Ayco Holleman
+ * @author Tom Gilissen
  *
  */
 public class CSVExtractor<T extends Enum<T>> implements Iterator<CSVRecordInfo<T>>,
@@ -40,11 +42,13 @@ public class CSVExtractor<T extends Enum<T>> implements Iterator<CSVRecordInfo<T
 	 */
 	public static class NoSuchFieldException extends ETLRuntimeException {
 
+	  private static final long serialVersionUID = 1L;
+	  
 		static final String MSG = "Specified field number (%s) exceeds number of fields in CSV record (%s)";
 
-		public NoSuchFieldException(CSVRecord record, int fieldNo)
+		public NoSuchFieldException(Record record, int fieldNo)
 		{
-			super(String.format(MSG, fieldNo, record.size()));
+		  super(String.format(MSG, fieldNo, record.getValues().length));
 		}
 	}
 
@@ -54,9 +58,10 @@ public class CSVExtractor<T extends Enum<T>> implements Iterator<CSVRecordInfo<T
 	private final ETLStatistics stats;
 
 	private boolean skipHeader;
-	private CSVFormat csvFormat;
+	private CsvFormat csvFormat;
 	private char delimiter;
 	private Charset charset;
+	private int maxCharsPerColumn = 4096;
 	private boolean suppressErrors;
 
 	private LineNumberReader lnr;
@@ -103,7 +108,7 @@ public class CSVExtractor<T extends Enum<T>> implements Iterator<CSVRecordInfo<T
 	 * 
 	 * @return
 	 */
-	public CSVFormat getCsvFormat()
+	public CsvFormat getCsvFormat()
 	{
 		return csvFormat;
 	}
@@ -113,7 +118,7 @@ public class CSVExtractor<T extends Enum<T>> implements Iterator<CSVRecordInfo<T
 	 * 
 	 * @param csvFormat
 	 */
-	public void setCsvFormat(CSVFormat csvFormat)
+	public void setCsvFormat(CsvFormat csvFormat)
 	{
 		this.csvFormat = csvFormat;
 	}
@@ -157,8 +162,27 @@ public class CSVExtractor<T extends Enum<T>> implements Iterator<CSVRecordInfo<T
 	{
 		this.charset = charset.equals(UTF_8) ? UTF_8 : charset;
 	}
+	
+	/**
+	 * Returns the maximum number of characters to read in each column.
+	 * The default is 4096 characters.
+	 * 
+	 * @return
+	 */
+	public int getMaxCharsPerColumn() {
+    return maxCharsPerColumn;
+  }
 
 	/**
+	 * Set the maximum number of characters to read in each column.
+	 * 
+	 * @param maxCharsPerColumn
+	 */
+  public void setMaxCharsPerColumn(int maxCharsPerColumn) {
+    this.maxCharsPerColumn = maxCharsPerColumn;
+  }
+
+  /**
 	 * Whether to suppress WARN and ERROR messages, but let through INFO
 	 * messages. This might make log files easier to read if you expect a lot of
 	 * well-known, but not soon-to-be-solved errors.
@@ -185,8 +209,10 @@ public class CSVExtractor<T extends Enum<T>> implements Iterator<CSVRecordInfo<T
 	{
 		if (lnr != null)
 			IOUtil.close(lnr);
-		if (csvFormat == null)
-			csvFormat = CSVFormat.DEFAULT.withDelimiter(delimiter);
+		if (csvFormat == null) {
+		  csvFormat = new CsvFormat();
+		  csvFormat.setDelimiter(delimiter);
+		}
 		try {
 			FileInputStream fis = new FileInputStream(csvFile);
 			InputStreamReader isr = new InputStreamReader(fis, charset);
@@ -214,32 +240,34 @@ public class CSVExtractor<T extends Enum<T>> implements Iterator<CSVRecordInfo<T
 		if (lnr == null || line == null) {
 			throw new IllegalStateException("Iterator not initialized");
 		}
-		if (charset != UTF_8)
+		if (charset != UTF_8) {
 			line = new String(line.getBytes(UTF_8));
-		try {
-			CSVParser parser = CSVParser.parse(line, csvFormat);
-			CSVRecord record = (CSVRecord) nextRecordMethod.invoke(parser);
-			return new CSVRecordInfo<>(record, line, lnr.getLineNumber());
 		}
-		catch (Throwable t) {
-			stats.badInput++;
-			if (!suppressErrors) {
-				// Seriously lame, but so thinks common-csv itself (see comments
-				// inside their source code)
-				while (t.getCause() != null)
-					t = t.getCause();
-				String msg;
-				if (t instanceof IOException)
-					msg = message(lnr.getLineNumber(), lchop(t.getMessage(), "(line 1) "));
-				else
-					msg = message(lnr.getLineNumber(), t.getMessage());
-				logger.error(msg);
-			}
-			return null;
-		}
-		finally {
-			line = nextLine(lnr);
-		}
+    CsvParserSettings settings = new CsvParserSettings();
+    settings.getFormat().setDelimiter(delimiter);
+    settings.setMaxCharsPerColumn(maxCharsPerColumn);
+    CsvParser parser = new CsvParser(settings);
+    try {
+      Record record = parser.parseRecord(line);      
+      return new CSVRecordInfo<>(record, line, lnr.getLineNumber());
+    }
+    catch (Throwable t) {
+      stats.badInput++;
+      if (!suppressErrors) {
+        String msg;
+        if (t instanceof IOException)
+          msg = message(lnr.getLineNumber(), lchop(t.getMessage(), "(line 1) "));
+        else if (t instanceof TextParsingException)
+          msg = message(lnr.getLineNumber(), "Line could not be parsed!");
+        else
+          msg = message(lnr.getLineNumber(), t.getMessage());
+        logger.error(msg);
+      }
+      return null;
+    }
+    finally {
+      line = nextLine(lnr);
+    }
 	}
 
 	@Override
@@ -308,20 +336,4 @@ public class CSVExtractor<T extends Enum<T>> implements Iterator<CSVRecordInfo<T
 		return "Line " + lpad(line, 6, '0', " | ") + msg;
 	}
 
-	/*
-	 * All this reflection (see below) is pretty lame, but given the current
-	 * state of commons-csv it seemed like the best option.
-	 */
-
-	private static final Method nextRecordMethod;
-
-	static {
-		try {
-			nextRecordMethod = CSVParser.class.getDeclaredMethod("nextRecord");
-			nextRecordMethod.setAccessible(true);
-		}
-		catch (Throwable t) {
-			throw new ETLRuntimeException(t);
-		}
-	}
 }

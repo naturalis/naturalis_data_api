@@ -18,6 +18,8 @@ import nl.naturalis.nba.common.json.JsonUtil;
  * @param <V>
  */
 public class QueryCache<V> extends LinkedHashMap<QuerySpec, V> {
+  
+  private static final long serialVersionUID = 1L;
 
 	private static Logger logger = getLogger(QueryCache.class);
 

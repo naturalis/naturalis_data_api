@@ -12,7 +12,9 @@ import java.lang.reflect.Method;
  */
 public class ClassCircularityException extends MappingException {
 
-	private static String MSG_PATTERN = "Illegal recursive nesting of type %s in %s %s";
+  private static final long serialVersionUID = 2858646853346371035L;
+
+  private static String MSG_PATTERN = "Illegal recursive nesting of type %s in %s %s";
 
 	public ClassCircularityException(Field field, Class<?> type)
 	{

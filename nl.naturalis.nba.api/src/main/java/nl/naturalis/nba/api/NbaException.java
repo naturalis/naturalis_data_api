@@ -8,7 +8,9 @@ package nl.naturalis.nba.api;
  */
 public class NbaException extends Exception {
 
-	public NbaException()
+  private static final long serialVersionUID = 1L;
+
+  public NbaException()
 	{
 	}
 

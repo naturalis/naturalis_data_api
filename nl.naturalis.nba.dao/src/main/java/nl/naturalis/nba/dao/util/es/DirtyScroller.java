@@ -83,7 +83,7 @@ public class DirtyScroller implements IScroller {
 		String uidStart = dt.getName() + '#';
 		SCROLL_LOOP: do {
 			SearchResponse response = executeSearchRequest(request);
-			SearchHit[] hits = response.getHits().hits();
+			SearchHit[] hits = response.getHits().getHits();
 			if (hits.length == 0) {
 				break;
 			}

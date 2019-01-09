@@ -91,10 +91,10 @@ public class AcidScroller implements IScroller {
 		Client client = ESClientManager.getInstance().getClient();
 		SCROLL_LOOP: do {
 			// Ignore everything before the from-th document
-			if (i + response.getHits().hits().length < from) {
-				i += response.getHits().hits().length;
+			if (i + response.getHits().getHits().length < from) {
+				i += response.getHits().getHits().length;
 			}
-			for (SearchHit hit : response.getHits().hits()) {
+			for (SearchHit hit : response.getHits().getHits()) {
 				if (size != 0 && i >= to) {
 					break SCROLL_LOOP;
 				}

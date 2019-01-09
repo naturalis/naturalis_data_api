@@ -9,6 +9,8 @@ package nl.naturalis.nba.etl;
  */
 public class InitializationException extends RuntimeException {
 
+  private static final long serialVersionUID = 1L;
+  
 	/**
 	 * @param message
 	 */

@@ -12,7 +12,9 @@ import static java.lang.String.format;
  */
 public class IllegalOperatorException extends InvalidConditionException {
 
-	public IllegalOperatorException(Path field, ComparisonOperator operator)
+  private static final long serialVersionUID = 2974180028453747230L;
+
+  public IllegalOperatorException(Path field, ComparisonOperator operator)
 	{
 		this(field.toString(), operator);
 	}

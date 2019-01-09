@@ -8,6 +8,8 @@ import javax.ws.rs.core.UriInfo;
  *
  */
 public class HTTP400Exception extends RESTException {
+  
+  private static final long serialVersionUID = 1L;
 
 	public HTTP400Exception(UriInfo uriInfo, String message)
 	{

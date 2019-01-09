@@ -8,7 +8,9 @@ package nl.naturalis.nba.dao.exception;
  */
 public class ConnectionFailureException extends DaoException {
 
-	private static final String PREFIX = "Error while connecting to Elasticsearch cluster. ";
+  private static final long serialVersionUID = 1L;
+
+  private static final String PREFIX = "Error while connecting to Elasticsearch cluster. ";
 
 	public ConnectionFailureException(String message)
 	{

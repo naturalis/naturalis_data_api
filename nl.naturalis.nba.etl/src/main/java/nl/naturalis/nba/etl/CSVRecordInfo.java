@@ -1,13 +1,14 @@
 package nl.naturalis.nba.etl;
 
+import com.univocity.parsers.common.record.Record;
+
 import nl.naturalis.nba.etl.CSVExtractor.NoSuchFieldException;
 
-import org.apache.commons.csv.CSVRecord;
-
 /**
- * Immutable class wrapping a commons-csv {@link CSVRecord} instance.
+ * Immutable class wrapping a univocity-csv {@link Record} instance.
  * 
  * @author Ayco Holleman
+ * @author Tom Gilissen
  *
  * @param <T>
  *            An enum class whose constants symbolize the fields in the CSV
@@ -18,11 +19,11 @@ import org.apache.commons.csv.CSVRecord;
  */
 public final class CSVRecordInfo<T extends Enum<T>> {
 
-	private final CSVRecord record;
+	private final Record record;
 	private final String line;
 	private final int lineNumber;
 
-	public CSVRecordInfo(CSVRecord record, String line, int lineNumber)
+	public CSVRecordInfo(Record record, String line, int lineNumber)
 	{
 		this.record = record;
 		this.line = line;
@@ -57,12 +58,13 @@ public final class CSVRecordInfo<T extends Enum<T>> {
 	public String get(T field, boolean emptyIsNull)
 	{
 		int fieldNo = field.ordinal();
-		if (fieldNo < record.size()) {
+		int size = record.getValues().length;
+		if (fieldNo < size) {
 			if (emptyIsNull) {
-				String s = record.get(fieldNo).trim();
+				String s = record.getValue(fieldNo, "").trim();
 				return s.length() == 0 ? null : s;
 			}
-			return record.get(fieldNo);
+			return record.getValue(fieldNo, "");
 		}
 		throw new NoSuchFieldException(record, fieldNo);
 	}

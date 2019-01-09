@@ -163,7 +163,7 @@ public class DirtyDocumentIterator<T extends IDocumentObject> implements IDocume
 			throw new DaoException(e);
 		}
 		SearchResponse response = executeSearchRequest(request);
-		batch = response.getHits().hits();
+		batch = response.getHits().getHits();
 		if (batch.length > 0) {
 			lastUid = dt.getName() + '#' + batch[batch.length - 1].getId();
 		}
@@ -188,7 +188,7 @@ public class DirtyDocumentIterator<T extends IDocumentObject> implements IDocume
 		}
 		request.searchAfter(new String[] { lastUid });
 		SearchResponse response = executeSearchRequest(request);
-		batch = response.getHits().hits();
+		batch = response.getHits().getHits();
 		if (batch.length > 0) {
 			lastUid = dt.getName() + '#' + batch[batch.length - 1].getId();
 		}

@@ -8,7 +8,9 @@ package nl.naturalis.nba.api;
  */
 public class InvalidConditionException extends InvalidQueryException {
 
-	public InvalidConditionException(String message)
+  private static final long serialVersionUID = 2216319724491803720L;
+
+  public InvalidConditionException(String message)
 	{
 		super(message);
 	}

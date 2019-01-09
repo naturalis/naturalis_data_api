@@ -2,7 +2,9 @@ package nl.naturalis.nba.common.es.map;
 
 public class MappingException extends RuntimeException {
 
-	public MappingException(String message)
+  private static final long serialVersionUID = 8625874695224740933L;
+
+  public MappingException(String message)
 	{
 		super(message);
 	}

@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.csv.CSVRecord;
 import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.api.model.DefaultClassification;

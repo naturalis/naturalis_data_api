@@ -55,9 +55,6 @@
         <apache-commons-io.version>2.6</apache-commons-io.version>
         <apache-commons-lang3.version>3.5</apache-commons-lang3.version>
         <apache-commons-text.version>1.1</apache-commons-text.version>
-        <!-- 
-        <apache-commons-csv.version>1.4</apache-commons-csv.version>
-        -->
         <apache-commons-compress.version>1.18</apache-commons-compress.version>
         <apache-logging.version>2.7</apache-logging.version>
 
@@ -65,9 +62,6 @@
         <apache-lucene.version>6.6.1</apache-lucene.version>
 
         <osgi.version>4.3.1</osgi.version>
-        <!-- 
-        <com.opencsv.version>4.2</com.opencsv.version>
-        -->
         <com.univocity.version>2.7.5</com.univocity.version>
         <com.lmax.disruptor.version>3.3.5</com.lmax.disruptor.version>
         <com.conversantmedia.disruptor.version>1.2.8-JDK7</com.conversantmedia.disruptor.version>
@@ -245,15 +239,6 @@
                 <artifactId>commons-compress</artifactId>
                 <version>${apache-commons-compress.version}</version>
             </dependency>
-
-            <!-- 
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-csv</artifactId>
-                <version>${apache-commons-csv.version}</version>
-            </dependency>
-            -->
-            
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-api</artifactId>
@@ -405,21 +390,11 @@
                 <artifactId>spatial4j</artifactId>
                 <version>${spatial4j.version}</version>
             </dependency>
-            <!-- 
-            <dependency>
-                <groupId>com.opencsv</groupId>
-                <artifactId>opencsv</artifactId>
-                <version>${com.opencsv.version}</version>
-            </dependency>
-             -->
             <dependency>
             <groupId>com.univocity</groupId>
                 <artifactId>univocity-parsers</artifactId>
                 <version>${com.univocity.version}</version>
             </dependency>
-            
-
-
 
             <!-- TEST -->
             <dependency>

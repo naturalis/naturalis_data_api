@@ -13,6 +13,8 @@ import nl.naturalis.nba.dao.DocumentType;
  *
  */
 public class HTTP404Exception extends RESTException {
+  
+  private static final long serialVersionUID = 1L;
 
 	public HTTP404Exception(UriInfo uriInfo, DocumentType<?> type, String id)
 	{

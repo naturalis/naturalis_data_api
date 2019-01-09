@@ -10,7 +10,9 @@ import org.elasticsearch.action.bulk.BulkResponse;
 
 public class BulkIndexException extends Exception {
 
-	private int bulkRequestSize;
+  private static final long serialVersionUID = 1L;
+
+  private int bulkRequestSize;
 	private List<BulkIndexFailure> failures;
 
 	public BulkIndexException(BulkResponse response, Collection<?> objs)

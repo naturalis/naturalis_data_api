@@ -14,7 +14,6 @@
     <name>NBA DAO layer</name>
     <description>The data access layer of the NBA. Regulates interaction with the Elasticsearch backend</description>
 
-
     <properties>
         <main.basedir>${project.parent.basedir}</main.basedir>
     </properties>
@@ -74,17 +73,10 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
         </dependency>
-<!-- 
-        <dependency>
-            <groupId>com.opencsv</groupId>
-            <artifactId>opencsv</artifactId>
-        </dependency>
- -->
         <dependency>
             <groupId>com.univocity</groupId>
             <artifactId>univocity-parsers</artifactId>
-            <version>2.7.5</version>
-        </dependency>
+            </dependency>
         <dependency>
             <!-- Needed b/c elasticsearch doesn't hide it behind its API -->
             <groupId>org.apache.lucene</groupId>

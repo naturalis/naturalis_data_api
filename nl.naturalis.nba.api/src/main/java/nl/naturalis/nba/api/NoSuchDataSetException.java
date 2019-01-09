@@ -10,7 +10,9 @@ package nl.naturalis.nba.api;
  */
 public class NoSuchDataSetException extends NbaException {
 
-	public NoSuchDataSetException(String dataSet)
+  private static final long serialVersionUID = 1117508667976656515L;
+
+  public NoSuchDataSetException(String dataSet)
 	{
 		super(String.format("No such data set: \"%s\"", dataSet));
 	}

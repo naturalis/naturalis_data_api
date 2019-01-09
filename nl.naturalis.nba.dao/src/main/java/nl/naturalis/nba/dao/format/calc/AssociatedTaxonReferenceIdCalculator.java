@@ -1,10 +1,9 @@
 package nl.naturalis.nba.dao.format.calc;
 
-import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static nl.naturalis.nba.dao.format.FormatUtil.EMPTY_STRING;
 
 import java.util.Map;
-import org.apache.logging.log4j.Logger;
+
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.dao.format.CalculationException;
@@ -21,8 +20,6 @@ import nl.naturalis.nba.dao.format.ICalculator;
  */
 public class AssociatedTaxonReferenceIdCalculator implements ICalculator {
   
-  private static final Logger logger = getLogger(AssociatedTaxonReferenceIdCalculator.class);
-
   @Override
   public void initialize(Class<? extends IDocumentObject> docType, Map<String, String> args) throws CalculatorInitializationException 
   {

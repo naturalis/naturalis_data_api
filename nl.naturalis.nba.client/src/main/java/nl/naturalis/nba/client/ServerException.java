@@ -22,7 +22,9 @@ import nl.naturalis.nba.utils.debug.BeanPrinter;
  */
 public class ServerException extends RuntimeException {
 
-	@SuppressWarnings("unused")
+  private static final long serialVersionUID = 5323619448077539890L;
+
+  @SuppressWarnings("unused")
 	private static Logger logger = LogManager.getLogger(ServerException.class);
 
 	static ServerException newServerException(int status, byte[] response)

@@ -9,7 +9,9 @@ package nl.naturalis.nba.client;
  */
 public class ClientException extends RuntimeException {
 
-	public ClientException(String message)
+  private static final long serialVersionUID = 1717810212157737191L;
+
+  public ClientException(String message)
 	{
 		super(message);
 	}

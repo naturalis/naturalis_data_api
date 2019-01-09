@@ -10,6 +10,8 @@ import nl.naturalis.nba.dao.exception.DaoException;
  *
  */
 public class DwcaCreationException extends DaoException {
+  
+  private static final long serialVersionUID = 1L;
 
 	public DwcaCreationException(String message)
 	{

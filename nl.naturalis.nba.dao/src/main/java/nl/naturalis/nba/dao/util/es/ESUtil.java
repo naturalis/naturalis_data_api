@@ -77,14 +77,14 @@ public class ESUtil {
    */
   public static <T extends IDocumentObject> T toDocumentObject(SearchHit hit, DocumentType<T> dt) {
     byte[] json;
-    if (hit.sourceRef() == null) {
+    if (hit.getSourceRef() == null) {
       /*
        * This happens if the user specified a zero-size List for QuerySpec.fields. See
        * QuerySpecTranslator.
        */
       json = "{}".getBytes();
     } else {
-      json = BytesReference.toBytes(hit.sourceRef());
+      json = BytesReference.toBytes(hit.getSourceRef());
     }
     T obj = JsonUtil.deserialize(dt.getObjectMapper(), json, dt.getJavaType());
     obj.setId(hit.getId());
@@ -120,7 +120,7 @@ public class ESUtil {
     }
     SearchResponse response = request.get();
     if (logger.isDebugEnabled()) {
-      logger.debug("Documents found: {}", response.getHits().totalHits());
+      logger.debug("Documents found: {}", response.getHits().getTotalHits());
     }
     return response;
   }

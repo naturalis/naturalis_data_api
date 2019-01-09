@@ -19,6 +19,8 @@ import nl.naturalis.nba.common.rest.ServerInfo;
  *
  */
 public class RESTException extends RuntimeException {
+  
+  private static final long serialVersionUID = 1L;
 
 	private Status status;
 	private UriInfo request;

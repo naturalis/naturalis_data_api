@@ -196,7 +196,7 @@ public class AcidDocumentIterator<T extends IDocumentObject> implements IDocumen
 			SearchResponse response = executeSearchRequest(request);
 			size = response.getHits().getTotalHits();
 			scrollId = response.getScrollId();
-			hits = response.getHits().hits();
+			hits = response.getHits().getHits();
 			ready = true;
 		}
 	}
@@ -206,7 +206,7 @@ public class AcidDocumentIterator<T extends IDocumentObject> implements IDocumen
 		SearchScrollRequestBuilder ssrb = client.prepareSearchScroll(scrollId);
 		SearchResponse response = ssrb.setScroll(timeout).get();
 		scrollId = response.getScrollId();
-		hits = response.getHits().hits();
+		hits = response.getHits().getHits();
 		hitCounter = 0;
 	}
 

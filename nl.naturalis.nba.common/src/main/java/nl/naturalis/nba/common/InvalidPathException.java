@@ -2,7 +2,9 @@ package nl.naturalis.nba.common;
 
 public class InvalidPathException extends RuntimeException {
 
-	public InvalidPathException(String message)
+  private static final long serialVersionUID = 2846174292210652255L;
+
+  public InvalidPathException(String message)
 	{
 		super(message);
 	}

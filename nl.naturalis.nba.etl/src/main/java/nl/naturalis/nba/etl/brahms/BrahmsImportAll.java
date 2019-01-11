@@ -16,14 +16,18 @@ import java.io.File;
 import java.nio.charset.Charset;
 
 import org.apache.logging.log4j.Logger;
-
+import nl.naturalis.nba.api.model.MultiMediaObject;
+import nl.naturalis.nba.api.model.Specimen;
+import nl.naturalis.nba.dao.DaoRegistry;
 import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.CSVExtractor;
 import nl.naturalis.nba.etl.CSVRecordInfo;
+import nl.naturalis.nba.etl.DocumentObjectWriter;
 import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.ETLUtil;
+import nl.naturalis.nba.etl.JsonNDWriter;
 import nl.naturalis.nba.etl.ThemeCache;
 import nl.naturalis.nba.etl.normalize.SpecimenTypeStatusNormalizer;
 import nl.naturalis.nba.utils.ConfigObject;
@@ -74,6 +78,7 @@ public class BrahmsImportAll {
 
 	private static final Logger logger = ETLRegistry.getInstance().getLogger(BrahmsImportAll.class);
 
+	private final boolean toFile;
 	private final boolean backup;
 	private final boolean parallel;
 
@@ -82,6 +87,7 @@ public class BrahmsImportAll {
 
 	public BrahmsImportAll()
 	{
+	  toFile = DaoRegistry.getInstance().getConfiguration().get("etl.output", "file").equals("file");
 		backup = ConfigObject.isEnabled("brahms.backup", true);
 		parallel = ConfigObject.isEnabled("brahms.parallel", true);
 		suppressErrors = ConfigObject.isEnabled(SYSPROP_SUPPRESS_ERRORS);
@@ -195,21 +201,30 @@ public class BrahmsImportAll {
 		CSVExtractor<BrahmsCsvField> extractor = null;
 		BrahmsSpecimenTransformer specimenTransformer = null;
 		BrahmsMultiMediaTransformer multimediaTransformer = null;
-		BrahmsSpecimenLoader specimenLoader = null;
-		BrahmsMultiMediaLoader multimediaLoader = null;
+		DocumentObjectWriter<Specimen> specimenLoader = null;
+		DocumentObjectWriter<MultiMediaObject> multimediaLoader = null;
 		try {
 			extractor = createExtractor(f, extractionStats);
 			specimenTransformer = new BrahmsSpecimenTransformer(specimenStats);
-			specimenLoader = new BrahmsSpecimenLoader(loaderQueueSize, specimenStats);
-			specimenLoader.suppressErrors(suppressErrors);
 			multimediaTransformer = new BrahmsMultiMediaTransformer(multimediaStats);
-			multimediaLoader = new BrahmsMultiMediaLoader(loaderQueueSize, multimediaStats);
-			multimediaLoader.suppressErrors(suppressErrors);
+
+			if (toFile) {
+	       logger.info("ETL Output: Writing the documents to the file system");
+	       specimenLoader = new BrahmsSpecimenJsonNDWriter(loaderQueueSize, specimenStats);
+	       multimediaLoader = new BrahmsMultiMediaJsonNDWriter(loaderQueueSize, multimediaStats);
+			}
+			else {
+			  logger.info("ETL Output: loading the documents into the document store");
+			  specimenLoader = new BrahmsSpecimenLoader(loaderQueueSize, specimenStats);
+			  specimenLoader.suppressErrors(suppressErrors);
+			  multimediaLoader = new BrahmsMultiMediaLoader(loaderQueueSize, multimediaStats);
+			  multimediaLoader.suppressErrors(suppressErrors);
+			}
 			for (CSVRecordInfo<BrahmsCsvField> rec : extractor) {
 				if (rec == null)
 					continue;
-				specimenLoader.queue(specimenTransformer.transform(rec));
-				multimediaLoader.queue(multimediaTransformer.transform(rec));
+				specimenLoader.write(specimenTransformer.transform(rec));
+				multimediaLoader.write(multimediaTransformer.transform(rec));
 				if (specimenStats.recordsProcessed != 0
 						&& specimenStats.recordsProcessed % 50000 == 0) {
 					logger.info("Records processed: {}", specimenStats.recordsProcessed);

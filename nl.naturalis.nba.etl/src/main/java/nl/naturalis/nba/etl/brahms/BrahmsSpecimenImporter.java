@@ -14,11 +14,13 @@ import java.io.File;
 import java.nio.charset.Charset;
 
 import org.apache.logging.log4j.Logger;
-
+import nl.naturalis.nba.api.model.Specimen;
+import nl.naturalis.nba.dao.DaoRegistry;
 import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.CSVExtractor;
 import nl.naturalis.nba.etl.CSVRecordInfo;
+import nl.naturalis.nba.etl.DocumentObjectWriter;
 import nl.naturalis.nba.etl.ETLRuntimeException;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.ETLUtil;
@@ -122,15 +124,22 @@ public class BrahmsSpecimenImporter {
 		ETLStatistics myStats = new ETLStatistics();
 		CSVExtractor<BrahmsCsvField> extractor = null;
 		BrahmsSpecimenTransformer transformer = null;
-		BrahmsSpecimenLoader loader = null;
+		DocumentObjectWriter<Specimen> loader = null;
 		try {
 			extractor = createExtractor(f, myStats);
 			transformer = new BrahmsSpecimenTransformer(myStats);
-			loader = new BrahmsSpecimenLoader(loaderQueueSize, myStats);
+			if (DaoRegistry.getInstance().getConfiguration().get("etl.output", "file").equals("file")) {
+			  logger.info("ETL Output: Writing the specimen documents to the file system");
+			  loader = new BrahmsSpecimenJsonNDWriter(loaderQueueSize, myStats);
+			}
+			else {
+			  logger.info("ETL Output: loading the specimen documents into the document store");
+			  loader = new BrahmsSpecimenLoader(loaderQueueSize, myStats);
+			}
 			for (CSVRecordInfo<BrahmsCsvField> rec : extractor) {
 				if (rec == null)
 					continue;
-				loader.queue(transformer.transform(rec));
+				loader.write(transformer.transform(rec));
 				if (myStats.recordsProcessed != 0 && myStats.recordsProcessed % 50000 == 0) {
 					logger.info("Records processed: {}", myStats.recordsProcessed);
 					logger.info("Documents indexed: {}", myStats.documentsIndexed);

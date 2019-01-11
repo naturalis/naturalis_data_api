@@ -14,11 +14,13 @@ import java.io.File;
 import java.nio.charset.Charset;
 
 import org.apache.logging.log4j.Logger;
-
+import nl.naturalis.nba.api.model.MultiMediaObject;
+import nl.naturalis.nba.dao.DaoRegistry;
 import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.CSVExtractor;
 import nl.naturalis.nba.etl.CSVRecordInfo;
+import nl.naturalis.nba.etl.DocumentObjectWriter;
 import nl.naturalis.nba.etl.ETLRuntimeException;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.ETLUtil;
@@ -127,15 +129,22 @@ public class BrahmsMultiMediaImporter {
 		myStats.setOneToMany(true);
 		CSVExtractor<BrahmsCsvField> extractor = null;
 		BrahmsMultiMediaTransformer transformer = null;
-		BrahmsMultiMediaLoader loader = null;
+		DocumentObjectWriter<MultiMediaObject> loader = null;
 		try {
 			extractor = createExtractor(f, myStats);
 			transformer = new BrahmsMultiMediaTransformer(myStats);
-			loader = new BrahmsMultiMediaLoader(loaderQueueSize, myStats);
+			if (DaoRegistry.getInstance().getConfiguration().get("etl.output", "file").equals("file")) {
+        logger.info("ETL Output: Writing the multimedia documents to the file system");
+        loader = new BrahmsMultiMediaJsonNDWriter(loaderQueueSize, myStats);
+			}
+			else {
+			  logger.info("ETL Output: loading the multimedia documents into the document store");
+			  loader = new BrahmsMultiMediaLoader(loaderQueueSize, myStats);
+			}
 			for (CSVRecordInfo<BrahmsCsvField> rec : extractor) {
 				if (rec == null)
 					continue;
-				loader.queue(transformer.transform(rec));
+				loader.write(transformer.transform(rec));
 				if (myStats.recordsProcessed != 0 && myStats.recordsProcessed % 50000 == 0) {
 					logger.info("Records processed: {}", myStats.recordsProcessed);
 					logger.info("Documents indexed: {}", myStats.documentsIndexed);

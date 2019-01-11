@@ -2,16 +2,11 @@ package nl.naturalis.nba.etl;
 
 import static nl.naturalis.nba.etl.ETLConstants.SYSPROP_DRY_RUN;
 import static nl.naturalis.nba.etl.ETLUtil.getLogger;
-
-import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
-
 import org.apache.logging.log4j.Logger;
-
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.utils.ConfigObject;
@@ -36,7 +31,7 @@ import nl.naturalis.nba.utils.ConfigObject;
  * @param <T>  The type of object to be converted to and stored as a JSON
  *             document
  */
-public abstract class Loader<T extends IDocumentObject> implements Closeable {
+public abstract class Loader<T extends IDocumentObject> implements DocumentObjectWriter<T> {
 
 	private static final Logger logger = getLogger(Loader.class);
 
@@ -77,17 +72,11 @@ public abstract class Loader<T extends IDocumentObject> implements Closeable {
 	}
 
 	
-	/**
-	 * Adds the specified objects to a queue of objects waiting to be indexed.
-	 * When the size of the queue reaches a certain treshold (specified through
-	 * the {@code queueSize} parameter of the constructor), all objects in the
-	 * queue are flushed at once to Elasticsearch. In other words, calling
-	 * {@code queue} does not necessarily immediately trigger the specified
-	 * objects to be indexed.
-	 * 
-	 * @param objects
-	 */
-	public final void queue(Collection<T> objects)
+	/* (non-Javadoc)
+   * @see nl.naturalis.nba.etl.DocumentObjectWriter#write(java.util.Collection)
+   */
+	@Override
+  public final void write(Collection<T> objects)
 	{
 		if (objects == null || objects.size() == 0) {
 			return;
@@ -124,16 +113,11 @@ public abstract class Loader<T extends IDocumentObject> implements Closeable {
 	}
 
 	
-	/**
-	 * Flushes the contents of the queue to ElasticSearch. While processing your
-	 * data sources you don't have to call this method explicitly as it is done
-	 * implicitly by the {@link #queue(List) queue} method once the queue fills
-	 * up. However, you <b>must</b> call this method yourself (e.g. in a finally
-	 * block) once all source data has been processed to make sure any remaining
-	 * objects in the queue are written to Elasticsearch. Alternatively, you can
-	 * set up a try-with-resources block to achieve the same.
-	 */
-	public void flush()
+	/* (non-Javadoc)
+   * @see nl.naturalis.nba.etl.DocumentObjectWriter#flush()
+   */
+	@Override
+  public void flush()
 	{
 		if (!objs.isEmpty()) {
 			try {

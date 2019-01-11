@@ -78,7 +78,7 @@ public class CoLTaxonImporter extends CoLImporter {
         if (rec == null)
           continue;
         List<Taxon> taxa = transformer.transform(rec);
-        loader.queue(taxa);
+        loader.write(taxa);
         if (stats.recordsProcessed != 0 && stats.recordsProcessed % 50000 == 0) {
           logger.info("Records processed: {}", stats.recordsProcessed);
           logger.info("Documents indexed: {}", stats.documentsIndexed);

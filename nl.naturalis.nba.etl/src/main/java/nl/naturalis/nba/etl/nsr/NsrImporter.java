@@ -112,10 +112,10 @@ public class NsrImporter {
 				logger.info("Processing file {}", f.getAbsolutePath());
 				for (XMLRecordInfo extracted : new NsrExtractor(f, taxonStats)) {
 					List<Taxon> taxa = tTransformer.transform(extracted);
-					taxonLoader.queue(taxa);
+					taxonLoader.write(taxa);
 					mTransformer.setTaxon(taxa == null ? null : taxa.get(0));
 					List<MultiMediaObject> multimedia = mTransformer.transform(extracted);
-					mediaLoader.queue(multimedia);
+					mediaLoader.write(multimedia);
 					if (taxonStats.recordsProcessed != 0
 							&& taxonStats.recordsProcessed % 5000 == 0) {
 						logger.info("Records processed: {}", taxonStats.recordsProcessed);
@@ -160,7 +160,7 @@ public class NsrImporter {
 				int i = 0;
 				for (XMLRecordInfo extracted : new NsrExtractor(f, stats)) {
 					List<Taxon> transformed = transformer.transform(extracted);
-					loader.queue(transformed);
+					loader.write(transformed);
 					if (++i % 5000 == 0) {
 						logger.info("Records processed: {}", i);
 						logger.info("Documents indexed: {}", stats.documentsIndexed);
@@ -212,7 +212,7 @@ public class NsrImporter {
 					List<Taxon> taxa = ntt.transform(extracted);
 					transformer.setTaxon(taxa == null ? null : taxa.get(0));
 					List<MultiMediaObject> multimedia = transformer.transform(extracted);
-					loader.queue(multimedia);
+					loader.write(multimedia);
 					if (stats.recordsProcessed % 5000 == 0) {
 						logger.info("Records processed: {}", stats.recordsProcessed);
 						logger.info("Documents indexed: {}", stats.documentsIndexed);

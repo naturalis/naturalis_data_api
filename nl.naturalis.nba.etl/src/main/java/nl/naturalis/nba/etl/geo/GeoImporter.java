@@ -97,7 +97,7 @@ public class GeoImporter {
 			loader = new GeoLoader(fileStats, esBulkRequestSize);
 			for (CSVRecordInfo<GeoCsvField> rec : extractor) {
 			  if (rec == null) continue;
-				loader.queue(transformer.transform(rec));
+				loader.write(transformer.transform(rec));
 				if (fileStats.recordsProcessed != 0 && fileStats.recordsProcessed % 100 == 0) {
 					logger.info("Records processed: {}", fileStats.recordsProcessed);
 					if (fileStats.documentsIndexed != 0) {

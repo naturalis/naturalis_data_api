@@ -134,7 +134,7 @@ public class CrsMultiMediaImportOffline {
 		}
 		for (XMLRecordInfo extracted : extractor) {
 			List<MultiMediaObject> transformed = transformer.transform(extracted);
-			loader.queue(transformed);
+			loader.write(transformed);
 			if (stats.recordsProcessed != 0 && stats.recordsProcessed % 50000 == 0) {
 				logger.info("Records processed: {}", stats.recordsProcessed);
 				logger.info("Documents indexed: {}", stats.documentsIndexed);

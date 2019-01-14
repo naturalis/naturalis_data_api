@@ -68,6 +68,7 @@ public class CoLTaxonImporter extends CoLImporter {
       ETLUtil.truncate(TAXON, SourceSystem.COL);
       stats = new ETLStatistics();
       extractor = createExtractor(stats, f);
+      extractor.setDelimiter('\t');
       transformer = new CoLTaxonTransformer(stats);
       transformer.setColYear(colYear);
       transformer.setSuppressErrors(suppressErrors);

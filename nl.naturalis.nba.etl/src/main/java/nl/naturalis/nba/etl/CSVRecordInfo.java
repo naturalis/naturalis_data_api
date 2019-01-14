@@ -1,5 +1,9 @@
 package nl.naturalis.nba.etl;
 
+import static nl.naturalis.nba.etl.ETLUtil.getLogger;
+import java.util.Arrays;
+import org.apache.logging.log4j.Logger;
+
 import com.univocity.parsers.common.record.Record;
 
 import nl.naturalis.nba.etl.CSVExtractor.NoSuchFieldException;
@@ -19,14 +23,16 @@ import nl.naturalis.nba.etl.CSVExtractor.NoSuchFieldException;
  */
 public final class CSVRecordInfo<T extends Enum<T>> {
 
+  private static final Logger logger = getLogger(CSVRecordInfo.class);
+  
 	private final Record record;
 	private final String line;
 	private final int lineNumber;
 
-	public CSVRecordInfo(Record record, String line, int lineNumber)
+	public CSVRecordInfo(Record record, int lineNumber)
 	{
 		this.record = record;
-		this.line = line;
+		this.line = Arrays.toString(record.getValues());
 		this.lineNumber = lineNumber;
 	}
 

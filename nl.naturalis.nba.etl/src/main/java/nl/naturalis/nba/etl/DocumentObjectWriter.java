@@ -28,7 +28,7 @@ public interface DocumentObjectWriter<T extends IDocumentObject> extends Closeab
    * objects in the queue are written to Elasticsearch. Alternatively, you can
    * set up a try-with-resources block to achieve the same.
    */
-  void flush();
+  default void flush() {};
   
   /**
    * Determines whether to suppress ERROR and WARN messages while still

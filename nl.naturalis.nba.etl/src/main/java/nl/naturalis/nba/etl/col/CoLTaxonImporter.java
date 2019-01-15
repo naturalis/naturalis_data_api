@@ -96,7 +96,7 @@ public class CoLTaxonImporter extends CoLImporter {
 
   private CSVExtractor<CoLTaxonCsvField> createExtractor(ETLStatistics stats, File f) {
     CSVExtractor<CoLTaxonCsvField> extractor;
-    extractor = new CSVExtractor<>(f, stats);
+    extractor = new CSVExtractor<>(f, CoLTaxonCsvField.class, stats);
     extractor.setSkipHeader(true);
     extractor.setDelimiter('\t');
     extractor.setSuppressErrors(suppressErrors);

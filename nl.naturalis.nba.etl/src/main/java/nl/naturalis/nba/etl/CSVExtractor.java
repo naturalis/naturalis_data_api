@@ -1,18 +1,15 @@
 package nl.naturalis.nba.etl;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-
-import static nl.naturalis.nba.utils.StringUtil.lchop;
 import static nl.naturalis.nba.utils.StringUtil.lpad;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Iterator;
 
 import org.apache.logging.log4j.Logger;
 
-import com.univocity.parsers.common.TextParsingException;
+import com.univocity.parsers.common.ParsingContext;
 import com.univocity.parsers.common.record.Record;
 import com.univocity.parsers.csv.CsvFormat;
 import com.univocity.parsers.csv.CsvParser;
@@ -39,7 +36,7 @@ public class CSVExtractor<T extends Enum<T>> implements Iterator<CSVRecordInfo<T
 
     private static final long serialVersionUID = 1L;
 
-    static final String MSG = "Specified field number (%s) exceeds number of fields in CSV record (%s)";
+    static final String MSG = "Number of fields (%s) exceeds number of fields in CSV record (%s)";
 
     public NoSuchFieldException(Record record, int fieldNo) {
       super(String.format(MSG, fieldNo, record.getValues().length));
@@ -52,16 +49,15 @@ public class CSVExtractor<T extends Enum<T>> implements Iterator<CSVRecordInfo<T
   
   private CsvParserSettings settings;
   private CsvParser parser;
+  private ParsingContext context;
   private Iterator<Record> iterator;
-  private int lineNumber = 0;
   
   private final ETLStatistics stats;
-  private boolean skipHeader;
   private CsvFormat csvFormat;
   private char delimiter;
   private Charset charset;
   private boolean suppressErrors;
-  
+  private int numFields;
 
   /**
    * Creates a CSV extractor for the specified CSV file and updating the specified statistics object
@@ -69,8 +65,8 @@ public class CSVExtractor<T extends Enum<T>> implements Iterator<CSVRecordInfo<T
    * 
    * @param csvFile
    * @param stats
-   */
-  public CSVExtractor(File csvFile, ETLStatistics stats) {
+   */  
+  public CSVExtractor(File csvFile, Class<? extends Enum<?>> csvClass, ETLStatistics stats) {
     checkEncoding();
     this.csvFile = csvFile;
     this.stats = stats;
@@ -78,7 +74,8 @@ public class CSVExtractor<T extends Enum<T>> implements Iterator<CSVRecordInfo<T
     this.charset = UTF_8;
     settings = new CsvParserSettings();
     settings.setSkipEmptyLines(true);
-    settings.getFormat().setDelimiter(delimiter);
+    setDelimiter(delimiter);
+    this.numFields = csvClass.getEnumConstants().length;
   }
 
   /**
@@ -87,7 +84,7 @@ public class CSVExtractor<T extends Enum<T>> implements Iterator<CSVRecordInfo<T
    * @return
    */
   public boolean isSkipHeader() {
-    return skipHeader;
+    return settings.isHeaderExtractionEnabled();
   }
 
   /**
@@ -96,9 +93,7 @@ public class CSVExtractor<T extends Enum<T>> implements Iterator<CSVRecordInfo<T
    * @param skipHeader
    */
   public void setSkipHeader(boolean skipHeader) {
-    this.skipHeader = skipHeader;
     settings.setHeaderExtractionEnabled(skipHeader);
-    lineNumber++;
   }
 
   /**
@@ -125,7 +120,7 @@ public class CSVExtractor<T extends Enum<T>> implements Iterator<CSVRecordInfo<T
    * @return
    */
   public char getDelimiter() {
-    return delimiter;
+    return settings.getFormat().getDelimiter();
   }
 
   /**
@@ -209,25 +204,18 @@ public class CSVExtractor<T extends Enum<T>> implements Iterator<CSVRecordInfo<T
   public CSVRecordInfo<T> next() {
     if (iterator == null)
       throw new IllegalStateException("Iterator not initialized");
-    try {
-      CSVRecordInfo<T> csvRecord = new CSVRecordInfo<>(iterator.next(), lineNumber);
-      lineNumber++;
+    
+      context = parser.getContext();
+      Long lineNumber = context.currentLine(); // CurrentLine is the line that's up for parsing next
+      Record record = iterator.next();
+      if (record.getValues().length != numFields) {
+        stats.badInput++;
+        String msg = String.format("Number of fields (%s) does not match the required number of fields (%s). Line has been skipped.", record.getValues().length, numFields);
+        logger.error(message(lineNumber, msg));
+        return null;
+      }
+      CSVRecordInfo<T> csvRecord = new CSVRecordInfo<>(record, lineNumber);
       return csvRecord;
-    } 
-    catch (Throwable t) {
-      stats.badInput++;
-      if (!suppressErrors) {
-        String msg;
-          if (t instanceof IOException)
-            msg = message(lineNumber, lchop(t.getMessage(), "(line 1) "));
-          else if (t instanceof TextParsingException)
-            msg = message(lineNumber, "Line could not be parsed!");
-          else
-            msg = message(lineNumber, t.getMessage());
-          logger.error(msg);
-      }
-      return null;
-      }
   }
 
   @Override
@@ -252,7 +240,7 @@ public class CSVExtractor<T extends Enum<T>> implements Iterator<CSVRecordInfo<T
     }
   }
 
-  private static String message(int line, String msg) {
+  private static String message(long line, String msg) {
     return "Line " + lpad(line, 6, '0', " | ") + msg;
   }
 

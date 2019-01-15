@@ -135,7 +135,7 @@ public class CoLVernacularNameBatchImporter {
 			ETLStatistics stats, File f)
 	{
 		CSVExtractor<CoLVernacularNameCsvField> extractor;
-		extractor = new CSVExtractor<>(f, stats);
+		extractor = new CSVExtractor<>(f, CoLVernacularNameCsvField.class, stats);
 		extractor.setSkipHeader(true);
 		extractor.setDelimiter('\t');
 		return extractor;

@@ -154,7 +154,7 @@ public class BrahmsMultiMediaImporter {
 
 	private CSVExtractor<BrahmsCsvField> createExtractor(File f, ETLStatistics stats)
 	{
-		CSVExtractor<BrahmsCsvField> extractor = new CSVExtractor<>(f, stats);
+		CSVExtractor<BrahmsCsvField> extractor = new CSVExtractor<>(f, BrahmsCsvField.class, stats);
 		extractor.setSkipHeader(true);
 		extractor.setDelimiter(',');
 		extractor.setCharset(Charset.forName("Windows-1252"));

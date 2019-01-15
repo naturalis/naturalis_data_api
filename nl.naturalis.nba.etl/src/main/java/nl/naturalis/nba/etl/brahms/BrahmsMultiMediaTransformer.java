@@ -47,18 +47,28 @@ class BrahmsMultiMediaTransformer extends BrahmsTransformer<MultiMediaObject> {/
 	{
 		// No record-level validations for Brahms multimedia, so:
 		stats.recordsAccepted++;
-		ArrayList<MultiMediaObject> result = new ArrayList<>(3);
-		String images = input.get(IMAGELIST);
-		if (images != null) {
-			String[] urls = images.split(",");
-			for (int i = 0; i < urls.length; ++i) {
-				MultiMediaObject mmo = transformOne(urls[i]);
-				if (mmo != null) {
-					result.add(mmo);
-				}
-			}
+		try {
+		  ArrayList<MultiMediaObject> result = new ArrayList<>(3);
+		  String images = input.get(IMAGELIST);
+		  if (images != null) {
+		    String[] urls = images.split(",");
+		    for (int i = 0; i < urls.length; ++i) {
+		      MultiMediaObject mmo = transformOne(urls[i]);
+		      if (mmo != null) {
+		        result.add(mmo);
+		      }
+		    }
+		  }
+		  return result;		  
 		}
-		return result;
+		catch (Throwable t) {
+      stats.objectsRejected++;
+      if (!suppressErrors) {
+        error(t.getMessage());
+        error(input.getLine());
+      }
+		  return null;
+		}
 	}
 
 	private MultiMediaObject transformOne(String url)

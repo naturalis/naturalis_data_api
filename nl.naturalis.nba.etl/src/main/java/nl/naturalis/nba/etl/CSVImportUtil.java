@@ -29,7 +29,7 @@ public class CSVImportUtil {
 	 * @param objectID The ID of the object
 	 * @return
 	 */
-	public static String getDefaultMessagePrefix(int lineNo, String objectID)
+	public static String getDefaultMessagePrefix(long lineNo, String objectID)
 	{
 		return "Line " + lpad(lineNo, 6, '0', " | ") + rpad(objectID, 16, " | ");
 	}

@@ -135,7 +135,7 @@ public class CoLReferenceBatchImporter {
 			File f)
 	{
 		CSVExtractor<CoLReferenceCsvField> extractor;
-		extractor = new CSVExtractor<>(f, stats);
+		extractor = new CSVExtractor<>(f, CoLReferenceCsvField.class, stats);
 		extractor.setSkipHeader(true);
 		extractor.setDelimiter('\t');
 		return extractor;

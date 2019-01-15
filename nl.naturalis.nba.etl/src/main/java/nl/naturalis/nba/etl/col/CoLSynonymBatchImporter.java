@@ -139,7 +139,7 @@ public class CoLSynonymBatchImporter {
 			File f)
 	{
 		CSVExtractor<CoLTaxonCsvField> extractor;
-		extractor = new CSVExtractor<>(f, stats);
+		extractor = new CSVExtractor<>(f, CoLTaxonCsvField.class, stats);
 		extractor.setSkipHeader(true);
 		extractor.setDelimiter('\t');
 		return extractor;

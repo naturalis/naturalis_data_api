@@ -5,7 +5,7 @@ import static nl.naturalis.nba.etl.geo.GeoImportUtil.getCsvFiles;
 
 import java.io.File;
 import java.nio.charset.Charset;
-
+import java.util.Arrays;
 import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.api.model.GeoArea;
@@ -92,7 +92,7 @@ public class GeoImporter {
 		try {
 			extractor = createExtractor(f, fileStats);
 		  // Watch out: the geojson column can be very (very!) wide
-			extractor.setMaxCharsPerColumn(10000000); 
+			extractor.setMaxCharsPerColumn(10000000);
 			transformer = new GeoTransformer(fileStats);
 			loader = new GeoLoader(fileStats, esBulkRequestSize);
 			for (CSVRecordInfo<GeoCsvField> rec : extractor) {
@@ -118,7 +118,7 @@ public class GeoImporter {
 
 	private CSVExtractor<GeoCsvField> createExtractor(File f, ETLStatistics extractionStats)
 	{
-		CSVExtractor<GeoCsvField> extractor = new CSVExtractor<>(f, extractionStats);
+		CSVExtractor<GeoCsvField> extractor = new CSVExtractor<>(f, GeoCsvField.class, extractionStats);
 		extractor.setSkipHeader(true);
 		extractor.setDelimiter(',');
 		extractor.setCharset(Charset.forName("UTF-8"));

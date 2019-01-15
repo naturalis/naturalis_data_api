@@ -35,12 +35,12 @@ public class SpecimenTaxonomicEnricher2Test {
     CoLTaxonImporter cti = new CoLTaxonImporter();
     String texa = AllTests.class.getResource("taxa.txt").getPath();
     cti.importCsv(texa);
-    CoLVernacularNameBatchImporter cvbi = new CoLVernacularNameBatchImporter();
-    String vernecular = AllTests.class.getResource("vernacular.txt").getPath();
-    cvbi.importCsv(vernecular);
-    CoLReferenceBatchImporter crbi = new CoLReferenceBatchImporter();
-    String reference = AllTests.class.getResource("reference.txt").getPath();
-    crbi.importCsv(reference);
+//    CoLVernacularNameBatchImporter cvbi = new CoLVernacularNameBatchImporter();
+//    String vernecular = AllTests.class.getResource("vernacular.txt").getPath();
+//    cvbi.importCsv(vernecular);
+//    CoLReferenceBatchImporter crbi = new CoLReferenceBatchImporter();
+//    String reference = AllTests.class.getResource("reference.txt").getPath();
+//    crbi.importCsv(reference);
 
   }
 

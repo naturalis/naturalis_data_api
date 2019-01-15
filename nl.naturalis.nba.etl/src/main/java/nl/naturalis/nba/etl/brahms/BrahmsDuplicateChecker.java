@@ -301,7 +301,7 @@ public class BrahmsDuplicateChecker {
 
 	private CSVExtractor<BrahmsCsvField> createExtractor(File f, ETLStatistics extractionStats)
 	{
-		CSVExtractor<BrahmsCsvField> extractor = new CSVExtractor<>(f, extractionStats);
+		CSVExtractor<BrahmsCsvField> extractor = new CSVExtractor<>(f, BrahmsCsvField.class, extractionStats);
 		extractor.setSkipHeader(true);
 		extractor.setDelimiter(',');
 		extractor.setCharset(Charset.forName("Windows-1252"));

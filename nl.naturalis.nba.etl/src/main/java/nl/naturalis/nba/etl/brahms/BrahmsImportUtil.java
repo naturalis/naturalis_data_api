@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -66,6 +67,7 @@ class BrahmsImportUtil {//Class made public for test purpose
 				return name.toLowerCase().endsWith(".csv");
 			}
 		});
+		Arrays.sort(files);
 		return files;
 	}
 	

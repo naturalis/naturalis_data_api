@@ -15,6 +15,7 @@ import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.dao.DaoRegistry;
 import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.util.es.ESUtil;
+import nl.naturalis.nba.etl.DocumentObjectWriter;
 import nl.naturalis.nba.etl.ETLConstants;
 import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.ETLStatistics;
@@ -66,7 +67,7 @@ public class CrsSpecimenImportOffline {
 
 	private ETLStatistics stats;
 	private CrsSpecimenTransformer transformer;
-	private CrsSpecimenLoader loader;
+	private DocumentObjectWriter<Specimen> loader;
 
 	public CrsSpecimenImportOffline()
 	{
@@ -92,7 +93,14 @@ public class CrsSpecimenImportOffline {
 		stats = new ETLStatistics();
 		transformer = new CrsSpecimenTransformer(stats);
 		transformer.setSuppressErrors(suppressErrors);
-		loader = new CrsSpecimenLoader(esBulkRequestSize, stats);
+		if (DaoRegistry.getInstance().getConfiguration().get("etl.output", "file").equals("file")) {
+      logger.info("ETL Output: Writing the specimen documents to the file system");
+      loader = new CrsSpecimenJsonNDWriter(stats);
+    }
+		else {
+		  logger.info("ETL Output: loading the specimen documents into the document store");
+		  loader = new CrsSpecimenLoader(esBulkRequestSize, stats);
+		}
 		SexNormalizer.getInstance().resetStatistics();
 		SpecimenTypeStatusNormalizer.getInstance().resetStatistics();
 		PhaseOrStageNormalizer.getInstance().resetStatistics();

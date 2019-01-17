@@ -11,9 +11,9 @@ import nl.naturalis.nba.etl.JsonNDWriter;
  */
 class BrahmsSpecimenJsonNDWriter extends JsonNDWriter<Specimen> {
 
-  public BrahmsSpecimenJsonNDWriter(int queueSize, ETLStatistics stats)
+  public BrahmsSpecimenJsonNDWriter(ETLStatistics stats)
   {
-    super(SPECIMEN, "Brahms", queueSize, stats);
+    super(SPECIMEN, "Brahms", stats);
   }
 
 }

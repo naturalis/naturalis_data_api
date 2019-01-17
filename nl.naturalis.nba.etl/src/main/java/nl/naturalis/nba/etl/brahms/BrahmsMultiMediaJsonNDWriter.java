@@ -11,8 +11,8 @@ import nl.naturalis.nba.etl.JsonNDWriter;
  */
 public class BrahmsMultiMediaJsonNDWriter extends JsonNDWriter<MultiMediaObject> {
 
-  public BrahmsMultiMediaJsonNDWriter(int queueSize, ETLStatistics stats) {
-    super(MULTI_MEDIA_OBJECT, "Brahms", queueSize, stats);
+  public BrahmsMultiMediaJsonNDWriter(ETLStatistics stats) {
+    super(MULTI_MEDIA_OBJECT, "Brahms", stats);
   }
 
 }

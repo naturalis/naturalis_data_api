@@ -16,6 +16,7 @@ import java.io.File;
 import java.nio.charset.Charset;
 
 import org.apache.logging.log4j.Logger;
+
 import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.dao.DaoRegistry;
@@ -27,7 +28,6 @@ import nl.naturalis.nba.etl.DocumentObjectWriter;
 import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.ETLUtil;
-import nl.naturalis.nba.etl.JsonNDWriter;
 import nl.naturalis.nba.etl.ThemeCache;
 import nl.naturalis.nba.etl.normalize.SpecimenTypeStatusNormalizer;
 import nl.naturalis.nba.utils.ConfigObject;
@@ -210,8 +210,8 @@ public class BrahmsImportAll {
 
 			if (toFile) {
 	       logger.info("ETL Output: Writing the documents to the file system");
-	       specimenLoader = new BrahmsSpecimenJsonNDWriter(loaderQueueSize, specimenStats);
-	       multimediaLoader = new BrahmsMultiMediaJsonNDWriter(loaderQueueSize, multimediaStats);
+	       specimenLoader = new BrahmsSpecimenJsonNDWriter(specimenStats);
+	       multimediaLoader = new BrahmsMultiMediaJsonNDWriter(multimediaStats);
 			}
 			else {
 			  logger.info("ETL Output: loading the documents into the document store");

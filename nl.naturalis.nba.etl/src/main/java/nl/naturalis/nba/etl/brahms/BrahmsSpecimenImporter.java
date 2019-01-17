@@ -130,7 +130,7 @@ public class BrahmsSpecimenImporter {
 			transformer = new BrahmsSpecimenTransformer(myStats);
 			if (DaoRegistry.getInstance().getConfiguration().get("etl.output", "file").equals("file")) {
 			  logger.info("ETL Output: Writing the specimen documents to the file system");
-			  loader = new BrahmsSpecimenJsonNDWriter(loaderQueueSize, myStats);
+			  loader = new BrahmsSpecimenJsonNDWriter(myStats);
 			}
 			else {
 			  logger.info("ETL Output: loading the specimen documents into the document store");

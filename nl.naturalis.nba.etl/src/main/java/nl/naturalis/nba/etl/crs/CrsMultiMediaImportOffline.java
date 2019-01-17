@@ -15,6 +15,7 @@ import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.dao.DaoRegistry;
 import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.util.es.ESUtil;
+import nl.naturalis.nba.etl.DocumentObjectWriter;
 import nl.naturalis.nba.etl.ETLConstants;
 import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.ETLStatistics;
@@ -65,7 +66,7 @@ public class CrsMultiMediaImportOffline {
 
 	private ETLStatistics stats;
 	private CrsMultiMediaTransformer transformer;
-	private CrsMultiMediaLoader loader;
+	private DocumentObjectWriter<MultiMediaObject> loader;
 
 	public CrsMultiMediaImportOffline()
 	{
@@ -93,7 +94,14 @@ public class CrsMultiMediaImportOffline {
 		stats.setOneToMany(true);
 		transformer = new CrsMultiMediaTransformer(stats);
 		transformer.setSuppressErrors(suppressErrors);
-		loader = new CrsMultiMediaLoader(esBulkRequestSize, stats);
+    if (DaoRegistry.getInstance().getConfiguration().get("etl.output", "file").equals("file")) {
+      logger.info("ETL Output: Writing the multimedia documents to the file system");
+      loader = new CrsMultiMediaJsonNDWriter(stats);
+    }
+    else {
+      logger.info("ETL Output: loading the multimedia documents into the document store");
+      loader = new CrsMultiMediaLoader(esBulkRequestSize, stats);
+    }
 		SexNormalizer.getInstance().resetStatistics();
 		SpecimenTypeStatusNormalizer.getInstance().resetStatistics();
 		PhaseOrStageNormalizer.getInstance().resetStatistics();

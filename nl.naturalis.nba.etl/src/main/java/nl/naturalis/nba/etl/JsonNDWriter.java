@@ -123,7 +123,7 @@ public abstract class JsonNDWriter<T extends IDocumentObject> implements Documen
 
   private void createExportFile() {
     File dir = DaoRegistry.getInstance().getConfiguration().getDirectory("nba.etl.install.dir");
-    File exportDir = FileUtil.newFile(dir, "export" + "/" + documentType);
+    File exportDir = FileUtil.newFile(dir, "export" + "/" + documentType.getName().toLowerCase());
     if (!exportDir.isDirectory()) {
       exportDir.mkdirs();
     }

@@ -125,7 +125,7 @@ public class JsonImporter {
     File[] files = getDataDir(path).listFiles(new FilenameFilter() {
       @Override
       public boolean accept(File dir, String name) {
-        return name.toLowerCase().endsWith(".json");
+        return name.toLowerCase().endsWith(".json") || name.toLowerCase().endsWith(".ndjson");
       }
     });    
     return files;

@@ -210,8 +210,8 @@ public class BrahmsImportAll {
 
 			if (toFile) {
 	       logger.info("ETL Output: Writing the documents to the file system");
-	       specimenLoader = new BrahmsSpecimenJsonNDWriter(specimenStats);
-	       multimediaLoader = new BrahmsMultiMediaJsonNDWriter(multimediaStats);
+	       specimenLoader = new BrahmsSpecimenJsonNDWriter(f.getName(), specimenStats);
+	       multimediaLoader = new BrahmsMultiMediaJsonNDWriter(f.getName(), multimediaStats);
 			}
 			else {
 			  logger.info("ETL Output: loading the documents into the document store");

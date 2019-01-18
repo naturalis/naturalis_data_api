@@ -11,9 +11,9 @@ import nl.naturalis.nba.etl.JsonNDWriter;
  */
 public class CrsSpecimenJsonNDWriter extends JsonNDWriter<Specimen> {
   
-  public CrsSpecimenJsonNDWriter(ETLStatistics stats) 
+  public CrsSpecimenJsonNDWriter(String sourceFile, ETLStatistics stats) 
   {
-    super(SPECIMEN, "CRS", stats);
+    super(SPECIMEN, "CRS", sourceFile, stats);
   }
 
 }

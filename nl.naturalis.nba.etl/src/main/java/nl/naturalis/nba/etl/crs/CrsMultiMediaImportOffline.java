@@ -94,24 +94,18 @@ public class CrsMultiMediaImportOffline {
 		stats.setOneToMany(true);
 		transformer = new CrsMultiMediaTransformer(stats);
 		transformer.setSuppressErrors(suppressErrors);
-    if (DaoRegistry.getInstance().getConfiguration().get("etl.output", "file").equals("file")) {
-      logger.info("ETL Output: Writing the multimedia documents to the file system");
-      loader = new CrsMultiMediaJsonNDWriter(stats);
-    }
-    else {
-      logger.info("ETL Output: loading the multimedia documents into the document store");
-      loader = new CrsMultiMediaLoader(esBulkRequestSize, stats);
-    }
+
 		SexNormalizer.getInstance().resetStatistics();
 		SpecimenTypeStatusNormalizer.getInstance().resetStatistics();
 		PhaseOrStageNormalizer.getInstance().resetStatistics();
 		ThemeCache.getInstance().resetMatchCounters();
+		
 		try {
 			for (File f : xmlFiles)
 				importFile(f);
 		}
 		finally {
-			IOUtil.close(loader);
+		  logger.info("Finished importing {} files", xmlFiles.length);
 		}
 		SexNormalizer.getInstance().logStatistics();
 		SpecimenTypeStatusNormalizer.getInstance().logStatistics();
@@ -131,6 +125,15 @@ public class CrsMultiMediaImportOffline {
 	private void importFile(File f)
 	{
 		logger.info("Processing file {}", f.getName());
+		if (DaoRegistry.getInstance().getConfiguration().get("etl.output", "file").equals("file")) {
+      logger.info("ETL Output: Writing the multimedia documents to the file system");
+      loader = new CrsMultiMediaJsonNDWriter(f.getName(), stats);
+    }
+    else {
+      logger.info("ETL Output: loading the multimedia documents into the document store");
+      loader = new CrsMultiMediaLoader(esBulkRequestSize, stats);
+    }
+
 		CrsExtractor extractor;
 		try {
 			extractor = new CrsExtractor(f, stats);
@@ -148,6 +151,7 @@ public class CrsMultiMediaImportOffline {
 				logger.info("Documents indexed: {}", stats.documentsIndexed);
 			}
 		}
+		IOUtil.close(loader);
 	}
 
 	private static File[] getXmlFiles()

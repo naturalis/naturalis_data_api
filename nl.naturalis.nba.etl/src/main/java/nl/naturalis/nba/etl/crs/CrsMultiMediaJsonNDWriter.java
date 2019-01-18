@@ -11,8 +11,8 @@ import nl.naturalis.nba.etl.JsonNDWriter;
  */
 public class CrsMultiMediaJsonNDWriter extends JsonNDWriter<MultiMediaObject> {
 
-  public CrsMultiMediaJsonNDWriter(ETLStatistics stats) {
-    super(MULTI_MEDIA_OBJECT, "CRS", stats);
+  public CrsMultiMediaJsonNDWriter(String sourceFile, ETLStatistics stats) {
+    super(MULTI_MEDIA_OBJECT, "CRS", sourceFile, stats);
   }
 
 }

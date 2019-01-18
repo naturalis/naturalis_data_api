@@ -135,7 +135,7 @@ public class BrahmsMultiMediaImporter {
 			transformer = new BrahmsMultiMediaTransformer(myStats);
 			if (DaoRegistry.getInstance().getConfiguration().get("etl.output", "file").equals("file")) {
         logger.info("ETL Output: Writing the multimedia documents to the file system");
-        loader = new BrahmsMultiMediaJsonNDWriter(myStats);
+        loader = new BrahmsMultiMediaJsonNDWriter(f.getName(), myStats);
 			}
 			else {
 			  logger.info("ETL Output: loading the multimedia documents into the document store");

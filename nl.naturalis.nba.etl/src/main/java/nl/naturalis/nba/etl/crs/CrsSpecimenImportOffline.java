@@ -93,14 +93,7 @@ public class CrsSpecimenImportOffline {
 		stats = new ETLStatistics();
 		transformer = new CrsSpecimenTransformer(stats);
 		transformer.setSuppressErrors(suppressErrors);
-		if (DaoRegistry.getInstance().getConfiguration().get("etl.output", "file").equals("file")) {
-      logger.info("ETL Output: Writing the specimen documents to the file system");
-      loader = new CrsSpecimenJsonNDWriter(stats);
-    }
-		else {
-		  logger.info("ETL Output: loading the specimen documents into the document store");
-		  loader = new CrsSpecimenLoader(esBulkRequestSize, stats);
-		}
+
 		SexNormalizer.getInstance().resetStatistics();
 		SpecimenTypeStatusNormalizer.getInstance().resetStatistics();
 		PhaseOrStageNormalizer.getInstance().resetStatistics();
@@ -112,7 +105,7 @@ public class CrsSpecimenImportOffline {
 				importFile(f);
 		}
 		finally {
-			IOUtil.close(loader);
+			logger.info("Finished importing {} files", xmlFiles.length);
 		}
 		SexNormalizer.getInstance().logStatistics();
 		SpecimenTypeStatusNormalizer.getInstance().logStatistics();
@@ -127,6 +120,14 @@ public class CrsSpecimenImportOffline {
 	private void importFile(File f)
 	{
 		logger.info("Processing file " + f.getName());
+    if (DaoRegistry.getInstance().getConfiguration().get("etl.output", "file").equals("file")) {
+      logger.info("ETL Output: Writing the specimen documents to the file system");
+      loader = new CrsSpecimenJsonNDWriter(f.getName(), stats);
+    }
+    else {
+      logger.info("ETL Output: loading the specimen documents into the document store");
+      loader = new CrsSpecimenLoader(esBulkRequestSize, stats);
+    }
 		CrsExtractor extractor;
 		try {
 			extractor = new CrsExtractor(f, stats);
@@ -144,6 +145,7 @@ public class CrsSpecimenImportOffline {
 				logger.info("Documents indexed: {}", stats.documentsIndexed);
 			}
 		}
+		IOUtil.close(loader);
 	}
 
 	private static File[] getXmlFiles()

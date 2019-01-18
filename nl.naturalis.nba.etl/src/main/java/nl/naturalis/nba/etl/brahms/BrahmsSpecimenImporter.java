@@ -14,6 +14,7 @@ import java.io.File;
 import java.nio.charset.Charset;
 
 import org.apache.logging.log4j.Logger;
+
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.dao.DaoRegistry;
 import nl.naturalis.nba.dao.ESClientManager;
@@ -130,7 +131,7 @@ public class BrahmsSpecimenImporter {
 			transformer = new BrahmsSpecimenTransformer(myStats);
 			if (DaoRegistry.getInstance().getConfiguration().get("etl.output", "file").equals("file")) {
 			  logger.info("ETL Output: Writing the specimen documents to the file system");
-			  loader = new BrahmsSpecimenJsonNDWriter(myStats);
+			  loader = new BrahmsSpecimenJsonNDWriter(f.getName(), myStats);
 			}
 			else {
 			  logger.info("ETL Output: loading the specimen documents into the document store");

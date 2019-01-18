@@ -26,6 +26,7 @@ public abstract class JsonNDWriter<T extends IDocumentObject> implements Documen
   private File file;
   private FileOutputStream fos = null;
   private BufferedOutputStream bos = null;
+  private ObjectWriter writer;
   private final ETLStatistics stats;
  
   private String sourceSystem;
@@ -49,8 +50,10 @@ public abstract class JsonNDWriter<T extends IDocumentObject> implements Documen
     this.stats = stats;
     createExportFile();
     openFile();
+    createWriter();
     logger.info("Writing documents to: " + file.getAbsolutePath());
   }
+
 
   private void openFile() {
     try {
@@ -73,19 +76,23 @@ public abstract class JsonNDWriter<T extends IDocumentObject> implements Documen
     }
   }
 
+  private void createWriter() {
+    ObjectMapper mapper = ObjectMapperLocator.getInstance().getObjectMapper(documentType.getJavaType());
+    this.writer = mapper.writer();
+  }
+
+  
   @Override
   public final void write(Collection<T> objects) {
 
     if (objects == null || objects.size() == 0) {
       return;
     }
-    
-    ObjectMapper mapper = ObjectMapperLocator.getInstance().getObjectMapper(documentType.getJavaType());
-    ObjectWriter writer = mapper.writer();
 
     for (T object : objects) {
       if (object != null) {
         try {
+          // writer.writeValue(bos, object); // Closes the outputstream, therefore:
           bos.write(writer.writeValueAsBytes(object));
           bos.write(NEW_LINE);
         } catch (IOException e) {

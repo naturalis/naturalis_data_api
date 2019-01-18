@@ -64,6 +64,11 @@ nl.naturalis.nba.taxon.groupByScientificName.cacheTreshold=3000
 # ETL module-only seetings
 # **************************
 
+# The ETL can either push the documents it creates directly into 
+# the document store (etl.output=es) or write them to the file 
+# system (etl.output=file).
+etl.output=file
+
 crs.specimens.url.initial=http\://crs.naturalis.nl/atlantispubliek/oai.axd?verb\=ListRecords&metadataprefix\=oai_crs_object
 crs.specimens.url.resume=http\://crs.naturalis.nl/atlantispubliek/oai.axd?verb\=ListRecords&resumptionToken\=%s
 crs.multimedia.url.initial=http\://crs.naturalis.nl/atlantispubliek/oai.axd?verb\=ListRecords&metadataprefix\=oai_crs

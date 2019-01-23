@@ -96,6 +96,7 @@ public class CoLSynonymBatchTransformerTest {
     when(record.get(CoLTaxonCsvField.scientificNameID)).thenReturn("ITS-714782");
     when(record.get(CoLTaxonCsvField.references)).thenReturn(
         "http://www.catalogueoflife.org/annual-checklist/details/species/id/39ed89a52a61ef3a59eef66b9ce8ad7e");
+    when(record.get(CoLTaxonCsvField.isExtinct)).thenReturn("false");
 
     ArrayList<CSVRecordInfo<CoLTaxonCsvField>> arrayList = new ArrayList<>();
     arrayList.add(record);
@@ -171,6 +172,7 @@ public class CoLSynonymBatchTransformerTest {
     when(record.get(CoLTaxonCsvField.scientificNameID)).thenReturn("ITS-714782");
     when(record.get(CoLTaxonCsvField.references)).thenReturn(
         "http://www.catalogueoflife.org/annual-checklist/details/species/id/39ed89a52a61ef3a59eef66b9ce8ad7e");
+    when(record.get(CoLTaxonCsvField.isExtinct)).thenReturn("false");
 
     List<CSVRecordInfo<CoLTaxonCsvField>> arrayList = new ArrayList<>();
     arrayList.add(record);
@@ -241,6 +243,7 @@ public class CoLSynonymBatchTransformerTest {
     when(record.get(CoLTaxonCsvField.scientificNameID)).thenReturn("ITS-714782");
     when(record.get(CoLTaxonCsvField.references)).thenReturn(
         "http://www.catalogueoflife.org/annual-checklist/details/species/id/39ed89a52a61ef3a59eef66b9ce8ad7e");
+    when(record.get(CoLTaxonCsvField.isExtinct)).thenReturn("false");
 
     Object returned = ReflectionUtil.callStatic(CoLSynonymBatchTransformer.class, "createSynonym",
         new Class[] {CSVRecordInfo.class}, new Object[] {record});
@@ -300,6 +303,7 @@ public class CoLSynonymBatchTransformerTest {
     when(record.get(CoLTaxonCsvField.scientificNameID)).thenReturn("ITS-714782");
     when(record.get(CoLTaxonCsvField.references)).thenReturn(
         "http://www.catalogueoflife.org/annual-checklist/details/species/id/39ed89a52a61ef3a59eef66b9ce8ad7e");
+    when(record.get(CoLTaxonCsvField.isExtinct)).thenReturn("false");
 
     ArrayList<CSVRecordInfo<CoLTaxonCsvField>> arrayList = new ArrayList<>();
     arrayList.add(record);

@@ -19,8 +19,10 @@ import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.api.model.Taxon;
+import nl.naturalis.nba.dao.DaoRegistry;
 import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.util.es.ESUtil;
+import nl.naturalis.nba.etl.DocumentObjectWriter;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.ETLUtil;
 import nl.naturalis.nba.etl.XMLRecordInfo;
@@ -74,12 +76,14 @@ public class NsrImporter {
 
 	private final int loaderQueueSize;
 	private final boolean suppressErrors;
+	private final boolean toFile;
 
 	public NsrImporter()
 	{
 		suppressErrors = ConfigObject.isEnabled(SYSPROP_SUPPRESS_ERRORS);
 		String val = System.getProperty(SYSPROP_LOADER_QUEUE_SIZE, "1000");
 		loaderQueueSize = Integer.parseInt(val);
+		toFile = DaoRegistry.getInstance().getConfiguration().get("etl.output", "file").equals("file");
 	}
 
 	/**
@@ -103,12 +107,24 @@ public class NsrImporter {
 		tTransformer.setSuppressErrors(suppressErrors);
 		NsrMultiMediaTransformer mTransformer = new NsrMultiMediaTransformer(mediaStats);
 		mTransformer.setSuppressErrors(suppressErrors);
-		NsrTaxonLoader taxonLoader = null;
-		NsrMultiMediaLoader mediaLoader = null;
+		DocumentObjectWriter<Taxon> taxonLoader = null;
+		DocumentObjectWriter<MultiMediaObject> mediaLoader = null;
+    if (toFile) {
+      logger.info("ETL Output: Writing the documents to the file system");
+    }
+    else {
+      logger.info("ETL Output: loading documents into the document store");
+    }
 		try {
-			taxonLoader = new NsrTaxonLoader(loaderQueueSize, taxonStats);
-			mediaLoader = new NsrMultiMediaLoader(loaderQueueSize, mediaStats);
 			for (File f : xmlFiles) {
+			  if (toFile) {
+			    taxonLoader = new NsrTaxonJsonNDWriter(f.getName(), taxonStats);
+			    mediaLoader = new NsrMultiMediaJsonNDWriter(f.getName(), mediaStats);
+			  }
+			  else {
+			    taxonLoader = new NsrTaxonLoader(loaderQueueSize, taxonStats);
+			    mediaLoader = new NsrMultiMediaLoader(loaderQueueSize, mediaStats);			    
+			  }
 				logger.info("Processing file {}", f.getAbsolutePath());
 				for (XMLRecordInfo extracted : new NsrExtractor(f, taxonStats)) {
 					List<Taxon> taxa = tTransformer.transform(extracted);
@@ -152,11 +168,22 @@ public class NsrImporter {
 		ETLStatistics stats = new ETLStatistics();
 		NsrTaxonTransformer transformer = new NsrTaxonTransformer(stats);
 		transformer.setSuppressErrors(suppressErrors);
-		NsrTaxonLoader loader = null;
+		DocumentObjectWriter<Taxon> loader = null;
+		if (toFile) {
+		  logger.info("ETL Output: Writing the documents to the file system");
+		}
+		else {
+		  logger.info("ETL Output: loading documents into the document store");
+		}
 		try {
-			loader = new NsrTaxonLoader(loaderQueueSize, stats);
 			for (File f : xmlFiles) {
 				logger.info("Processing file {}", f.getAbsolutePath());
+				if (toFile) {
+				  loader = new NsrTaxonJsonNDWriter(f.getName(), stats);
+				}
+				else {
+				  loader = new NsrTaxonLoader(loaderQueueSize, stats);				  
+				}
 				int i = 0;
 				for (XMLRecordInfo extracted : new NsrExtractor(f, stats)) {
 					List<Taxon> transformed = transformer.transform(extracted);
@@ -203,10 +230,21 @@ public class NsrImporter {
 		 */
 		NsrTaxonTransformer ntt = new NsrTaxonTransformer(new ETLStatistics());
 		ntt.setSuppressErrors(suppressErrors);
-		NsrMultiMediaLoader loader = null;
+		DocumentObjectWriter<MultiMediaObject> loader = null;
+    if (toFile) {
+      logger.info("ETL Output: Writing the documents to the file system");
+    }
+    else {
+      logger.info("ETL Output: loading documents into the document store");
+    }
 		try {
-			loader = new NsrMultiMediaLoader(loaderQueueSize, stats);
 			for (File f : xmlFiles) {
+			  if (toFile) {
+			    loader = new NsrMultiMediaJsonNDWriter(f.getName(), stats);
+			  }
+			  else {
+			    loader = new NsrMultiMediaLoader(loaderQueueSize, stats);			    
+			  }
 				logger.info("Processing file {}", f.getAbsolutePath());
 				for (XMLRecordInfo extracted : new NsrExtractor(f, stats)) {
 					List<Taxon> taxa = ntt.transform(extracted);

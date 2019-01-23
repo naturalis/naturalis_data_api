@@ -22,6 +22,7 @@ public class CoLImportAll {
 	public static void main(String[] args) throws Exception
 	{
 		String prop = System.getProperty("batchSize", "1000");
+		boolean toFile = DaoRegistry.getInstance().getConfiguration().get("etl.output", "file").equals("file");
 		int batchSize = 0;
 		try {
 			batchSize = Integer.parseInt(prop);
@@ -36,7 +37,12 @@ public class CoLImportAll {
 		try {
 			CoLImportAll importer = new CoLImportAll();
 			importer.setBatchSize(batchSize);
-			importer.importAll();
+			if (toFile) {
+			  importer.importTaxa();
+			}
+			else {
+			  importer.importAll();			  
+			}
 		}
 		catch (Throwable t) {
 			logger.error("CoLImportAll terminated unexpectedly!", t);
@@ -47,9 +53,9 @@ public class CoLImportAll {
 		}
 	}
 
-	private static final Logger logger = ETLRegistry.getInstance()
-			.getLogger(CoLImportAll.class);
+	private static final Logger logger = ETLRegistry.getInstance().getLogger(CoLImportAll.class);
 
+	
 	private int batchSize = 1000;
 
 	public CoLImportAll()
@@ -65,8 +71,7 @@ public class CoLImportAll {
 	public void importAll() throws BulkIndexException
 	{
 		long start = System.currentTimeMillis();
-		String dwcaDir = DaoRegistry.getInstance().getConfiguration()
-				.required("col.data.dir");
+		String dwcaDir = DaoRegistry.getInstance().getConfiguration().required("col.data.dir");
 		CoLTaxonImporter cti = new CoLTaxonImporter();
 		cti.importCsv(dwcaDir + "/taxa.txt");
 		CoLSynonymBatchImporter csbi = new CoLSynonymBatchImporter();
@@ -79,6 +84,15 @@ public class CoLImportAll {
 		crbi.setBatchSize(batchSize);
 		crbi.importCsv(dwcaDir + "/reference.txt");
 		logDuration(logger, getClass(), start);
+	}
+	
+	public void importTaxa() {
+	  logger.info("Creating taxa documents without enrichments");
+    long start = System.currentTimeMillis();
+    String dwcaDir = DaoRegistry.getInstance().getConfiguration().required("col.data.dir");
+    CoLTaxonImporter cti = new CoLTaxonImporter();
+    cti.importCsv(dwcaDir + "/taxa.txt");
+    logDuration(logger, getClass(), start);
 	}
 
 	public int getBatchSize()

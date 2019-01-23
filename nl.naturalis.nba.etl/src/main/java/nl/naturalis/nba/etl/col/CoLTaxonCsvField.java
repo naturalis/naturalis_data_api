@@ -37,5 +37,6 @@ enum CoLTaxonCsvField
 	description,
 	taxonConceptID,
 	scientificNameID,
-	references
+	references,
+	isExtinct
 }

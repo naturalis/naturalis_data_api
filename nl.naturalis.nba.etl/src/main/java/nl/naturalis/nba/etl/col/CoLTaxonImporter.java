@@ -12,6 +12,7 @@ import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.CSVExtractor;
 import nl.naturalis.nba.etl.CSVRecordInfo;
+import nl.naturalis.nba.etl.DocumentObjectWriter;
 import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.ETLRuntimeException;
 import nl.naturalis.nba.etl.ETLStatistics;
@@ -60,19 +61,28 @@ public class CoLTaxonImporter extends CoLImporter {
     ETLStatistics stats = null;
     CSVExtractor<CoLTaxonCsvField> extractor = null;
     CoLTaxonTransformer transformer = null;
-    CoLTaxonLoader loader = null;
+    DocumentObjectWriter<Taxon> loader = null;
+   
     try {
       File f = new File(path);
       if (!f.exists())
         throw new ETLRuntimeException("No such file: " + path);
-      ETLUtil.truncate(TAXON, SourceSystem.COL);
+      if (!toFile)
+        ETLUtil.truncate(TAXON, SourceSystem.COL);
       stats = new ETLStatistics();
       extractor = createExtractor(stats, f);
       extractor.setDelimiter('\t');
       transformer = new CoLTaxonTransformer(stats);
       transformer.setColYear(colYear);
       transformer.setSuppressErrors(suppressErrors);
-      loader = new CoLTaxonLoader(stats, loaderQueueSize);
+      if (toFile) {
+        loader = new ColTaxonJsonNDWriter(f.getName(), stats);
+        logger.info("ETL Output: Writing the documents to the file system");
+      }
+      else {
+        loader = new CoLTaxonLoader(stats, loaderQueueSize);
+        logger.info("ETL Output: loading documents into the document store");
+      }
       loader.suppressErrors(suppressErrors);
       logger.info("Processing file {}", f.getAbsolutePath());
       for (CSVRecordInfo<CoLTaxonCsvField> rec : extractor) {
@@ -87,7 +97,9 @@ public class CoLTaxonImporter extends CoLImporter {
       }
     } finally {
       IOUtil.close(loader);
-      ESUtil.refreshIndex(TAXON);
+      if (!toFile) {
+        ESUtil.refreshIndex(TAXON);        
+      }
     }
     stats.logStatistics(logger);
     logger.info("(NB skipped records are synonyms or higher taxa)");

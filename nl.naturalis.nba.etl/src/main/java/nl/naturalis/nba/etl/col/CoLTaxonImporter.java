@@ -72,6 +72,7 @@ public class CoLTaxonImporter extends CoLImporter {
       stats = new ETLStatistics();
       extractor = createExtractor(stats, f);
       extractor.setDelimiter('\t');
+      extractor.setQuote('\u0000'); // CoL export doesn't use quotes!
       transformer = new CoLTaxonTransformer(stats);
       transformer.setColYear(colYear);
       transformer.setSuppressErrors(suppressErrors);

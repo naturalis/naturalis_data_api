@@ -134,6 +134,27 @@ public class CSVExtractor<T extends Enum<T>> implements Iterator<CSVRecordInfo<T
   }
 
   /**
+   * Returns the value used for escaping values where the field 
+   * delimiter is part of the value (e.g. the value " a , b " is 
+   * parsed as a , b).
+   * 
+   * @return
+   */
+  public char getQuote() {
+    return settings.getFormat().getQuote();
+  }
+  
+  /**
+   * Sets the the value used for escaping values where the field 
+   * delimiter is part of the value.
+   * 
+   * @param quote
+   */
+  public void setQuote(char quote) {
+    settings.getFormat().setQuote(quote);
+  }
+
+  /**
    * Returns the character set of the CSV file.
    * 
    * @return
@@ -191,7 +212,7 @@ public class CSVExtractor<T extends Enum<T>> implements Iterator<CSVRecordInfo<T
   @Override
   public Iterator<CSVRecordInfo<T>> iterator() {
     parser = new CsvParser(settings);
-    iterator = parser.iterateRecords(csvFile).iterator();
+    iterator = parser.iterateRecords(csvFile, charset).iterator();
     return this;
   }
 

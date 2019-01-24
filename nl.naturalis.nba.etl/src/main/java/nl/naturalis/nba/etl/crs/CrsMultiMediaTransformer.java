@@ -231,6 +231,8 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 	private MultiMediaObject initializeFromFirst()
 	{
 		MultiMediaObject next = new MultiMediaObject();
+		next.setSourceInstitutionID(first.getSourceInstitutionID());
+		next.setSourceID(first.getSourceID());
 		next.setGatheringEvents(first.getGatheringEvents());
 		next.setPhasesOrStages(first.getPhasesOrStages());
 		next.setSexes(first.getSexes());

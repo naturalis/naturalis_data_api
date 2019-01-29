@@ -109,6 +109,13 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- ETL H2 database -->
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>1.4.197</version>
+		</dependency>
+
     </dependencies>
 
     <build>

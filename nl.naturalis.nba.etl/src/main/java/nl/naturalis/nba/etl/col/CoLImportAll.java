@@ -1,7 +1,9 @@
 package nl.naturalis.nba.etl.col;
 
 import static nl.naturalis.nba.etl.ETLUtil.logDuration;
-
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.dao.DaoRegistry;
@@ -38,7 +40,7 @@ public class CoLImportAll {
 			CoLImportAll importer = new CoLImportAll();
 			importer.setBatchSize(batchSize);
 			if (toFile) {
-			  importer.importTaxa();
+			  importer.importAllToFile();
 			}
 			else {
 			  importer.importAll();			  
@@ -85,6 +87,36 @@ public class CoLImportAll {
 		crbi.importCsv(dwcaDir + "/reference.txt");
 		logDuration(logger, getClass(), start);
 	}
+
+  /**
+   * Reads the CoL source file and creates CoL taxa documents, including
+   * synonyms, vernacular names and literature references.
+   * 
+   * @throws BulkIndexException
+   * 
+   */
+  public void importAllToFile() throws BulkIndexException
+  {
+    long start = System.currentTimeMillis();
+    String colDataDir = DaoRegistry.getInstance().getConfiguration().required("col.data.dir");
+
+    // 1. Read synonyms and store them in the H2 database
+    CoLSynonymBatchImporter csbi = new CoLSynonymBatchImporter();
+    csbi.setBatchSize(batchSize);
+    csbi.importCsv(colDataDir + "/taxa.txt");
+    
+//    CoLVernacularNameBatchImporter cvbi = new CoLVernacularNameBatchImporter();
+//    cvbi.setBatchSize(batchSize);
+//    cvbi.importCsv(colDataDir + "/vernacular.txt");
+//    CoLReferenceBatchImporter crbi = new CoLReferenceBatchImporter();
+//    crbi.setBatchSize(batchSize);
+//    crbi.importCsv(colDataDir + "/reference.txt");
+//    CoLTaxonImporter cti = new CoLTaxonImporter();
+//    cti.importCsv(colDataDir + "/taxa.txt");
+    logDuration(logger, getClass(), start);
+  }
+
+	
 	
 	public void importTaxa() {
 	  logger.info("Creating taxa documents without enrichments");

@@ -23,7 +23,8 @@ import nl.naturalis.nba.etl.ETLRuntimeException;
 import nl.naturalis.nba.etl.ETLStatistics;
 
 /**
- * Load vernacular names into H2 Database
+ * The CoLVernacularNameLoader loads vernacular names into a
+ * temporary H2 Database
  * 
  * @author Tom Gilissen
  *
@@ -33,12 +34,23 @@ public class CoLVernacularNameLoader {
   private static final Logger logger = getLogger(CoLVernacularNameLoader.class);
   
   private Connection connection;
-  private int batchSize = 1000;
+  private int batchSize;
   
   public CoLVernacularNameLoader(Connection connection)
   {
     this.connection = connection;
+    this.batchSize = 1000;
     createTable();
+  }
+
+  public int getBatchSize()
+  {
+    return batchSize;
+  }
+  
+  public void setBatchSize(int batchSize)
+  {
+    this.batchSize = batchSize;
   }
 
   /**
@@ -85,22 +97,11 @@ public class CoLVernacularNameLoader {
     }
     logger.info("Records processed:        {}", processed);
     logger.info("Records skipped:          {}", skipped);
-    logger.info("Vernacular names created: {}", countVernacularNames());
+    logger.info("Vernacular names created: {}", countRecordsCreated());
     logDuration(logger, getClass(), start);
   }
 
-  public int getBatchSize()
-  {
-    return batchSize;
-  }
-
-  public void setBatchSize(int batchSize)
-  {
-    this.batchSize = batchSize;
-  }
-
-  private static CSVExtractor<CoLVernacularNameCsvField> createExtractor(
-      ETLStatistics stats, File f)
+  private static CSVExtractor<CoLVernacularNameCsvField> createExtractor(ETLStatistics stats, File f)
   {
     CSVExtractor<CoLVernacularNameCsvField> extractor;
     extractor = new CSVExtractor<>(f, CoLVernacularNameCsvField.class, stats);
@@ -108,6 +109,26 @@ public class CoLVernacularNameLoader {
     extractor.setDelimiter('\t');
     extractor.setQuote('\u0000');
     return extractor;
+  }
+  
+  private void saveRecords(ArrayList<CSVRecordInfo<CoLVernacularNameCsvField>> records) {
+    Statement stmt = null;
+    try {          
+      connection.setAutoCommit(false);
+      stmt = connection.createStatement();
+      for (CSVRecordInfo<CoLVernacularNameCsvField> record : records) {
+        VernacularName vernacularName = createVernacularName(record);
+        String taxonId = record.get(taxonID);
+        String document = JsonUtil.toJson(vernacularName).replaceAll("'", "''");
+        stmt.execute(String.format("INSERT INTO VERNACULARNAMES(taxonId, document) VALUES('%s', '%s')", taxonId, document));
+      }
+      stmt.close();
+      connection.commit();
+    } catch (SQLException e) {
+      System.out.println("Exception Message " + e.getLocalizedMessage());
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
   
   private static VernacularName createVernacularName(CSVRecordInfo<CoLVernacularNameCsvField> record)
@@ -134,27 +155,7 @@ public class CoLVernacularNameLoader {
     } 
   }
   
-  private void saveRecords(ArrayList<CSVRecordInfo<CoLVernacularNameCsvField>> records) {
-    Statement stmt = null;
-    try {          
-      connection.setAutoCommit(false);
-      stmt = connection.createStatement();
-      for (CSVRecordInfo<CoLVernacularNameCsvField> record : records) {
-        VernacularName vernacularName = createVernacularName(record);
-        String taxonId = record.get(taxonID);
-        String document = JsonUtil.toJson(vernacularName).replaceAll("'", "''");
-        stmt.execute(String.format("INSERT INTO VERNACULARNAMES(taxonId, document) VALUES('%s', '%s')", taxonId, document));
-      }
-      stmt.close();
-      connection.commit();
-    } catch (SQLException e) {
-        System.out.println("Exception Message " + e.getLocalizedMessage());
-    } catch (Exception e) {
-        e.printStackTrace();
-    }
-  }
-
-  private long countVernacularNames() {
+  private long countRecordsCreated() {
     long n = 0L;
     Statement stmt = null;
     try {          
@@ -172,7 +173,5 @@ public class CoLVernacularNameLoader {
     } 
     return n;
   }
-
-
 
 }

@@ -9,7 +9,6 @@ import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.scientificName;
 import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.scientificNameAuthorship;
 import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.specificEpithet;
 import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.taxonID;
-import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.acceptedNameUsageID;
 import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.taxonomicStatus;
 
 import java.io.File;
@@ -34,31 +33,37 @@ import nl.naturalis.nba.etl.normalize.UnmappedValueException;
 
 /**
  * 
- * Loads Synonym data into H2 Database
+ * The CoLSynonymLoader loads synonym names into a temporary 
+ * H2 Database
  * 
  * @author Tom Gilissen
  *
  */
 public class CoLSynonymLoader {
 
-  private static final Logger logger;
-  private static final TaxonomicStatusNormalizer statusNormalizer;
+  private static final Logger logger = getLogger(CoLSynonymBatchImporter.class);
+  private static final TaxonomicStatusNormalizer statusNormalizer = TaxonomicStatusNormalizer.getInstance();
   
   private Connection connection;
-  private int batchSize = 1000;
-
-  static {
-    logger = getLogger(CoLSynonymBatchImporter.class);
-    statusNormalizer = TaxonomicStatusNormalizer.getInstance();
-  }
+  private int batchSize;
 
   public CoLSynonymLoader(Connection connection)
   {
     this.connection = connection;
+    this.batchSize = 1000;
     createTable();
   }
 
-
+  public int getBatchSize()
+  {
+    return batchSize;
+  }
+  
+  public void setBatchSize(int batchSize)
+  {
+    this.batchSize = batchSize;
+  }
+  
   /**
    * Processes the taxa.txt file to retrieve and store synonyms
    * 
@@ -79,7 +84,6 @@ public class CoLSynonymLoader {
 
     int processed = 0;
     int skipped = 0;
-    long synonymsCreated;
     logger.info("Processing file {}", f.getAbsolutePath());
     logger.info("Batch size: {}", batchSize);
     
@@ -107,25 +111,13 @@ public class CoLSynonymLoader {
       saveRecords(csvRecords);
       csvRecords.clear();
     }
-    synonymsCreated = countSynonyms();
     logger.info("Records processed: {}", processed);
     logger.info("Records skipped:   {}", skipped);
-    logger.info("Synonyms created:  {}", synonymsCreated);
+    logger.info("Synonyms created:  {}", countRecordsCreated());
     logDuration(logger, getClass(), start);
   }
 
-  public int getBatchSize()
-  {
-    return batchSize;
-  }
-
-  public void setBatchSize(int batchSize)
-  {
-    this.batchSize = batchSize;
-  }
-
-  private static CSVExtractor<CoLTaxonCsvField> createExtractor(ETLStatistics stats,
-      File f)
+  private static CSVExtractor<CoLTaxonCsvField> createExtractor(ETLStatistics stats, File f)
   {
     CSVExtractor<CoLTaxonCsvField> extractor;
     extractor = new CSVExtractor<>(f, CoLTaxonCsvField.class, stats);
@@ -133,6 +125,27 @@ public class CoLSynonymLoader {
     extractor.setDelimiter('\t');
     extractor.setQuote('\u0000');
     return extractor;
+  }
+  
+  private void saveRecords(ArrayList<CSVRecordInfo<CoLTaxonCsvField>> records) {
+    Statement stmt = null;
+    try {          
+      connection.setAutoCommit(false);
+      stmt = connection.createStatement();
+      for (CSVRecordInfo<CoLTaxonCsvField> record : records) {
+        ScientificName synonym = createSynonym(record);
+        String taxonId = record.get(taxonID);
+        String acceptedNameUsageId = record.get(acceptedNameUsageID);
+        String document = JsonUtil.toJson(synonym).replaceAll("'", "''");
+        stmt.execute(String.format("INSERT INTO SYNONYMS(taxonId, acceptedNameUsageId, document) VALUES('%s', '%s', '%s')", taxonId, acceptedNameUsageId, document));
+      }
+      stmt.close();
+      connection.commit();
+    } catch (SQLException e) {
+      System.out.println("Exception Message " + e.getLocalizedMessage());
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
   
   private static ScientificName createSynonym(CSVRecordInfo<CoLTaxonCsvField> record)
@@ -172,66 +185,7 @@ public class CoLSynonymLoader {
     } 
   }
 
-  private void saveRecords(ArrayList<CSVRecordInfo<CoLTaxonCsvField>> records) {
-    Statement stmt = null;
-    try {          
-      connection.setAutoCommit(false);
-      stmt = connection.createStatement();
-      for (CSVRecordInfo<CoLTaxonCsvField> record : records) {
-        ScientificName synonym = createSynonym(record);
-        String taxonId = record.get(taxonID);
-        String acceptedNameUsageId = record.get(acceptedNameUsageID);
-        String document = JsonUtil.toJson(synonym).replaceAll("'", "''");
-        stmt.execute(String.format("INSERT INTO SYNONYMS(taxonId, acceptedNameUsageId, document) VALUES('%s', '%s', '%s')", taxonId, acceptedNameUsageId, document));
-      }
-      stmt.close();
-      connection.commit();
-    } catch (SQLException e) {
-        System.out.println("Exception Message " + e.getLocalizedMessage());
-    } catch (Exception e) {
-        e.printStackTrace();
-    }
-  }
-  
-  private boolean saveRecord(String taxonId, String acceptedNameUsageId, ScientificName synonym) {
-    Statement stmt = null;
-    try {          
-      connection.setAutoCommit(false);
-      stmt = connection.createStatement();
-      String document = JsonUtil.toJson(synonym).replaceAll("'", "''");
-      stmt.execute(String.format("INSERT INTO SYNONYMS(taxonId, acceptedNameUsageId, document) VALUES('%s', '%s', '%s')", taxonId, acceptedNameUsageId, document));        
-      stmt.close();
-      connection.commit();
-      return true;
-    } catch (SQLException e) {
-        System.out.println("Exception Message " + e.getLocalizedMessage());
-        return false;
-    } catch (Exception e) {
-        e.printStackTrace();
-        return false;
-    }
-  }
-
-  private void listRecord(String taxonId) {
-    Statement stmt = null;
-    try {          
-      connection.setAutoCommit(false);
-      stmt = connection.createStatement();
-      ResultSet rs = stmt.executeQuery(String.format("SELECT * FROM SYNONYMS WHERE taxonId = '%s'", taxonId));
-      while (rs.next()) {
-          logger.info(rs.getString("taxonId") + ", " + rs.getString("acceptedNameUsageId") + ", " + rs.getString("document"));
-      }
-      stmt.close();
-      connection.commit();
-    } catch (SQLException e) {
-        System.out.println("Exception Message " + e.getLocalizedMessage());
-    } catch (Exception e) {
-        e.printStackTrace();
-    }
-  }
-
-  
-  private long countSynonyms() {
+  private long countRecordsCreated() {
     long n = 0L;
     Statement stmt = null;
     try {          
@@ -249,6 +203,5 @@ public class CoLSynonymLoader {
     } 
     return n;
   }
-
 
 }

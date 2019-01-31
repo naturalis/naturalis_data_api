@@ -23,7 +23,7 @@ import nl.naturalis.nba.utils.IOUtil;
  * Imports taxa from the taxa.txt file ...
  *
  */
-public class CoLTaxonImporterToJson extends CoLImporter {
+public class CoLTaxonFullImporter extends CoLImporter {
 
   public static void main(String[] args) throws Exception {
     try {
@@ -38,12 +38,12 @@ public class CoLTaxonImporterToJson extends CoLImporter {
     }
   }
 
-  private static final Logger logger = ETLRegistry.getInstance().getLogger(CoLTaxonImporterToJson.class);
+  private static final Logger logger = ETLRegistry.getInstance().getLogger(CoLTaxonFullImporter.class);
 
   private Connection connection;
   private final String colYear;
 
-  public CoLTaxonImporterToJson(Connection connection) {
+  public CoLTaxonFullImporter(Connection connection) {
     super();
     this.connection = connection;
     colYear = DaoRegistry.getInstance().getConfiguration().required("col.year");
@@ -58,7 +58,7 @@ public class CoLTaxonImporterToJson extends CoLImporter {
     long start = System.currentTimeMillis();
     ETLStatistics stats = null;
     CSVExtractor<CoLTaxonCsvField> extractor = null;
-    CoLTaxonCompleteTransformer transformer = null;
+    CoLTaxonFullTransformer transformer = null;
     DocumentObjectWriter<Taxon> loader = null;
    
     try {
@@ -69,7 +69,7 @@ public class CoLTaxonImporterToJson extends CoLImporter {
       extractor = createExtractor(stats, f);
       extractor.setDelimiter('\t');
       extractor.setQuote('\u0000'); // CoL export doesn't use quotes!
-      transformer = new CoLTaxonCompleteTransformer(stats, connection); 
+      transformer = new CoLTaxonFullTransformer(stats, connection); 
       transformer.setColYear(colYear);
       transformer.setSuppressErrors(suppressErrors);
       

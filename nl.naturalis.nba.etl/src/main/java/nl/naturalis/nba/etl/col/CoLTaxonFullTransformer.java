@@ -30,6 +30,7 @@ import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.subgenus;
 import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.superfamily;
 import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.taxonID;
 import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.taxonRank;
+
 import java.net.URI;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -38,6 +39,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 import nl.naturalis.nba.api.model.DefaultClassification;
 import nl.naturalis.nba.api.model.Monomial;
 import nl.naturalis.nba.api.model.Reference;
@@ -58,7 +60,7 @@ import nl.naturalis.nba.etl.TransformUtil;
  * @author Tom Gilissen
  *
  */
-class CoLTaxonCompleteTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, Taxon> {
+class CoLTaxonFullTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, Taxon> {
 
   private static final List<String> allowedTaxonRanks;
 
@@ -70,7 +72,7 @@ class CoLTaxonCompleteTransformer extends AbstractCSVTransformer<CoLTaxonCsvFiel
   private String colYear;
   private String[] testGenera;
 
-  public CoLTaxonCompleteTransformer(ETLStatistics stats, Connection connection) {
+  public CoLTaxonFullTransformer(ETLStatistics stats, Connection connection) {
     super(stats);
     this.connection = connection;
     testGenera = getTestGenera();
@@ -217,7 +219,6 @@ class CoLTaxonCompleteTransformer extends AbstractCSVTransformer<CoLTaxonCsvFiel
     } catch (Exception e) {
         e.printStackTrace();
     }
-    //logger.info("Added {} synonym(s)", synonyms.size());
     if (synonyms.isEmpty()) return null;
     return synonyms;
   }
@@ -242,7 +243,6 @@ class CoLTaxonCompleteTransformer extends AbstractCSVTransformer<CoLTaxonCsvFiel
         e.printStackTrace();
     }
     if (vernacularNames.isEmpty()) return null;
-    //logger.info("Added: {} vernacular name(s)", vernacularNames.size());
     return vernacularNames;
   }
 
@@ -266,7 +266,6 @@ class CoLTaxonCompleteTransformer extends AbstractCSVTransformer<CoLTaxonCsvFiel
         e.printStackTrace();
     }
     if (references.isEmpty()) return null;
-    logger.info("Added: {} reference(s)", references.size());
     return references;
   }
 

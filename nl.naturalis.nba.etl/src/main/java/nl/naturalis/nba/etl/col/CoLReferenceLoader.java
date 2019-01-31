@@ -7,6 +7,7 @@ import static nl.naturalis.nba.etl.col.CoLReferenceCsvField.title;
 import static nl.naturalis.nba.etl.col.CoLReferenceCsvField.creator;
 import static nl.naturalis.nba.etl.col.CoLReferenceCsvField.date;
 import static nl.naturalis.nba.etl.col.CoLReferenceCsvField.description;
+
 import java.io.File;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -16,9 +17,9 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 
 import org.apache.logging.log4j.Logger;
+
 import nl.naturalis.nba.api.model.Person;
 import nl.naturalis.nba.api.model.Reference;
-import nl.naturalis.nba.api.model.VernacularName;
 import nl.naturalis.nba.common.es.ESDateInput;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.etl.CSVExtractor;
@@ -27,23 +28,36 @@ import nl.naturalis.nba.etl.ETLRuntimeException;
 import nl.naturalis.nba.etl.ETLStatistics;
 
 /**
- * Load literature references into the H2 Database
+ * The CoLReferenceLoader loads literature references 
+ * into a temporary H2 Database
  * 
  * @author Tom Gilissen
  *
  */
 public class CoLReferenceLoader {
+  
   private static final Logger logger = getLogger(CoLVernacularNameLoader.class);
   
   private Connection connection;
-  private int batchSize = 1000;
+  private int batchSize;
   
   public CoLReferenceLoader(Connection connection)
   {
     this.connection = connection;
+    this.batchSize = 1000;
     createTable();
   }
 
+  public int getBatchSize()
+  {
+    return batchSize;
+  }
+  
+  public void setBatchSize(int batchSize)
+  {
+    this.batchSize = batchSize;
+  }
+  
   /**
    * Processes the reference.txt file
    * 
@@ -88,18 +102,8 @@ public class CoLReferenceLoader {
     }
     logger.info("Records processed:        {}", processed);
     logger.info("Records skipped:          {}", skipped);
-    logger.info("References created: {}", countReferences());
+    logger.info("References created: {}", countRecordsCreated());
     logDuration(logger, getClass(), start);
-  }
-
-  public int getBatchSize()
-  {
-    return batchSize;
-  }
-
-  public void setBatchSize(int batchSize)
-  {
-    this.batchSize = batchSize;
   }
 
   private static CSVExtractor<CoLReferenceCsvField> createExtractor(ETLStatistics stats, File f)
@@ -110,6 +114,26 @@ public class CoLReferenceLoader {
     extractor.setDelimiter('\t');
     extractor.setQuote('\u0000');
     return extractor;
+  }
+  
+  private void saveRecords(ArrayList<CSVRecordInfo<CoLReferenceCsvField>> records) {
+    Statement stmt = null;
+    try {          
+      connection.setAutoCommit(false);
+      stmt = connection.createStatement();
+      for (CSVRecordInfo<CoLReferenceCsvField> record : records) {
+        Reference reference = createReference(record);
+        String taxonId = record.get(taxonID);
+        String document = JsonUtil.toJson(reference).replaceAll("'", "''");
+        stmt.execute(String.format("INSERT INTO REFERENCES(taxonId, document) VALUES('%s', '%s')", taxonId, document));
+      }
+      stmt.close();
+      connection.commit();
+    } catch (SQLException e) {
+      System.out.println("Exception Message " + e.getLocalizedMessage());
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
   
   private static Reference createReference(CSVRecordInfo<CoLReferenceCsvField> record)
@@ -149,27 +173,7 @@ public class CoLReferenceLoader {
     } 
   }
   
-  private void saveRecords(ArrayList<CSVRecordInfo<CoLReferenceCsvField>> records) {
-    Statement stmt = null;
-    try {          
-      connection.setAutoCommit(false);
-      stmt = connection.createStatement();
-      for (CSVRecordInfo<CoLReferenceCsvField> record : records) {
-        Reference reference = createReference(record);
-        String taxonId = record.get(taxonID);
-        String document = JsonUtil.toJson(reference).replaceAll("'", "''");
-        stmt.execute(String.format("INSERT INTO REFERENCES(taxonId, document) VALUES('%s', '%s')", taxonId, document));
-      }
-      stmt.close();
-      connection.commit();
-    } catch (SQLException e) {
-        System.out.println("Exception Message " + e.getLocalizedMessage());
-    } catch (Exception e) {
-        e.printStackTrace();
-    }
-  }
-
-  private long countReferences() {
+  private long countRecordsCreated() {
     long n = 0L;
     Statement stmt = null;
     try {          

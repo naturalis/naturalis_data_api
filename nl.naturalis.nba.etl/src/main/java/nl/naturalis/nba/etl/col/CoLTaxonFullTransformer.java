@@ -30,16 +30,16 @@ import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.subgenus;
 import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.superfamily;
 import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.taxonID;
 import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.taxonRank;
-
 import java.net.URI;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
-
+import java.util.stream.Collectors;
 import nl.naturalis.nba.api.model.DefaultClassification;
 import nl.naturalis.nba.api.model.Monomial;
 import nl.naturalis.nba.api.model.Reference;
@@ -71,6 +71,8 @@ class CoLTaxonFullTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, T
   private Connection connection;
   private String colYear;
   private String[] testGenera;
+  private ArrayList<String> taxonIds;
+  private HashMap<String, HashMap<String, List<String>>> cache;
 
   public CoLTaxonFullTransformer(ETLStatistics stats, Connection connection) {
     super(stats);
@@ -80,6 +82,11 @@ class CoLTaxonFullTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, T
 
   public void setColYear(String colYear) {
     this.colYear = colYear;
+  }
+
+  public void createLookupTable(ArrayList<String> taxonIds) throws SQLException {
+    this.taxonIds = taxonIds;
+    this.cache = createCache();
   }
 
   @Override
@@ -199,76 +206,106 @@ class CoLTaxonFullTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, T
     TransformUtil.setScientificNameGroup(sn);
     return sn;
   }
-  
-  private List<ScientificName> getSynonyms(String taxonId) {
-    List<ScientificName> synonyms = new ArrayList<>();
-    Statement stmt = null;
-    try {
-        connection.setAutoCommit(false);
-        stmt = connection.createStatement();                
-        ResultSet rs = stmt.executeQuery(String.format("SELECT document FROM SYNONYMS WHERE acceptedNameUsageId = '%s'", taxonId));
-        while (rs.next()) {
-            String json = rs.getString("document");
-            ScientificName synonym = JsonUtil.deserialize(json, ScientificName.class);
-            synonyms.add(synonym);
+
+  private HashMap<String, HashMap<String, List<String>>> createCache() throws SQLException {
+    
+    String ids = taxonIds.stream().map(id -> "'".concat(id).concat("'")).collect(Collectors.joining(","));
+    HashMap<String, HashMap<String, List<String>>> cache = new HashMap<>(taxonIds.size());
+
+    // Vernacular Names
+    String sql = String.format("SELECT taxonId, document FROM %s WHERE taxonId in (?);", "VERNACULARNAMES");
+    try (PreparedStatement statement = connection.prepareStatement(sql)) {
+      statement.setString(1, ids);
+      try (ResultSet resultSet = statement.executeQuery()) {
+        while (resultSet.next()) {
+          String taxonId = resultSet.getString("taxonId");
+          if (!cache.containsKey(taxonId)) {
+            HashMap<String, List<String>> additionalData = new HashMap<>();
+            additionalData.put("synonymNames", new ArrayList<>());
+            additionalData.put("vernacularNames", new ArrayList<>());
+            additionalData.put("referenceData", new ArrayList<>());
+            cache.put(taxonId, additionalData);
+          }
+          cache.get(taxonId).get("vernacularNames").add(resultSet.getString("document"));
         }
-        stmt.close();
-        connection.commit();
-    } catch (SQLException e) {
-        System.out.println("Exception Message " + e.getLocalizedMessage());
-    } catch (Exception e) {
-        e.printStackTrace();
+      }
     }
-    if (synonyms.isEmpty()) return null;
+
+    // Synonym names
+    sql = String.format("SELECT taxonId, document FROM %s WHERE taxonId in (?);", "SYNONYMS");
+    try (PreparedStatement statement = connection.prepareStatement(sql)) {
+      statement.setString(1, ids);
+      try (ResultSet resultSet = statement.executeQuery()) {
+        while (resultSet.next()) {
+          String taxonId = resultSet.getString("taxonId");
+          if (!cache.containsKey(taxonId)) {
+            HashMap<String, List<String>> additionalData = new HashMap<>();
+            additionalData.put("synonymNames", new ArrayList<>());
+            additionalData.put("vernacularNames", new ArrayList<>());
+            additionalData.put("referenceData", new ArrayList<>());
+            cache.put(taxonId, additionalData);
+          }
+          cache.get(taxonId).get("synonymNames").add(resultSet.getString("document"));
+        }
+      }
+    }
+
+    // Reference data
+    sql = String.format("SELECT taxonId, document FROM %s WHERE taxonId in (?);", "REFERENCES");
+    try (PreparedStatement statement = connection.prepareStatement(sql)) {
+      statement.setString(1, ids);
+      try (ResultSet resultSet = statement.executeQuery()) {
+        while (resultSet.next()) {
+          String taxonId = resultSet.getString("taxonId");
+          if (!cache.containsKey(taxonId)) {
+            HashMap<String, List<String>> additionalData = new HashMap<>();
+            additionalData.put("synonymNames", new ArrayList<>());
+            additionalData.put("vernacularNames", new ArrayList<>());
+            additionalData.put("referenceData", new ArrayList<>());
+            cache.put(taxonId, additionalData);
+          }
+          cache.get(taxonId).get("referenceData").add(resultSet.getString("document"));
+        }
+      }
+    }
+    return cache;
+  }
+
+  private List<ScientificName> getSynonyms(String taxonId) {
+    if (cache == null || cache.get(taxonId) == null || cache.get(taxonId).get("synonymNames") == null)
+      return null;
+    List<ScientificName> synonyms = new ArrayList<>();
+    List<String> documents = cache.get(taxonId).get("synonymNames");
+    for (String document : documents) {
+      ScientificName synonym = JsonUtil.deserialize(document, ScientificName.class);
+      synonyms.add(synonym);
+    }
     return synonyms;
   }
-  
+
   private List<VernacularName> getVernacularNames(String taxonId) {
+    if (cache == null || cache.get(taxonId) == null || cache.get(taxonId).get("vernacularNames") == null)
+      return null;
     List<VernacularName> vernacularNames = new ArrayList<>();
-    Statement stmt = null;
-    try {
-        connection.setAutoCommit(false);
-        stmt = connection.createStatement();                
-        ResultSet rs = stmt.executeQuery(String.format("SELECT document FROM VERNACULARNAMES WHERE taxonId = '%s'", taxonId));
-        while (rs.next()) {
-            String json = rs.getString("document");
-            VernacularName name = JsonUtil.deserialize(json, VernacularName.class);
-            vernacularNames.add(name);
-        }
-        stmt.close();
-        connection.commit();
-    } catch (SQLException e) {
-        System.out.println("Exception Message " + e.getLocalizedMessage());
-    } catch (Exception e) {
-        e.printStackTrace();
+    List<String> documents = cache.get(taxonId).get("vernacularNames");
+    for (String document : documents) {
+      VernacularName name = JsonUtil.deserialize(document, VernacularName.class);
+      vernacularNames.add(name);
     }
-    if (vernacularNames.isEmpty()) return null;
     return vernacularNames;
   }
 
   private List<Reference> getReferences(String taxonId) {
+    if (cache == null || cache.get(taxonId) == null || cache.get(taxonId).get("referenceData") == null)
+      return null;
     List<Reference> references = new ArrayList<>();
-    Statement stmt = null;
-    try {
-        connection.setAutoCommit(false);
-        stmt = connection.createStatement();                
-        ResultSet rs = stmt.executeQuery(String.format("SELECT document FROM REFERENCES WHERE taxonId = '%s'", taxonId));
-        while (rs.next()) {
-            String json = rs.getString("document");
-            Reference reference = JsonUtil.deserialize(json, Reference.class);
-            references.add(reference);
-        }
-        stmt.close();
-        connection.commit();
-    } catch (SQLException e) {
-        System.out.println("Exception Message " + e.getLocalizedMessage());
-    } catch (Exception e) {
-        e.printStackTrace();
+    List<String> documents = cache.get(taxonId).get("referenceData");
+    for (String document : documents) {
+      Reference reference = JsonUtil.deserialize(document, Reference.class);
+      references.add(reference);
     }
-    if (references.isEmpty()) return null;
     return references;
   }
-
 
   private static void addMonomials(Taxon taxon) {
     DefaultClassification dc = taxon.getDefaultClassification();

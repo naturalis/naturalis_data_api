@@ -10,6 +10,7 @@ import static nl.naturalis.nba.etl.col.CoLReferenceCsvField.description;
 
 import java.io.File;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -36,7 +37,7 @@ import nl.naturalis.nba.etl.ETLStatistics;
  */
 public class CoLReferenceLoader {
   
-  private static final Logger logger = getLogger(CoLVernacularNameLoader.class);
+  private static final Logger logger = getLogger(CoLReferenceLoader.class);
   
   private Connection connection;
   private int batchSize;
@@ -73,8 +74,7 @@ public class CoLReferenceLoader {
     ETLStatistics stats = new ETLStatistics();
     
     CSVExtractor<CoLReferenceCsvField> extractor = createExtractor(stats, f);
-    ArrayList<CSVRecordInfo<CoLReferenceCsvField>> csvRecords;
-    csvRecords = new ArrayList<>(batchSize);
+    ArrayList<CSVRecordInfo<CoLReferenceCsvField>> csvRecords = new ArrayList<>(batchSize);
     
     int processed = 0;
     int skipped = 0;
@@ -94,12 +94,14 @@ public class CoLReferenceLoader {
       if (csvRecords.size() == batchSize) {
         saveRecords(csvRecords);
         csvRecords.clear();
+        //if (processed == 450000) break;
         }
       }
     if (!csvRecords.isEmpty()) {
       saveRecords(csvRecords);
       csvRecords.clear();
     }
+    addIndex();
     logger.info("Records processed:        {}", processed);
     logger.info("Records skipped:          {}", skipped);
     logger.info("References created: {}", countRecordsCreated());
@@ -117,22 +119,17 @@ public class CoLReferenceLoader {
   }
   
   private void saveRecords(ArrayList<CSVRecordInfo<CoLReferenceCsvField>> records) {
-    Statement stmt = null;
-    try {          
-      connection.setAutoCommit(false);
-      stmt = connection.createStatement();
+    try (PreparedStatement ps = connection.prepareStatement("INSERT INTO REFERENCES(taxonId, document) VALUES(?, ?)")) {          
       for (CSVRecordInfo<CoLReferenceCsvField> record : records) {
         Reference reference = createReference(record);
         String taxonId = record.get(taxonID);
         String document = JsonUtil.toJson(reference).replaceAll("'", "''");
-        stmt.execute(String.format("INSERT INTO REFERENCES(taxonId, document) VALUES('%s', '%s')", taxonId, document));
+        ps.setString(1,  taxonId);
+        ps.setString(2,  document);
+        ps.executeUpdate();
       }
-      stmt.close();
-      connection.commit();
     } catch (SQLException e) {
-      System.out.println("Exception Message " + e.getLocalizedMessage());
-    } catch (Exception e) {
-      e.printStackTrace();
+      throw new RuntimeException(e);
     }
   }
   
@@ -158,36 +155,33 @@ public class CoLReferenceLoader {
   }
   
   private void createTable() {
-    Statement stmt = null;
-    try {
-      connection.setAutoCommit(false);      
-      stmt = connection.createStatement();
-      stmt.execute("CREATE TABLE REFERENCES (id int primary key auto_increment, taxonId varchar(50) not null, document LONGTEXT)");
-      stmt.close();
-      connection.commit();
-
+    try (Statement stmt = connection.createStatement()) {
+      stmt.execute("CREATE TABLE REFERENCES (id int, taxonId varchar(50) not null, document LONGTEXT)");
     } catch (SQLException e) {
-      System.out.println("Exception Message " + e.getLocalizedMessage());
-    } catch (Exception e) {
-      e.printStackTrace();
+      throw new RuntimeException(e);
     } 
+  }
+  
+  private void addIndex() {
+    logger.info("Creating index");
+    try (Statement stmt = connection.createStatement()) {
+      stmt.execute("CREATE INDEX refTaxonIdInd ON REFERENCES (taxonId);");
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+    logger.info("Creating index: done");
   }
   
   private long countRecordsCreated() {
     long n = 0L;
-    Statement stmt = null;
-    try {          
+    try (Statement stmt = connection.createStatement()){          
       connection.setAutoCommit(false);
-      stmt = connection.createStatement();
-      ResultSet rs = stmt.executeQuery("SELECT COUNT(taxonId) FROM REFERENCES");
-      rs.next();
-      n = rs.getLong(1);
-      stmt.close();
-      connection.commit();
+      try (ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM REFERENCES")) {
+        rs.next();
+        n = rs.getLong(1);        
+      }
     } catch (SQLException e) {
-        System.out.println("Exception Message " + e.getLocalizedMessage());
-    } catch (Exception e) {
-        e.printStackTrace();
+        throw new RuntimeException(e);
     } 
     return n;
   }

@@ -13,6 +13,7 @@ import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.taxonomicStatus;
 
 import java.io.File;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -111,6 +112,7 @@ public class CoLSynonymLoader {
       saveRecords(csvRecords);
       csvRecords.clear();
     }
+    addIndex();
     logger.info("Records processed: {}", processed);
     logger.info("Records skipped:   {}", skipped);
     logger.info("Synonyms created:  {}", countRecordsCreated());
@@ -128,23 +130,19 @@ public class CoLSynonymLoader {
   }
   
   private void saveRecords(ArrayList<CSVRecordInfo<CoLTaxonCsvField>> records) {
-    Statement stmt = null;
-    try {          
-      connection.setAutoCommit(false);
-      stmt = connection.createStatement();
+    try (PreparedStatement ps = connection.prepareStatement("INSERT INTO SYNONYMS(id, taxonId, document) VALUES(?, ?, ?)")) {
       for (CSVRecordInfo<CoLTaxonCsvField> record : records) {
         ScientificName synonym = createSynonym(record);
-        String taxonId = record.get(taxonID);
-        String acceptedNameUsageId = record.get(acceptedNameUsageID);
+        String id = record.get(taxonID);
+        ps.setString(1, id);
+        String taxonId = record.get(acceptedNameUsageID);
+        ps.setString(2, taxonId);
         String document = JsonUtil.toJson(synonym).replaceAll("'", "''");
-        stmt.execute(String.format("INSERT INTO SYNONYMS(taxonId, acceptedNameUsageId, document) VALUES('%s', '%s', '%s')", taxonId, acceptedNameUsageId, document));
+        ps.setString(3, document);
+        ps.executeUpdate();
       }
-      stmt.close();
-      connection.commit();
     } catch (SQLException e) {
-      System.out.println("Exception Message " + e.getLocalizedMessage());
-    } catch (Exception e) {
-      e.printStackTrace();
+      throw new RuntimeException(e);
     }
   }
   
@@ -170,36 +168,33 @@ public class CoLSynonymLoader {
   }
 
   private void createTable() {
-    Statement stmt = null;
-    try {
-      connection.setAutoCommit(false);      
-      stmt = connection.createStatement();
-      stmt.execute("CREATE TABLE SYNONYMS (taxonId varchar(50) not null primary key, acceptedNameUsageId varchar(50) not null, document LONGTEXT)");
+    try (Statement stmt = connection.createStatement();) {
+      stmt.execute("CREATE TABLE SYNONYMS (id varchar(50) not null, taxonId varchar(50) not null, document LONGTEXT)");
       stmt.close();
-      connection.commit();
-
     } catch (SQLException e) {
-      System.out.println("Exception Message " + e.getLocalizedMessage());
-    } catch (Exception e) {
-      e.printStackTrace();
-    } 
+      throw new RuntimeException(e);
+    }
+  }
+  
+  private void addIndex() {
+    logger.info("Creating index");
+    try (Statement stmt = connection.createStatement()) {
+      stmt.execute("CREATE INDEX synTaxonIdInd ON SYNONYMS (taxonId);");
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+    logger.info("Creating index: done");
   }
 
   private long countRecordsCreated() {
     long n = 0L;
-    Statement stmt = null;
-    try {          
-      connection.setAutoCommit(false);
-      stmt = connection.createStatement();
-      ResultSet rs = stmt.executeQuery("SELECT COUNT(taxonId) FROM SYNONYMS");
-      rs.next();
-      n = rs.getLong(1);
-      stmt.close();
-      connection.commit();
+    try (Statement stmt  = connection.createStatement()) {
+      try (ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM SYNONYMS")) {
+        rs.next();
+        n = rs.getLong(1);
+      }
     } catch (SQLException e) {
-        System.out.println("Exception Message " + e.getLocalizedMessage());
-    } catch (Exception e) {
-        e.printStackTrace();
+      throw new RuntimeException(e);
     } 
     return n;
   }

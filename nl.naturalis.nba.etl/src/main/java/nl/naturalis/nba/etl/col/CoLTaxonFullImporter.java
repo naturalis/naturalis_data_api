@@ -1,9 +1,12 @@
 package nl.naturalis.nba.etl.col;
 
 import static nl.naturalis.nba.etl.ETLUtil.logDuration;
+import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.taxonID;
 
 import java.io.File;
 import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.logging.log4j.Logger;
@@ -53,8 +56,9 @@ public class CoLTaxonFullImporter extends CoLImporter {
    * Writes CoL taxa to a file in JsonND format
    * 
    * @param path
+   * @throws SQLException 
    */
-  public void importCsv(String path) {
+  public void importCsv(String path) throws SQLException {
     long start = System.currentTimeMillis();
     ETLStatistics stats = null;
     CSVExtractor<CoLTaxonCsvField> extractor = null;
@@ -78,11 +82,24 @@ public class CoLTaxonFullImporter extends CoLImporter {
       loader.suppressErrors(suppressErrors);
       logger.info("Processing file {}", f.getAbsolutePath());
 
+      int batchSize = 1000;
+      ArrayList<String> taxonIds = new ArrayList<>();
+      
+      List<CSVRecordInfo<CoLTaxonCsvField>> csvRecords = new ArrayList<>(batchSize); 
       for (CSVRecordInfo<CoLTaxonCsvField> rec : extractor) {
         if (rec == null)
           continue;
-        List<Taxon> taxa = transformer.transform(rec);
-        loader.write(taxa);
+        csvRecords.add(rec);
+        taxonIds.add(rec.get(taxonID));
+        if (csvRecords.size() == batchSize) {    
+          transformer.createLookupTable(taxonIds);
+          for (CSVRecordInfo<CoLTaxonCsvField> record : csvRecords) {
+            List<Taxon> taxa = transformer.transform(record);
+            loader.write(taxa);
+          }
+          taxonIds.clear();
+          csvRecords.clear();
+        }
         if (stats.recordsProcessed != 0 && stats.recordsProcessed % 50000 == 0) {
           logger.info("Records processed: {}", stats.recordsProcessed);
           logger.info("Documents indexed: {}", stats.documentsIndexed);

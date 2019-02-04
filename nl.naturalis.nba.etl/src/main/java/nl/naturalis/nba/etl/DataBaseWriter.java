@@ -4,10 +4,17 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
+import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.common.json.JsonUtil;
 
@@ -127,17 +134,38 @@ public class DataBaseWriter<T extends IDocumentObject> implements DocumentObject
     Statement stmt = null;
     try {
         connection.setAutoCommit(false);
-        stmt = connection.createStatement();
+        PreparedStatement ps = connection.prepareStatement("INSERT INTO TAXON(taxonId, document) VALUES('316423@COL', ?)");
+        ps.setString(1, TAXON01);
+        ps.executeUpdate();
         
-        stmt.execute("INSERT INTO TAXON(taxonId, document) VALUES('" + "316423@COL" + "', '" + TAXON01 + "')"); 
-        stmt.execute(String.format("INSERT INTO TAXON(taxonId, document) VALUES('%s', '%s')", "316424@COL", TAXON02));
-        stmt.execute("INSERT INTO TAXON(taxonId, document) VALUES('316425@COL', '" + TAXON03 + "')");
+//        stmt = connection.createStatement();
+//        stmt.execute("INSERT INTO TAXON(taxonId, document) VALUES('" + "316423@COL" + "', '" + TAXON01 + "')"); 
+//        stmt.execute(String.format("INSERT INTO TAXON(taxonId, document) VALUES('%s', '%s')", "316424@COL", TAXON02));
+//        stmt.execute("INSERT INTO TAXON(taxonId, document) VALUES('316425@COL', '" + TAXON03 + "')");
         
-        ResultSet rs = stmt.executeQuery("select * from TAXON");
+        
+        
+//        ResultSet rs = stmt.executeQuery("select * from TAXON");
+        PreparedStatement ps2 = connection.prepareStatement("select * from ? where taxonId = ?");
+        ps2.setString(1, "TAXON");
+        ps2.setString(2,  "316423@COL");
+        ResultSet rs = ps2.executeQuery();
         while (rs.next()) {
             System.out.println(rs.getString("taxonId") + ", " + rs.getString("document"));
         }
+        
+//        List<String> taxonIds = Arrays.asList("316423@COL", "316424@COL", "316425@COL");
+//        String ids = taxonIds.stream().map(id -> "'".concat(id).concat("'")).collect(Collectors.joining(","));
+//        System.out.println(ids);
+//
+////        rs = stmt.executeQuery("select * from TAXON where taxonId in ('316423@COL', '316424@COL', '316425@COL')");
+//        rs = stmt.executeQuery(String.format("select * from TAXON where taxonId in (%s)", ids));
+//        
+//        while (rs.next()) {
+//            System.out.println(rs.getString("taxonId") + ", " + rs.getString("document"));
+//        }
 
+        stmt = connection.createStatement();
         stmt.execute("DROP TABLE TAXON");
         stmt.close();
         connection.commit();

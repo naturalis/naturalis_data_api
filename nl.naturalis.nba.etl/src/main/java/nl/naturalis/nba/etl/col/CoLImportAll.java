@@ -62,12 +62,13 @@ public class CoLImportAll {
 		try {
 			CoLImportAll importer = new CoLImportAll();
 			importer.setBatchSize(batchSize);
-			if (toFile) {
-			  importer.importAllToFile();
-			}
-			else {
-			  importer.importAll();			  
-			}
+			importer.importAllToFile();
+//			if (toFile) {
+//			  importer.importAllToFile();
+//			}
+//			else {
+//			  importer.importAll();			  
+//			}
 		}
 		catch (Throwable t) {
 			logger.error("CoLImportAll terminated unexpectedly!", t);
@@ -106,32 +107,38 @@ public class CoLImportAll {
    * Reads the CoL source file and creates CoL taxa documents, including
    * synonyms, vernacular names and literature references.
    * 
-   * @throws BulkIndexException
    * 
    */
-  public void importAllToFile() throws BulkIndexException
+  public void importAllToFile()
   {
+    logger.info(">>>>>>>>>> IMPORT ALL TO FILE <<<<<<<<<<<<<");
     long start = System.currentTimeMillis();
     String colDataDir = DaoRegistry.getInstance().getConfiguration().required("col.data.dir");
-    connection = getDBConnection();
-    
-    // 1. Load synonym names into intermediate database
-    CoLSynonymLoader synonymLoader = new CoLSynonymLoader(connection);
-    synonymLoader.importCsv(colDataDir + "/taxa.txt");
-    
-    // 2. Load vernacular names into intermediate database
-    CoLVernacularNameLoader vernacularNameLoader = new CoLVernacularNameLoader(connection);
-    vernacularNameLoader.setBatchSize(batchSize);
-    vernacularNameLoader.importCsv(colDataDir + "/vernacular.txt");
+    try (Connection connection = getDBConnection()) {
 
-    // 3. Load literature references into intermediate database
-    CoLReferenceLoader referenceLoader = new CoLReferenceLoader(connection);
-    referenceLoader.setBatchSize(batchSize);
-    referenceLoader.importCsv(colDataDir + "/reference.txt");
+      // 1. Load synonym names into intermediate database
+      CoLSynonymLoader synonymLoader = new CoLSynonymLoader(connection);
+      synonymLoader.setBatchSize(batchSize);
+      synonymLoader.importCsv(colDataDir + "/taxa.txt");
     
-    // Finally, create the taxon documents using the data from intermediate database
-    CoLTaxonFullImporter cti = new CoLTaxonFullImporter(connection);
-    cti.importCsv(colDataDir + "/taxa.txt");
+      // 2. Load vernacular names into intermediate database
+      CoLVernacularNameLoader vernacularNameLoader = new CoLVernacularNameLoader(connection);
+      vernacularNameLoader.setBatchSize(batchSize);
+      vernacularNameLoader.importCsv(colDataDir + "/vernacular.txt");
+    
+      // 3. Load literature references into intermediate database
+      CoLReferenceLoader referenceLoader = new CoLReferenceLoader(connection);
+      referenceLoader.setBatchSize(batchSize);
+      referenceLoader.importCsv(colDataDir + "/reference.txt");
+
+      // Finally, create the taxon documents using the data from intermediate database
+      CoLTaxonFullImporter cti = new CoLTaxonFullImporter(connection);
+      cti.importCsv(colDataDir + "/taxa.txt");
+
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+    
     logDuration(logger, getClass(), start);
   }
 	

@@ -100,7 +100,7 @@ public class CoLTaxonFullImporter extends CoLImporter {
           taxonIds.clear();
           csvRecords.clear();
         }
-        if (stats.recordsProcessed != 0 && stats.recordsProcessed % 50000 == 0) {
+        if (stats.recordsProcessed != 0 && stats.recordsProcessed % 100000 == 0) {
           logger.info("Records processed: {}", stats.recordsProcessed);
           logger.info("Documents indexed: {}", stats.documentsIndexed);
         }

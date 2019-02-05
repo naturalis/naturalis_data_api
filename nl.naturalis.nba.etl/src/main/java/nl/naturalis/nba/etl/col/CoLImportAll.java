@@ -28,8 +28,6 @@ public class CoLImportAll {
   private static final String DB_CONNECTION = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1";
   private static final String DB_USER = "";
   private static final String DB_PASSWORD = "";
-  private static Connection connection;
-
   private int batchSize;
   
   public CoLImportAll() {}
@@ -62,13 +60,10 @@ public class CoLImportAll {
 		try {
 			CoLImportAll importer = new CoLImportAll();
 			importer.setBatchSize(batchSize);
-			importer.importAllToFile();
-//			if (toFile) {
-//			  importer.importAllToFile();
-//			}
-//			else {
-//			  importer.importAll();			  
-//			}
+			if (toFile) 
+			  importer.importAllToFile();
+			else
+			  importer.importAll();
 		}
 		catch (Throwable t) {
 			logger.error("CoLImportAll terminated unexpectedly!", t);
@@ -111,7 +106,7 @@ public class CoLImportAll {
    */
   public void importAllToFile()
   {
-    logger.info(">>>>>>>>>> IMPORT ALL TO FILE <<<<<<<<<<<<<");
+    logger.info("Transforming CoL dataset and writing to file");
     long start = System.currentTimeMillis();
     String colDataDir = DaoRegistry.getInstance().getConfiguration().required("col.data.dir");
     try (Connection connection = getDBConnection()) {

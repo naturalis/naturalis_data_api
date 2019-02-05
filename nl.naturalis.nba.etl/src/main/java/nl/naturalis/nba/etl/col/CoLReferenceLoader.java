@@ -7,6 +7,7 @@ import static nl.naturalis.nba.etl.col.CoLReferenceCsvField.title;
 import static nl.naturalis.nba.etl.col.CoLReferenceCsvField.creator;
 import static nl.naturalis.nba.etl.col.CoLReferenceCsvField.date;
 import static nl.naturalis.nba.etl.col.CoLReferenceCsvField.description;
+import static nl.naturalis.nba.etl.col.CoLEntityType.REFERENCE_DATA;
 
 import java.io.File;
 import java.sql.Connection;
@@ -42,7 +43,7 @@ public class CoLReferenceLoader {
   private Connection connection;
   private int batchSize;
   
-  public CoLReferenceLoader(Connection connection)
+  public CoLReferenceLoader(Connection connection) throws SQLException
   {
     this.connection = connection;
     this.batchSize = 1000;
@@ -63,8 +64,9 @@ public class CoLReferenceLoader {
    * Processes the reference.txt file
    * 
    * @param path
+   * @throws SQLException 
    */
-  public void importCsv(String path)
+  public void importCsv(String path) throws SQLException
   {
     File f = new File(path);
     if (!f.exists()) {
@@ -94,7 +96,6 @@ public class CoLReferenceLoader {
       if (csvRecords.size() == batchSize) {
         saveRecords(csvRecords);
         csvRecords.clear();
-        //if (processed == 450000) break;
         }
       }
     if (!csvRecords.isEmpty()) {
@@ -118,18 +119,17 @@ public class CoLReferenceLoader {
     return extractor;
   }
   
-  private void saveRecords(ArrayList<CSVRecordInfo<CoLReferenceCsvField>> records) {
-    try (PreparedStatement ps = connection.prepareStatement("INSERT INTO REFERENCES(taxonId, document) VALUES(?, ?)")) {          
+  private void saveRecords(ArrayList<CSVRecordInfo<CoLReferenceCsvField>> records) throws SQLException {
+    try (PreparedStatement ps = connection.prepareStatement(String.format("INSERT INTO %s (taxonId, document) VALUES(?, ?)", REFERENCE_DATA))) {          
       for (CSVRecordInfo<CoLReferenceCsvField> record : records) {
         Reference reference = createReference(record);
         String taxonId = record.get(taxonID);
         String document = JsonUtil.toJson(reference).replaceAll("'", "''");
         ps.setString(1,  taxonId);
         ps.setString(2,  document);
-        ps.executeUpdate();
+        ps.addBatch();
       }
-    } catch (SQLException e) {
-      throw new RuntimeException(e);
+      ps.executeBatch();
     }
   }
   
@@ -154,34 +154,26 @@ public class CoLReferenceLoader {
     return reference;
   }
   
-  private void createTable() {
+  private void createTable() throws SQLException {
     try (Statement stmt = connection.createStatement()) {
-      stmt.execute("CREATE TABLE REFERENCES (id int, taxonId varchar(50) not null, document LONGTEXT)");
-    } catch (SQLException e) {
-      throw new RuntimeException(e);
+      stmt.execute(String.format("CREATE TABLE %s (id INT, taxonId VARCHAR(50) NOT NULL, document LONGTEXT);", REFERENCE_DATA));
     } 
   }
   
-  private void addIndex() {
-    logger.info("Creating index");
+  private void addIndex() throws SQLException {
     try (Statement stmt = connection.createStatement()) {
-      stmt.execute("CREATE INDEX refTaxonIdInd ON REFERENCES (taxonId);");
-    } catch (SQLException e) {
-      throw new RuntimeException(e);
+      stmt.execute(String.format("CREATE INDEX referenceTaxonIdIndex ON %s (taxonId);", REFERENCE_DATA));
     }
-    logger.info("Creating index: done");
   }
   
-  private long countRecordsCreated() {
+  private long countRecordsCreated() throws SQLException {
     long n = 0L;
     try (Statement stmt = connection.createStatement()){          
       connection.setAutoCommit(false);
-      try (ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM REFERENCES")) {
+      try (ResultSet rs = stmt.executeQuery(String.format("SELECT COUNT(*) FROM %s;", REFERENCE_DATA))) {
         rs.next();
         n = rs.getLong(1);        
       }
-    } catch (SQLException e) {
-        throw new RuntimeException(e);
     } 
     return n;
   }

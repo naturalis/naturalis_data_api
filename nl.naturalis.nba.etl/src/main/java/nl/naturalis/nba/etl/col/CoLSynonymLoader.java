@@ -10,6 +10,7 @@ import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.scientificNameAuthorship
 import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.specificEpithet;
 import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.taxonID;
 import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.taxonomicStatus;
+import static nl.naturalis.nba.etl.col.CoLEntityType.SYNONYM_NAMES;
 
 import java.io.File;
 import java.sql.Connection;
@@ -48,7 +49,7 @@ public class CoLSynonymLoader {
   private Connection connection;
   private int batchSize;
 
-  public CoLSynonymLoader(Connection connection)
+  public CoLSynonymLoader(Connection connection) throws SQLException
   {
     this.connection = connection;
     this.batchSize = 1000;
@@ -69,8 +70,9 @@ public class CoLSynonymLoader {
    * Processes the taxa.txt file to retrieve and store synonyms
    * 
    * @param path
+   * @throws SQLException 
    */
-  public void importCsv(String path)
+  public void importCsv(String path) throws SQLException
   {
     File f = new File(path);
     if (!f.exists()) {
@@ -129,8 +131,8 @@ public class CoLSynonymLoader {
     return extractor;
   }
   
-  private void saveRecords(ArrayList<CSVRecordInfo<CoLTaxonCsvField>> records) {
-    try (PreparedStatement ps = connection.prepareStatement("INSERT INTO SYNONYMS(id, taxonId, document) VALUES(?, ?, ?)")) {
+  private void saveRecords(ArrayList<CSVRecordInfo<CoLTaxonCsvField>> records) throws SQLException {
+    try (PreparedStatement ps = connection.prepareStatement(String.format("INSERT INTO %s (id, taxonId, document) VALUES(?, ?, ?)", SYNONYM_NAMES))) {
       for (CSVRecordInfo<CoLTaxonCsvField> record : records) {
         ScientificName synonym = createSynonym(record);
         String id = record.get(taxonID);
@@ -139,15 +141,13 @@ public class CoLSynonymLoader {
         ps.setString(2, taxonId);
         String document = JsonUtil.toJson(synonym).replaceAll("'", "''");
         ps.setString(3, document);
-        ps.executeUpdate();
+        ps.addBatch();
       }
-    } catch (SQLException e) {
-      throw new RuntimeException(e);
+      ps.executeBatch();
     }
   }
   
-  private static ScientificName createSynonym(CSVRecordInfo<CoLTaxonCsvField> record)
-  {
+  private static ScientificName createSynonym(CSVRecordInfo<CoLTaxonCsvField> record) {
     ScientificName sn = new ScientificName();
     sn.setFullScientificName(record.get(scientificName));
     sn.setGenusOrMonomial(record.get(genericName));
@@ -167,34 +167,25 @@ public class CoLSynonymLoader {
     return sn;
   }
 
-  private void createTable() {
+  private void createTable() throws SQLException {
     try (Statement stmt = connection.createStatement();) {
-      stmt.execute("CREATE TABLE SYNONYMS (id varchar(50) not null, taxonId varchar(50) not null, document LONGTEXT)");
-      stmt.close();
-    } catch (SQLException e) {
-      throw new RuntimeException(e);
+      stmt.execute(String.format("CREATE TABLE %s (id VARCHAR(50) NOT NULL, taxonId VARCHAR(50) NOT NULL, document LONGTEXT);", SYNONYM_NAMES));
     }
   }
   
-  private void addIndex() {
-    logger.info("Creating index");
+  private void addIndex() throws SQLException {
     try (Statement stmt = connection.createStatement()) {
-      stmt.execute("CREATE INDEX synTaxonIdInd ON SYNONYMS (taxonId);");
-    } catch (SQLException e) {
-      throw new RuntimeException(e);
+      stmt.execute(String.format("CREATE INDEX synonymTaxonIdIndex ON %s (taxonId);", SYNONYM_NAMES));
     }
-    logger.info("Creating index: done");
   }
 
-  private long countRecordsCreated() {
+  private long countRecordsCreated() throws SQLException {
     long n = 0L;
     try (Statement stmt  = connection.createStatement()) {
-      try (ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM SYNONYMS")) {
+      try (ResultSet rs = stmt.executeQuery(String.format("SELECT COUNT(*) FROM %s;", SYNONYM_NAMES))) {
         rs.next();
         n = rs.getLong(1);
       }
-    } catch (SQLException e) {
-      throw new RuntimeException(e);
     } 
     return n;
   }

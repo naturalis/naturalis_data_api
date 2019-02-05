@@ -5,6 +5,7 @@ import static nl.naturalis.nba.etl.ETLUtil.logDuration;
 import static nl.naturalis.nba.etl.col.CoLVernacularNameCsvField.language;
 import static nl.naturalis.nba.etl.col.CoLVernacularNameCsvField.taxonID;
 import static nl.naturalis.nba.etl.col.CoLVernacularNameCsvField.vernacularName;
+import static nl.naturalis.nba.etl.col.CoLEntityType.VERNACULAR_NAMES;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -33,7 +34,7 @@ public class CoLVernacularNameLoader {
   private Connection connection;
   private int batchSize;
 
-  public CoLVernacularNameLoader(Connection connection) {
+  public CoLVernacularNameLoader(Connection connection) throws SQLException {
     this.connection = connection;
     this.batchSize = 1000;
     createTable();
@@ -51,8 +52,9 @@ public class CoLVernacularNameLoader {
    * Processes the vernacular.txt file
    * 
    * @param path
+   * @throws SQLException 
    */
-  public void importCsv(String path) {
+  public void importCsv(String path) throws SQLException {
     File f = new File(path);
     if (!f.exists()) {
       throw new ETLRuntimeException("No such file: " + path);
@@ -104,18 +106,17 @@ public class CoLVernacularNameLoader {
     return extractor;
   }
 
-  private void saveRecords(ArrayList<CSVRecordInfo<CoLVernacularNameCsvField>> records) {
-    try (PreparedStatement ps = connection.prepareStatement("INSERT INTO VERNACULARNAMES(taxonId, document) VALUES(?, ?)")) {
+  private void saveRecords(ArrayList<CSVRecordInfo<CoLVernacularNameCsvField>> records) throws SQLException {
+    try (PreparedStatement ps = connection.prepareStatement(String.format("INSERT INTO %s (taxonId, document) VALUES(?, ?)", VERNACULAR_NAMES))) {
       for (CSVRecordInfo<CoLVernacularNameCsvField> record : records) {
         VernacularName vernacularName = createVernacularName(record);
         String taxonId = record.get(taxonID);
         String document = JsonUtil.toJson(vernacularName).replaceAll("'", "''");
         ps.setString(1, taxonId);
         ps.setString(2, document);
-        ps.executeUpdate();
+        ps.addBatch();
       }
-    } catch (SQLException e) {
-      throw new RuntimeException(e);
+      ps.executeBatch();
     }
   }
 
@@ -126,33 +127,25 @@ public class CoLVernacularNameLoader {
     return vn;
   }
 
-  private void createTable() {
+  private void createTable() throws SQLException {
     try (Statement stmt = connection.createStatement()) {
-      stmt.execute("CREATE TABLE VERNACULARNAMES (taxonId varchar(50) not null, document LONGTEXT)");
-    } catch (SQLException e) {
-      throw new RuntimeException(e);
+      stmt.execute(String.format("CREATE TABLE %s (taxonId VARCHAR(50) NOT NULL, document LONGTEXT);", VERNACULAR_NAMES));
     }
   }
   
-  private void addIndex() {
-    logger.info("Creating index");
+  private void addIndex() throws SQLException {
     try (Statement stmt = connection.createStatement()) {
-      stmt.execute("CREATE INDEX verTaxonIdInd ON VERNACULARNAMES (taxonId);");
-    } catch (SQLException e) {
-      throw new RuntimeException(e);
+      stmt.execute(String.format("CREATE INDEX vernacularTaxonIdIndex ON %s (taxonId);", VERNACULAR_NAMES));
     }
-    logger.info("Creating index: done");
   }
   
-  private long countRecordsCreated() {
+  private long countRecordsCreated() throws SQLException {
     long n = 0L;
     try (Statement stmt = connection.createStatement()) {
-      try (ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM VERNACULARNAMES")) {
+      try (ResultSet rs = stmt.executeQuery(String.format("SELECT COUNT(*) FROM %s;", VERNACULAR_NAMES))) {
         rs.next();
         n = rs.getLong(1);
       }
-    } catch (SQLException e) {
-      throw new RuntimeException(e);
     }
     return n;
   }

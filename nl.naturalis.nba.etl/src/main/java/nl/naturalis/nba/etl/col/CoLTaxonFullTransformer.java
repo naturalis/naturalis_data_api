@@ -13,6 +13,9 @@ import static nl.naturalis.nba.api.model.TaxonomicRank.SUBSPECIES;
 import static nl.naturalis.nba.api.model.TaxonomicRank.SUPER_FAMILY;
 import static nl.naturalis.nba.dao.util.es.ESUtil.getElasticsearchId;
 import static nl.naturalis.nba.etl.ETLUtil.getTestGenera;
+import static nl.naturalis.nba.etl.col.CoLEntityType.REFERENCE_DATA;
+import static nl.naturalis.nba.etl.col.CoLEntityType.SYNONYM_NAMES;
+import static nl.naturalis.nba.etl.col.CoLEntityType.VERNACULAR_NAMES;
 import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.acceptedNameUsageID;
 import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.classRank;
 import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.description;
@@ -30,6 +33,7 @@ import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.subgenus;
 import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.superfamily;
 import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.taxonID;
 import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.taxonRank;
+
 import java.net.URI;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -39,7 +43,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
+
 import nl.naturalis.nba.api.model.DefaultClassification;
 import nl.naturalis.nba.api.model.Monomial;
 import nl.naturalis.nba.api.model.Reference;
@@ -72,7 +76,7 @@ class CoLTaxonFullTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, T
   private String colYear;
   private String[] testGenera;
   private ArrayList<String> taxonIds;
-  private HashMap<String, HashMap<String, List<String>>> cache;
+  private HashMap<String, HashMap<CoLEntityType, List<String>>> cache;
 
   public CoLTaxonFullTransformer(ETLStatistics stats, Connection connection) {
     super(stats);
@@ -207,75 +211,41 @@ class CoLTaxonFullTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, T
     return sn;
   }
 
-  private HashMap<String, HashMap<String, List<String>>> createCache() throws SQLException {
-    
-    String ids = taxonIds.stream().map(id -> "'".concat(id).concat("'")).collect(Collectors.joining(","));
-    HashMap<String, HashMap<String, List<String>>> cache = new HashMap<>(taxonIds.size());
-
-    // Vernacular Names
-    String sql = String.format("SELECT taxonId, document FROM %s WHERE taxonId in (?);", "VERNACULARNAMES");
-    try (PreparedStatement statement = connection.prepareStatement(sql)) {
-      statement.setString(1, ids);
-      try (ResultSet resultSet = statement.executeQuery()) {
-        while (resultSet.next()) {
-          String taxonId = resultSet.getString("taxonId");
-          if (!cache.containsKey(taxonId)) {
-            HashMap<String, List<String>> additionalData = new HashMap<>();
-            additionalData.put("synonymNames", new ArrayList<>());
-            additionalData.put("vernacularNames", new ArrayList<>());
-            additionalData.put("referenceData", new ArrayList<>());
-            cache.put(taxonId, additionalData);
-          }
-          cache.get(taxonId).get("vernacularNames").add(resultSet.getString("document"));
-        }
-      }
-    }
-
-    // Synonym names
-    sql = String.format("SELECT taxonId, document FROM %s WHERE taxonId in (?);", "SYNONYMS");
-    try (PreparedStatement statement = connection.prepareStatement(sql)) {
-      statement.setString(1, ids);
-      try (ResultSet resultSet = statement.executeQuery()) {
-        while (resultSet.next()) {
-          String taxonId = resultSet.getString("taxonId");
-          if (!cache.containsKey(taxonId)) {
-            HashMap<String, List<String>> additionalData = new HashMap<>();
-            additionalData.put("synonymNames", new ArrayList<>());
-            additionalData.put("vernacularNames", new ArrayList<>());
-            additionalData.put("referenceData", new ArrayList<>());
-            cache.put(taxonId, additionalData);
-          }
-          cache.get(taxonId).get("synonymNames").add(resultSet.getString("document"));
-        }
-      }
-    }
-
-    // Reference data
-    sql = String.format("SELECT taxonId, document FROM %s WHERE taxonId in (?);", "REFERENCES");
-    try (PreparedStatement statement = connection.prepareStatement(sql)) {
-      statement.setString(1, ids);
-      try (ResultSet resultSet = statement.executeQuery()) {
-        while (resultSet.next()) {
-          String taxonId = resultSet.getString("taxonId");
-          if (!cache.containsKey(taxonId)) {
-            HashMap<String, List<String>> additionalData = new HashMap<>();
-            additionalData.put("synonymNames", new ArrayList<>());
-            additionalData.put("vernacularNames", new ArrayList<>());
-            additionalData.put("referenceData", new ArrayList<>());
-            cache.put(taxonId, additionalData);
-          }
-          cache.get(taxonId).get("referenceData").add(resultSet.getString("document"));
-        }
-      }
-    }
+  private HashMap<String, HashMap<CoLEntityType, List<String>>> createCache() throws SQLException {
+        
+    HashMap<String, HashMap<CoLEntityType, List<String>>> cache = new HashMap<>(taxonIds.size());
+    addToCache(VERNACULAR_NAMES);
+    addToCache(SYNONYM_NAMES);
+    addToCache(REFERENCE_DATA);
     return cache;
+  }
+  
+  private void addToCache(CoLEntityType entityType) throws SQLException {
+    
+    String sql = String.format("SELECT taxonId, document FROM %s WHERE taxonId in (?);", entityType);
+    try (PreparedStatement statement = connection.prepareStatement(sql)) {
+      statement.setObject(1, taxonIds);
+      try (ResultSet resultSet = statement.executeQuery()) {
+        while (resultSet.next()) {
+          String taxonId = resultSet.getString("taxonId");
+          if (!cache.containsKey(taxonId)) {
+            HashMap<CoLEntityType, List<String>> additionalData = new HashMap<>();
+            additionalData.put(SYNONYM_NAMES, new ArrayList<>());
+            additionalData.put(VERNACULAR_NAMES, new ArrayList<>());
+            additionalData.put(REFERENCE_DATA, new ArrayList<>());
+            cache.put(taxonId, additionalData);
+          }
+          cache.get(taxonId).get(entityType).add(resultSet.getString("document"));
+        }
+      }
+    }
   }
 
   private List<ScientificName> getSynonyms(String taxonId) {
-    if (cache == null || cache.get(taxonId) == null || cache.get(taxonId).get("synonymNames") == null)
+    if (cache == null || cache.get(taxonId) == null || cache.get(taxonId).get(SYNONYM_NAMES) == null)
       return null;
     List<ScientificName> synonyms = new ArrayList<>();
-    List<String> documents = cache.get(taxonId).get("synonymNames");
+    List<String> documents = cache.get(taxonId).get(SYNONYM_NAMES);
     for (String document : documents) {
       ScientificName synonym = JsonUtil.deserialize(document, ScientificName.class);
       synonyms.add(synonym);
@@ -284,10 +254,10 @@ class CoLTaxonFullTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, T
   }
 
   private List<VernacularName> getVernacularNames(String taxonId) {
-    if (cache == null || cache.get(taxonId) == null || cache.get(taxonId).get("vernacularNames") == null)
+    if (cache == null || cache.get(taxonId) == null || cache.get(taxonId).get(VERNACULAR_NAMES) == null)
       return null;
     List<VernacularName> vernacularNames = new ArrayList<>();
-    List<String> documents = cache.get(taxonId).get("vernacularNames");
+    List<String> documents = cache.get(taxonId).get(VERNACULAR_NAMES);
     for (String document : documents) {
       VernacularName name = JsonUtil.deserialize(document, VernacularName.class);
       vernacularNames.add(name);
@@ -296,10 +266,10 @@ class CoLTaxonFullTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, T
   }
 
   private List<Reference> getReferences(String taxonId) {
-    if (cache == null || cache.get(taxonId) == null || cache.get(taxonId).get("referenceData") == null)
+    if (cache == null || cache.get(taxonId) == null || cache.get(taxonId).get(REFERENCE_DATA) == null)
       return null;
     List<Reference> references = new ArrayList<>();
-    List<String> documents = cache.get(taxonId).get("referenceData");
+    List<String> documents = cache.get(taxonId).get(REFERENCE_DATA);
     for (String document : documents) {
       Reference reference = JsonUtil.deserialize(document, Reference.class);
       references.add(reference);

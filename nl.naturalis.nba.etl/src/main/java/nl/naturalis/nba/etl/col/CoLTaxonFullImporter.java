@@ -59,6 +59,7 @@ public class CoLTaxonFullImporter extends CoLImporter {
    * @throws SQLException 
    */
   public void importCsv(String path) throws SQLException {
+   
     long start = System.currentTimeMillis();
     ETLStatistics stats = null;
     CSVExtractor<CoLTaxonCsvField> extractor = null;
@@ -83,8 +84,7 @@ public class CoLTaxonFullImporter extends CoLImporter {
       logger.info("Processing file {}", f.getAbsolutePath());
 
       int batchSize = 1000;
-      ArrayList<String> taxonIds = new ArrayList<>();
-      
+      ArrayList<String> taxonIds = new ArrayList<>(batchSize);
       List<CSVRecordInfo<CoLTaxonCsvField>> csvRecords = new ArrayList<>(batchSize); 
       for (CSVRecordInfo<CoLTaxonCsvField> rec : extractor) {
         if (rec == null)
@@ -108,8 +108,7 @@ public class CoLTaxonFullImporter extends CoLImporter {
     } finally {
       IOUtil.close(loader);
     }
-    stats.logStatistics(logger);
-    logger.info("(NB skipped records are synonyms or higher taxa)");
+    stats.logStatistics(logger); // NOTE: skipped records are synonyms or higher taxa
     logDuration(logger, getClass(), start);
   }
 

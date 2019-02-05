@@ -10,10 +10,14 @@ then
 elif [ "${type}" = multimedia ]
 then
     java -cp ${classpath} $JAVA_OPTS ${root_package}.JsonImporter MultiMediaObject
+elif [ "${type}" = taxa ]
+then
+    java -cp ${classpath} $JAVA_OPTS ${root_package}.JsonImporter Taxon
 elif [ "${type}" = all ]
 then
     java -cp ${classpath} $JAVA_OPTS ${root_package}.JsonImporter Specimen
     java -cp ${classpath} $JAVA_OPTS ${root_package}.JsonImporter MultiMediaObject
+    java -cp ${classpath} $JAVA_OPTS ${root_package}.JsonImporter Taxon
 else
-    echo "USAGE: ${0} [ specimen | multimedia | all ]"
+    echo "USAGE: ${0} [ specimen | multimedia | taxa | all ]"
 fi

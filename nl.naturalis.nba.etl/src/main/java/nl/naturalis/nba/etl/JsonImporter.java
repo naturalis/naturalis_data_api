@@ -121,6 +121,7 @@ public class JsonImporter {
     switch(documentType) {
       case("Specimen") : path = "specimen"; break;
       case("MultiMediaObject") : path = "multimedia"; break;
+      case("Taxon") : path = "taxa"; break;
     }
     File[] files = getDataDir(path).listFiles(new FilenameFilter() {
       @Override

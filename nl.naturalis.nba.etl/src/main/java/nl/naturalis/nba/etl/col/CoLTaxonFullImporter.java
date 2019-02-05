@@ -28,6 +28,15 @@ import nl.naturalis.nba.utils.IOUtil;
  */
 public class CoLTaxonFullImporter extends CoLImporter {
 
+  private static final Logger logger = ETLRegistry.getInstance().getLogger(CoLTaxonFullImporter.class);
+  
+  private Connection connection;
+  
+  public CoLTaxonFullImporter(Connection connection) {
+    super();
+    this.connection = connection;
+  }
+
   public static void main(String[] args) throws Exception {
     try {
       CoLTaxonImporter importer = new CoLTaxonImporter();
@@ -41,16 +50,6 @@ public class CoLTaxonFullImporter extends CoLImporter {
     }
   }
 
-  private static final Logger logger = ETLRegistry.getInstance().getLogger(CoLTaxonFullImporter.class);
-
-  private Connection connection;
-  private final String colYear;
-
-  public CoLTaxonFullImporter(Connection connection) {
-    super();
-    this.connection = connection;
-    colYear = DaoRegistry.getInstance().getConfiguration().required("col.year");
-  }
 
   /**
    * Writes CoL taxa to a file in JsonND format

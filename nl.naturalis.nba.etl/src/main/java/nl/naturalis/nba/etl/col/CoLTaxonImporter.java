@@ -29,6 +29,12 @@ import nl.naturalis.nba.utils.IOUtil;
  */
 public class CoLTaxonImporter extends CoLImporter {
 
+  private static final Logger logger = ETLRegistry.getInstance().getLogger(CoLTaxonImporter.class);
+
+  public CoLTaxonImporter() {
+    super();
+  }
+
   public static void main(String[] args) throws Exception {
     try {
       CoLTaxonImporter importer = new CoLTaxonImporter();
@@ -42,14 +48,7 @@ public class CoLTaxonImporter extends CoLImporter {
     }
   }
 
-  private static final Logger logger = ETLRegistry.getInstance().getLogger(CoLTaxonImporter.class);
 
-  private final String colYear;
-
-  public CoLTaxonImporter() {
-    super();
-    colYear = DaoRegistry.getInstance().getConfiguration().required("col.year");
-  }
 
   /**
    * Imports CoL taxa into ElasticSearch.

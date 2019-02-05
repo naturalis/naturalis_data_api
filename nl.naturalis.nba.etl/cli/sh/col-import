@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export OVERRIDE_VM_OPTS="-Xms2048m -Xmx4096m"
+
 . ./include.sh
 
 java -cp ${classpath} ${JAVA_OPTS} ${root_package}.col.CoLImportAll

@@ -53,7 +53,13 @@ dt=$(date +%Y%m%d%H%M%S)
 log_file="${log_dir}/${log_file}.${dt}"
 echo "Log file: ${log_file}.log"
 
-JAVA_OPTS="-Xms2048m -Xmx2048m"
+if [ "${OVERRIDE_VM_OPTS}" != "" ]
+then 
+    JAVA_OPTS=${OVERRIDE_VM_OPTS}
+else
+    JAVA_OPTS="-Xms2048m -Xmx2048m"
+fi
+
 JAVA_OPTS="${JAVA_OPTS} -Dfile.encoding=UTF-8"
 JAVA_OPTS="${JAVA_OPTS} -Dlog4j.configurationFile=${cnf_dir}/log4j2.xml"
 JAVA_OPTS="${JAVA_OPTS} -Dnba.conf.file=${cnf_dir}/nba.properties"

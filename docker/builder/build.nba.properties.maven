@@ -20,6 +20,7 @@ nl.naturalis.nba.specimen.groupByScientificName.cacheTreshold=3000
 nl.naturalis.nba.taxon.groupByScientificName.maxNumBuckets=10000
 nl.naturalis.nba.taxon.groupByScientificName.queryCacheSize=1000
 nl.naturalis.nba.taxon.groupByScientificName.cacheTreshold=3000
+etl.output=es
 crs.specimens.url.initial=http\://crs.naturalis.nl/atlantispubliek/oai.axd?verb\=ListRecords&metadataprefix\=oai_crs_object
 crs.specimens.url.resume=http\://crs.naturalis.nl/atlantispubliek/oai.axd?verb\=ListRecords&resumptionToken\=%s
 crs.multimedia.url.initial=http\://crs.naturalis.nl/atlantispubliek/oai.axd?verb\=ListRecords&metadataprefix\=oai_crs

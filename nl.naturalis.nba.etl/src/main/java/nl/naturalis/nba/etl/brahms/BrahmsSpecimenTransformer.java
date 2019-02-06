@@ -86,7 +86,8 @@ class BrahmsSpecimenTransformer extends BrahmsTransformer<Specimen> {
       else
         specimen.setRecordBasis(s);
       specimen.setAssemblageID(getAssemblageID());
-      specimen.setNotes(input.get(PLANTDESC).replaceAll("\u00001", ""));
+      String notes = input.get(PLANTDESC, true);
+      if (notes != null) specimen.setNotes(notes.replaceAll("\u00001", ""));
       specimen.setPreviousUnitsText(getPreviousUnitsText());
       s = input.get(NOTONLINE);
       if (s == null || s.equals("0"))

@@ -84,7 +84,8 @@ public class CoLTaxonFullImporter extends CoLImporter {
 
       int batchSize = 1000;
       ArrayList<String> taxonIds = new ArrayList<>(batchSize);
-      List<CSVRecordInfo<CoLTaxonCsvField>> csvRecords = new ArrayList<>(batchSize); 
+      List<CSVRecordInfo<CoLTaxonCsvField>> csvRecords = new ArrayList<>(batchSize);
+      
       for (CSVRecordInfo<CoLTaxonCsvField> rec : extractor) {
         if (rec == null)
           continue;
@@ -104,7 +105,20 @@ public class CoLTaxonFullImporter extends CoLImporter {
           logger.info("Documents indexed: {}", stats.documentsIndexed);
         }
       }
-    } finally {
+      
+      if (csvRecords.size() > 0) {
+        transformer.createLookupTable(taxonIds);
+        for (CSVRecordInfo<CoLTaxonCsvField> record : csvRecords) {
+          List<Taxon> taxa = transformer.transform(record);
+          loader.write(taxa);
+        }
+        taxonIds.clear();
+        csvRecords.clear();
+        logger.info("Records processed: {}", stats.recordsProcessed);
+        logger.info("Documents indexed: {}", stats.documentsIndexed);
+      }
+    } 
+    finally {
       IOUtil.close(loader);
     }
     stats.logStatistics(logger); // NOTE: skipped records are synonyms or higher taxa

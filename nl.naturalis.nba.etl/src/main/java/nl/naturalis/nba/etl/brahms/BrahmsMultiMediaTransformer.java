@@ -85,7 +85,7 @@ class BrahmsMultiMediaTransformer extends BrahmsTransformer<MultiMediaObject> {/
 			mmo.setAssociatedSpecimenReference(specimenID);
 			List<String> themes = themeCache.lookup(objectID, MULTI_MEDIA_OBJECT, BRAHMS);
 			mmo.setTheme(themes);
-			mmo.setDescription(input.get(PLANTDESC));
+			mmo.setDescription(input.get(PLANTDESC).replaceAll("\u00001", ""));
 			mmo.setGatheringEvents(Arrays.asList(getMultiMediaGatheringEvent(input)));
 			mmo.setIdentifications(Arrays.asList(getIdentification()));
 			mmo.addServiceAccessPoint(newServiceAccessPoint(uri));

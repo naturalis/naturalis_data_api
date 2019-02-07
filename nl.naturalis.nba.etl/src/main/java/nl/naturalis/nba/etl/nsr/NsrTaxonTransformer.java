@@ -126,8 +126,8 @@ class NsrTaxonTransformer extends AbstractXMLTransformer<Taxon> {
 		}
 		if (!allowedTaxonRanks.contains(rank)) {
 			stats.recordsSkipped++;
-			if (logger.isDebugEnabled()) {
-				debug("Ignoring higher taxon: \"%s\"", rank);
+			if (!suppressErrors) { // if (logger.isDebugEnabled())
+				error("Ignoring higher taxon: \"%s\"", rank);
 			}
 			return true;
 		}

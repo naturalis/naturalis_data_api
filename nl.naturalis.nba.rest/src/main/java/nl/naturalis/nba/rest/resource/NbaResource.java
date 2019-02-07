@@ -1,5 +1,6 @@
 package nl.naturalis.nba.rest.resource;
 
+import static nl.naturalis.nba.rest.util.ResourceUtil.NDJSON_CONTENT_TYPE;
 import static nl.naturalis.nba.rest.util.ResourceUtil.handleError;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -48,6 +49,8 @@ public abstract class NbaResource<T extends IDocumentObject, U extends NbaDao<T>
       };
 
       ResponseBuilder response = Response.ok(stream);
+      response.type(NDJSON_CONTENT_TYPE);
+      response.header("Content-Disposition", "attachment; filename=\"download.ndjson\"");
       return response.build();
     } catch (Throwable t) {
       throw handleError(uriInfo, t);
@@ -70,6 +73,8 @@ public abstract class NbaResource<T extends IDocumentObject, U extends NbaDao<T>
       };
 
       ResponseBuilder response = Response.ok(stream);
+      response.type(NDJSON_CONTENT_TYPE);
+      response.header("Content-Disposition", "attachment; filename=\"download.ndjson\"");
       return response.build();
     } catch (Throwable t) {
       throw handleError(uriInfo, t);
@@ -91,7 +96,8 @@ public abstract class NbaResource<T extends IDocumentObject, U extends NbaDao<T>
       };
 
       ResponseBuilder response = Response.ok(stream);
-//      response.type(JSON_CONTENT_TYPE);
+      response.type(NDJSON_CONTENT_TYPE);
+      response.header("Content-Disposition", "attachment; filename=\"download.ndjson\"");
       return response.build();
     } catch (Throwable t) {
       throw handleError(uriInfo, t);

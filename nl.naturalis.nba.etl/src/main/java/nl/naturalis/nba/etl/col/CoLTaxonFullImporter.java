@@ -91,7 +91,7 @@ public class CoLTaxonFullImporter extends CoLImporter {
           continue;
         csvRecords.add(rec);
         taxonIds.add(rec.get(taxonID));
-        if (csvRecords.size() == batchSize) {    
+        if (csvRecords.size() == batchSize) {
           transformer.createLookupTable(taxonIds);
           for (CSVRecordInfo<CoLTaxonCsvField> record : csvRecords) {
             List<Taxon> taxa = transformer.transform(record);
@@ -100,7 +100,7 @@ public class CoLTaxonFullImporter extends CoLImporter {
           taxonIds.clear();
           csvRecords.clear();
         }
-        if (stats.recordsProcessed != 0 && stats.recordsProcessed % 100000 == 0) {
+        if (stats.recordsProcessed != 0 && stats.recordsProcessed % 50000 == 0) {
           logger.info("Records processed: {}", stats.recordsProcessed);
           logger.info("Documents indexed: {}", stats.documentsIndexed);
         }

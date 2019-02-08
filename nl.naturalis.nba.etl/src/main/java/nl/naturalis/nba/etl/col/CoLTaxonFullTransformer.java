@@ -33,8 +33,8 @@ import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.subgenus;
 import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.superfamily;
 import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.taxonID;
 import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.taxonRank;
+
 import java.net.URI;
-import java.sql.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -45,6 +45,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import nl.naturalis.nba.api.model.DefaultClassification;
 import nl.naturalis.nba.api.model.Monomial;
 import nl.naturalis.nba.api.model.Reference;
@@ -92,7 +93,7 @@ class CoLTaxonFullTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, T
   public void createLookupTable(ArrayList<String> taxonIds) throws SQLException {
     this.taxonIds = taxonIds;
     this.cache = new HashMap<>(taxonIds.size());
-    fillCache();
+    createCache();
   }
 
   @Override
@@ -125,13 +126,20 @@ class CoLTaxonFullTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, T
         debug("Ignoring taxon with rank \"%s\"", rank);
       return null;
     }
+    String sourceSystemId = getSourceSystemId(input.get(references));
+    if (sourceSystemId == null) {
+      stats.recordsSkipped++;
+      if (logger.isDebugEnabled())
+        debug("Ignoring taxon with no unique source id (reference uri \"%s\"", input.get(taxonID));
+      return null;
+    }      
     try {
       stats.recordsAccepted++;
       stats.objectsProcessed++;
       Taxon taxon = new Taxon();
-      taxon.setId(getElasticsearchId(COL, objectID));
+      taxon.setId(getElasticsearchId(COL, sourceSystemId));
       taxon.setSourceSystem(COL);
-      taxon.setSourceSystemId(input.get(taxonID));
+      taxon.setSourceSystemId(sourceSystemId);
       taxon.setTaxonRank(input.get(taxonRank));
       taxon.setAcceptedName(getScientificName());
       taxon.setDefaultClassification(getClassification());
@@ -147,6 +155,15 @@ class CoLTaxonFullTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, T
       handleError(t);
       return null;
     }
+  }
+  
+  /*
+   * Utility method to extraxt the id from the CoL record URI
+   */
+  private String getSourceSystemId(String uri) {
+    if (uri == null || uri.contains("/synonym/")) return null;
+    String[] chunks = uri.split("/details/species/id/");
+    return chunks[1];
   }
 
   private void setTaxonDescription(Taxon taxon) {
@@ -213,46 +230,52 @@ class CoLTaxonFullTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, T
     return sn;
   }
 
-  private void fillCache() throws SQLException {
-    addToCache(VERNACULAR_NAMES);
-    addToCache(SYNONYM_NAMES);
-    addToCache(REFERENCE_DATA);
-  }
-
-   private void addToCache(CoLEntityType entityType) throws SQLException {  
-     String ids = taxonIds.stream().map(id -> "'".concat(id).concat("'")).collect(Collectors.joining(","));
-     String sql = String.format("SELECT taxonId, document FROM %s WHERE taxonId in (%s);", entityType.toString(), ids);
-     Statement stmt = connection.createStatement();
-     ResultSet resultSet = stmt.executeQuery(sql);
-     while (resultSet.next()) {
-       String taxonId = resultSet.getString("taxonId");
-       if (!cache.containsKey(taxonId)) {
-         HashMap<CoLEntityType, List<String>> additionalData = new HashMap<>();
-         additionalData.put(SYNONYM_NAMES, new ArrayList<>());
-         additionalData.put(VERNACULAR_NAMES, new ArrayList<>());
-         additionalData.put(REFERENCE_DATA, new ArrayList<>());
-         cache.put(taxonId, additionalData);
+   private void createCache() throws SQLException {
+     for (CoLEntityType entityType : CoLEntityType.values()) {
+       String ids = taxonIds.stream().map(id -> "'".concat(id).concat("'")).collect(Collectors.joining(","));
+       String sql = String.format("SELECT taxonId, document FROM %s WHERE taxonId in (%s);", entityType.toString(), ids);
+       Statement stmt = connection.createStatement();
+       ResultSet resultSet = stmt.executeQuery(sql);
+//       PreparedStatement statement = connection.prepareCall(sql);
+//       ResultSet resultSet = statement.executeQuery();
+       while (resultSet.next()) {
+         String taxonId = resultSet.getString("taxonId");
+         if (!cache.containsKey(taxonId)) {
+           HashMap<CoLEntityType, List<String>> additionalData = new HashMap<>();
+           additionalData.put(SYNONYM_NAMES, new ArrayList<>());
+           additionalData.put(VERNACULAR_NAMES, new ArrayList<>());
+           additionalData.put(REFERENCE_DATA, new ArrayList<>());
+           cache.put(taxonId, additionalData);
+         }
+         cache.get(taxonId).get(entityType).add(resultSet.getString("document"));
        }
-       cache.get(taxonId).get(entityType).add(resultSet.getString("document"));
-     } 
+     }
    }
 
-//  private void addToCache(CoLEntityType entityType) throws SQLException {
-//    String sql = String.format("SELECT taxonId, document FROM %s WHERE taxonId in (?);", entityType);
-//    try (PreparedStatement statement = connection.prepareStatement(sql)) {
-//      Array array = connection.createArrayOf("String", taxonIds.toArray());
-//      statement.setArray(1, array);
-//      try (ResultSet resultSet = statement.executeQuery()) {
-//        while (resultSet.next()) {
-//          String taxonId = resultSet.getString("taxonId");
-//          if (!cache.containsKey(taxonId)) {
-//            HashMap<CoLEntityType, List<String>> additionalData = new HashMap<>();
-//            additionalData.put(SYNONYM_NAMES, new ArrayList<>());
-//            additionalData.put(VERNACULAR_NAMES, new ArrayList<>());
-//            additionalData.put(REFERENCE_DATA, new ArrayList<>());
-//            cache.put(taxonId, additionalData);
+//  NOTE: the next is 1 minute slower and produces strange intermediate stats 
+//  private void createCache() throws SQLException {
+//    for (CoLEntityType entityType : CoLEntityType.values()) {
+//
+//      String param = "?";
+//      for (int n = 1; n < taxonIds.size(); n++) param = param.concat(", ?");
+//      String sql = String.format("SELECT taxonId, document FROM %s WHERE taxonId in (%s);", entityType, param);
+//      
+//      try (PreparedStatement statement = connection.prepareStatement(sql)) {
+//        for (int x = 1; x <= taxonIds.size(); x++) {
+//          statement.setString(x, taxonIds.get(x-1));
+//        }
+//        try (ResultSet resultSet = statement.executeQuery()) {
+//          while (resultSet.next()) {
+//            String taxonId = resultSet.getString("taxonId");
+//            if (!cache.containsKey(taxonId)) {
+//              HashMap<CoLEntityType, List<String>> additionalData = new HashMap<>();
+//              additionalData.put(SYNONYM_NAMES, new ArrayList<>());
+//              additionalData.put(VERNACULAR_NAMES, new ArrayList<>());
+//              additionalData.put(REFERENCE_DATA, new ArrayList<>());
+//              cache.put(taxonId, additionalData);
+//            }
+//            cache.get(taxonId).get(entityType).add(resultSet.getString("document"));
 //          }
-//          cache.get(taxonId).get(entityType).add(resultSet.getString("document"));
 //        }
 //      }
 //    }

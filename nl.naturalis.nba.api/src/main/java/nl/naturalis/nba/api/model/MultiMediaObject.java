@@ -38,7 +38,7 @@ public class MultiMediaObject extends NbaTraceableObject implements IDocumentObj
 	private String description;
 	private List<ServiceAccessPoint> serviceAccessPoints;
 	private ResourceType type;
-	private int taxonCount;
+	private Integer taxonCount;
 	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String creator;
 	private String copyrightText;
@@ -238,7 +238,7 @@ public class MultiMediaObject extends NbaTraceableObject implements IDocumentObj
 		return taxonCount;
 	}
 
-	public void setTaxonCount(int taxonCount)
+	public void setTaxonCount(Integer taxonCount)
 	{
 		this.taxonCount = taxonCount;
 	}

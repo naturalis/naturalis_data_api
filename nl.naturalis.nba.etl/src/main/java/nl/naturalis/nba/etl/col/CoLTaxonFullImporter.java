@@ -95,17 +95,16 @@ public class CoLTaxonFullImporter extends CoLImporter {
           transformer.createLookupTable(taxonIds);
           for (CSVRecordInfo<CoLTaxonCsvField> record : csvRecords) {
             List<Taxon> taxa = transformer.transform(record);
+            if (stats.recordsProcessed != 0 && stats.recordsProcessed % 50000 == 0) {
+              logger.info("Records processed: {}", stats.recordsProcessed);
+              logger.info("Documents indexed: {}", stats.documentsIndexed);
+            }
             loader.write(taxa);
           }
           taxonIds.clear();
           csvRecords.clear();
         }
-        if (stats.recordsProcessed != 0 && stats.recordsProcessed % 50000 == 0) {
-          logger.info("Records processed: {}", stats.recordsProcessed);
-          logger.info("Documents indexed: {}", stats.documentsIndexed);
-        }
       }
-      
       if (csvRecords.size() > 0) {
         transformer.createLookupTable(taxonIds);
         for (CSVRecordInfo<CoLTaxonCsvField> record : csvRecords) {

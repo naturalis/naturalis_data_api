@@ -45,7 +45,8 @@ public class CoLImportAll {
   public static void main(String[] args) throws Exception
 	{
 		String prop = System.getProperty("batchSize", "1000");
-		boolean toFile = DaoRegistry.getInstance().getConfiguration().get("etl.output", "file").equals("file");
+		@SuppressWarnings("unused")
+    boolean toFile = DaoRegistry.getInstance().getConfiguration().get("etl.output", "file").equals("file");
 		int batchSize = 0;
 		try {
 			batchSize = Integer.parseInt(prop);
@@ -60,10 +61,12 @@ public class CoLImportAll {
 		try {
 			CoLImportAll importer = new CoLImportAll();
 			importer.setBatchSize(batchSize);
-			if (toFile) 
-			  importer.importAllToFile();
-			else
-			  importer.importAll();
+			// Import to File should be the default for the time being ...
+			importer.importAllToFile();
+//			if (toFile) 
+//			  importer.importAllToFile();
+//			else
+//			  importer.importAll();
 		}
 		catch (Throwable t) {
 			logger.error("CoLImportAll terminated unexpectedly!", t);

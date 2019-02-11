@@ -8,6 +8,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.LineNumberReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.client.Client;
@@ -42,6 +43,7 @@ public class JsonImporter {
     JsonImporter importer = new JsonImporter( DocumentType.forName(documentType) );
     try {
       File[] files = getJsonFiles(documentType);
+      Arrays.sort(files);
       importer.importJsonFiles(files);
     } catch (Throwable t) {
       logger.error("JsonImporter terminated unexpectly!", t);

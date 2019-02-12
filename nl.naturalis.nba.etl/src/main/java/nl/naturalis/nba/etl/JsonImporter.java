@@ -52,11 +52,17 @@ public class JsonImporter {
     importer.refresh();
   }
 
-  public void importJsonFiles(File[] jsonFiles) throws IOException, BulkIndexException {
+  public void importJsonFiles(File[] jsonFiles) throws IOException {
     for (File f : jsonFiles) {
       System.out.println("Processing file: " + f.getName());
       logger.info("Processing file: " + f.getName());
-      importJsonFile(f, docType);
+      try {
+        importJsonFile(f, docType);        
+      } catch (BulkIndexException e) {
+        logger.warn("Import file contains errors: " + e.getMessage());
+        logger.warn("Not all documents in " + f.getName() + " have been processed!");
+        continue;
+      }
     }
   }
   

@@ -137,24 +137,6 @@ public abstract class NbaDocumentMetaDataDao<T extends IDocumentObject>
     File file = new File(dir, fileName);
     InputStream is = new FileInputStream(file);
     if (is != null) {
-
-// opencsv.com version
-      
-//      CSVReader reader = new CSVReaderBuilder(new InputStreamReader(is)).withSkipLines(1)
-//          .withCSVParser(parser).build();
-//      String[] record = null;
-//      while ((record = reader.readNext()) != null) {
-//        try {
-//          if (record[0] != null)
-//            metadata.put(record[0], record[1]);
-//        } catch (ArrayIndexOutOfBoundsException e) {
-//          logger.debug("Error in csv file: " + file.toString());
-//          metadata = null;
-//          break;
-//        }
-
-// univocity version
-      
       CsvParserSettings settings = new CsvParserSettings();
       settings.getFormat().setLineSeparator("\n");
       settings.setHeaderExtractionEnabled(true);

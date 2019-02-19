@@ -1,6 +1,7 @@
 package nl.naturalis.nba.rest.resource;
 
 import static nl.naturalis.nba.rest.util.ResourceUtil.JSON_CONTENT_TYPE;
+import static nl.naturalis.nba.rest.util.ResourceUtil.NDJSON_CONTENT_TYPE;
 import static nl.naturalis.nba.rest.util.ResourceUtil.TEXT_CONTENT_TYPE;
 import java.util.List;
 import java.util.Map;
@@ -39,19 +40,20 @@ public class MultiMediaObjectResource extends NbaResource<MultiMediaObject, Mult
 
   private static final Logger logger = LogManager.getLogger(MultiMediaObjectResource.class);
 
-  MultiMediaObjectResource() {
+  MultiMediaObjectResource() 
+  {
     super(new MultiMediaObjectDao());
   }
 
   //@formatter:off
-  @GZIP
   @GET
+  @GZIP
   @Path("/download")
   @ApiOperation(
       value = "Dynamic download service: Query for multimedia objects and return result as a stream ...",
       response = Response.class,
       notes = "Query with query parameters or querySpec JSON. ...")
-  @Produces(MediaType.APPLICATION_OCTET_STREAM)
+  @Produces(NDJSON_CONTENT_TYPE)
   @ApiImplicitParams({@ApiImplicitParam(
       name = "collectionType", 
       value = "Example query param",
@@ -71,7 +73,7 @@ public class MultiMediaObjectResource extends NbaResource<MultiMediaObject, Mult
       response = Response.class,
       notes = "Query with query parameters or querySpec JSON. ...")
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-  @Produces(JSON_CONTENT_TYPE)
+  @Produces(NDJSON_CONTENT_TYPE)
   @ApiImplicitParams({@ApiImplicitParam(
       name = "collectionType", 
       value = "Example query param",
@@ -93,7 +95,7 @@ public class MultiMediaObjectResource extends NbaResource<MultiMediaObject, Mult
       response = Response.class,
       notes = "Query with query parameters or querySpec JSON. ...")
   @Consumes(JSON_CONTENT_TYPE)
-  @Produces(JSON_CONTENT_TYPE)
+  @Produces(NDJSON_CONTENT_TYPE)
   @ApiImplicitParams({@ApiImplicitParam(
       name = "collectionType", 
       value = "Example query param",

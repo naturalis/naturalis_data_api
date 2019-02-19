@@ -1,6 +1,7 @@
 package nl.naturalis.nba.rest.resource;
 
 import static nl.naturalis.nba.rest.util.ResourceUtil.JSON_CONTENT_TYPE;
+import static nl.naturalis.nba.rest.util.ResourceUtil.NDJSON_CONTENT_TYPE;
 import static nl.naturalis.nba.rest.util.ResourceUtil.TEXT_CONTENT_TYPE;
 import static nl.naturalis.nba.rest.util.ResourceUtil.ZIP_CONTENT_TYPE;
 import static nl.naturalis.nba.rest.util.ResourceUtil.handleError;
@@ -56,19 +57,20 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
 
   private static final Logger logger = LogManager.getLogger(TaxonResource.class);
 
-  TaxonResource() {
+  TaxonResource() 
+  {
     super(new TaxonDao());
   }
 
   //@formatter:off
-  @GZIP
   @GET
+  @GZIP
   @Path("/download")
   @ApiOperation(
       value = "Dynamic download service: Query for taxa and return result as a stream ...",
       response = Response.class,
       notes = "Query with query parameters or querySpec JSON. ...")
-  @Produces(MediaType.APPLICATION_OCTET_STREAM)
+  @Produces(NDJSON_CONTENT_TYPE)
   @ApiImplicitParams({@ApiImplicitParam(
       name = "sourceSystem.code", 
       value = "Example query param",
@@ -80,15 +82,15 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
     return super.downloadQueryHttpGet(uriInfo);
   }
 
-  @GZIP
   @POST
+  @GZIP
   @Path("/download")
   @ApiOperation(
       value = "Dynamic download service: Query for taxa and return result as a stream ...",
       response = Response.class,
       notes = "Query with query parameters or querySpec JSON. ...")
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-  @Produces(JSON_CONTENT_TYPE)
+  @Produces(NDJSON_CONTENT_TYPE)
   @ApiImplicitParams({@ApiImplicitParam(
       name = "sourceSystem.code", 
       value = "Example query param",
@@ -102,15 +104,15 @@ public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
     return super.downloadQueryHttpPostForm(form, uriInfo);
   }
 
-  @GZIP
   @POST
+  @GZIP
   @Path("/download")
   @ApiOperation(
       value = "Dynamic download service: Query for taxa and return result as a stream ...",
       response = Response.class,
       notes = "Query with query parameters or querySpec JSON. ...")
   @Consumes(JSON_CONTENT_TYPE)
-  @Produces(JSON_CONTENT_TYPE)
+  @Produces(NDJSON_CONTENT_TYPE)
   @ApiImplicitParams({@ApiImplicitParam(
       name = "sourceSystem.code", 
       value = "Example query param",

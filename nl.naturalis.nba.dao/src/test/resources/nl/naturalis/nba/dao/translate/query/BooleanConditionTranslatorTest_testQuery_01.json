@@ -1,0 +1,24 @@
+{
+  "from" : 0,
+  "size" : 10,
+  "query" : {
+    "bool" : {
+      "must" : [
+        {
+          "exists" : {
+            "field" : "collectionType",
+            "boost" : 1.0
+          }
+        },
+        {
+          "match_all" : {
+            "boost" : 1.0
+          }
+        }
+      ],
+      "disable_coord" : false,
+      "adjust_pure_negative" : true,
+      "boost" : 1.0
+    }
+  }
+}

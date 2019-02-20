@@ -36,11 +36,11 @@ class ConditionValidator {
 	{
 		Path path = condition.getField();
 		ComparisonOperator operator = condition.getOperator();
-		if (path == null) {
+		if (path == null && operator != null) {
 			String msg = "Missing field in search condition";
 			throw new InvalidConditionException(msg);
 		}
-		if (operator == null) {
+		if (operator == null && path != null) {
 			String msg = "Missing operator in search condition";
 			throw new InvalidConditionException(msg);
 		}

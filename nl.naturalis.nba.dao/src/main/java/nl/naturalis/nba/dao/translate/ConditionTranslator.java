@@ -128,7 +128,10 @@ abstract class ConditionTranslator {
 			query = generateOrSiblings(query);
 		}
 		else if ( isSingleCondition() ) {
-		  String nestedPath = getNestedPath(condition.getField(), mappingInfo);
+		  String nestedPath = null;
+		  if (condition.getField() != null && condition.getOperator() != null) {
+		    nestedPath = getNestedPath(condition.getField(), mappingInfo);
+		  }
 		  if (nestedPath != null) {
 		    query = nestedQuery(nestedPath, query, ScoreMode.Avg);
 		  }

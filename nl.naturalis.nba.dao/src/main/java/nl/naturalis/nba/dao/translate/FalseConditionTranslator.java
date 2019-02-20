@@ -1,8 +1,6 @@
 package nl.naturalis.nba.dao.translate;
 
-import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
-import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
-
+import org.elasticsearch.index.query.MatchNoneQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 
 import nl.naturalis.nba.api.InvalidConditionException;
@@ -24,7 +22,7 @@ class FalseConditionTranslator extends ConditionTranslator {
 	@Override
 	QueryBuilder translateCondition() throws InvalidConditionException
 	{
-		return boolQuery().mustNot(matchAllQuery());
+	  return new MatchNoneQueryBuilder();
 	}
 
 	@Override

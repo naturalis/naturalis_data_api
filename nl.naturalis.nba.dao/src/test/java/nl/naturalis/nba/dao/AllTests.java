@@ -8,6 +8,7 @@ import nl.naturalis.nba.dao.format.DocumentFlattenerTest;
 import nl.naturalis.nba.dao.format.calc.NamePublishedInCalculatorTest;
 import nl.naturalis.nba.dao.format.dwca.DwcaWriterTest;
 import nl.naturalis.nba.dao.translate.BetweenConditionTranslatorTest;
+import nl.naturalis.nba.dao.translate.BooleanConditionTranslatorTest;
 import nl.naturalis.nba.dao.translate.ConditionCollectorTest;
 import nl.naturalis.nba.dao.translate.ConditionTranslatorFactoryTest;
 import nl.naturalis.nba.dao.translate.ConditionTranslatorTranslateTest;
@@ -36,6 +37,7 @@ import nl.naturalis.nba.dao.util.es.ESUtilTest;
 	ConditionTranslatorTranslateTest.class,
 	ConditionCollectorTest.class,
 	BetweenConditionTranslatorTest.class,
+	BooleanConditionTranslatorTest.class,
 	EqualsConditionTranslatorTest.class,
 	EqualsIgnoreCaseConditionTranslatorTest.class,
 	ExploderTest.class,

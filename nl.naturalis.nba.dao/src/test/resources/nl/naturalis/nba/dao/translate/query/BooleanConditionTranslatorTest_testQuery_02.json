@@ -19,16 +19,16 @@
                       "must" : [
                         {
                           "term" : {
-                            "identifications.defaultClassification.genus" : {
-                              "value" : "Alethe",
+                            "identifications.scientificName.genusOrMonomial.ignoreCase" : {
+                              "value" : "passer",
                               "boost" : 1.0
                             }
                           }
                         },
                         {
                           "term" : {
-                            "identifications.defaultClassification.specificEpithet" : {
-                              "value" : "castanea",
+                            "identifications.scientificName.specificEpithet.ignoreCase" : {
+                              "value" : "italiae",
                               "boost" : 1.0
                             }
                           }
@@ -61,16 +61,16 @@
                       "must" : [
                         {
                           "term" : {
-                            "identifications.scientificName.genusOrMonomial" : {
-                              "value" : "Alethe",
+                            "identifications.scientificName.genusOrMonomial.ignoreCase" : {
+                              "value" : "passer",
                               "boost" : 1.0
                             }
                           }
                         },
                         {
                           "term" : {
-                            "identifications.scientificName.specificEpithet" : {
-                              "value" : "castanea",
+                            "identifications.scientificName.specificEpithet.ignoreCase" : {
+                              "value" : "luteus",
                               "boost" : 1.0
                             }
                           }

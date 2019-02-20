@@ -3,9 +3,11 @@ package nl.naturalis.nba.dao.translate;
 import static nl.naturalis.nba.api.LogicalOperator.AND;
 import static nl.naturalis.nba.dao.translate.TranslatorUtil.getNestedPath;
 import static nl.naturalis.nba.utils.CollectionUtil.hasElements;
+
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+
 import nl.naturalis.nba.api.LogicalOperator;
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.common.es.map.MappingInfo;
@@ -14,6 +16,7 @@ import nl.naturalis.nba.common.es.map.MappingInfo;
  * Utility class for the ConditionTranslator class
  */
 class ConditionCollector {
+  
   QueryCondition condition;
   MappingInfo<?> mappingInfo;
   
@@ -53,7 +56,10 @@ class ConditionCollector {
         conditionsMap.putIfAbsent(null, new ArrayList<QueryCondition>());
         conditionsMap.get(null).add(c);
       } else {
-        String nestedPathNext = getNestedPath(c.getField(), mappingInfo);
+        String nestedPathNext = null;
+        if (c.getField() != null && c.getOperator() != null) {
+          nestedPathNext = getNestedPath(c.getField(), mappingInfo);
+        }
         conditionsMap.putIfAbsent(nestedPathNext, new ArrayList<QueryCondition>());
         conditionsMap.get(nestedPathNext).add(c);
       }

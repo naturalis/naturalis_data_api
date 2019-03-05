@@ -28,8 +28,10 @@ nsr.data.dir=/payload/data/nsr
 geo.data.dir=/payload/data/geo
 ndff.data.dir=/payload/data/ndff
 medialib.data.dir=/payload/data/medialib
+json.data.dir=/payload/data/json-imports
 col.year=$COL_YEAR
 purl.baseurl=$PURL_BASE_URL
+etl.output=es
 EOF
 fi
 

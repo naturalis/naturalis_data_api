@@ -1,5 +1,5 @@
-FROM openjdk:8
-MAINTAINER atze.devries@naturalis.nl
+FROM openjdk:11
+MAINTAINER tom.gilissen@naturalis.nl
 
 ENV ES_DNS=es DEFAULT_SHARDS=12 NUM_REPLICAS=0 NBA_INDEX_NAME=nba COL_YEAR=2016 PURL_BASE_URL=''
 ENV TEST_GENERA=#test_genera=malus,parus,larus,bombus,rhododendron,felix,tulipa,rosa,canis,passer,trientalis

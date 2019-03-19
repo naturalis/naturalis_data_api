@@ -1,198 +1,212 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-    <modelVersion>4.0.0</modelVersion>
+	<modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>nl.naturalis.nba</groupId>
-        <artifactId>nba-motherpom</artifactId>
-        <version>2.20-SNAPSHOT</version>
-    </parent>
+	<parent>
+		<groupId>nl.naturalis.nba</groupId>
+		<artifactId>nba-motherpom</artifactId>
+		<version>2.20-SNAPSHOT</version>
+	</parent>
 
-    <artifactId>nl.naturalis.nba.dao</artifactId>
-    <name>NBA DAO layer</name>
-    <description>The data access layer of the NBA. Regulates interaction with the Elasticsearch backend</description>
+	<artifactId>nl.naturalis.nba.dao</artifactId>
+	<name>NBA DAO layer</name>
+	<description>The data access layer of the NBA. Regulates interaction with the Elasticsearch backend</description>
 
-    <properties>
-        <main.basedir>${project.parent.basedir}</main.basedir>
-    </properties>
+	<properties>
+		<main.basedir>${project.parent.basedir}</main.basedir>
+	</properties>
 
-    <dependencies>
+	<dependencies>
 
-        <dependency>
-            <groupId>nl.naturalis.nba</groupId>
-            <artifactId>nl.naturalis.nba.api</artifactId>
-            <version>2.20-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>nl.naturalis.nba</groupId>
-            <artifactId>nl.naturalis.nba.utils</artifactId>
-            <version>2.20-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>nl.naturalis.nba</groupId>
-            <artifactId>nl.naturalis.nba.common</artifactId>
-            <version>2.20-SNAPSHOT</version>
-        </dependency>
+		<dependency>
+			<groupId>nl.naturalis.nba</groupId>
+			<artifactId>nl.naturalis.nba.api</artifactId>
+			<version>2.20-SNAPSHOT</version>
+		</dependency>
 
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.elasticsearch.client</groupId>
-            <artifactId>transport</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.elasticsearch</groupId>
-            <artifactId>elasticsearch</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.vividsolutions</groupId>
-            <artifactId>jts</artifactId>
-            <version>1.13</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-annotations</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>de.grundid.opendatalab</groupId>
-            <artifactId>geojson-jackson</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.univocity</groupId>
-            <artifactId>univocity-parsers</artifactId>
-            </dependency>
-        <dependency>
-            <!-- Needed b/c elasticsearch doesn't hide it behind its API -->
-            <groupId>org.apache.lucene</groupId>
-            <artifactId>lucene-join</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>nl.naturalis.nba</groupId>
+			<artifactId>nl.naturalis.nba.utils</artifactId>
+			<version>2.20-SNAPSHOT</version>
+		</dependency>
 
-        <!-- TEST SCOPE -->
-        <dependency>
-            <!-- Needed even if mvn dependency:analyze says it isn't! -->
-            <groupId>org.locationtech.spatial4j</groupId>
-            <artifactId>spatial4j</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-module-junit4</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-api-mockito</artifactId>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+		<dependency>
+			<groupId>nl.naturalis.nba</groupId>
+			<artifactId>nl.naturalis.nba.common</artifactId>
+			<version>2.20-SNAPSHOT</version>
+		</dependency>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>delete-api-install-dir</id>
-                        <phase>clean</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <executable>rm</executable>
-                            <arguments>
-                                <argument>-rf</argument>
-                                <argument>${nba.api.install.dir}</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>clone-dwca-config-repo</id>
-                        <phase>clean</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <executable>git</executable>
-                            <arguments>
-                                <argument>clone</argument>
-                                <argument>https://github.com/naturalis/DWCAConfig</argument>
-                                <argument>${nba.api.install.dir}/dwca</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>clone-nba-fieldinfo-metadata-repo</id>
-                        <phase>clean</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <executable>git</executable>
-                            <arguments>
-                                <argument>clone</argument>
-                                <argument>https://github.com/naturalis/nba-fieldinfo-metadata.git</argument>
-                                <argument>${nba.api.install.dir}/metadata</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <forkCount>1</forkCount>
-                    <reuseForks>false</reuseForks>
-                    <redirectTestOutputToFile>false</redirectTestOutputToFile>
-                    <argLine>-Xmx256m
-                        -Dnba.conf.file=${project.basedir}/../nba.properties
-                        -Delasticsearch.index.default.suffix=_integration_test
-                        -Dlog4jConfigurationFile=${project.basedir}/../log4j2-test.xml
-                    </argLine>
-                    <runOrder>random</runOrder>
-                    <includes>
-                        <include>**/*Test.java</include>
-                    </includes>
-                    <excludes>
-                        <!-- Still no solid way to run test classes of Java client -->
-                        <exclude>**/nl.naturalis.nba.client.*.java</exclude>
-                    </excludes>
-                </configuration>
-            </plugin>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-api</artifactId>
+		</dependency>
 
-        </plugins>
-    </build>
+		<dependency>
+			<groupId>org.elasticsearch.client</groupId>
+			<artifactId>transport</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.elasticsearch</groupId>
+			<artifactId>elasticsearch</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.vividsolutions</groupId>
+			<artifactId>jts</artifactId>
+			<version>1.13</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-core</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-annotations</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>de.grundid.opendatalab</groupId>
+			<artifactId>geojson-jackson</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.univocity</groupId>
+			<artifactId>univocity-parsers</artifactId>
+		</dependency>
+
+		<dependency>
+			<!-- Needed b/c elasticsearch doesn't hide it behind its API -->
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-join</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+		</dependency>
+
+		<!-- TEST SCOPE -->
+
+        <!-- Since Java 11 this depencency does NOT seem to be needed any longer -->
+		<!-- Needed even if mvn dependency:analyze says it isn't! -->
+<!-- 	
+        <dependency>
+			<groupId>org.locationtech.spatial4j</groupId>
+			<artifactId>spatial4j</artifactId>
+			<scope>test</scope>
+		</dependency>
+ -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-all</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-reflect</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>delete-api-install-dir</id>
+						<phase>clean</phase>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>rm</executable>
+							<arguments>
+								<argument>-rf</argument>
+								<argument>${nba.api.install.dir}</argument>
+							</arguments>
+						</configuration>
+					</execution>
+					<execution>
+						<id>clone-dwca-config-repo</id>
+						<phase>clean</phase>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>git</executable>
+							<arguments>
+								<argument>clone</argument>
+								<argument>https://github.com/naturalis/DWCAConfig</argument>
+								<argument>${nba.api.install.dir}/dwca</argument>
+							</arguments>
+						</configuration>
+					</execution>
+					<execution>
+						<id>clone-nba-fieldinfo-metadata-repo</id>
+						<phase>clean</phase>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>git</executable>
+							<arguments>
+								<argument>clone</argument>
+								<argument>https://github.com/naturalis/nba-fieldinfo-metadata.git</argument>
+								<argument>${nba.api.install.dir}/metadata</argument>
+							</arguments>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<forkCount>1</forkCount>
+					<reuseForks>false</reuseForks>
+					<redirectTestOutputToFile>false</redirectTestOutputToFile>
+					<argLine>-Xmx256m
+						-Dnba.conf.file=${project.basedir}/../nba.properties
+						-Delasticsearch.index.default.suffix=_integration_test
+						-Dlog4jConfigurationFile=${project.basedir}/../log4j2-test.xml
+					</argLine>
+					<runOrder>random</runOrder>
+					<includes>
+						<include>**/*Test.java</include>
+					</includes>
+					<excludes>
+						<!-- Still no solid way to run test classes of Java client -->
+						<exclude>**/nl.naturalis.nba.client.*.java</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+
+		</plugins>
+	</build>
 
 </project>

@@ -26,11 +26,13 @@
 			<artifactId>nl.naturalis.nba.api</artifactId>
 			<version>2.20-SNAPSHOT</version>
 		</dependency>
+
 		<dependency>
 			<groupId>nl.naturalis.nba</groupId>
 			<artifactId>nl.naturalis.nba.utils</artifactId>
 			<version>2.20-SNAPSHOT</version>
 		</dependency>
+
 		<dependency>
 			<groupId>nl.naturalis.nba</groupId>
 			<artifactId>nl.naturalis.nba.common</artifactId>
@@ -43,22 +45,20 @@
 		</dependency>
 		
 		<dependency>
-				<groupId>org.apache.logging.log4j</groupId>
-				<artifactId>log4j-core</artifactId>
-		</dependency>
-		
-		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-annotations</artifactId>
 		</dependency>
+
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
 		</dependency>
+
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-core</artifactId>
 		</dependency>
+
 		<dependency>
 			<groupId>de.grundid.opendatalab</groupId>
 			<artifactId>geojson-jackson</artifactId>
@@ -70,6 +70,7 @@
 			<artifactId>commons-compress</artifactId>
 			<scope>test</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>

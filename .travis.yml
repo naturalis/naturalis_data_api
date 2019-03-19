@@ -8,7 +8,7 @@ services:
 
 before_install:
   - sudo /sbin/sysctl -w vm.max_map_count=262144
-  - docker pull maven:3-jdk-11-slim
+  - docker pull maven:3-jdk-11
   - >
     docker run \
       --name build-es \
@@ -37,7 +37,7 @@ before_script:
       --volume $(pwd):/repo \
       --volume $(pwd)/payload:/payload \
       --workdir /repo \
-      maven:3-jdk-11-slim /bin/sh -c "apk add --no-cache git && mvn clean install"
+      maven:3-jdk-11 /bin/sh -c "apk add --no-cache git && mvn clean install"
 
 script:
   - sudo mv nl.naturalis.nba.rest/target/*.war docker/api/nba.war

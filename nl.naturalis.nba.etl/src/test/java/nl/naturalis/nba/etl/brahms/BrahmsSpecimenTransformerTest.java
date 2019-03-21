@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.mockito.PowerMockito;
@@ -52,7 +53,7 @@ public class BrahmsSpecimenTransformerTest {
      * 
      *         Test to verify the do Transform object returns the correct {@List<Specimen>} object
      */
-
+    @Ignore
     @Test
     public void testDoTransform() throws Exception {
 
@@ -125,6 +126,7 @@ public class BrahmsSpecimenTransformerTest {
      * 
      *         Test to verify gathering event object returned.
      */
+    @Ignore
     @Test
     public void testGatheringEvent() throws Exception {
 
@@ -187,6 +189,7 @@ public class BrahmsSpecimenTransformerTest {
      * 
      *         Test to verify the specimen identification object returned.
      */
+    @Ignore
     @Test
     public void testGetSpecimenIdentification() throws Exception {
 
@@ -248,6 +251,7 @@ public class BrahmsSpecimenTransformerTest {
      * 
      *         Test to verify the assembleId object returned.
      */
+    @Ignore
     @Test
     public void testGetAssemblageID() throws Exception {
 
@@ -278,6 +282,7 @@ public class BrahmsSpecimenTransformerTest {
      * 
      *         Test to verify the collection field number returned.
      */
+    @Ignore
     @Test
     public void testGetCollectorsFieldNumber() throws Exception {
 
@@ -311,6 +316,7 @@ public class BrahmsSpecimenTransformerTest {
      * 
      *         Test to verify the returned service access points
      */
+    @Ignore
     @Test
     public void testGetServiceAccessPoints() throws Exception {
 
@@ -344,6 +350,7 @@ public class BrahmsSpecimenTransformerTest {
      * 
      *         Test to verify values returned by getPreviousUnitsText()
      */
+    @Ignore
     @Test
     public void testGetPreviousUnitsText() throws Exception {
 

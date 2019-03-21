@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -55,7 +56,7 @@ public class TransformUtilTest {
    * Test to verify extractClassificiationFromName method returns an expected DefaultClassification
    * object
    */
-
+  @Ignore
   @Test
   public void testExtractClassificiationFromName() {
 
@@ -81,6 +82,7 @@ public class TransformUtilTest {
    * 
    * Test to verify if getMonomialsInName returns an {@link List<@Monomial>} object
    */
+  @Ignore
   @Test
   public void testGetMonomialsInName() {
 
@@ -110,6 +112,7 @@ public class TransformUtilTest {
    * Test to verify if extractNameFromClassification method returns the expected
    * {@link DefaultClassification} object
    */
+  @Ignore
   @Test
   public void testExtractNameFromClassification() {
 
@@ -139,7 +142,7 @@ public class TransformUtilTest {
    * @throws NameMismatchException
    * 
    */
-
+  @Ignore
   @Test
   public void testEqualizeNameComponentsTaxon_01() throws NameMismatchException {
 
@@ -175,7 +178,7 @@ public class TransformUtilTest {
    * @throws NameMismatchException
    * 
    */
-
+  @Ignore
   @Test(expected=NameMismatchException.class)
   public void testEqualizeNameComponentsTaxon_02() throws NameMismatchException {
 
@@ -210,7 +213,7 @@ public class TransformUtilTest {
    * @throws NameMismatchException
    * 
    */
-
+  @Ignore
   @Test(expected=NameMismatchException.class)
   public void testEqualizeNameComponentsTaxon_03() throws NameMismatchException {
 
@@ -246,6 +249,7 @@ public class TransformUtilTest {
    * 
    *
    */
+  @Ignore
   @Test(expected=NullPointerException.class)
   public void testEqualizeNameComponentsSpecimen() throws NameMismatchException {
 
@@ -277,6 +281,7 @@ public class TransformUtilTest {
    * 
    * @throws NameMismatchException
    */
+  @Ignore
   @Test
   public void testEqualizeNameComponentsMultiMediaObjects() throws NameMismatchException {
 
@@ -314,6 +319,7 @@ public class TransformUtilTest {
    * 
    * Test to verify guessMimeType returns the correct MimeType
    */
+  @Ignore
   @Test
   public void testGuessMimeType() {
 

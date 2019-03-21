@@ -31,15 +31,16 @@
 
 		<!-- build settings -->
 		<minimumMavenVersion>3.3</minimumMavenVersion>
-		<jdkLevel>1.8</jdkLevel>
+		<jdkLevel>11</jdkLevel>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
 		<!-- Library dependencies -->
 		<!-- *** Check for updates: mvn versions:display-dependency-updates -->
 		<!-- *** Check dependencies: mvn dependency:analyze -->
+		<javax-xml-bind.version>2.3.1</javax-xml-bind.version>
 		<javax-mail.version>1.5.5</javax-mail.version>
-		<javax-activation.version>1.1</javax-activation.version>
+		<javax-activation.version>1.1.1</javax-activation.version>
 		<javax-persistence.version>2.1.0-RC2</javax-persistence.version>
 		<javax-jms.version>1.0.1.Final</javax-jms.version>
 		<javax.ws.rs-api.version>2.0.1</javax.ws.rs-api.version>
@@ -58,7 +59,7 @@
 		<apache-commons-compress.version>1.18</apache-commons-compress.version>
 		<apache-logging.version>2.7</apache-logging.version>
 
-		<elasticsearch.version>5.6.13</elasticsearch.version>
+		<elasticsearch.version>5.6.15</elasticsearch.version>
 		<apache-lucene.version>6.6.1</apache-lucene.version>
 
 		<osgi.version>4.3.1</osgi.version>
@@ -88,31 +89,31 @@
 		<hamcrest-all.version>1.3</hamcrest-all.version>
 		<mockito-core.version>2.8.9</mockito-core.version>
 		<mockito-all.version>1.10.19</mockito-all.version>
-		<powermock-module-junit4.version>1.7.1</powermock-module-junit4.version>
-		<powermock-core.version>1.7.1</powermock-core.version>
-		<powermock-api-mockito.version>1.7.1</powermock-api-mockito.version>
-		<powermock-reflect.version>1.7.1</powermock-reflect.version>
+		<powermock-module-junit4.version>2.0.0</powermock-module-junit4.version>
+		<powermock-core.version>2.0.0</powermock-core.version>
+		<powermock-reflect.version>2.0.0</powermock-reflect.version>
+		<powermock-api-mockito.version>1.7.4</powermock-api-mockito.version>
 
 
 		<!-- Maven plugin versions -->
 		<!-- *** Check for updates: mvn versions:display-plugin-updates -->
 		<maven-clean-plugin.version>3.1.0</maven-clean-plugin.version>
-		<maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
+		<maven-compiler-plugin.version>3.8.0</maven-compiler-plugin.version>
 		<maven-dependency-plugin.version>3.1.1</maven-dependency-plugin.version>
-		<maven-enforcer-plugin.version>1.4.1</maven-enforcer-plugin.version>
-		<maven-install-plugin.version>2.5.2</maven-install-plugin.version>
-		<maven-jar-plugin.version>3.0.2</maven-jar-plugin.version>
+		<maven-enforcer-plugin.version>3.0.0-M2</maven-enforcer-plugin.version>
+		<maven-install-plugin.version>3.0.0-M1</maven-install-plugin.version>
+		<maven-jar-plugin.version>3.1.1</maven-jar-plugin.version>
 		<maven-release-plugin.version>2.5.3</maven-release-plugin.version>
-		<maven-resources-plugin.version>3.0.2</maven-resources-plugin.version>
-		<maven-shade-plugin.version>3.1.1</maven-shade-plugin.version>
+		<maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
+		<maven-shade-plugin.version>3.2.1</maven-shade-plugin.version>
 		<maven-source-plugin.version>3.0.1</maven-source-plugin.version>
 		<maven-site-plugin.version>3.7.1</maven-site-plugin.version>
-		<maven-javadoc-plugin.version>3.0.1</maven-javadoc-plugin.version>
-		<maven-surefire-plugin.version>2.22.0</maven-surefire-plugin.version>
-		<maven-war-plugin.version>3.2.0</maven-war-plugin.version>
-		<versions-maven-plugin.version>2.4</versions-maven-plugin.version>
+		<maven-javadoc-plugin.version>3.1.0</maven-javadoc-plugin.version>
+		<maven-surefire-plugin.version>3.0.0-M3</maven-surefire-plugin.version>
+		<maven-war-plugin.version>3.2.2</maven-war-plugin.version>
+		<versions-maven-plugin.version>2.7</versions-maven-plugin.version>
 		<exec-maven-plugin.version>1.6.0</exec-maven-plugin.version>
-		<git-commit-id-plugin.version>2.2.4</git-commit-id-plugin.version>
+		<git-commit-id-plugin.version>2.2.6</git-commit-id-plugin.version>
 		<properties-maven-plugin.version>1.0.0</properties-maven-plugin.version>
 
 	</properties>
@@ -261,7 +262,7 @@
 				<version>${kafka-clients.version}</version>
 			</dependency>
 
-            <!-- OTHER -->
+			<!-- OTHER -->
 			<dependency>
 				<groupId>org.jctools</groupId>
 				<artifactId>jctools-core</artifactId>
@@ -307,10 +308,17 @@
 				<artifactId>javax.mail</artifactId>
 				<version>${javax-mail.version}</version>
 			</dependency>
-			<dependency>
-				<groupId>javax.activation</groupId>
-				<artifactId>activation</artifactId>
+			<!-- 
+			<dependency> 
+			    <groupId>javax.activation</groupId> 
+			    <artifactId>activation</artifactId> 
 				<version>${javax-activation.version}</version>
+		    </dependency> 
+		    -->
+			<dependency>
+				<groupId>com.sun.activation</groupId>
+				<artifactId>javax.activation</artifactId>
+				<version>1.2.0</version>
 			</dependency>
 			<dependency>
 				<groupId>javax.ejb</groupId>
@@ -322,11 +330,26 @@
 				<artifactId>cdi-api</artifactId>
 				<version>${javax-cdi-api.version}</version>
 			</dependency>
+
+			<!-- Needed as of Java 11 -->
+			<dependency>
+				<groupId>javax.xml.bind</groupId>
+				<artifactId>jaxb-api</artifactId>
+				<version>${javax-xml-bind.version}</version>
+			</dependency>
+
 			<dependency>
 				<groupId>javax.ws.rs</groupId>
 				<artifactId>javax.ws.rs-api</artifactId>
 				<version>${javax.ws.rs-api.version}</version>
 			</dependency>
+
+			<dependency>
+				<groupId>javax.xml.ws</groupId>
+				<artifactId>jaxws-api</artifactId>
+				<version>2.3.1</version>
+			</dependency>
+
 			<dependency>
 				<!-- Needed for index.jsp (even if mvn dependency:analyze says otherwise) -->
 				<groupId>javax.servlet</groupId>
@@ -534,6 +557,7 @@
 					<artifactId>maven-surefire-plugin</artifactId>
 					<version>${maven-surefire-plugin.version}</version>
 					<configuration>
+					   <argLine>--illegal-access=permit</argLine>
 						<forkCount>1</forkCount>
 						<reuseForks>false</reuseForks>
 						<redirectTestOutputToFile>true</redirectTestOutputToFile>
@@ -631,8 +655,8 @@
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
-					<source>${jdkLevel}</source>
-					<target>${jdkLevel}</target>
+					<release>11</release>
+					<!-- <source>${jdkLevel}</source> <target>${jdkLevel}</target> -->
 				</configuration>
 			</plugin>
 			<plugin>

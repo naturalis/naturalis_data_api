@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.mockito.PowerMockito;
@@ -61,6 +62,7 @@ public class CoLSynonymBatchTransformerTest {
    * 
    * @throws Exception
    */
+  @Ignore
   @Test
   public void testTransform() throws Exception {
 
@@ -137,6 +139,7 @@ public class CoLSynonymBatchTransformerTest {
    * 
    * @throws Exception
    */
+  @Ignore
   @Test
   public void testCreateLookupTable() throws Exception {
 
@@ -208,6 +211,7 @@ public class CoLSynonymBatchTransformerTest {
    * 
    * @throws Exception
    */
+  @Ignore
   @Test
   public void testCreateSynonym() throws Exception {
 
@@ -268,6 +272,7 @@ public class CoLSynonymBatchTransformerTest {
    * 
    * @throws Exception
    */
+  @Ignore
   @Test
   public void testHasSynonym() throws Exception {
 

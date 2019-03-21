@@ -27,7 +27,6 @@ import nl.naturalis.nba.etl.nsr.NsrTaxonTransformerTest;
 
 @RunWith(Suite.class)
 @SuiteClasses({ 
-    
     ETLUtilTest.class,
     BrahmsImportUtilTest.class,
     BrahmsSpecimenTransformerTest.class,
@@ -52,9 +51,8 @@ import nl.naturalis.nba.etl.nsr.NsrTaxonTransformerTest;
     MultimediaTaxonomicEnricher2Test.class,
     SpecimenMultimediaEnricherTest.class,
     SpecimenTaxonomicEnricher2Test.class,
-    SummaryObjectUtilTest.class
-    
+    SummaryObjectUtilTest.class    
 })
-public class AllTests {
 
+public class AllTests {
 }

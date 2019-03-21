@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.mockito.PowerMockito;
@@ -49,6 +50,7 @@ public class GeoTransformerTest {
    * 
    * @throws Exception
    */
+  @Ignore
   @Test
   public void testDoTransform() throws Exception {
 

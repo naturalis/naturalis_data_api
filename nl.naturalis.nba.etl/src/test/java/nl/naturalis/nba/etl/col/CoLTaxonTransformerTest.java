@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -60,6 +61,7 @@ public class CoLTaxonTransformerTest {
    * 
    * @throws Exception
    */
+  @Ignore
   @Test
   public void testDoTransform() throws Exception {
 
@@ -128,6 +130,7 @@ public class CoLTaxonTransformerTest {
    * 
    * @throws Exception
    */
+  @Ignore
   @Test
   public void testGetClassification() throws Exception {
 
@@ -200,6 +203,7 @@ public class CoLTaxonTransformerTest {
    * 
    * @throws Exception
    */
+  @Ignore
   @Test
   public void testGetScientificName() throws Exception {
 
@@ -272,6 +276,7 @@ public class CoLTaxonTransformerTest {
    * 
    * @throws Exception
    */
+  @Ignore
   @Test
   public void testIsTestSetGenus() throws Exception {
 

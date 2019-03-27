@@ -148,6 +148,8 @@
                             <arguments>
                                 <argument>clone</argument>
                                 <argument>https://github.com/naturalis/DWCAConfig</argument>
+                                <argument>--branch</argument>
+                                <argument>${nba.api.dwca.config.version}</argument>
                                 <argument>${nba.api.install.dir}/dwca</argument>
                             </arguments>
                         </configuration>

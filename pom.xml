@@ -729,8 +729,8 @@
 						</goals>
 						<configuration>
 							<detectLinks>true</detectLinks>
-							<doctitle>Naturalis
-								Biodiversity API (NBA) V${project.version} -
+							<doctitle>Naturalis Biodiversity API (NBA) 
+							    V${project.version} -
 								Developer documentation</doctitle>
 							<sourcepath> nl.naturalis.nba.api/src/main/java:
 								nl.naturalis.nba.client/src/main/java:

@@ -9,8 +9,8 @@ import static nl.naturalis.nba.etl.ETLConstants.SOURCE_INSTITUTION_ID;
 import static nl.naturalis.nba.etl.ETLUtil.getTestGenera;
 import static nl.naturalis.nba.etl.TransformUtil.sortIdentificationsPreferredFirst;
 import static nl.naturalis.nba.utils.StringUtil.rpad;
+
 import java.lang.reflect.Field;
-import java.net.URI;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -18,7 +18,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
+
 import org.w3c.dom.Element;
+
 import nl.naturalis.nba.api.model.AreaClass;
 import nl.naturalis.nba.api.model.AssociatedTaxon;
 import nl.naturalis.nba.api.model.BioStratigraphy;
@@ -28,7 +30,6 @@ import nl.naturalis.nba.api.model.GatheringEvent;
 import nl.naturalis.nba.api.model.GatheringSiteCoordinates;
 import nl.naturalis.nba.api.model.LithoStratigraphy;
 import nl.naturalis.nba.api.model.Monomial;
-import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.api.model.NamedArea;
 import nl.naturalis.nba.api.model.Person;
 import nl.naturalis.nba.api.model.ScientificName;
@@ -44,6 +45,8 @@ import nl.naturalis.nba.etl.AbstractXMLTransformer;
 import nl.naturalis.nba.etl.ETLRuntimeException;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.ETLUtil;
+import nl.naturalis.nba.etl.MimeTypeCache;
+import nl.naturalis.nba.etl.MimeTypeCacheFactory;
 import nl.naturalis.nba.etl.ThemeCache;
 import nl.naturalis.nba.etl.TransformUtil;
 import nl.naturalis.nba.etl.normalize.AreaClassNormalizer;
@@ -70,6 +73,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
     private static final TaxonRelationTypeNormalizer trtNormalizer;
     private static final Field[] geFields;
     private static final String DEFAULT_IMAGE_QUALITY = "MEDIUM_QUALITY";
+    private final MimeTypeCache mimetypeCache;
 
     static {
         areaClassNormalizer = AreaClassNormalizer.getInstance();
@@ -88,6 +92,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 
     CrsSpecimenTransformer(ETLStatistics stats) {
         super(stats);
+        mimetypeCache = MimeTypeCacheFactory.getInstance().getCache();
         testGenera = getTestGenera();
     }
 
@@ -204,12 +209,10 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
             return null;
         }
     }
-    
-    
-    
+
     private List<ServiceAccessPoint> getAssociatedMultiMediaUris() {
-      Element record = input.getRecord();
       
+      Element record = input.getRecord();
       List<Element> fileUriElems = DOMUtil.getDescendants(record, "abcd:fileuri");
       if (fileUriElems == null) {
         if (logger.isDebugEnabled()) {
@@ -218,22 +221,37 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
         return null;
       }
       
-      List<Element> mmPublicElems = DOMUtil.getDescendants(record, "abcd:MultiMediaPublic");
-      if (mmPublicElems == null) {
+      /*
+       * When MultiMediaPublic is set to 0 (<abcd:MultiMediaPublic>0</abcd:MultiMediaPublic>)
+       * this means that no URI's should be added to the document. While that data should not 
+       * be have been provided by the source system in the first place, we do a security check 
+       * anyway.
+       * 
+       * NOTE: When the source record contains more than one multimedia item, the field
+       * MultiMediaPublic will be available more than once (one for every multimedia item).
+       * Since the field multiMediaPublic in the specimen document can be set only once,
+       * we check each value provided.
+       * 
+       */
+      List<Element> multimediaPublic = DOMUtil.getDescendants(record, "abcd:MultiMediaPublic");
+      if (multimediaPublic == null) {
           return null;
       }
-            
+      
       List<ServiceAccessPoint> serviceAccessPoints = new ArrayList<>(fileUriElems.size());
+      int n = 0;
       for (Element e : fileUriElems) {
+        if (n >= multimediaPublic.size() && multimediaPublic.get(n++).getTextContent().trim().equals("0")) continue;
         String uri = e.getTextContent().trim();
-        if (uri.length() > 0) {
-          serviceAccessPoints.add( new ServiceAccessPoint(uri, "image/jepg", DEFAULT_IMAGE_QUALITY) );         
-        }        
+        String mimeType = mimetypeCache.getMimeType(objectID);
+        if (uri != null && uri.length() > 0 && mimeType != null) {
+          serviceAccessPoints.add( new ServiceAccessPoint(uri, mimeType, DEFAULT_IMAGE_QUALITY) );         
+        } else if (uri.length() > 0 && mimeType == null) {
+          logger.error("Multimedia URI from object {} has no mime type! URI has been skipped: {}", objectID, uri);
+        }
       }
       return (serviceAccessPoints.size() == 0) ? null : serviceAccessPoints;
     }
-
-    
     
     private List<String> getPreviousSourceIds() {
       Element record = input.getRecord();

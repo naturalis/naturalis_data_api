@@ -10,6 +10,7 @@ import static nl.naturalis.nba.etl.ETLUtil.getTestGenera;
 import static nl.naturalis.nba.etl.TransformUtil.sortIdentificationsPreferredFirst;
 import static nl.naturalis.nba.utils.StringUtil.rpad;
 import java.lang.reflect.Field;
+import java.net.URI;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -27,9 +28,11 @@ import nl.naturalis.nba.api.model.GatheringEvent;
 import nl.naturalis.nba.api.model.GatheringSiteCoordinates;
 import nl.naturalis.nba.api.model.LithoStratigraphy;
 import nl.naturalis.nba.api.model.Monomial;
+import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.api.model.NamedArea;
 import nl.naturalis.nba.api.model.Person;
 import nl.naturalis.nba.api.model.ScientificName;
+import nl.naturalis.nba.api.model.ServiceAccessPoint;
 import nl.naturalis.nba.api.model.Sex;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
@@ -66,6 +69,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
     private static final PhaseOrStageNormalizer posNormalizer;
     private static final TaxonRelationTypeNormalizer trtNormalizer;
     private static final Field[] geFields;
+    private static final String DEFAULT_IMAGE_QUALITY = "MEDIUM_QUALITY";
 
     static {
         areaClassNormalizer = AreaClassNormalizer.getInstance();
@@ -192,6 +196,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
             specimen.setSex(getSex());
             specimen.setGatheringEvent(getGatheringEvent());
             specimen.setDateLastEdited(getDateLastEdited());
+            specimen.setAssociatedMultiMediaUris(getAssociatedMultiMediaUris()); //(getAssociatedMultiMediaObjects());
             stats.objectsAccepted++;
             return Arrays.asList(specimen);
         } catch (Throwable t) {
@@ -199,6 +204,36 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
             return null;
         }
     }
+    
+    
+    
+    private List<ServiceAccessPoint> getAssociatedMultiMediaUris() {
+      Element record = input.getRecord();
+      
+      List<Element> fileUriElems = DOMUtil.getDescendants(record, "abcd:fileuri");
+      if (fileUriElems == null) {
+        if (logger.isDebugEnabled()) {
+          debug("Missing or empty element <abcd:fileuri>");
+        }
+        return null;
+      }
+      
+      List<Element> mmPublicElems = DOMUtil.getDescendants(record, "abcd:MultiMediaPublic");
+      if (mmPublicElems == null) {
+          return null;
+      }
+            
+      List<ServiceAccessPoint> serviceAccessPoints = new ArrayList<>(fileUriElems.size());
+      for (Element e : fileUriElems) {
+        String uri = e.getTextContent().trim();
+        if (uri.length() > 0) {
+          serviceAccessPoints.add( new ServiceAccessPoint(uri, "image/jepg", DEFAULT_IMAGE_QUALITY) );         
+        }        
+      }
+      return (serviceAccessPoints.size() == 0) ? null : serviceAccessPoints;
+    }
+
+    
     
     private List<String> getPreviousSourceIds() {
       Element record = input.getRecord();

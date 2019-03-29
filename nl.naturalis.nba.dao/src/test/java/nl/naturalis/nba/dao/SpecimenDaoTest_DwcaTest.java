@@ -77,6 +77,7 @@ public class SpecimenDaoTest_DwcaTest {
     // Download a DwCA file
     String tmpDir = System.getProperty("java.io.tmpdir");
     File file = new File(tmpDir + "/dwca-test.zip");
+    logger.info("DWCA test file: {}", file.getAbsolutePath());
     if (file.exists()) {
       file.delete();
     }
@@ -109,11 +110,13 @@ public class SpecimenDaoTest_DwcaTest {
     zis.closeEntry();
     zis.close();
 
-    assertTrue("02 - DwCA file does not include the right ammount of files.", zipEntries.size() == 3);
+    assertTrue("02 - DwCA file does not include the right ammount of files.", zipEntries.size() == 4);
     assertTrue("03 - eml.xml is missing.", zipEntries.contains("eml.xml"));
     assertTrue("04 - meta.xml is missing.", zipEntries.contains("meta.xml"));
     assertTrue("05 - Occurrence.txt is missing.", zipEntries.contains("Occurrence.txt"));
+    assertTrue("06 - Multimedia.txt is missing.", zipEntries.contains("Multimedia.txt"));
     
+    // Test Occurrence.txt
     File occurrenceFile = new File(destDir.getPath(), "Occurrence.txt");
     InputStream is = new FileInputStream(occurrenceFile);
     
@@ -122,15 +125,18 @@ public class SpecimenDaoTest_DwcaTest {
     settings.setHeaderExtractionEnabled(true);
     CsvParser parser = new CsvParser(settings);
     List<Record> allRecords = parser.parseAllRecords(new InputStreamReader(is, "UTF-8"));
-    assertEquals("06 - Number of records in DwCA file is incorrect.", 2, allRecords.size());
+    assertEquals("07 - Number of records in DwCA file is incorrect.", 2, allRecords.size());
     
     Set<String> ids = new HashSet<>();
     for (Record record : allRecords) {
       ids.add(record.getString("catalogNumber"));
     }
-    assertTrue("06a - Document missing from DwCA.", ids.contains(pMajor.getSourceSystemId()));
-    assertTrue("06b - Document missing from DwCA.", ids.contains(lFuscus1.getSourceSystemId()));
-        
+    assertTrue("08a - Document missing from DwCA.", ids.contains(pMajor.getSourceSystemId()));
+    assertTrue("08b - Document missing from DwCA.", ids.contains(lFuscus1.getSourceSystemId()));
+
+    // TODO Add test for Multimedia.txt
+
+    
     // Clean up
     file.delete();
     File[] testFiles = destDir.listFiles();

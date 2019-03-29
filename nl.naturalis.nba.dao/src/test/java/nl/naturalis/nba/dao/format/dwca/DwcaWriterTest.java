@@ -22,7 +22,7 @@ public class DwcaWriterTest {
   public void test_getWriter() throws FileNotFoundException, NoSuchDataSetException, DataSetConfigurationException {
     OutputStream out = new FileOutputStream(new File("/tmp/dwca.tst"));
     DwcaConfig config = new DwcaConfig("botany", DwcaDataSetType.SPECIMEN);
-    assertEquals(SingleDataSourceDwcaWriter.class.getName(), config.getWriter(out).getClass().getName());
+    assertEquals(MultiDataSourceDwcaWriter.class.getName(), config.getWriter(out).getClass().getName());
   }
 
   @Test

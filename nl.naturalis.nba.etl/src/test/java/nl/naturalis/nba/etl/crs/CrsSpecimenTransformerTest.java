@@ -1,21 +1,26 @@
 package nl.naturalis.nba.etl.crs;
 
+import static nl.naturalis.nba.etl.ETLUtil.getLogger;
 import static nl.naturalis.nba.utils.xml.DOMUtil.getDescendant;
 import static nl.naturalis.nba.utils.xml.DOMUtil.getDescendants;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.net.URL;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import org.apache.logging.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Element;
+
 import nl.naturalis.nba.api.model.AreaClass;
 import nl.naturalis.nba.api.model.AssociatedTaxon;
 import nl.naturalis.nba.api.model.BioStratigraphy;
@@ -46,6 +51,8 @@ public class CrsSpecimenTransformerTest {
 
   URL specimenFileUrl;
   File specimenFile;
+  
+  private static final Logger logger = getLogger(CrsSpecimenTransformerTest.class);
 
   /**
    * @throws java.lang.Exception
@@ -75,6 +82,7 @@ public class CrsSpecimenTransformerTest {
   @Test
   public void testDoTransform() throws Exception {
 
+    logger.info("testDoTransform");
     ETLStatistics etlStatistics = new ETLStatistics();
     List<Specimen> list = null;
     CrsSpecimenTransformer crsSpecimenTransformer = new CrsSpecimenTransformer(etlStatistics);
@@ -130,6 +138,7 @@ public class CrsSpecimenTransformerTest {
   @Test
   public void testGetIdentification() throws Exception {
 
+    logger.info("testGetIdentification");
     ETLStatistics etlStatistics = new ETLStatistics();
     SpecimenIdentification identification = null;
     CrsSpecimenTransformer crsSpecimenTransformer = new CrsSpecimenTransformer(etlStatistics);
@@ -175,6 +184,7 @@ public class CrsSpecimenTransformerTest {
   @Test
   public void testGetGatheringEvent() throws Exception {
 
+    logger.info("testGetGatheringEvent");
     ETLStatistics etlStatistics = new ETLStatistics();
     GatheringEvent event = null;
     CrsSpecimenTransformer crsSpecimenTransformer = new CrsSpecimenTransformer(etlStatistics);
@@ -216,6 +226,7 @@ public class CrsSpecimenTransformerTest {
   @Test
   public void testGetScientificName() throws Exception {
 
+    logger.info("testGetScientificName");
     ETLStatistics etlStatistics = new ETLStatistics();
     ScientificName scientificName = null;
     CrsSpecimenTransformer crsSpecimenTransformer = new CrsSpecimenTransformer(etlStatistics);
@@ -257,6 +268,7 @@ public class CrsSpecimenTransformerTest {
   @Test
   public void testGetSystemClassification() throws Exception {
 
+    logger.info("testGetSystemClassification");
     ETLStatistics etlStatistics = new ETLStatistics();
     int listSize = 0;
     List<Monomial> classification = null;
@@ -304,6 +316,7 @@ public class CrsSpecimenTransformerTest {
   @Test
   public void testGetChronoStratigraphyList() throws Exception {
 
+    logger.info("testGetChronoStratigraphyList");
     ETLStatistics etlStatistics = new ETLStatistics();
     List<ChronoStratigraphy> actualList = null;
     int listSize = 0;
@@ -349,6 +362,7 @@ public class CrsSpecimenTransformerTest {
   @Test
   public void testGetBioStratigraphyList() throws Exception {
 
+    logger.info("testGetBioStratigraphyList");
     ETLStatistics etlStatistics = new ETLStatistics();
     List<BioStratigraphy> actualList = null;
     int listSize = 0;
@@ -393,6 +407,7 @@ public class CrsSpecimenTransformerTest {
   @Test
   public void testGetLithoStratigraphyList() throws Exception {
 
+    logger.info("testGetLithoStratigraphyList");
     ETLStatistics etlStatistics = new ETLStatistics();
     List<LithoStratigraphy> actualList = null;
     int listSize = 0;
@@ -436,6 +451,7 @@ public class CrsSpecimenTransformerTest {
   @Test
   public void testGetPhaseOrStage() throws Exception {
 
+    logger.info("testGetPhaseOrStage");
     ETLStatistics etlStatistics = new ETLStatistics();
     String orStage = null;
     CrsSpecimenTransformer crsSpecimenTransformer = new CrsSpecimenTransformer(etlStatistics);
@@ -469,6 +485,7 @@ public class CrsSpecimenTransformerTest {
   @Test
   public void testGetTypeStatus() throws Exception {
 
+    logger.info("testGetTypeStatus");
     ETLStatistics etlStatistics = new ETLStatistics();
     SpecimenTypeStatus specimenTypeStatus = null;
     CrsSpecimenTransformer crsSpecimenTransformer = new CrsSpecimenTransformer(etlStatistics);
@@ -506,6 +523,7 @@ public class CrsSpecimenTransformerTest {
   @Test
   public void testGetSex() throws Exception {
 
+    logger.info("testGetSex");
     ETLStatistics etlStatistics = new ETLStatistics();
     Sex sex = null;
     CrsSpecimenTransformer crsSpecimenTransformer = new CrsSpecimenTransformer(etlStatistics);
@@ -542,6 +560,7 @@ public class CrsSpecimenTransformerTest {
   @Test
   public void testDate() throws Exception {
 
+    logger.info("testDate");
     ETLStatistics etlStatistics = new ETLStatistics();
     OffsetDateTime offsetDateTime = null;
     ScientificName scientificName = new ScientificName();
@@ -581,6 +600,7 @@ public class CrsSpecimenTransformerTest {
   @Test
   public void testHasStatusDeleted() throws Exception {
 
+    logger.info("testHasStatusDeleted");
     ETLStatistics etlStatistics = new ETLStatistics();
     boolean hasStatus = false;
     CrsSpecimenTransformer crsSpecimenTransformer = new CrsSpecimenTransformer(etlStatistics);
@@ -613,6 +633,7 @@ public class CrsSpecimenTransformerTest {
   @Test
   public void testHasTestGenus_01() throws Exception {
 
+    logger.info("testHasTestGenus_01");
     ETLStatistics etlStatistics = new ETLStatistics();
     boolean hasTestGenus = false;
     List<Element> elementList = new ArrayList<>();
@@ -649,6 +670,8 @@ public class CrsSpecimenTransformerTest {
    */
   @Test
   public void testHasTestGenus_02() throws Exception {
+    
+    logger.info("testHasTestGenus_02");
     System.setProperty("nl.naturalis.nba.etl.testGenera", "test");
     ETLStatistics etlStatistics = new ETLStatistics();
     boolean hasTestGenus = true;
@@ -687,6 +710,7 @@ public class CrsSpecimenTransformerTest {
   @Test
   public void testVal() throws Exception {
 
+    logger.info("testVal");
     ETLStatistics etlStatistics = new ETLStatistics();
     String val = null;
     CrsSpecimenTransformer crsSpecimenTransformer = new CrsSpecimenTransformer(etlStatistics);
@@ -719,6 +743,7 @@ public class CrsSpecimenTransformerTest {
   @Test
   public void testGetAreaClass() throws Exception {
 
+    logger.info("testGetAreaClass");
     ETLStatistics etlStatistics = new ETLStatistics();
     CrsSpecimenTransformer crsSpecimenTransformer = new CrsSpecimenTransformer(etlStatistics);
     CrsExtractor extractor = new CrsExtractor(specimenFile, etlStatistics);
@@ -761,6 +786,7 @@ public class CrsSpecimenTransformerTest {
   @Test
   public void testGetNamedAreas() throws Exception {
 
+    logger.info("testGetNamedAreas");
     ETLStatistics etlStatistics = new ETLStatistics();    
     CrsSpecimenTransformer crsSpecimenTransformer = new CrsSpecimenTransformer(etlStatistics);
     CrsExtractor extractor = new CrsExtractor(specimenFile, etlStatistics);
@@ -790,6 +816,7 @@ public class CrsSpecimenTransformerTest {
   @Test
   public void testGetTaxonRelationType() throws Exception {
 
+    logger.info("testGetTaxonRelationType");
     ETLStatistics etlStatistics = new ETLStatistics();
     CrsSpecimenTransformer crsSpecimenTransformer = new CrsSpecimenTransformer(etlStatistics);
     CrsExtractor extractor = new CrsExtractor(specimenFile, etlStatistics);
@@ -832,6 +859,7 @@ public class CrsSpecimenTransformerTest {
   @Test
   public void testGetAssociatedTaxa() throws Exception {
 
+    logger.info("testGetAssociatedTaxa");
     ETLStatistics etlStatistics = new ETLStatistics();
     List<AssociatedTaxon> associatedTaxa = null;
     int listSize = 0;

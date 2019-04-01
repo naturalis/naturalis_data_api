@@ -37,7 +37,7 @@ before_script:
       --volume $(pwd):/repo \
       --volume $(pwd)/payload:/payload \
       --workdir /repo \
-      maven:3-jdk-11-slim /bin/sh -c "apt-get update && apt-get install -y git && mvn clean install"
+      maven:3-jdk-11-slim /bin/sh -c "apt-get update && apt-get install -y git && git clone https://github.com/naturalis/DWCAConfig.git && mvn clean install"
 
 script:
   - sudo mv nl.naturalis.nba.rest/target/*.war docker/api/nba.war

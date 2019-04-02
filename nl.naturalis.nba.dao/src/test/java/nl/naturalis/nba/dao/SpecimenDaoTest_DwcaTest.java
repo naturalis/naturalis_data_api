@@ -21,6 +21,7 @@ import java.util.zip.ZipInputStream;
 import org.apache.logging.log4j.Logger;
 import org.junit.After;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import com.univocity.parsers.common.record.Record;
 import com.univocity.parsers.csv.CsvParser;
@@ -64,6 +65,7 @@ public class SpecimenDaoTest_DwcaTest {
     // dropIndex(Specimen.class);
   }
 
+  @Ignore
   @Test
   public void test_dwcaGetDataSetNames() {
     SpecimenDao dao = new SpecimenDao();
@@ -71,6 +73,7 @@ public class SpecimenDaoTest_DwcaTest {
         dao.dwcaGetDataSetNames().length > 0);
   }
 
+  @Ignore
   @Test
   public void test_dwcaGetDataSet() throws NoSuchDataSetException, IOException {
 
@@ -152,6 +155,7 @@ public class SpecimenDaoTest_DwcaTest {
   /*
    * Just make sure we don't get exceptions. No assertions about contents of zip archive yet (TODO).
    */
+  @Ignore
   @Test
   public void test_dwcaQuery() throws InvalidQueryException, IOException {
 

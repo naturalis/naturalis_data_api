@@ -9,7 +9,7 @@ services:
 before_install:
   - sudo /sbin/sysctl -w vm.max_map_count=262144
   - git clone https://github.com/naturalis/DWCAConfig.git
-  - mv DWCAConfig dwca
+  - mv DWCAConfig api-output/etc-nba/dwca
   - docker pull maven:3-jdk-11-slim
   - >
     docker run \

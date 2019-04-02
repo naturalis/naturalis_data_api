@@ -8,6 +8,7 @@ import static nl.naturalis.nba.etl.ETLConstants.LICENCE_TYPE;
 import static nl.naturalis.nba.etl.ETLConstants.SOURCE_INSTITUTION_ID;
 import static nl.naturalis.nba.etl.ETLUtil.getTestGenera;
 import static nl.naturalis.nba.etl.MimeTypeCache.MEDIALIB_URL_START;
+import static nl.naturalis.nba.etl.MimeTypeCache.MEDIALIB_HTTPS_URL;
 import static nl.naturalis.nba.etl.TransformUtil.getSystemClassification;
 import static nl.naturalis.nba.etl.normalize.Normalizer.NOT_MAPPED;
 import static nl.naturalis.nba.utils.StringUtil.rpad;
@@ -395,7 +396,7 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 			}
 			info.medialibId = medialibId;
 			// Discard original URL and reconstruct from scratch
-			url = MEDIALIB_URL_START + medialibId + "/format/large";
+			url = MEDIALIB_HTTPS_URL + medialibId + "/format/large";
 			info.url = url;
 			info.mimeType = mimetypeCache.getMimeType(medialibId);
 		}

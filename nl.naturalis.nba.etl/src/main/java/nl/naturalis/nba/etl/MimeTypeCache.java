@@ -19,6 +19,13 @@ public interface MimeTypeCache extends Closeable {
 	 */
 	String MEDIALIB_URL_START = "http://medialib.naturalis.nl/file/id/";
 
+	 /**
+   * Defines the endpoint for medialib resource up to the ID part of the URL:
+   * {@code "http://medialib.naturalis.nl/file/id/"}.
+   */
+  String MEDIALIB_HTTPS_URL = "https://medialib.naturalis.nl/file/id/";
+
+	
 	/**
 	 * Reset statistics counters (cache hits, medialib requests, request
 	 * failures). Call this method if you are importing multiple data sources

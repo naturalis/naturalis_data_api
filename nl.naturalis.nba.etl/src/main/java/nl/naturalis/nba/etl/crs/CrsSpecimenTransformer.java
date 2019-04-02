@@ -8,6 +8,8 @@ import static nl.naturalis.nba.etl.ETLConstants.LICENCE_TYPE;
 import static nl.naturalis.nba.etl.ETLConstants.SOURCE_INSTITUTION_ID;
 import static nl.naturalis.nba.etl.ETLUtil.getTestGenera;
 import static nl.naturalis.nba.etl.TransformUtil.sortIdentificationsPreferredFirst;
+import static nl.naturalis.nba.etl.MimeTypeCache.MEDIALIB_URL_START;
+import static nl.naturalis.nba.etl.MimeTypeCache.MEDIALIB_HTTPS_URL;
 import static nl.naturalis.nba.utils.StringUtil.rpad;
 
 import java.lang.reflect.Field;
@@ -201,7 +203,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
             specimen.setSex(getSex());
             specimen.setGatheringEvent(getGatheringEvent());
             specimen.setDateLastEdited(getDateLastEdited());
-            specimen.setAssociatedMultiMediaUris(getAssociatedMultiMediaUris()); //(getAssociatedMultiMediaObjects());
+            specimen.setAssociatedMultiMediaUris(getAssociatedMultiMediaUris());
             stats.objectsAccepted++;
             return Arrays.asList(specimen);
         } catch (Throwable t) {
@@ -243,6 +245,12 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
       for (Element e : fileUriElems) {
         if (n >= multimediaPublic.size() && multimediaPublic.get(n++).getTextContent().trim().equals("0")) continue;
         String uri = e.getTextContent().trim();
+        
+        // Change http urls to https urls, but leave the rest as they are 
+        if (uri.startsWith(MEDIALIB_URL_START) && !uri.startsWith(MEDIALIB_HTTPS_URL)) {
+          uri = MEDIALIB_HTTPS_URL.concat(uri.substring(MEDIALIB_URL_START.length()));
+        }        
+        
         String mimeType = mimetypeCache.getMimeType(objectID);
         if (uri != null && uri.length() > 0 && mimeType != null) {
           serviceAccessPoints.add( new ServiceAccessPoint(uri, mimeType, DEFAULT_IMAGE_QUALITY) );         

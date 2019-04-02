@@ -55,6 +55,7 @@ import nl.naturalis.nba.etl.ThemeCache;
 class BrahmsSpecimenTransformer extends BrahmsTransformer<Specimen> {
 
   private static final ThemeCache themeCache;
+  private static final String DEFAULT_IMAGE_QUALITY = "ac:GoodQuality";
 
   static {
     themeCache = ThemeCache.getInstance();
@@ -214,7 +215,7 @@ class BrahmsSpecimenTransformer extends BrahmsTransformer<Specimen> {
       String url = urls[i].trim().replaceAll(" ", "%20");
       try {
         URI uri = new URI(url);
-        saps.add(new ServiceAccessPoint(uri, "image/jpeg", "MEDIUM_QUALITY"));
+        saps.add(new ServiceAccessPoint(uri, "image/jpeg", DEFAULT_IMAGE_QUALITY));
       }
       catch (URISyntaxException e) {
         if (!suppressErrors) {

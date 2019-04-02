@@ -74,7 +74,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
     private static final PhaseOrStageNormalizer posNormalizer;
     private static final TaxonRelationTypeNormalizer trtNormalizer;
     private static final Field[] geFields;
-    private static final String DEFAULT_IMAGE_QUALITY = "MEDIUM_QUALITY";
+    private static final String DEFAULT_IMAGE_QUALITY = "ac:GoodQuality";
     private final MimeTypeCache mimetypeCache;
 
     static {

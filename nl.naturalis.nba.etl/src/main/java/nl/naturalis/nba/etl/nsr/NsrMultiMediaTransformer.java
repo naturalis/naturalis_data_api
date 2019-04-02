@@ -40,6 +40,8 @@ class NsrMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 
 	private Taxon taxon;
 	private String[] testGenera;
+	
+	private static final String DEFAULT_IMAGE_QUALITY = "ac:BestQuality";
 
 	public NsrMultiMediaTransformer(ETLStatistics stats)
 	{
@@ -122,7 +124,7 @@ class NsrMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 				}
 				format = guessMimeType(uri.toString());
 			}
-			mmo.addServiceAccessPoint(new ServiceAccessPoint(uri, format, "MEDIUM_QUALITY"));
+			mmo.addServiceAccessPoint(new ServiceAccessPoint(uri, format, DEFAULT_IMAGE_QUALITY));
 			mmo.setCreator(val(e, "photographer_name"));
 			mmo.setCopyrightText(val(e, "copyright"));
 			mmo.setLicenseType(LicenseType.parse( val(e, "licence_type") ));

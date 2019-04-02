@@ -68,6 +68,7 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 	private final SexNormalizer sexNormalizer;
 	private final MimeTypeCache mimetypeCache;
 	private final ThemeCache themeCache;
+	private static final String DEFAULT_IMAGE_QUALITY = "ac:GoodQuality";
 
 	private String databaseID;
 	private String[] testGenera;
@@ -170,7 +171,7 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 				}
 				MultiMediaObject mmo = initialize(oaiDcElem, identifications);
 				ServiceAccessPoint sap;
-				sap = new ServiceAccessPoint(info.url, info.mimeType, "MEDIUM_QUALITY");
+				sap = new ServiceAccessPoint(info.url, info.mimeType, DEFAULT_IMAGE_QUALITY);
 				mmo.addServiceAccessPoint(sap);
 				String unitID;
 				if (info.medialibId == null) {

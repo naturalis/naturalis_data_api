@@ -126,7 +126,6 @@ public final class ETLUtil {
     return testGenera;
   }
   
-  
   private static URIBuilder getPurlBuilder() {
     String value = null;
     try {

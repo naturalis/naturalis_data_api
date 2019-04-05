@@ -75,6 +75,9 @@ public class SpecimenTaxonomicEnricher2 {
 		tempFile = createTempFile(getClass().getSimpleName());
 		logger.info("Writing enriched specimens to " + tempFile.getAbsolutePath());
 		saveToTempFile();
+		
+//		System.exit(0);
+		
 		logger.info("Reading enriched specimens from " + tempFile.getAbsolutePath());
 		importFromTempFile();
 		tempFile.delete();

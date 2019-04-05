@@ -91,7 +91,7 @@ public interface ETLConstants {
 	/**
 	 * http://data.biodiversitydata.nl
 	 */
-	String PURL_SERVER_BASE_URL = "http://data.biodiversitydata.nl";
+	String PURL_SERVER_BASE_URL = "https://data.biodiversitydata.nl";
 	/**
 	 * Brahms
 	 */

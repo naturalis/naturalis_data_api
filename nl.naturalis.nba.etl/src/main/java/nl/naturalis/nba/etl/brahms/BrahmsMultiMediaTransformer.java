@@ -41,6 +41,8 @@ class BrahmsMultiMediaTransformer extends BrahmsTransformer<MultiMediaObject> {/
 	{
 		super(stats);
 	}
+	
+	private static final String DEFAULT_IMAGE_QUALITY = "ac:GoodQuality";
 
 	@Override
 	protected List<MultiMediaObject> doTransform()
@@ -155,7 +157,7 @@ class BrahmsMultiMediaTransformer extends BrahmsTransformer<MultiMediaObject> {/
 
 	private static ServiceAccessPoint newServiceAccessPoint(URI uri)
 	{
-		return new ServiceAccessPoint(uri, "image/jpeg", "MEDIUM_QUALITY");
+		return new ServiceAccessPoint(uri, "image/jpeg", DEFAULT_IMAGE_QUALITY);
 	}
 
 }

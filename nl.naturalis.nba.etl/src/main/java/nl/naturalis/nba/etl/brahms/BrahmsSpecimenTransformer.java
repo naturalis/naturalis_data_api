@@ -9,6 +9,8 @@ import static nl.naturalis.nba.etl.ETLConstants.LICENCE;
 import static nl.naturalis.nba.etl.ETLConstants.LICENCE_TYPE;
 import static nl.naturalis.nba.etl.ETLConstants.SOURCE_INSTITUTION_ID;
 import static nl.naturalis.nba.etl.ETLUtil.getSpecimenPurl;
+import static nl.naturalis.nba.etl.MimeTypeCache.MEDIALIB_HTTPS_URL;
+import static nl.naturalis.nba.etl.MimeTypeCache.MEDIALIB_URL_START;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.ACCESSION;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.CATEGORY;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.COLLECTOR;
@@ -213,6 +215,10 @@ class BrahmsSpecimenTransformer extends BrahmsTransformer<Specimen> {
     List<ServiceAccessPoint> saps = new ArrayList<>(urls.length);
     for (int i = 0; i < urls.length; ++i) {
       String url = urls[i].trim().replaceAll(" ", "%20");
+      // Change http urls to https urls, but leave the rest as they are 
+      if (url.startsWith(MEDIALIB_URL_START) && !url.startsWith(MEDIALIB_HTTPS_URL)) {
+        url = MEDIALIB_HTTPS_URL.concat(url.substring(MEDIALIB_URL_START.length()));
+      }        
       try {
         URI uri = new URI(url);
         saps.add(new ServiceAccessPoint(uri, "image/jpeg", DEFAULT_IMAGE_QUALITY));

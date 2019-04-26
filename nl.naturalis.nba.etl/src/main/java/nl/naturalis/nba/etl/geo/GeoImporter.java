@@ -9,10 +9,12 @@ import java.util.Arrays;
 import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.api.model.GeoArea;
+import nl.naturalis.nba.dao.DaoRegistry;
 import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.CSVExtractor;
 import nl.naturalis.nba.etl.CSVRecordInfo;
+import nl.naturalis.nba.etl.DocumentObjectWriter;
 import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.ETLUtil;
@@ -44,6 +46,8 @@ public class GeoImporter {
 	}
 
 	private static final Logger logger;
+	
+	private final boolean toFile;
 
 	static {
 		logger = ETLRegistry.getInstance().getLogger(GeoImporter.class);
@@ -59,6 +63,7 @@ public class GeoImporter {
 	public GeoImporter()
 	{
 		suppressErrors = ConfigObject.isEnabled("suppressErrors");
+		toFile = DaoRegistry.getInstance().getConfiguration().get("etl.output", "file").equals("file");
 	}
 
 	/**
@@ -88,13 +93,22 @@ public class GeoImporter {
 		ETLStatistics fileStats = new ETLStatistics();
 		CSVExtractor<GeoCsvField> extractor = null;
 		GeoTransformer transformer = null;
-		GeoLoader loader = null;
+		DocumentObjectWriter<GeoArea> loader = null;
 		try {
 			extractor = createExtractor(f, fileStats);
 		  // Watch out: the geojson column can be very (very!) wide
 			extractor.setMaxCharsPerColumn(10000000);
 			transformer = new GeoTransformer(fileStats);
-			loader = new GeoLoader(fileStats, esBulkRequestSize);
+			
+			if (toFile) {
+			  logger.info("ETL Output: Writing Geo Area documents to the file system");
+			  loader = new GeoJsonNDWriter(f.getName(), fileStats);
+			}
+			else {
+			  logger.info("ETL Output: Loading Geo Area documents into the document store");
+			  loader = new GeoLoader(fileStats, esBulkRequestSize);
+			}
+			
 			for (CSVRecordInfo<GeoCsvField> rec : extractor) {
 			  if (rec == null) continue;
 				loader.write(transformer.transform(rec));

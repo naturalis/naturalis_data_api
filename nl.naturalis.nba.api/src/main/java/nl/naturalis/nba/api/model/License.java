@@ -33,7 +33,6 @@ public enum License implements INbaModelObject {
   CCBYNC_20   ("CC BY-NC 2.0"),
   CCBYNCSA_20 ("CC BY-NC-SA 2.0"),
   CCBYNCND_20 ("CC BY-NC-ND 2.0"),
-  CC0_20      ("CC0 2.0"),
   
   CCBY_25     ("CC BY 2.5"),
   CCBYSA_25   ("CC BY-SA 2.5"), 
@@ -41,7 +40,6 @@ public enum License implements INbaModelObject {
   CCBYNC_25   ("CC BY-NC 2.5"),
   CCBYNCSA_25 ("CC BY-NC-SA 2.5"),
   CCBYNCND_25 ("CC BY-NC-ND 2.5"),
-  CC0_25      ("CC0 2.5"),
   
   CCBY_30     ("CC BY 3.0"),
   CCBYSA_30   ("CC BY-SA 3.0"), 
@@ -49,7 +47,6 @@ public enum License implements INbaModelObject {
   CCBYNC_30   ("CC BY-NC 3.0"),
   CCBYNCSA_30 ("CC BY-NC-SA 3.0"),
   CCBYNCND_30 ("CC BY-NC-ND 3.0"),
-  CC0_30      ("CC0 3.0"),
   
   CCBY_40     ("CC BY 4.0"),
   CCBYSA_40   ("CC BY-SA 4.0"), 
@@ -57,7 +54,6 @@ public enum License implements INbaModelObject {
   CCBYNC_40   ("CC BY-NC 4.0"),
   CCBYNCSA_40 ("CC BY-NC-SA 4.0"),
   CCBYNCND_40 ("CC BY-NC-ND 4.0"),
-  CC0_40      ("CC0 4.0"),
   
   ALL_RIGHTS_RESERVED ("All rights reserved") ;
 

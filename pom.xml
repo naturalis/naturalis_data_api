@@ -21,10 +21,6 @@
 		<tag>HEAD</tag>
 	</scm>
 
-	<prerequisites>
-		<maven>${minimumMavenVersion}</maven>
-	</prerequisites>
-
 	<properties>
 
 		<main.basedir>${project.basedir}</main.basedir>
@@ -107,8 +103,8 @@
 		<maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
 		<maven-shade-plugin.version>3.2.1</maven-shade-plugin.version>
 		<maven-source-plugin.version>3.0.1</maven-source-plugin.version>
+		<maven-javadoc-plugin.version>3.0.1</maven-javadoc-plugin.version>
 		<maven-site-plugin.version>3.7.1</maven-site-plugin.version>
-		<maven-javadoc-plugin.version>3.1.0</maven-javadoc-plugin.version>
 		<maven-surefire-plugin.version>3.0.0-M3</maven-surefire-plugin.version>
 		<maven-war-plugin.version>3.2.2</maven-war-plugin.version>
 		<versions-maven-plugin.version>2.7</versions-maven-plugin.version>
@@ -128,7 +124,7 @@
 
 	<organization>
 		<name>Naturalis Biodiversity Center</name>
-		<url>http://www.naturalis.nl</url>
+		<url>https://www.naturalis.nl</url>
 	</organization>
 
 	<modules>
@@ -481,6 +477,7 @@
 				<filtering>true</filtering>
 			</resource>
 		</resources>
+		
 		<testResources>
 			<testResource>
 				<directory>src/test/resources</directory>
@@ -533,10 +530,8 @@
 					<configuration>
 						<archive>
 							<manifest>
-								<addDefaultSpecificationEntries>true
-								</addDefaultSpecificationEntries>
-								<addDefaultImplementationEntries>true
-								</addDefaultImplementationEntries>
+								<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+								<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
 								<addClasspath>true</addClasspath>
 							</manifest>
 						</archive>
@@ -655,8 +650,7 @@
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
-					<release>11</release>
-					<!-- <source>${jdkLevel}</source> <target>${jdkLevel}</target> -->
+					<release>${jdkLevel}</release>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -687,19 +681,21 @@
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>${maven-javadoc-plugin.version}</version>
 				<configuration>
+				    <!-- Default configuration for all reports -->
 					<failOnError>false</failOnError>
+					<failOnWarnings>false</failOnWarnings>
 					<quiet>true</quiet>
-					<additionalJOption>-Xdoclint:none</additionalJOption>
+					<doclint>none</doclint>
 					<show>public</show>
 					<excludes>src/test/**/*</excludes>
 				</configuration>
 				<executions>
-					<execution>
-						<id>attach-javadocs</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
 					<execution>
 						<id>aggregate-client-javadocs</id>
 						<inherited>false</inherited>
@@ -708,6 +704,7 @@
 							<goal>aggregate</goal>
 						</goals>
 						<configuration>
+						<!-- Specific configuration for the Java client aggregate report -->
 							<detectLinks>true</detectLinks>
 							<doctitle>Naturalis Biodiversity API (NBA)
 								V${project.version} -
@@ -728,6 +725,7 @@
 							<goal>aggregate</goal>
 						</goals>
 						<configuration>
+						<!-- Specific configuration for the Rest API aggregate report -->
 							<detectLinks>true</detectLinks>
 							<doctitle>Naturalis Biodiversity API (NBA) 
 							    V${project.version} -

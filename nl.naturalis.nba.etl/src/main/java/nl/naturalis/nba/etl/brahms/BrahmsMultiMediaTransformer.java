@@ -19,6 +19,8 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import nl.naturalis.nba.api.model.DefaultClassification;
 import nl.naturalis.nba.api.model.MultiMediaContentIdentification;
 import nl.naturalis.nba.api.model.MultiMediaGatheringEvent;
@@ -28,6 +30,8 @@ import nl.naturalis.nba.api.model.ServiceAccessPoint;
 import nl.naturalis.nba.api.model.VernacularName;
 import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.ETLStatistics;
+import nl.naturalis.nba.etl.MimeTypeCache;
+import nl.naturalis.nba.etl.MimeTypeCacheFactory;
 
 /**
  * The transformer component in the ETL cycle for Brahms multimedia.
@@ -37,12 +41,15 @@ import nl.naturalis.nba.etl.ETLStatistics;
  */
 class BrahmsMultiMediaTransformer extends BrahmsTransformer<MultiMediaObject> {//made public for test purpose
 
-	BrahmsMultiMediaTransformer(ETLStatistics stats)
+  private static final String DEFAULT_IMAGE_QUALITY = "ac:GoodQuality";
+  private static final String DEFAULT_MIME_TYPE = "image/jpeg";
+  private final MimeTypeCache mimetypeCache;
+
+  BrahmsMultiMediaTransformer(ETLStatistics stats)
 	{
 		super(stats);
+		mimetypeCache = MimeTypeCacheFactory.getInstance().getCache();
 	}
-	
-	private static final String DEFAULT_IMAGE_QUALITY = "ac:GoodQuality";
 
 	@Override
 	protected List<MultiMediaObject> doTransform()
@@ -155,9 +162,17 @@ class BrahmsMultiMediaTransformer extends BrahmsTransformer<MultiMediaObject> {/
 		return new URI(url);
 	}
 
-	private static ServiceAccessPoint newServiceAccessPoint(URI uri)
+	private ServiceAccessPoint newServiceAccessPoint(URI uri)
 	{
-		return new ServiceAccessPoint(uri, "image/jpeg", DEFAULT_IMAGE_QUALITY);
+    String mimeType = DEFAULT_MIME_TYPE;
+    Pattern pattern = Pattern.compile("^.*id/(.*)/format/.*$");
+    Matcher matcher = pattern.matcher(uri.getRawPath());
+    String mediaObjectId = "";
+    if (matcher.matches()) {
+      mediaObjectId = matcher.group(1);
+      mimeType = mimetypeCache.getMimeType(mediaObjectId);
+    }
+		return new ServiceAccessPoint(uri, mimeType, DEFAULT_IMAGE_QUALITY);
 	}
 
 }

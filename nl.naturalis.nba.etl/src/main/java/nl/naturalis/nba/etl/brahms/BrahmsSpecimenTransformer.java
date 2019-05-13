@@ -34,6 +34,8 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import nl.naturalis.nba.api.model.Agent;
 import nl.naturalis.nba.api.model.DefaultClassification;
 import nl.naturalis.nba.api.model.GatheringEvent;
@@ -45,6 +47,8 @@ import nl.naturalis.nba.api.model.VernacularName;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.ETLStatistics;
+import nl.naturalis.nba.etl.MimeTypeCache;
+import nl.naturalis.nba.etl.MimeTypeCacheFactory;
 import nl.naturalis.nba.etl.ThemeCache;
 
 /**
@@ -58,6 +62,8 @@ class BrahmsSpecimenTransformer extends BrahmsTransformer<Specimen> {
 
   private static final ThemeCache themeCache;
   private static final String DEFAULT_IMAGE_QUALITY = "ac:GoodQuality";
+  private static final String DEFAULT_MIME_TYPE = "image/jpeg";
+  private final MimeTypeCache mimetypeCache;
 
   static {
     themeCache = ThemeCache.getInstance();
@@ -66,6 +72,7 @@ class BrahmsSpecimenTransformer extends BrahmsTransformer<Specimen> {
   BrahmsSpecimenTransformer(ETLStatistics stats) //constructor made public for test.
   {
     super(stats);
+    mimetypeCache = MimeTypeCacheFactory.getInstance().getCache();
   }
 
   @Override
@@ -218,10 +225,20 @@ class BrahmsSpecimenTransformer extends BrahmsTransformer<Specimen> {
       // Change http urls to https urls, but leave the rest as they are 
       if (url.startsWith(MEDIALIB_URL_START) && !url.startsWith(MEDIALIB_HTTPS_URL)) {
         url = MEDIALIB_HTTPS_URL.concat(url.substring(MEDIALIB_URL_START.length()));
-      }        
+      }
+      // Try to retrieve the mimetype from the mimetype cache
+      String mimeType = DEFAULT_MIME_TYPE;
+      Pattern pattern = Pattern.compile("^.*id/(.*)/format/.*$");
+      Matcher matcher = pattern.matcher(url);
+      String mediaObjectId = "";
+      if (matcher.matches()) {
+        mediaObjectId = matcher.group(1);
+        mimeType = mimetypeCache.getMimeType(mediaObjectId);
+      }
+      
       try {
         URI uri = new URI(url);
-        saps.add(new ServiceAccessPoint(uri, "image/jpeg", DEFAULT_IMAGE_QUALITY));
+        saps.add(new ServiceAccessPoint(uri, mimeType, DEFAULT_IMAGE_QUALITY));
       }
       catch (URISyntaxException e) {
         if (!suppressErrors) {

@@ -8,14 +8,12 @@ services:
 
 before_install:
   - sudo /sbin/sysctl -w vm.max_map_count=262144
-  - git clone https://github.com/naturalis/DWCAConfig.git
-  - mv DWCAConfig dwca
   - docker pull maven:3-jdk-11-slim
   - >
     docker run \
       --name build-es \
       --detach \
-      -e ES_JAVA_OPTS="-Xms512m -Xmx512m" docker.elastic.co/elasticsearch/elasticsearch:5.6.13 elasticsearch \
+      -e ES_JAVA_OPTS="-Xms512m -Xmx512m" docker.elastic.co/elasticsearch/elasticsearch:5.6.16 elasticsearch \
          -Ecluster.name="nba-cluster" \
          -Enetwork.host="_site_" \
          -Expack.security.enabled=false
@@ -50,7 +48,7 @@ script:
   - ( cd docker/etl ; docker build -t naturalis/nba-etl:$TRAVIS_BRANCH-$REV . )
 
 after_success:
-  - docker login -u atzedevries -p $DOCKER_PASS
+  - docker login -u naturalistravisbuilder -p $DOCKER_PASS
   - docker push naturalis/nba-api:$TRAVIS_BRANCH-$REV
   - docker push naturalis/nba-etl:$TRAVIS_BRANCH-$REV
   - docker logout

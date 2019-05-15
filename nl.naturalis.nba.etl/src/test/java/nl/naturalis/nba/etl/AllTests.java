@@ -34,7 +34,6 @@ import nl.naturalis.nba.etl.nsr.NsrTaxonTransformerTest;
     CrsImportUtilTest.class,
     CrsSpecimenTransformerTest.class,
     CrsMultiMediaTransformerTest.class,
-    CrsSpecimenTransformerTest.class,
     CreateTestDocumentTest.class,
     CoLTaxonTransformerTest.class,
     CoLTaxonImporterTest.class,

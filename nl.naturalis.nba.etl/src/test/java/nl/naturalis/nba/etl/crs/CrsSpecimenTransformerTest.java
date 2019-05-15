@@ -99,7 +99,7 @@ public class CrsSpecimenTransformerTest {
       Specimen expectedSpecimen = new Specimen();
       expectedSpecimen.setSourceID("CRS");
       expectedSpecimen.setId("RMNH.MAM.TT.5@CRS");
-      expectedSpecimen.setUnitGUID("http://data.biodiversitydata.nl/naturalis/specimen/RMNH.MAM.TT.5");
+      expectedSpecimen.setUnitGUID("https://data.biodiversitydata.nl/naturalis/specimen/RMNH.MAM.TT.5");
       expectedSpecimen.setOwner("Naturalis Biodiversity Center");
       expectedSpecimen.setTitle("RMNH.ART");
       expectedSpecimen.setKindOfUnit("WholeOrganism");

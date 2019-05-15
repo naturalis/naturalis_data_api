@@ -46,7 +46,7 @@ public class CountDistinctValuesNestedFieldAggregation<T extends IDocumentObject
     Nested nestedDocs = response.getAggregations().get("NESTED");
     Cardinality cardinality = nestedDocs.getAggregations().get("CARDINALITY");
     result = cardinality.getValue();
-    return new Long(result);
+    return Long.valueOf(result);
   }
 
 }

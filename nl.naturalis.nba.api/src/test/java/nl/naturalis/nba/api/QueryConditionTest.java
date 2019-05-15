@@ -37,7 +37,7 @@ public class QueryConditionTest {
 	public void test_equals_02()
 	{
 		QueryCondition c0 = new QueryCondition(true);
-		QueryCondition c1 = new QueryCondition(new Boolean(true));
+		QueryCondition c1 = new QueryCondition(Boolean.TRUE);
 		assertTrue("01", c0.equals(c1));
 	}
 
@@ -48,7 +48,7 @@ public class QueryConditionTest {
 	public void test_hashCode_02()
 	{
 		QueryCondition c0 = new QueryCondition(true);
-		QueryCondition c1 = new QueryCondition(new Boolean(true));
+		QueryCondition c1 = new QueryCondition(Boolean.TRUE);
 		assertEquals("01", c0.hashCode(), c1.hashCode());
 	}
 

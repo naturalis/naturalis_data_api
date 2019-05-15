@@ -76,11 +76,11 @@ public class ArrayUtilTest {
     @Test
     public void testStringifyTArray_01() {
 
-        Integer int1 = new Integer(1);
-        Integer int2 = new Integer(2);
-        Integer int3 = new Integer(3);
-        Integer int4 = new Integer(4);
-        Integer int5 = new Integer(5);
+        Integer int1 = Integer.valueOf(1);
+        Integer int2 = Integer.valueOf(2);
+        Integer int3 = Integer.valueOf(3);
+        Integer int4 = Integer.valueOf(4);
+        Integer int5 = Integer.valueOf(5);
 
         Object[] inputArray = {int1, int2, int3, int4, int5};
         String[] actualResult = ArrayUtil.stringify(inputArray);
@@ -103,11 +103,11 @@ public class ArrayUtilTest {
     @Test
     public void testStringifyTArrayStringifierOptionalObjs() {
 
-        Integer int1 = new Integer(1);
-        Integer int2 = new Integer(2);
-        Integer int3 = new Integer(3);
-        Integer int4 = new Integer(4);
-        Integer int5 = new Integer(5);
+        Integer int1 = Integer.valueOf(1);
+        Integer int2 = Integer.valueOf(2);
+        Integer int3 = Integer.valueOf(3);
+        Integer int4 = Integer.valueOf(4);
+        Integer int5 = Integer.valueOf(5);
 
         Object[] inputArray = {int1, int2, int3, int4, int5};
         String[] expectedResult = {"1", "2", "3", "4", "5"};
@@ -157,11 +157,11 @@ public class ArrayUtilTest {
     @Test
     public void testStringifyCollectionOfTStringifierOptionalObjs() {
 
-        Integer int1 = new Integer(1);
-        Integer int2 = new Integer(2);
-        Integer int3 = new Integer(3);
-        Integer int4 = new Integer(4);
-        Integer int5 = new Integer(5);
+        Integer int1 = Integer.valueOf(1);
+        Integer int2 = Integer.valueOf(2);
+        Integer int3 = Integer.valueOf(3);
+        Integer int4 = Integer.valueOf(4);
+        Integer int5 = Integer.valueOf(5);
 
         Object[] inputArray = {int1, int2, int3, int4, int5};
         String[] expectedResult = {"1", "2", "3", "4", "5"};

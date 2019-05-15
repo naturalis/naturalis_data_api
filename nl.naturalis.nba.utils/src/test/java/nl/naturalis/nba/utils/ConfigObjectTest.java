@@ -341,7 +341,7 @@ public class ConfigObjectTest {
     @Test
     public void testRequiredStringClassOfT_01() {
 
-        Integer valInteger = new Integer(1);
+        Integer valInteger = Integer.valueOf(1);
         String valString = "1";
         Double valDouble = 1.0;
         Short valueShort = 1;

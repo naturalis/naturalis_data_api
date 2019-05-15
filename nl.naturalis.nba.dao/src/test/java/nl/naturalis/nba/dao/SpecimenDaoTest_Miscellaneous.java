@@ -455,13 +455,13 @@ public class SpecimenDaoTest_Miscellaneous {
 		Iterator<Map.Entry<String, Long>> entries = result.entrySet().iterator();
 		Map.Entry<String, Long> entry = entries.next();
 		assertEquals("02", "Preserved specimen", entry.getKey());
-		assertEquals("03", new Long(2), entry.getValue());
+		assertEquals("03", Long.valueOf(2), entry.getValue());
 		entry = entries.next();
 		assertEquals("04", "Herbarium sheet", entry.getKey());
-		assertEquals("05", new Long(1), entry.getValue());
+		assertEquals("05", Long.valueOf(1), entry.getValue());
     entry = entries.next();
     assertEquals("06", "FossileSpecimen", entry.getKey());
-    assertEquals("07", new Long(1), entry.getValue());
+    assertEquals("07", Long.valueOf(1), entry.getValue());
 	}
 
 	/*

@@ -17,7 +17,6 @@ import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.api.model.TaxonomicEnrichment;
-import nl.naturalis.nba.api.model.TaxonomicIdentification;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.util.es.DirtyDocumentIterator;

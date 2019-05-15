@@ -5,7 +5,7 @@ import static nl.naturalis.nba.etl.geo.GeoImportUtil.getCsvFiles;
 
 import java.io.File;
 import java.nio.charset.Charset;
-import java.util.Arrays;
+
 import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.api.model.GeoArea;

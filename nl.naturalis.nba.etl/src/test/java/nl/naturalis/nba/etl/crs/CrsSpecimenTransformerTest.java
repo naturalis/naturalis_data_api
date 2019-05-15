@@ -33,7 +33,6 @@ import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.api.model.SpecimenTypeStatus;
 import nl.naturalis.nba.api.model.TaxonRelationType;
-
 import nl.naturalis.nba.etl.AbstractTransformer;
 import nl.naturalis.nba.etl.AllTests;
 import nl.naturalis.nba.etl.ETLStatistics;
@@ -47,7 +46,7 @@ import nl.naturalis.nba.utils.xml.DOMUtil;
  */
 @SuppressWarnings({"unchecked"})
 public class CrsSpecimenTransformerTest {
-
+  
   URL specimenFileUrl;
   File specimenFile;
   

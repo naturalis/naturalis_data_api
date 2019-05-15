@@ -90,6 +90,6 @@ medialib.data.dir=/path/to/datadir/medialib
 ndff.data.dir=/path/to/datadir/ndff
 # Needed to generate values for the unitGUID field while
 # importing specimens
-purl.baseurl=http://data.biodiversitydata.nl
+purl.baseurl=https://data.biodiversitydata.nl
 
 

@@ -1,6 +1,7 @@
 package nl.naturalis.nba.common;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InaccessibleObjectException;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 
@@ -26,12 +27,15 @@ class FieldCache {
 		if (f == null) {
 			f = getField(name, cls);
 			if (f == null) {
-				return null;
+			  throw new RuntimeException("No such field: " + f);
 			}
-			if (!f.isAccessible()) {
-				f.setAccessible(true);
+			try {
+			  f.setAccessible(true);			  
+			  subcache.put(name, f);
+			} 
+			catch (InaccessibleObjectException | SecurityException e){
+			  throw new RuntimeException(e);
 			}
-			subcache.put(name, f);
 		}
 		return f;
 	}

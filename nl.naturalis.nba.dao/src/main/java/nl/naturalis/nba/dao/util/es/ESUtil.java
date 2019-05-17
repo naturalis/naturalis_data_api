@@ -33,6 +33,7 @@ import org.elasticsearch.client.IndicesAdminClient;
 import org.elasticsearch.common.bytes.BytesReference;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.settings.Settings.Builder;
+import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.IndexNotFoundException;
 import org.elasticsearch.search.SearchHit;
 import nl.naturalis.nba.api.QueryCondition;
@@ -458,7 +459,7 @@ public class ESUtil {
     PutMappingRequestBuilder request = indices().preparePutMapping(index);
     MappingSerializer<T> serializer = new MappingSerializer<>();
     String source = serializer.serialize(dt.getMapping());
-    request.setSource(source);
+    request.setSource(source, XContentType.JSON);
     request.setType(type);
     try {
       PutMappingResponse response = request.execute().actionGet();

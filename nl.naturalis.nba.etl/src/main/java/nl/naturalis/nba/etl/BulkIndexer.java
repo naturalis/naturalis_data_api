@@ -10,7 +10,7 @@ import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.unit.TimeValue;
-
+import org.elasticsearch.common.xcontent.XContentType;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -73,7 +73,7 @@ public class BulkIndexer<T extends IDocumentObject> {
 		for (int i = 0; i < documents.size(); ++i) {
 			IndexRequestBuilder irb = client.prepareIndex(index, type);
 			try {
-				irb.setSource(om.writeValueAsBytes(documents.get(i)));
+				irb.setSource(om.writeValueAsBytes(documents.get(i)), XContentType.JSON);
 				if (ids != null) {
 					irb.setId(ids.get(i));
 				}

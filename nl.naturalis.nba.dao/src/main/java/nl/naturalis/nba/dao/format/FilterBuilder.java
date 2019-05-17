@@ -1,5 +1,6 @@
 package nl.naturalis.nba.dao.format;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,7 +61,7 @@ class FilterBuilder {
 			}
 		}
 		try {
-			return (IEntityFilter) cls.newInstance();
+			return (IEntityFilter) cls.getDeclaredConstructor().newInstance();
 		}
 		catch (ClassCastException e) {
 			String msg = String.format(ERR_NOT_A_FILTER, className);
@@ -69,5 +70,8 @@ class FilterBuilder {
 		catch (InstantiationException | IllegalAccessException e) {
 			throw new DataSetConfigurationException(e.getMessage());
 		}
+    catch (IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+      throw new RuntimeException(e);
+    }
 	}
 }

@@ -1,5 +1,6 @@
 package nl.naturalis.nba.dao.format;
 
+import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
@@ -192,7 +193,7 @@ class FieldBuilder {
 			if (logger.isDebugEnabled()) {
 				logger.debug("Creating calculator for field {}: {}", fieldName, cls.getName());
 			}
-			return (ICalculator) cls.newInstance();
+			return (ICalculator) cls.getDeclaredConstructor().newInstance();
 		}
 		catch (ClassCastException e) {
 			String msg = String.format(ERR_NOT_A_CALCULATOR, className);
@@ -200,6 +201,9 @@ class FieldBuilder {
 		}
 		catch (InstantiationException | IllegalAccessException e) {
 			throw new FieldConfigurationException(fieldName, e.getMessage());
-		}
+		} 
+		catch (IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+      throw new RuntimeException(e);
+    }
 	}
 }

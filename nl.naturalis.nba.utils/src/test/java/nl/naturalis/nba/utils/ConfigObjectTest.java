@@ -33,7 +33,6 @@ import static org.hamcrest.Matchers.equalTo;*/
 /**
  * Test class for ConfigObject.java
  */
-@SuppressWarnings({"static-method","cast"})
 public class ConfigObjectTest {
 
     ConfigObject configObject;

@@ -11,7 +11,6 @@ import java.util.Collections;
 
 import org.junit.Test;
 
-@SuppressWarnings("static-method")
 public class QuerySpecTest {
 
 	@Test

@@ -33,7 +33,7 @@ import nl.naturalis.nba.etl.utils.CommonReflectionUtil;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({CSVRecordInfo.class})
 @PowerMockIgnore("javax.management.*")
-@SuppressWarnings({"static-method", "unchecked"})
+@SuppressWarnings({"unchecked"})
 public class BrahmsMultiMediaTransformerTest {
 
 

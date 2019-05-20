@@ -31,7 +31,6 @@ import nl.naturalis.nba.dao.util.es.ESUtil;
  * we mainly use the test method to print out stuff for which we would otherwise
  * have created a temporary main(String[] args) method.
  */
-@SuppressWarnings("static-method")
 public class ESUtilTest {
 
 	@BeforeClass

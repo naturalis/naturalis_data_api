@@ -12,7 +12,6 @@ import org.junit.Test;
 /**
  * Test class for ClassUtil.java
  */
-@SuppressWarnings("static-method")
 public class ClassUtilTest {
 
     /**

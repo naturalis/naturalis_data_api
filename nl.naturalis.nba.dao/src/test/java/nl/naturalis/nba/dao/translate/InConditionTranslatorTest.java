@@ -22,7 +22,6 @@ import nl.naturalis.nba.dao.test.TestPerson;
 import nl.naturalis.nba.dao.translate.ConditionTranslator;
 
 
-@SuppressWarnings("static-method")
 public class InConditionTranslatorTest {
 
 	private static MappingInfo<TestPerson> mappingInfo;

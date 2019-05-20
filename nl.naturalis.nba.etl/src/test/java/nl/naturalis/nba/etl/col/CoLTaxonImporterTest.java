@@ -39,7 +39,6 @@ public class CoLTaxonImporterTest {
    * 
    * Test to verify creteaExtractor method returns an expected {@ CSVExtractor} object
    */
-  @SuppressWarnings("static-method")
   @Test
   public void testCreateExtractor() {
 

@@ -9,7 +9,6 @@ import org.junit.Test;
 
 import nl.naturalis.nba.dao.util.RandomEntryZipOutputStream;
 
-@SuppressWarnings("static-method")
 public class RandomEntryZipOutputStreamTest {
 
 	@Test

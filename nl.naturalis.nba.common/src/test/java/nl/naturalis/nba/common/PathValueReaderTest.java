@@ -19,7 +19,6 @@ import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.api.model.VernacularName;
 
-@SuppressWarnings("static-method")
 public class PathValueReaderTest {
 
 	/*

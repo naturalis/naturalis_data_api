@@ -8,7 +8,6 @@ import java.time.OffsetDateTime;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-@SuppressWarnings("static-method")
 public class ESDateInputTest {
 
 	@BeforeClass

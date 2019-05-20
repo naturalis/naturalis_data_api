@@ -33,7 +33,6 @@ import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.dao.mock.SpecimenMock;
 
-@SuppressWarnings("static-method")
 public class SpecimenDaoTest_DwcaTest {
 
   private static final Logger logger = DaoRegistry.getInstance().getLogger(SpecimenDaoTest_DwcaTest.class);

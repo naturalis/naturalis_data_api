@@ -269,7 +269,6 @@ public class NsrImporter {
 	 * Backs up the XML files in the NSR data directory by appending a
 	 * "&#46;imported" extension to the file name.
 	 */
-	@SuppressWarnings("static-method")
 	public void backup()
 	{
 		backupXmlFiles();
@@ -280,7 +279,6 @@ public class NsrImporter {
 	 * data directory. Nice for repitive testing. Not meant for production
 	 * purposes.
 	 */
-	@SuppressWarnings("static-method")
 	public void reset()
 	{
 		removeBackupExtension();

@@ -42,7 +42,6 @@ public class ETLRegistry {
 	 * @param cls
 	 * @return
 	 */
-	@SuppressWarnings("static-method")
 	public Logger getLogger(Class<?> cls)
 	{
 		/*

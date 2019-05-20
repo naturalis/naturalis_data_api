@@ -20,16 +20,13 @@ import nl.naturalis.nba.utils.convert.Stringifier;
 /**
  * Test class for CollectionUtil.java
  */
-@SuppressWarnings({"static-method","cast"})
 public class CollectionUtilTest {
-
 
     /**
      * Test method for {@link nl.naturalis.nba.utils.CollectionUtil#isEmpty(java.util.Collection)}.
      * 
      * Test to check if a collection is empty.
      */
-
     @Test
     public void testIsEmpty() {
 
@@ -81,6 +78,7 @@ public class CollectionUtilTest {
     public void testStringifyCollectionWithOptionObjects() {
 
         List<Integer> ints = Arrays.asList(1, 2, 3, 4, 5);
+        @SuppressWarnings("unchecked")
         Stringifier<Integer> callback = mock(Stringifier.class);
 
         when(callback.execute(ints.get(0), "")).thenReturn("1");
@@ -178,6 +176,7 @@ public class CollectionUtilTest {
         String expectedResult_02 = "";
         String expectedResult_03 = "1null2null3null4null5";
 
+        @SuppressWarnings("unchecked")
         Stringifier<Integer> callback = mock(Stringifier.class);
 
         when(callback.execute(testInput.get(0), "")).thenReturn("1");

@@ -22,7 +22,6 @@ import nl.naturalis.nba.dao.mock.SpecimenMock;
 /*
  * Tests operators <, <=, >, >=
  */
-@SuppressWarnings("static-method")
 public class SpecimenDaoTest_LessThan {
 
 	private static final Logger logger = DaoRegistry.getInstance()

@@ -30,7 +30,6 @@ import nl.naturalis.nba.utils.reflect.ReflectionUtil;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(ETLUtil.class)
 @PowerMockIgnore("javax.management.*")
-@SuppressWarnings("static-method")
 @Ignore
 public class ETLUtilTest {
   

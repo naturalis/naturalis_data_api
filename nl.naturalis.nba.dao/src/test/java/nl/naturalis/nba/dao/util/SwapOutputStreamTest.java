@@ -14,7 +14,6 @@ import org.junit.Test;
 import nl.naturalis.nba.dao.DaoRegistry;
 import nl.naturalis.nba.utils.ArrayUtil;
 
-@SuppressWarnings("static-method")
 public class SwapOutputStreamTest {
 
 	private static final Logger logger = DaoRegistry.getInstance()

@@ -5,7 +5,6 @@ import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
-@SuppressWarnings("static-method")
 public class LogicalOperatorTest {
 
 	@Test

@@ -7,7 +7,6 @@ import org.junit.Test;
 
 import nl.naturalis.nba.dao.ESClientManager;
 
-@SuppressWarnings("static-method")
 public class ESClientManagerTest {
 
 	@Test

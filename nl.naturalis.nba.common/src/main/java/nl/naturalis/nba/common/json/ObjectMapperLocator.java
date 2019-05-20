@@ -36,7 +36,6 @@ public class ObjectMapperLocator {
 		dfault = createDefaultObjectMapper();
 	}
 
-	@SuppressWarnings("unused")
 	public ObjectMapper getObjectMapper(Class<?> forType)
 	{
 		/*
@@ -46,7 +45,6 @@ public class ObjectMapperLocator {
 		return dfault;
 	}
 
-	@SuppressWarnings("unused")
 	public ObjectMapper getObjectMapper(TypeReference<?> forType)
 	{
 		/*

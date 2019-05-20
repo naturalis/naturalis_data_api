@@ -13,7 +13,6 @@ import org.junit.Test;
 import nl.naturalis.nba.dao.translate.Exploder;
 
 
-@SuppressWarnings("static-method")
 public class ExploderTest {
 
 	@Test

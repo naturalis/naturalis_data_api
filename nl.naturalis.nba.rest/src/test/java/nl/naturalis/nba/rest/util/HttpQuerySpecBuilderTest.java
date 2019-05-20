@@ -35,7 +35,6 @@ import nl.naturalis.nba.rest.exception.HTTP400Exception;
  * @author Tom Gilissen
  */
 
-@SuppressWarnings("static-method")
 public class HttpQuerySpecBuilderTest {
 
 	@Before

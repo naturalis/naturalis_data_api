@@ -39,7 +39,7 @@ import nl.naturalis.nba.utils.reflect.ReflectionUtil;
  * 
  *
  */
-@SuppressWarnings({"static-method", "unchecked"})
+@SuppressWarnings({"unchecked"})
 public class EnrichmentUtilTest {
 
   String dirPath = null;

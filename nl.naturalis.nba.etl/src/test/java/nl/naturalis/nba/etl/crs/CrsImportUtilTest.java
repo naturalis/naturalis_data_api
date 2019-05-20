@@ -11,7 +11,7 @@ import nl.naturalis.nba.utils.reflect.ReflectionUtil;
 /**
  * Test class for CrsImportUtil.java
  */
-@SuppressWarnings({"static-method", "static-access", "cast", "deprecation"})
+@SuppressWarnings({"static-access", "deprecation"})
 @Ignore
 public class CrsImportUtilTest {
 

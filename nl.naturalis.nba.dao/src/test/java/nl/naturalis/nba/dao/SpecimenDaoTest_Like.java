@@ -26,7 +26,6 @@ import nl.naturalis.nba.dao.mock.SpecimenMock;
  * @author Ayco Holleman
  *
  */
-@SuppressWarnings("static-method")
 public class SpecimenDaoTest_Like {
 
 	private static final Logger logger = DaoRegistry.getInstance()

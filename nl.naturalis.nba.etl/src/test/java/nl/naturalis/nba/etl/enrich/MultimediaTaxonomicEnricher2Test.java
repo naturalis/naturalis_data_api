@@ -30,7 +30,7 @@ import nl.naturalis.nba.utils.reflect.ReflectionUtil;
  * @author Plabon
  *
  */
-@SuppressWarnings({"static-method", "unchecked"})
+@SuppressWarnings({"unchecked"})
 public class MultimediaTaxonomicEnricher2Test {
 
   /**

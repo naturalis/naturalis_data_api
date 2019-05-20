@@ -49,7 +49,6 @@ import nl.naturalis.nba.utils.StringUtil;
 @Path("/metadata")
 @Stateless
 @LocalBean
-@SuppressWarnings("static-method")
 @Api(value = "metadata")
 
 public class NbaMetaDataResource {

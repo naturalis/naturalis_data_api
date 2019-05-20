@@ -30,7 +30,7 @@ import nl.naturalis.nba.utils.reflect.ReflectionUtil;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(CSVRecordInfo.class)
 @PowerMockIgnore("javax.management.*")
-@SuppressWarnings({"static-method", "unchecked"})
+@SuppressWarnings({"unchecked"})
 public class CoLSynonymBatchTransformerTest {
 
   /**

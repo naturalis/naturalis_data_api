@@ -11,7 +11,6 @@ import java.util.ArrayList;
 
 import org.junit.Test;
 
-@SuppressWarnings("static-method")
 public class QueryConditionTest {
 
 	@Test

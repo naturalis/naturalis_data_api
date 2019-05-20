@@ -33,7 +33,6 @@ import nl.naturalis.nba.api.model.Taxon;
 @PrepareForTest(TransformUtil.class)
 @PowerMockIgnore("javax.management.*")
 @RunWith(PowerMockRunner.class)
-@SuppressWarnings({"static-method"})
 public class TransformUtilTest {
 
   /**

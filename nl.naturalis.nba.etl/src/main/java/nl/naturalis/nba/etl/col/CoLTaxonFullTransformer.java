@@ -159,7 +159,7 @@ class CoLTaxonFullTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, T
   /*
    * Utility method to extraxt the id from the CoL record URI
    */
-  private String getSourceSystemId(String uri) {
+  private static String getSourceSystemId(String uri) {
     if (uri == null || uri.contains("/synonym/")) return null;
     String[] chunks = uri.split("/details/species/id/");
     return chunks[1];

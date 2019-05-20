@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import org.junit.Test;
 
-@SuppressWarnings("static-method")
 public class UnaryBooleanOperatorTest {
 
   @Test

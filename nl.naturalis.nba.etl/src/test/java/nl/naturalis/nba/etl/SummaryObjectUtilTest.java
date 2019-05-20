@@ -43,7 +43,7 @@ import nl.naturalis.nba.utils.reflect.ReflectionUtil;
  * Test class for SummaryObjectUtil.java
  *
  */
-@SuppressWarnings({"static-method", "unchecked"})
+@SuppressWarnings({"unchecked"})
 @Ignore
 public class SummaryObjectUtilTest {
 

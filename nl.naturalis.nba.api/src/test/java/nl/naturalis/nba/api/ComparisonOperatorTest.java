@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-@SuppressWarnings("static-method")
 public class ComparisonOperatorTest {
 	
 	@Test(expected = IllegalArgumentException.class)

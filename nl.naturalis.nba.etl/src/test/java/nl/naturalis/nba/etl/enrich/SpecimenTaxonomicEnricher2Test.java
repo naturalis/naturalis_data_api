@@ -23,7 +23,7 @@ import nl.naturalis.nba.utils.reflect.ReflectionUtil;
  * @author plabon
  *
  */
-@SuppressWarnings({"static-method", "unchecked"})
+@SuppressWarnings({"unchecked"})
 public class SpecimenTaxonomicEnricher2Test {
 
   /**

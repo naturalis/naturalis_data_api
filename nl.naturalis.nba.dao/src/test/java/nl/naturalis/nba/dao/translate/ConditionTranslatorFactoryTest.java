@@ -17,7 +17,6 @@ import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.DocumentType;
 
-@SuppressWarnings("static-method")
 public class ConditionTranslatorFactoryTest {
 
 	@Test

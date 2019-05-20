@@ -6,7 +6,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import nl.naturalis.nba.utils.ConfigObject;
 
-@SuppressWarnings("static-method")
 public class RegistryTest {
 
 	private static final Logger logger = DaoRegistry.getInstance().getLogger(RegistryTest.class);

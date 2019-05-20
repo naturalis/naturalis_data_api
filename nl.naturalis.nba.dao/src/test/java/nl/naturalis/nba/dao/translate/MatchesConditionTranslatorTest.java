@@ -20,7 +20,6 @@ import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.dao.test.TestPerson;
 import nl.naturalis.nba.dao.translate.ConditionTranslator;
 
-@SuppressWarnings("static-method")
 public class MatchesConditionTranslatorTest {
 
 	private static MappingInfo<TestPerson> mappingInfo;

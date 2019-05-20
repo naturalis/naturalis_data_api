@@ -96,7 +96,6 @@ public class CrsHarvester {
 	 * @param fromDate
 	 * @param untilDate
 	 */
-	@SuppressWarnings("static-method")
 	public void downloadSpecimens(Date fromDate, Date untilDate)
 	{
 		logger.info("Downloading specimens");
@@ -129,7 +128,6 @@ public class CrsHarvester {
 	 * @param fromDate
 	 * @param untilDate
 	 */
-	@SuppressWarnings("static-method")
 	public void downloadMultiMedia(Date fromDate, Date untilDate)
 	{
 		logger.info("Downloading multimedia");

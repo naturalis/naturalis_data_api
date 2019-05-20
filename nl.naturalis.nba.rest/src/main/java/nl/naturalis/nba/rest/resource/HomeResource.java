@@ -53,7 +53,6 @@ import nl.naturalis.nba.utils.IOUtil;
 @Api(value = "/", hidden = true)
 @Stateless
 @LocalBean
-@SuppressWarnings("static-method")
 /* only here so @EJB injection works in JBoss AS; remove when possible */
 public class HomeResource {
 

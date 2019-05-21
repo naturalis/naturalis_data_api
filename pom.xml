@@ -70,7 +70,6 @@
 
 		<kafka-clients.version>0.10.0.1</kafka-clients.version>
 		<lz4.version>1.3.0</lz4.version>
-		<!-- snappy-java.version>1.1.7.2</snappy-java.version -->
 		<jeromq.version>0.3.5</jeromq.version>
 		<com.beust.version>1.48</com.beust.version>
 		<swagger.version>1.5.13</swagger.version>
@@ -304,13 +303,6 @@
 				<artifactId>javax.mail</artifactId>
 				<version>${javax-mail.version}</version>
 			</dependency>
-			<!-- 
-			<dependency> 
-			    <groupId>javax.activation</groupId> 
-			    <artifactId>activation</artifactId> 
-				<version>${javax-activation.version}</version>
-		    </dependency> 
-		    -->
 			<dependency>
 				<groupId>com.sun.activation</groupId>
 				<artifactId>javax.activation</artifactId>
@@ -333,19 +325,16 @@
 				<artifactId>jaxb-api</artifactId>
 				<version>${javax-xml-bind.version}</version>
 			</dependency>
-
 			<dependency>
 				<groupId>javax.ws.rs</groupId>
 				<artifactId>javax.ws.rs-api</artifactId>
 				<version>${javax.ws.rs-api.version}</version>
 			</dependency>
-
 			<dependency>
 				<groupId>javax.xml.ws</groupId>
 				<artifactId>jaxws-api</artifactId>
 				<version>2.3.1</version>
 			</dependency>
-
 			<dependency>
 				<!-- Needed for index.jsp (even if mvn dependency:analyze says otherwise) -->
 				<groupId>javax.servlet</groupId>
@@ -466,7 +455,6 @@
 			</dependency>
 
 		</dependencies>
-
 	</dependencyManagement>
 
 	<build>
@@ -691,9 +679,9 @@
 				</configuration>
 				<executions>
                     <execution>
-                        <id>attach-javadocs</id>
+                        <id>attach</id>
                         <goals>
-                            <goal>jar</goal>
+                            <goal>aggregate-jar</goal>
                         </goals>
                     </execution>
 					<execution>

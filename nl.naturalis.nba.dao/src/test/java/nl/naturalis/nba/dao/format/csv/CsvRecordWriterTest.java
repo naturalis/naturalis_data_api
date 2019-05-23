@@ -14,7 +14,6 @@ public class CsvRecordWriterTest {
 		String in = "Hello\\nWorld";
 		String out = escapeCsv(in);
 		assertEquals("01", in, out);
-		System.out.println(out);
 	}
 
 	@Test
@@ -23,7 +22,6 @@ public class CsvRecordWriterTest {
 		String in = "Hello\\World";
 		String out = escapeCsv(in);
 		assertEquals("01", in, out);
-		System.out.println(out);
 	}
 
 }

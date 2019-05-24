@@ -127,7 +127,6 @@ public class VerbatimEventDateCalculatorTest {
     specimen.setGatheringEvent(event);
     
     String date = calculator.calculateValue(entity);
-    System.out.println(date);
     assertTrue("07", date.equals("1956-02-23 / 1956-02-24"));
   }
   

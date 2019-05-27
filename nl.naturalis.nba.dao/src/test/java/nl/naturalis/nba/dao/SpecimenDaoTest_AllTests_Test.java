@@ -9,7 +9,7 @@ import org.junit.runners.Suite.SuiteClasses;
 	SpecimenDaoTest_Aggregations.class,
 	SpecimenDaoTest_Between.class,
 	SpecimenDaoTest_Equals.class,
-//	SpecimenDaoTest_GeoQueries.class, // Something wrong here!!!
+	SpecimenDaoTest_GeoQueries.class,
 	SpecimenDaoTest_In.class,
 	SpecimenDaoTest_IsNotNull.class,
 	SpecimenDaoTest_IsNull.class,
@@ -21,4 +21,4 @@ import org.junit.runners.Suite.SuiteClasses;
 	SpecimenDaoTest_Dwca.class
 })
 
-public class AllTests {}
+public class SpecimenDaoTest_AllTests_Test {}

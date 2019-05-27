@@ -2,9 +2,14 @@ package nl.naturalis.nba.etl.nsr;
 
 import static nl.naturalis.nba.api.model.SourceSystem.NSR;
 import static nl.naturalis.nba.api.model.TaxonomicStatus.ACCEPTED_NAME;
+import static nl.naturalis.nba.api.model.TaxonomicStatus.ALTERNATIVE_NAME;
 import static nl.naturalis.nba.api.model.TaxonomicStatus.BASIONYM;
 import static nl.naturalis.nba.api.model.TaxonomicStatus.HOMONYM;
+import static nl.naturalis.nba.api.model.TaxonomicStatus.INVALID_NAME;
+import static nl.naturalis.nba.api.model.TaxonomicStatus.MISIDENTIFICATION;
 import static nl.naturalis.nba.api.model.TaxonomicStatus.MISSPELLED_NAME;
+import static nl.naturalis.nba.api.model.TaxonomicStatus.NOMEN_NUDUM;
+import static nl.naturalis.nba.api.model.TaxonomicStatus.PREFERRED_NAME;
 import static nl.naturalis.nba.api.model.TaxonomicStatus.SYNONYM;
 import static nl.naturalis.nba.dao.util.es.ESUtil.getElasticsearchId;
 import static nl.naturalis.nba.etl.ETLUtil.getTestGenera;
@@ -46,13 +51,18 @@ class NsrTaxonTransformer extends AbstractXMLTransformer<Taxon> {
 	private static final HashMap<String, TaxonomicStatus> translations = new HashMap<>();
 
 	static {
+	  translations.put("isBasionymOf", BASIONYM);
+	  translations.put("isHomonymOf", HOMONYM);
+	  translations.put("isMisidentificationOf", MISIDENTIFICATION);
+	  translations.put("isMisspelledNameOf", MISSPELLED_NAME);
+	  translations.put("isNomenNudumOf", NOMEN_NUDUM);
+	  translations.put("isNomenNudemOf", NOMEN_NUDUM); // TODO: this should be deleted after the NSR source has been cleaned of this misspelling
+	  translations.put("isPreferredNameOf", PREFERRED_NAME);
+	  translations.put("isSynonymOf", SYNONYM);
+	  translations.put("isSynonymSLOf", SYNONYM);
+	  translations.put("isInvalidNameOf", INVALID_NAME);
 		translations.put("isValidNameOf", ACCEPTED_NAME);
-		translations.put("isSynonymOf", SYNONYM);
-		translations.put("isSynonymSLOf", SYNONYM);
-		translations.put("isBasionymOf", BASIONYM);
-		translations.put("isHomonymOf", HOMONYM);
-		translations.put("isMisspelledNameOf", MISSPELLED_NAME);
-		translations.put("isInvalidNameOf", SYNONYM);
+		translations.put("isAlternativeNameOf", ALTERNATIVE_NAME);
 	}
 
 	private static final List<String> allowedTaxonRanks = Arrays.asList("species", "subspecies",
@@ -187,7 +197,7 @@ class NsrTaxonTransformer extends AbstractXMLTransformer<Taxon> {
 
 	private boolean add(Taxon taxon, ScientificName sn)
 	{
-		if (sn.getTaxonomicStatus() == ACCEPTED_NAME) {
+		 if (sn.getTaxonomicStatus() == ACCEPTED_NAME) {
 			if (taxon.getAcceptedName() != null) {
 				stats.recordsRejected++;
 				if (!suppressErrors) {

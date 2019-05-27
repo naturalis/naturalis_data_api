@@ -55,7 +55,8 @@ public class SynonymIdCalculatorTest {
     SynonymIdCalculator calculator = new SynonymIdCalculator();
     
     EntityObject entity = entities.get(0);
-    long expected = 0xFFFFFE18DB5D1287L;
+    //long expected = 0xFFFFFE18DB5D1287L;
+    long expected = 0xFFFFFE18DB5D1292L;
     assertEquals("01", Long.toHexString(expected).toUpperCase(), calculator.calculateValue(entity));
     
     entity = entities.get(1);

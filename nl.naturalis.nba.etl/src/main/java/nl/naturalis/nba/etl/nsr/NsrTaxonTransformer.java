@@ -65,9 +65,17 @@ class NsrTaxonTransformer extends AbstractXMLTransformer<Taxon> {
 		translations.put("isAlternativeNameOf", ALTERNATIVE_NAME);
 	}
 
-	private static final List<String> allowedTaxonRanks = Arrays.asList("species", "subspecies",
-			"varietas", "cultivar", "forma_specialis", "forma", "nothospecies", "nothosubspecies",
-			"nothovarietas", "subforma");
+	private static final List<String> allowedTaxonRanks = Arrays.asList(
+	    "species", 
+	    "subspecies",
+			"varietas", 
+			"cultivar", 
+			"forma_specialis", 
+			"forma", 
+			"nothospecies", 
+			"nothosubspecies",
+			"nothovarietas", 
+			"subforma");
 
 	private String[] testGenera;
 

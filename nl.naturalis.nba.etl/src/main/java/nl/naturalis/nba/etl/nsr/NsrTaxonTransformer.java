@@ -128,7 +128,7 @@ class NsrTaxonTransformer extends AbstractXMLTransformer<Taxon> {
 		catch (Throwable t) {
 			stats.recordsRejected++;
 			if (!suppressErrors)
-				error(t.getMessage());
+				error("Record rejected! {}", t.getMessage());
 			return null;
 		}
 	}
@@ -138,14 +138,14 @@ class NsrTaxonTransformer extends AbstractXMLTransformer<Taxon> {
 		if (rank == null) {
 			stats.recordsRejected++;
 			if (!suppressErrors) {
-				error("Missing taxonomic rank");
+				error("Record rejected! Missing taxonomic rank");
 			}
 			return true;
 		}
 		if (!allowedTaxonRanks.contains(rank)) {
 			stats.recordsSkipped++;
 			if (!suppressErrors) {
-				error("Ignoring higher taxon: \"%s\"", rank);
+				error("Record skipped. Ignoring higher taxon: \"%s\"", rank);
 			}
 			return true;
 		}
@@ -163,7 +163,7 @@ class NsrTaxonTransformer extends AbstractXMLTransformer<Taxon> {
 			if (nametype == null) {
 				stats.recordsRejected++;
 				if (!suppressErrors)
-					error("Missing <nametype> element under <name> element");
+					error("Record rejected! Missing <nametype> element under <name> element");
 				return false;
 			}
 			if (!isVernacularName(nametype)) {
@@ -175,7 +175,7 @@ class NsrTaxonTransformer extends AbstractXMLTransformer<Taxon> {
 		if (taxon.getAcceptedName() == null) {
 			stats.recordsRejected++;
 			if (!suppressErrors) {
-				error("Missing accepted name for taxon");
+				error("Record rejected! Missing accepted name for taxon");
 			}
 			return false;
 		}
@@ -188,7 +188,7 @@ class NsrTaxonTransformer extends AbstractXMLTransformer<Taxon> {
 		if (namesElem == null) {
 			stats.recordsRejected++;
 			if (!suppressErrors) {
-				error("Missing <names> element under <taxon> element");
+				error("Record rejected! Missing <names> element under <taxon> element");
 			}
 			return null;
 		}
@@ -196,7 +196,7 @@ class NsrTaxonTransformer extends AbstractXMLTransformer<Taxon> {
 		if (nameElems == null) {
 			stats.recordsRejected++;
 			if (!suppressErrors) {
-				error("Missing accepted name (zero <name> elements under <names> element)");
+				error("Record rejected! Missing accepted name (zero <name> elements under <names> element)");
 			}
 			return null;
 		}
@@ -209,7 +209,7 @@ class NsrTaxonTransformer extends AbstractXMLTransformer<Taxon> {
 			if (taxon.getAcceptedName() != null) {
 				stats.recordsRejected++;
 				if (!suppressErrors) {
-					error("Only one accepted name per taxon allowed");
+					error("Record rejected! Only one accepted name per taxon allowed");
 				}
 				return false;
 			}

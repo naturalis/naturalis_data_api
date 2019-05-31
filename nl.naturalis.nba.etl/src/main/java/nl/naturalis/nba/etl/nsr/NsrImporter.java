@@ -132,16 +132,20 @@ public class NsrImporter {
 					mTransformer.setTaxon(taxa == null ? null : taxa.get(0));
 					List<MultiMediaObject> multimedia = mTransformer.transform(extracted);
 					mediaLoader.write(multimedia);
-					if (taxonStats.recordsProcessed != 0
-							&& taxonStats.recordsProcessed % 5000 == 0) {
+					if (taxonStats.recordsProcessed != 0 && taxonStats.recordsProcessed % 5000 == 0) {
 						logger.info("Records processed: {}", taxonStats.recordsProcessed);
 						logger.info("Taxon documents indexed: {}", taxonStats.documentsIndexed);
-						logger.info("Multimedia documents indexed: {}",
-								mediaStats.documentsIndexed);
+						logger.info("Multimedia documents indexed: {}", mediaStats.documentsIndexed);
 					}
 				}
 				backupXmlFile(f);
 			}
+      if (taxonStats.recordsProcessed != 0) {
+        logger.info("NSR Import complete");
+        logger.info("Records processed: {}", taxonStats.recordsProcessed);
+        logger.info("Taxon documents indexed: {}", taxonStats.documentsIndexed);
+        logger.info("Multimedia documents indexed: {}", mediaStats.documentsIndexed);
+      }
 		}
 		finally {
 			IOUtil.close(taxonLoader, mediaLoader);

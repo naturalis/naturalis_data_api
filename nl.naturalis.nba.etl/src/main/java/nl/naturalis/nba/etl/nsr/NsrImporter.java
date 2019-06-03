@@ -147,6 +147,7 @@ public class NsrImporter {
 				  logger.info("No record was processed");
 				}
 				taxonLoader.flush();
+				mediaLoader.flush();
 				backupXmlFile(f);
 			}
 			// Summer after entire import has finished

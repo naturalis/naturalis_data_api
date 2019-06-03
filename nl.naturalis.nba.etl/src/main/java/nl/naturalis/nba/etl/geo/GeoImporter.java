@@ -121,6 +121,7 @@ public class GeoImporter {
 			}
 		}
 		finally {
+		  loader.flush();
 			IOUtil.close(loader);
 		}
 		fileStats.logStatistics(logger, "Geo Areas");

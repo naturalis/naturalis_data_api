@@ -148,6 +148,7 @@ public class BrahmsSpecimenImporter {
 			}
 		}
 		finally {
+		  loader.flush();
 			IOUtil.close(loader);
 		}
 		myStats.logStatistics(logger, "Specimens");

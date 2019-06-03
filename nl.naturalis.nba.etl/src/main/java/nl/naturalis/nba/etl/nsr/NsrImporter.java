@@ -138,13 +138,26 @@ public class NsrImporter {
 						logger.info("Multimedia documents indexed: {}", mediaStats.documentsIndexed);
 					}
 				}
+				// Summary after file has finished
+				if (taxonStats.recordsProcessed != 0) {
+          logger.info("Records processed: {}", taxonStats.recordsProcessed);
+          logger.info("Taxon documents indexed: {}", taxonStats.documentsIndexed);
+          logger.info("Multimedia documents indexed: {}", mediaStats.documentsIndexed);
+				} else {
+				  logger.info("No record was processed");
+				}
+				taxonLoader.flush();
 				backupXmlFile(f);
 			}
+			// Summer after entire import has finished
       if (taxonStats.recordsProcessed != 0) {
         logger.info("NSR Import complete");
         logger.info("Records processed: {}", taxonStats.recordsProcessed);
         logger.info("Taxon documents indexed: {}", taxonStats.documentsIndexed);
         logger.info("Multimedia documents indexed: {}", mediaStats.documentsIndexed);
+      }
+      else {
+        logger.info("No record was processed");
       }
 		}
 		finally {

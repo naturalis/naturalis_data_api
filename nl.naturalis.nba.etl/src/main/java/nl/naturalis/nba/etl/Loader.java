@@ -67,11 +67,10 @@ public abstract class Loader<T extends IDocumentObject> implements DocumentObjec
 		 * treshold-tipping call to queue() may actually fill them beyond the
 		 * treshold.
 		 */
-		int sz = queueSize == 0 ? 256 : queueSize + 16;
+		int sz = queueSize == 0 ? 16 : queueSize + 256;
 		objs = new ArrayList<>(sz);
 	}
 
-	
 	/* (non-Javadoc)
    * @see nl.naturalis.nba.etl.DocumentObjectWriter#write(java.util.Collection)
    */
@@ -124,6 +123,7 @@ public abstract class Loader<T extends IDocumentObject> implements DocumentObjec
 				if (!dry) {
 					indexer.index(objs);
 					stats.documentsIndexed += objs.size();
+					objs.clear();
 				}
 			}
 			catch (BulkIndexException e) {
@@ -133,11 +133,9 @@ public abstract class Loader<T extends IDocumentObject> implements DocumentObjec
 					logger.warn(e.getMessage());
 				}
 			}
-			objs.clear();
 		}
 	}
-
-
+		
 	/**
 	 * Determines whether to suppress ERROR and WARN messages while still
 	 * letting through INFO messages. This is sometimes helpful if you expect

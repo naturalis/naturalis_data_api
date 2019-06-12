@@ -84,7 +84,7 @@ brahms.data.dir=/path/to/datadir/brahms
 nsr.data.dir=/path/to/datadir/nsr
 col.data.dir=/path/to/datadir/col
 # Needed to generate links to the CoL
-col.year=2018
+col.year=2019
 geo.data.dir=/path/to/datadir/geo
 medialib.data.dir=/path/to/datadir/medialib
 ndff.data.dir=/path/to/datadir/ndff

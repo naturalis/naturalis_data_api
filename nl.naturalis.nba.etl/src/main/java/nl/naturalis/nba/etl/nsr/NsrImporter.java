@@ -132,16 +132,34 @@ public class NsrImporter {
 					mTransformer.setTaxon(taxa == null ? null : taxa.get(0));
 					List<MultiMediaObject> multimedia = mTransformer.transform(extracted);
 					mediaLoader.write(multimedia);
-					if (taxonStats.recordsProcessed != 0
-							&& taxonStats.recordsProcessed % 5000 == 0) {
+					if (taxonStats.recordsProcessed != 0 && taxonStats.recordsProcessed % 5000 == 0) {
 						logger.info("Records processed: {}", taxonStats.recordsProcessed);
 						logger.info("Taxon documents indexed: {}", taxonStats.documentsIndexed);
-						logger.info("Multimedia documents indexed: {}",
-								mediaStats.documentsIndexed);
+						logger.info("Multimedia documents indexed: {}", mediaStats.documentsIndexed);
 					}
 				}
+				// Summary after file has finished
+				if (taxonStats.recordsProcessed != 0) {
+          logger.info("Records processed: {}", taxonStats.recordsProcessed);
+          logger.info("Taxon documents indexed: {}", taxonStats.documentsIndexed);
+          logger.info("Multimedia documents indexed: {}", mediaStats.documentsIndexed);
+				} else {
+				  logger.info("No record was processed");
+				}
+				taxonLoader.flush();
+				mediaLoader.flush();
 				backupXmlFile(f);
 			}
+			// Summer after entire import has finished
+      if (taxonStats.recordsProcessed != 0) {
+        logger.info("NSR Import complete");
+        logger.info("Records processed: {}", taxonStats.recordsProcessed);
+        logger.info("Taxon documents indexed: {}", taxonStats.documentsIndexed);
+        logger.info("Multimedia documents indexed: {}", mediaStats.documentsIndexed);
+      }
+      else {
+        logger.info("No record was processed");
+      }
 		}
 		finally {
 			IOUtil.close(taxonLoader, mediaLoader);
@@ -269,7 +287,6 @@ public class NsrImporter {
 	 * Backs up the XML files in the NSR data directory by appending a
 	 * "&#46;imported" extension to the file name.
 	 */
-	@SuppressWarnings("static-method")
 	public void backup()
 	{
 		backupXmlFiles();
@@ -280,7 +297,6 @@ public class NsrImporter {
 	 * data directory. Nice for repitive testing. Not meant for production
 	 * purposes.
 	 */
-	@SuppressWarnings("static-method")
 	public void reset()
 	{
 		removeBackupExtension();

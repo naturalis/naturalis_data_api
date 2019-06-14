@@ -1,19 +1,20 @@
 package nl.naturalis.nba.etl.enrich;
 
 import static org.junit.Assert.assertEquals;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
 import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.api.model.TaxonomicStatus;
 import nl.naturalis.nba.etl.AllTests;
-import nl.naturalis.nba.etl.col.CoLReferenceBatchImporter;
 import nl.naturalis.nba.etl.col.CoLTaxonImporter;
-import nl.naturalis.nba.etl.col.CoLVernacularNameBatchImporter;
 import nl.naturalis.nba.utils.reflect.ReflectionUtil;
 
 /**
@@ -22,7 +23,7 @@ import nl.naturalis.nba.utils.reflect.ReflectionUtil;
  * @author plabon
  *
  */
-@SuppressWarnings({"static-method", "unchecked"})
+@SuppressWarnings({"unchecked"})
 public class SpecimenTaxonomicEnricher2Test {
 
   /**

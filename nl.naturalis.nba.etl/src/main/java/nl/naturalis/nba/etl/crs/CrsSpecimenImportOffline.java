@@ -145,6 +145,7 @@ public class CrsSpecimenImportOffline {
 				logger.info("Documents indexed: {}", stats.documentsIndexed);
 			}
 		}
+		loader.flush();
 		IOUtil.close(loader);
 	}
 

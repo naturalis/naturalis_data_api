@@ -6,16 +6,19 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.net.URL;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Element;
+
 import nl.naturalis.nba.api.model.AreaClass;
 import nl.naturalis.nba.api.model.AssociatedTaxon;
 import nl.naturalis.nba.api.model.BioStratigraphy;
@@ -43,10 +46,10 @@ import nl.naturalis.nba.utils.xml.DOMUtil;
  */
 @SuppressWarnings({"unchecked"})
 public class CrsSpecimenTransformerTest {
-
+  
   URL specimenFileUrl;
   File specimenFile;
-
+  
   /**
    * @throws java.lang.Exception
    */
@@ -95,7 +98,7 @@ public class CrsSpecimenTransformerTest {
       Specimen expectedSpecimen = new Specimen();
       expectedSpecimen.setSourceID("CRS");
       expectedSpecimen.setId("RMNH.MAM.TT.5@CRS");
-      expectedSpecimen.setUnitGUID("http://data.biodiversitydata.nl/naturalis/specimen/RMNH.MAM.TT.5");
+      expectedSpecimen.setUnitGUID("https://data.biodiversitydata.nl/naturalis/specimen/RMNH.MAM.TT.5");
       expectedSpecimen.setOwner("Naturalis Biodiversity Center");
       expectedSpecimen.setTitle("RMNH.ART");
       expectedSpecimen.setKindOfUnit("WholeOrganism");
@@ -649,6 +652,7 @@ public class CrsSpecimenTransformerTest {
    */
   @Test
   public void testHasTestGenus_02() throws Exception {
+    
     System.setProperty("nl.naturalis.nba.etl.testGenera", "test");
     ETLStatistics etlStatistics = new ETLStatistics();
     boolean hasTestGenus = true;

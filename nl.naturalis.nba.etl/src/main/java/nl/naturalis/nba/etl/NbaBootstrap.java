@@ -44,7 +44,6 @@ public class NbaBootstrap {
 	 * 
 	 * @param documentTypes
 	 */
-	@SuppressWarnings("static-method")
 	public void bootstrap(String... documentTypes)
 	{
 		if (ConfigObject.isEnabled(ETLConstants.SYSPROP_DRY_RUN)) {

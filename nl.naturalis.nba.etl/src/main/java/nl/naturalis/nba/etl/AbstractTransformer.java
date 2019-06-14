@@ -98,7 +98,6 @@ public abstract class AbstractTransformer<INPUT, OUTPUT extends IDocumentObject>
 	 * 
 	 * @return
 	 */
-	@SuppressWarnings("static-method")
 	protected boolean skipRecord()
 	{
 		return false;

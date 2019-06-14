@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.mockito.PowerMockito;
@@ -28,7 +29,7 @@ import nl.naturalis.nba.utils.reflect.ReflectionUtil;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(CSVRecordInfo.class)
 @PowerMockIgnore("javax.management.*")
-@SuppressWarnings({"static-method", "unchecked"})
+@SuppressWarnings({"unchecked"})
 public class CoLReferenceBatchTransformerTest {
 
   /**
@@ -57,6 +58,7 @@ public class CoLReferenceBatchTransformerTest {
    * method calls the ES so the texa data needs to be present in the ES store (which are loading
    * into the ES in the setUp())
    */
+  @Ignore
   @Test
   public void testTransform() {
 
@@ -116,6 +118,7 @@ public class CoLReferenceBatchTransformerTest {
    * Since this method calls the ES so the data needs to be present in the ES store (which are
    * loaded into the ES in the setUp()
    */
+  @Ignore
   @Test
   public void testCreateLookupTable() {
 
@@ -161,6 +164,7 @@ public class CoLReferenceBatchTransformerTest {
    * 
    * Test to verify createSynonym method returns a correct {@Reference} object.
    */
+  @Ignore
   @Test
   public void testCreateReference() {
 

@@ -23,7 +23,6 @@ import nl.naturalis.nba.api.SortField;
 import nl.naturalis.nba.api.SortOrder;
 import nl.naturalis.nba.api.model.Specimen;
 
-@SuppressWarnings("static-method")
 public class JsonUtilTest {
 
 	@Test

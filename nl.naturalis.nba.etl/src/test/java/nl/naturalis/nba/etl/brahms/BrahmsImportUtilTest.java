@@ -39,7 +39,7 @@ import nl.naturalis.nba.etl.CSVRecordInfo;;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({BrahmsImportUtil.class,CSVRecordInfo.class})
 @PowerMockIgnore("javax.management.*")
-@SuppressWarnings({"static-method", "static-access"})
+@SuppressWarnings({"static-access"})
 @Ignore
 public class BrahmsImportUtilTest {
 
@@ -119,7 +119,7 @@ public class BrahmsImportUtilTest {
    */
   @Test
   public void testGetScientificName_01() {
-
+    @SuppressWarnings("unchecked")
     CSVRecordInfo<BrahmsCsvField> record = PowerMockito.mock(CSVRecordInfo.class);
 
     when(record.get(SPECIES)).thenReturn("Rhododendron ferrugineum L.");
@@ -151,7 +151,7 @@ public class BrahmsImportUtilTest {
    */
   @Test
   public void testGetScientificName_02() {
-
+    @SuppressWarnings("unchecked")
     CSVRecordInfo<BrahmsCsvField> record = PowerMockito.mock(CSVRecordInfo.class);
 
     when(record.get(SPECIES)).thenReturn(null);
@@ -189,7 +189,7 @@ public class BrahmsImportUtilTest {
 
     String expectedGenus = "Rhododendron";
     String expectedFamilyname = "Plantae";
-
+    @SuppressWarnings("unchecked")
     CSVRecordInfo<BrahmsCsvField> record = PowerMockito.mock(CSVRecordInfo.class);
 
     when(record.get(SPECIES)).thenReturn(null);
@@ -243,6 +243,7 @@ public class BrahmsImportUtilTest {
     monomial_4.setRank("subspecies");
     expectedList.add(monomial_4);
 
+    @SuppressWarnings("unchecked")
     CSVRecordInfo<BrahmsCsvField> record = PowerMockito.mock(CSVRecordInfo.class);
 
     when(record.get(SPECIES)).thenReturn("Rhododendron ferrugineum L.");
@@ -289,6 +290,7 @@ public class BrahmsImportUtilTest {
   @Test
   public void testGetAuthor() throws Exception {
 
+    @SuppressWarnings("unchecked")
     CSVRecordInfo<BrahmsCsvField> record = PowerMockito.mock(CSVRecordInfo.class);
     ScientificName expected = new ScientificName();
 
@@ -322,6 +324,7 @@ public class BrahmsImportUtilTest {
   @Test
   public void testGetInfraspecificMarker() throws Exception {
 
+    @SuppressWarnings("unchecked")
     CSVRecordInfo<BrahmsCsvField> record = PowerMockito.mock(CSVRecordInfo.class);
     ScientificName expected = new ScientificName();
 
@@ -354,6 +357,7 @@ public class BrahmsImportUtilTest {
   @Test
   public void testGetInfraspecificEpithet() throws Exception {
 
+    @SuppressWarnings("unchecked")
     CSVRecordInfo<BrahmsCsvField> record = PowerMockito.mock(CSVRecordInfo.class);
     ScientificName expected = new ScientificName();
 
@@ -383,6 +387,7 @@ public class BrahmsImportUtilTest {
   @Test
   public void testGetTaxonRank() {
 
+    @SuppressWarnings("unchecked")
     CSVRecordInfo<BrahmsCsvField> record = PowerMockito.mock(CSVRecordInfo.class);
 
     when(record.get(SPECIES)).thenReturn("Rhododendron ferrugineum L.");

@@ -51,11 +51,10 @@ public class ReflectionUtil {
   public static <T> T newInstance(Class<T> cls, Class<?>[] paramTypes, Object... args) {
     try {
       Constructor<T> c = cls.getDeclaredConstructor(paramTypes);
-      if (!c.isAccessible()) {
-        c.setAccessible(true);
-      }
-      return c.newInstance(args);
-    } catch (Exception e) {
+      c.setAccessible(true);
+      return c.newInstance(args); 
+    } 
+    catch (Exception e) {
       throw new RuntimeException(e);
     }
   }
@@ -72,10 +71,8 @@ public class ReflectionUtil {
     if (f == null) {
       throw new RuntimeException("No such field: " + field);
     }
-    if (!f.isAccessible()) {
-      f.setAccessible(true);
-    }
     try {
+      f.setAccessible(true);
       f.set(obj, value);
     } catch (IllegalArgumentException | IllegalAccessException e) {
       throw new RuntimeException(e);
@@ -97,10 +94,8 @@ public class ReflectionUtil {
     if (!Modifier.isStatic(f.getModifiers())) {
       throw new RuntimeException("Not a static field: " + field);
     }
-    if (!f.isAccessible()) {
-      f.setAccessible(true);
-    }
     try {
+      f.setAccessible(true);
       f.set(null, value);
     } catch (IllegalArgumentException | IllegalAccessException e) {
       throw new RuntimeException(e);
@@ -124,10 +119,8 @@ public class ReflectionUtil {
     if (Modifier.isStatic(f.getModifiers())) {
       throw new RuntimeException("Not an instance field: " + field);
     }
-    if (!f.isAccessible()) {
-      f.setAccessible(true);
-    }
     try {
+      f.setAccessible(true);
       return (T) f.get(obj);
     } catch (IllegalArgumentException | IllegalAccessException e) {
       throw new RuntimeException(e);
@@ -150,10 +143,8 @@ public class ReflectionUtil {
     if (!Modifier.isStatic(f.getModifiers())) {
       throw new RuntimeException("Not a static field: " + field);
     }
-    if (!f.isAccessible()) {
-      f.setAccessible(true);
-    }
     try {
+      f.setAccessible(true);
       return (T) f.get(null);
     } catch (Exception e) {
       throw new RuntimeException(e);
@@ -207,10 +198,8 @@ public class ReflectionUtil {
     if (Modifier.isStatic(m.getModifiers())) {
       throw new RuntimeException("Not an instance method: " + method);
     }
-    if (!m.isAccessible()) {
-      m.setAccessible(true);
-    }
     try {
+      m.setAccessible(true);
       return (T) m.invoke(obj, args);
     } catch (Exception e) {
       throw new RuntimeException(e);
@@ -265,10 +254,8 @@ public class ReflectionUtil {
     if (!Modifier.isStatic(m.getModifiers())) {
       throw new RuntimeException("Not a static method: " + method);
     }
-    if (!m.isAccessible()) {
-      m.setAccessible(true);
-    }
     try {
+      m.setAccessible(true);
       return (T) m.invoke(null, args);
     } catch (Exception e) {
       throw new RuntimeException(e);

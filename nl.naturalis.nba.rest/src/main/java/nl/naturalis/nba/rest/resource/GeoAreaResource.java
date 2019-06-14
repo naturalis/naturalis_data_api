@@ -38,7 +38,6 @@ import nl.naturalis.nba.rest.exception.HTTP404Exception;
 @Api(value = "geo")
 @Path("/geo")
 @Produces({"application/json", "application/xml"})
-@SuppressWarnings("static-method")
 public class GeoAreaResource extends NbaResource<GeoArea, GeoAreaDao> {
 
   private static final Logger logger = LogManager.getLogger(GeoAreaResource.class);

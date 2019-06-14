@@ -159,7 +159,7 @@ class CoLTaxonFullTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, T
   /*
    * Utility method to extraxt the id from the CoL record URI
    */
-  private String getSourceSystemId(String uri) {
+  private static String getSourceSystemId(String uri) {
     if (uri == null || uri.contains("/synonym/")) return null;
     String[] chunks = uri.split("/details/species/id/");
     return chunks[1];
@@ -180,23 +180,11 @@ class CoLTaxonFullTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, T
       if (!suppressErrors)
         warn("RecordURI not set. Missing Catalogue Of Life URL");
     } else {
-      String[] chunks = refs.split("annual-checklist");
-      if (chunks.length != 2) {
+      try {
+        taxon.setRecordURI(URI.create(refs));
+      } catch (IllegalArgumentException e) {
         if (!suppressErrors)
-          warn("RecordURI not set. Could not parse URL: \"%s\"", refs);
-      } else {
-        StringBuilder url = new StringBuilder(96);
-        url.append(chunks[0]);
-        url.append("annual-checklist");
-        url.append('/');
-        url.append(colYear);
-        url.append(chunks[1]);
-        try {
-          taxon.setRecordURI(URI.create(url.toString()));
-        } catch (IllegalArgumentException e) {
-          if (!suppressErrors)
-            warn("RecordURI not set. Invalid URL: \"%s\"", refs);
-        }
+          warn("RecordURI not set. Invalid URL: \"%s\"", refs);
       }
     }
   }

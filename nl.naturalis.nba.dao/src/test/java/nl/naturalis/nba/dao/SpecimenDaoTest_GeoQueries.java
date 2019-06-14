@@ -35,7 +35,6 @@ import nl.naturalis.nba.api.model.GeoArea;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.dao.mock.SpecimenMock;
 
-@SuppressWarnings("static-method")
 public class SpecimenDaoTest_GeoQueries {
 
 	private static final Logger logger = DaoRegistry.getInstance()

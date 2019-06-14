@@ -26,7 +26,6 @@ import nl.naturalis.nba.utils.reflect.ReflectionUtil;
  * Test class for NsrMultiMediaTransformer.java
  *
  */
-@SuppressWarnings({"unchecked", "static-method"})
 public class NsrMultiMediaTransformerTest {
 
   URL nsrFileURL;
@@ -54,6 +53,7 @@ public class NsrMultiMediaTransformerTest {
    * 
    * @throws Exception
    */
+  @SuppressWarnings("unchecked")
   @Test
   public void testDoTransform() throws Exception {
 
@@ -123,6 +123,7 @@ public class NsrMultiMediaTransformerTest {
    * 
    * @throws Exception
    */
+  @SuppressWarnings("unchecked")
   @Test
   public void testTransformOne() throws Exception {
 
@@ -218,6 +219,7 @@ public class NsrMultiMediaTransformerTest {
    * 
    * @throws Exception
    */
+  @SuppressWarnings("unchecked")
   @Test
   public void testNewMediaObject() throws Exception {
 
@@ -272,6 +274,7 @@ public class NsrMultiMediaTransformerTest {
    * 
    * @throws Exception
    */
+  @SuppressWarnings("unchecked")
   @Test
   public void testGetIdentification() throws Exception {
 
@@ -328,6 +331,7 @@ public class NsrMultiMediaTransformerTest {
    * 
    * @throws Exception
    */
+  @SuppressWarnings("unchecked")
   @Test
   public void testGetUri() throws Exception {
 

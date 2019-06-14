@@ -17,7 +17,6 @@ import nl.naturalis.nba.dao.DocumentType;
 
 public class ConditionCollectorTest {
 
-  @SuppressWarnings("static-method")
   @Test
   public void test_01() {
     
@@ -51,7 +50,6 @@ public class ConditionCollectorTest {
     assertTrue("10", conditionsMap.get("associatedMultiMediaUris").size() == 2);    
   }
   
-  @SuppressWarnings("static-method")
   @Test
   public void test_02() {
     

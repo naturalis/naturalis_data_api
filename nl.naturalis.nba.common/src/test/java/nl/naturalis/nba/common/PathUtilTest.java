@@ -10,7 +10,6 @@ import nl.naturalis.nba.common.es.map.Mapping;
 import nl.naturalis.nba.common.es.map.MappingFactory;
 import nl.naturalis.nba.common.mock.TestPerson;
 
-@SuppressWarnings("static-method")
 public class PathUtilTest {
 
 	@Test

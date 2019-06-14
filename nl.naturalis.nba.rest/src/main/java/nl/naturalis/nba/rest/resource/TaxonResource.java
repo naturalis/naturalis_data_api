@@ -52,7 +52,6 @@ import nl.naturalis.nba.rest.util.HttpQuerySpecBuilder;
 @Api(value = "taxon")
 @Path("/taxon")
 @Produces({"application/json", "application/xml"})
-@SuppressWarnings("static-method")
 public class TaxonResource extends NbaResource<Taxon, TaxonDao> {
 
   private static final Logger logger = LogManager.getLogger(TaxonResource.class);

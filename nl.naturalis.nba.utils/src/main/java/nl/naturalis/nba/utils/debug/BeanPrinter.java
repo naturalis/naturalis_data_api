@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Array;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -19,6 +20,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import nl.naturalis.nba.utils.ClassUtil;
+import sun.misc.Unsafe;
 
 /**
  * A {@code BeanPrinter} recursively dumps the innards of an object you specify
@@ -29,7 +31,8 @@ import nl.naturalis.nba.utils.ClassUtil;
  */
 public class BeanPrinter {
 
-	private static final Package PKG_JAVA_LANG = Package.getPackage("java.lang");
+  private static final Package PKG_JAVA_LANG = String.class.getPackage();
+  
 	// Separates field name from field value
 	private static final String FLD_SEP = ": ";
 	// Separates map key from values in map value
@@ -114,9 +117,9 @@ public class BeanPrinter {
 	{
 		try {
 			this.pw = new PrintWriter(path);
-			printOpaque("java.lang");
-			printOpaque("java.lang.reflect");
-			printOpaque("sun.misc");
+			printOpaque(String.class);
+			printOpaque(Constructor.class);
+			printOpaque(Unsafe.class);
 		}
 		catch (FileNotFoundException e) {
 			throw new RuntimeException(e);
@@ -133,9 +136,9 @@ public class BeanPrinter {
 	public BeanPrinter(PrintWriter printWriter)
 	{
 		this.pw = printWriter;
-		printOpaque("java.lang");
-		printOpaque("java.lang.reflect");
-		printOpaque("sun.misc");
+    printOpaque(String.class);
+    printOpaque(Constructor.class);
+    printOpaque(Unsafe.class);
 	}
 
 	/**
@@ -430,12 +433,10 @@ public class BeanPrinter {
 	 * @param packageName
 	 *            The name of the package
 	 */
-	public void printOpaque(String packageName)
+	public void printPackageOpaque(Class<?> classInPackage)
 	{
-		Package p = Package.getPackage(packageName);
-		if (p == null)
-			throw new RuntimeException("No such package: " + packageName);
-		opaquePackages.add(p);
+	  Package p = classInPackage.getPackage();
+    opaquePackages.add(p);    
 	}
 
 	/**
@@ -764,7 +765,7 @@ public class BeanPrinter {
 		indent(level, '}');
 	}
 
-	@SuppressWarnings({ "rawtypes", "unused" })
+	@SuppressWarnings({ "rawtypes" })
 	private void printEnum(Object obj, int level)
 	{
 		printClassAndId(obj, obj.getClass());

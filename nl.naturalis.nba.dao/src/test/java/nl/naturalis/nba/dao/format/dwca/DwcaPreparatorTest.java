@@ -30,7 +30,7 @@ public class DwcaPreparatorTest {
     
     DwcaPreparator dwcaPreparator = new DwcaPreparator(dwcaConfig);
     Method testPrepareEml = Whitebox.getMethod(DwcaPreparator.class, "prepareEml");
-    testPrepareEml.invoke(dwcaPreparator, null);
+    testPrepareEml.invoke(dwcaPreparator);
     
     verify(dwcaConfig).getEmlFile();
     

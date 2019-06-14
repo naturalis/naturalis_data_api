@@ -9,8 +9,9 @@ import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.client.AdminClient;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.IndicesAdminClient;
+import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.QueryBuilder;
-
+import org.junit.Test;
 import nl.naturalis.nba.api.model.GeoArea;
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.api.model.MultiMediaObject;
@@ -147,6 +148,7 @@ public class DaoTestUtil {
 		saveObject(id, null, object, refreshIndex);
 	}
 
+	@Test
 	public static void saveObject(String id, String parentId, IDocumentObject obj,
 			boolean refreshIndex)
 	{
@@ -161,7 +163,7 @@ public class DaoTestUtil {
 			irb.setParent(parentId);
 		}
 		byte[] data = JsonUtil.serialize(obj);
-		irb.setSource(data);
+		irb.setSource(data, XContentType.JSON);
 		irb.execute().actionGet();
 		if (refreshIndex) {
 			ESUtil.refreshIndex(dt);

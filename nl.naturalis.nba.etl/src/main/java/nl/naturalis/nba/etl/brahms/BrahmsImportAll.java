@@ -171,7 +171,6 @@ public class BrahmsImportAll {
 	 * Backs up the CSV files in the Brahms data directory by appending a
 	 * "&#46;imported" extension to the file name.
 	 */
-	@SuppressWarnings("static-method")
 	public void backupSourceFiles()
 	{
 		backup();
@@ -182,7 +181,6 @@ public class BrahmsImportAll {
 	 * Brahms data directory. Nice for repitive testing. Not meant for
 	 * production purposes.
 	 */
-	@SuppressWarnings("static-method")
 	public void reset()
 	{
 		removeBackupExtension();

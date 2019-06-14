@@ -4,13 +4,16 @@ import static nl.naturalis.nba.etl.ETLUtil.getLogger;
 import static nl.naturalis.nba.etl.SummaryObjectUtil.copyScientificName;
 import static nl.naturalis.nba.etl.SummaryObjectUtil.copySourceSystem;
 import static nl.naturalis.nba.etl.SummaryObjectUtil.copySummaryVernacularName;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+
 import org.apache.logging.log4j.Logger;
+
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QueryResult;
@@ -72,12 +75,15 @@ class EnrichmentUtil {
 
 	static List<TaxonomicEnrichment> createEnrichments(List<Taxon> taxa)
 	{
-		List<TaxonomicEnrichment> enrichments = new ArrayList<>(taxa.size());
-		for (Taxon taxon : taxa) {
-			if (taxon.getVernacularNames() == null && taxon.getSynonyms() == null && taxon.getDefaultClassification() == null) {
+	  List<TaxonomicEnrichment> enrichments = new ArrayList<>(taxa.size());
+	  for (Taxon taxon : taxa) {
+		  if (taxon.getVernacularNames() == null && taxon.getSynonyms() == null && taxon.getDefaultClassification() == null) {
 				continue;
 			}
-			TaxonomicEnrichment enrichment = new TaxonomicEnrichment();
+		  if (taxon.getSourceSystem() != SourceSystem.COL && taxon.getVernacularNames() == null && taxon.getSynonyms() == null) {
+		    continue; // Specimens should only be enriched with taxon classifications from Catalogue of Life 
+		  }
+		  TaxonomicEnrichment enrichment = new TaxonomicEnrichment();
 			if (taxon.getVernacularNames() != null) {
 				for (VernacularName vn : taxon.getVernacularNames()) {
 					enrichment.addVernacularName(copySummaryVernacularName(vn));

@@ -7,7 +7,6 @@ import nl.naturalis.nba.utils.StringUtil;
 /**
  * Test class for StringUtil.java
  */
-@SuppressWarnings("static-method")
 public class StringUtilTest {
 
     /*

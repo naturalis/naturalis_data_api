@@ -23,8 +23,9 @@ public class FormatUtil {
 	 */
 	public static final String EMPTY_STRING = "";
 
-	private static final DateTimeFormatter dwcaDateFormat = DateTimeFormatter
-			.ofPattern("yyyy/MM/dd");
+	private static final DateTimeFormatter dwcaDateFormat = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+	
+	private static final DateTimeFormatter ISO8601ShortDateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 	/**
 	 * Formats dates using pattern "yyyy/MM/dd".
@@ -35,6 +36,11 @@ public class FormatUtil {
 	public static String formatDate(OffsetDateTime date)
 	{
 		return date.format(dwcaDateFormat);
+	}
+	
+	public static String formatISO8601ShortDate(OffsetDateTime date)
+	{
+	  return date.format(ISO8601ShortDateFormat);
 	}
 
 	private FormatUtil()

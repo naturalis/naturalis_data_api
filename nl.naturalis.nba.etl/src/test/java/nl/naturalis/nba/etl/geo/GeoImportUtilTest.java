@@ -20,7 +20,6 @@ import nl.naturalis.nba.utils.reflect.ReflectionUtil;
  * @author Plabon
  *
  */
-@SuppressWarnings({"static-method"})
 @Ignore
 public class GeoImportUtilTest {
 

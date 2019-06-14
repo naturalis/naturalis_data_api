@@ -116,7 +116,6 @@ public class DaoRegistry {
    * @param cls
    * @return
    */
-  @SuppressWarnings("static-method")
   public Logger getLogger(Class<?> cls) {
     /*
      * Currently we just forward the call to the LogManager, but logging being the configuration

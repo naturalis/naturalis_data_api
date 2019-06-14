@@ -27,7 +27,6 @@ import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.dao.mock.SpecimenMock;
 
-@SuppressWarnings("static-method")
 public class SpecimenDaoTest_SortingSizingPaging {
 
 	private static final Logger logger = DaoRegistry.getInstance()

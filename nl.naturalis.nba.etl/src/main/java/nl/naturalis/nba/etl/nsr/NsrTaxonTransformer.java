@@ -2,9 +2,14 @@ package nl.naturalis.nba.etl.nsr;
 
 import static nl.naturalis.nba.api.model.SourceSystem.NSR;
 import static nl.naturalis.nba.api.model.TaxonomicStatus.ACCEPTED_NAME;
+import static nl.naturalis.nba.api.model.TaxonomicStatus.ALTERNATIVE_NAME;
 import static nl.naturalis.nba.api.model.TaxonomicStatus.BASIONYM;
 import static nl.naturalis.nba.api.model.TaxonomicStatus.HOMONYM;
+import static nl.naturalis.nba.api.model.TaxonomicStatus.INVALID_NAME;
+import static nl.naturalis.nba.api.model.TaxonomicStatus.MISIDENTIFICATION;
 import static nl.naturalis.nba.api.model.TaxonomicStatus.MISSPELLED_NAME;
+import static nl.naturalis.nba.api.model.TaxonomicStatus.NOMEN_NUDUM;
+import static nl.naturalis.nba.api.model.TaxonomicStatus.PREFERRED_NAME;
 import static nl.naturalis.nba.api.model.TaxonomicStatus.SYNONYM;
 import static nl.naturalis.nba.dao.util.es.ESUtil.getElasticsearchId;
 import static nl.naturalis.nba.etl.ETLUtil.getTestGenera;
@@ -46,18 +51,31 @@ class NsrTaxonTransformer extends AbstractXMLTransformer<Taxon> {
 	private static final HashMap<String, TaxonomicStatus> translations = new HashMap<>();
 
 	static {
+	  translations.put("isBasionymOf", BASIONYM);
+	  translations.put("isHomonymOf", HOMONYM);
+	  translations.put("isMisidentificationOf", MISIDENTIFICATION);
+	  translations.put("isMisspelledNameOf", MISSPELLED_NAME);
+	  translations.put("isNomenNudumOf", NOMEN_NUDUM);
+	  translations.put("isNomenNudemOf", NOMEN_NUDUM); // TODO: this should be deleted after the NSR source has been cleaned of this misspelling
+	  translations.put("isPreferredNameOf", PREFERRED_NAME);
+	  translations.put("isSynonymOf", SYNONYM);
+	  translations.put("isSynonymSLOf", SYNONYM);
+	  translations.put("isInvalidNameOf", INVALID_NAME);
 		translations.put("isValidNameOf", ACCEPTED_NAME);
-		translations.put("isSynonymOf", SYNONYM);
-		translations.put("isSynonymSLOf", SYNONYM);
-		translations.put("isBasionymOf", BASIONYM);
-		translations.put("isHomonymOf", HOMONYM);
-		translations.put("isMisspelledNameOf", MISSPELLED_NAME);
-		translations.put("isInvalidNameOf", SYNONYM);
+		translations.put("isAlternativeNameOf", ALTERNATIVE_NAME);
 	}
 
-	private static final List<String> allowedTaxonRanks = Arrays.asList("species", "subspecies",
-			"varietas", "cultivar", "forma_specialis", "forma", "nothospecies", "nothosubspecies",
-			"nothovarietas", "subforma");
+	private static final List<String> allowedTaxonRanks = Arrays.asList(
+	    "species", 
+	    "subspecies",
+			"varietas", 
+			"cultivar", 
+			"forma_specialis", 
+			"forma", 
+			"nothospecies", 
+			"nothosubspecies",
+			"nothovarietas", 
+			"subforma");
 
 	private String[] testGenera;
 
@@ -110,7 +128,7 @@ class NsrTaxonTransformer extends AbstractXMLTransformer<Taxon> {
 		catch (Throwable t) {
 			stats.recordsRejected++;
 			if (!suppressErrors)
-				error(t.getMessage());
+				error("Record rejected! {}", t.getMessage());
 			return null;
 		}
 	}
@@ -120,14 +138,14 @@ class NsrTaxonTransformer extends AbstractXMLTransformer<Taxon> {
 		if (rank == null) {
 			stats.recordsRejected++;
 			if (!suppressErrors) {
-				error("Missing taxonomic rank");
+				error("Record rejected! Missing taxonomic rank");
 			}
 			return true;
 		}
 		if (!allowedTaxonRanks.contains(rank)) {
 			stats.recordsSkipped++;
 			if (!suppressErrors) {
-				error("Ignoring higher taxon: \"%s\"", rank);
+				error("Record skipped. Ignoring higher taxon: \"%s\"", rank);
 			}
 			return true;
 		}
@@ -145,7 +163,7 @@ class NsrTaxonTransformer extends AbstractXMLTransformer<Taxon> {
 			if (nametype == null) {
 				stats.recordsRejected++;
 				if (!suppressErrors)
-					error("Missing <nametype> element under <name> element");
+					error("Record rejected! Missing <nametype> element under <name> element");
 				return false;
 			}
 			if (!isVernacularName(nametype)) {
@@ -157,7 +175,7 @@ class NsrTaxonTransformer extends AbstractXMLTransformer<Taxon> {
 		if (taxon.getAcceptedName() == null) {
 			stats.recordsRejected++;
 			if (!suppressErrors) {
-				error("Missing accepted name for taxon");
+				error("Record rejected! Missing accepted name for taxon");
 			}
 			return false;
 		}
@@ -170,7 +188,7 @@ class NsrTaxonTransformer extends AbstractXMLTransformer<Taxon> {
 		if (namesElem == null) {
 			stats.recordsRejected++;
 			if (!suppressErrors) {
-				error("Missing <names> element under <taxon> element");
+				error("Record rejected! Missing <names> element under <taxon> element");
 			}
 			return null;
 		}
@@ -178,7 +196,7 @@ class NsrTaxonTransformer extends AbstractXMLTransformer<Taxon> {
 		if (nameElems == null) {
 			stats.recordsRejected++;
 			if (!suppressErrors) {
-				error("Missing accepted name (zero <name> elements under <names> element)");
+				error("Record rejected! Missing accepted name (zero <name> elements under <names> element)");
 			}
 			return null;
 		}
@@ -187,11 +205,11 @@ class NsrTaxonTransformer extends AbstractXMLTransformer<Taxon> {
 
 	private boolean add(Taxon taxon, ScientificName sn)
 	{
-		if (sn.getTaxonomicStatus() == ACCEPTED_NAME) {
+		 if (sn.getTaxonomicStatus() == ACCEPTED_NAME) {
 			if (taxon.getAcceptedName() != null) {
 				stats.recordsRejected++;
 				if (!suppressErrors) {
-					error("Only one accepted name per taxon allowed");
+					error("Record rejected! Only one accepted name per taxon allowed");
 				}
 				return false;
 			}

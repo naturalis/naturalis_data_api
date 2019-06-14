@@ -39,7 +39,6 @@ public class CreateTestDocumentTest {
     createIndex(DocumentType.SPECIMEN);
   }
 
-  @SuppressWarnings("static-method")
   @Test
   public void testCreateSpecimenTestDoc() throws Exception {
     
@@ -80,7 +79,6 @@ public class CreateTestDocumentTest {
     dao.delete(id, true);
   }
 
-  @SuppressWarnings("static-method")
   @Test
   public void testCreateMultiMediaObjectTestDoc() throws Exception {
     

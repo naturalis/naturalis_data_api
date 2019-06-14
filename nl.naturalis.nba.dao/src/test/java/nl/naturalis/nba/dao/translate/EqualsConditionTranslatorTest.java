@@ -23,7 +23,6 @@ import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.dao.translate.ConditionTranslator;
 import nl.naturalis.nba.dao.translate.IsNotNullConditionTranslator;
 
-@SuppressWarnings("static-method")
 public class EqualsConditionTranslatorTest {
 
 	private static MappingInfo<EqualsTestObject> mappingInfo;

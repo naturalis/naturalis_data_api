@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>nl.naturalis.nba</groupId>
 		<artifactId>nba-motherpom</artifactId>
-		<version>2.19</version>
+		<version>2.20-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>nl.naturalis.nba.rest</artifactId>
@@ -26,64 +26,77 @@
 		<dependency>
 			<groupId>nl.naturalis.nba</groupId>
 			<artifactId>nl.naturalis.nba.api</artifactId>
-			<version>2.19</version>
+			<version>2.20-SNAPSHOT</version>
 		</dependency>
+
 		<dependency>
 			<groupId>nl.naturalis.nba</groupId>
 			<artifactId>nl.naturalis.nba.utils</artifactId>
-			<version>2.19</version>
+			<version>2.20-SNAPSHOT</version>
 		</dependency>
+
 		<dependency>
 			<groupId>nl.naturalis.nba</groupId>
 			<artifactId>nl.naturalis.nba.common</artifactId>
-			<version>2.19</version>
+			<version>2.20-SNAPSHOT</version>
 		</dependency>
+
 		<dependency>
 			<groupId>nl.naturalis.nba</groupId>
 			<artifactId>nl.naturalis.nba.dao</artifactId>
-			<version>2.19</version>
+			<version>2.20-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-core</artifactId>
+			<artifactId>log4j-api</artifactId>
 		</dependency>
+
 		<dependency>
 			<groupId>javax.enterprise</groupId>
 			<artifactId>cdi-api</artifactId>
 		</dependency>
+
 		<dependency>
 			<groupId>javax.ws.rs</groupId>
 			<artifactId>javax.ws.rs-api</artifactId>
 		</dependency>
+
 		<dependency>
 			<groupId>javax.ejb</groupId>
 			<artifactId>javax.ejb-api</artifactId>
 		</dependency>
+
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
 		</dependency>
+
 		<dependency>
 			<groupId>de.grundid.opendatalab</groupId>
 			<artifactId>geojson-jackson</artifactId>
 		</dependency>
+
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 		</dependency>
+
 		<dependency>
 			<groupId>org.reflections</groupId>
 			<artifactId>reflections</artifactId>
 		</dependency>
+
 		<dependency>
 			<groupId>io.swagger</groupId>
 			<artifactId>swagger-jaxrs</artifactId>
 		</dependency>
+
 		<dependency>
 			<groupId>io.swagger</groupId>
 			<artifactId>swagger-models</artifactId>
 		</dependency>
+
 		<dependency>
 			<groupId>io.swagger</groupId>
 			<artifactId>swagger-annotations</artifactId>
@@ -96,12 +109,12 @@
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-all</artifactId>
 			<scope>test</scope>
 		</dependency>
-
 
 		<!-- PROVIDED -->
 		<dependency>
@@ -109,13 +122,16 @@
 			<artifactId>resteasy-jaxrs</artifactId>
 			<scope>provided</scope>
 		</dependency>
-		<dependency>
-			<!-- Needed for index.jsp (even if mvn dependency:analyze says otherwise) -->
+
+        <!-- Does NOT seem to be needed any longer after the upgrade to Java 11 -->
+		<!-- Needed for index.jsp (even if mvn dependency:analyze says otherwise) -->
+<!--
+ 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
 			<scope>provided</scope>
 		</dependency>
-
+ -->
 	</dependencies>
 
 	<build>

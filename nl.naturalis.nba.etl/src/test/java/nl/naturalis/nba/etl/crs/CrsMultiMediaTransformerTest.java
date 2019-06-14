@@ -1,6 +1,6 @@
 package nl.naturalis.nba.etl.crs;
 
-import static nl.naturalis.nba.api.model.License.CC0_40;
+import static nl.naturalis.nba.api.model.License.CC0_10;
 import static nl.naturalis.nba.utils.xml.DOMUtil.getDescendant;
 import static nl.naturalis.nba.utils.xml.DOMUtil.getDescendants;
 
@@ -91,7 +91,7 @@ public class CrsMultiMediaTransformerTest {
       expectedMmo.setSourceID("CRS");
       expectedMmo.setOwner("Naturalis Biodiversity Center");
       expectedMmo.setUnitID("RMNH.INS.867435");
-      expectedMmo.setLicense(CC0_40);
+      expectedMmo.setLicense(CC0_10);
       expectedMmo.setCollectionType("Diptera");
       expectedMmo.setTitle("RMNH.INS.867435");
       expectedMmo.setAssociatedSpecimenReference("RMNH.INS.867435@CRS");
@@ -143,7 +143,7 @@ public class CrsMultiMediaTransformerTest {
     expectedMmo.setSourceInstitutionID("Naturalis Biodiversity Center");
     expectedMmo.setSourceID("CRS");
     expectedMmo.setOwner("Naturalis Biodiversity Center");
-    expectedMmo.setLicense(CC0_40);
+    expectedMmo.setLicense(CC0_10);
     expectedMmo.setCollectionType("Diptera");
     expectedMmo.setAssociatedSpecimenReference("RMNH.INS.867435@CRS");
 

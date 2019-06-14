@@ -11,7 +11,6 @@ import org.junit.Test;
 import nl.naturalis.nba.dao.util.SwapFileOutputStream;
 import nl.naturalis.nba.utils.ArrayUtil;
 
-@SuppressWarnings("static-method")
 public class SwapFileOutputStreamTest {
 
 	@Test

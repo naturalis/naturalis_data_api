@@ -23,7 +23,6 @@ import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.Specimen;
 
-@SuppressWarnings("static-method")
 public class SpecimenDaoTest_Equals {
 
 	private static final Logger logger = DaoRegistry.getInstance()

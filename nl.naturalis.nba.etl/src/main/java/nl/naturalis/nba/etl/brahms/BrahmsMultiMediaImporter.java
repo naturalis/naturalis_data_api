@@ -152,6 +152,7 @@ public class BrahmsMultiMediaImporter {
 			}
 		}
 		finally {
+		  loader.flush();
 			IOUtil.close(loader);
 		}
 		globalStats.add(myStats);

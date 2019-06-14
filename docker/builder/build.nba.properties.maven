@@ -36,5 +36,5 @@ col.year=2018
 geo.data.dir=/payload/data/geo
 medialib.data.dir=/payload/data/medialib
 ndff.data.dir=/payload/data/ndff
-purl.baseurl=http://data.biodiversitydata.nl
+purl.baseurl=https://data.biodiversitydata.nl
 

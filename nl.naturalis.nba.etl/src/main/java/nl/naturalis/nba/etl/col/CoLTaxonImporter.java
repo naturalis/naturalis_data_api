@@ -96,6 +96,7 @@ public class CoLTaxonImporter extends CoLImporter {
         }
       }
     } finally {
+      loader.flush();
       IOUtil.close(loader);
       if (!toFile) {
         ESUtil.refreshIndex(TAXON);        

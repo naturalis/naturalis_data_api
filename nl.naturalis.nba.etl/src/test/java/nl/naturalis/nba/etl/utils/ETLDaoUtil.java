@@ -2,6 +2,7 @@ package nl.naturalis.nba.etl.utils;
 
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.common.xcontent.XContentType;
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.common.json.JsonUtil;
@@ -40,7 +41,7 @@ public class ETLDaoUtil {
       irb.setParent(parentId);
     }
     byte[] data = JsonUtil.serialize(obj);
-    irb.setSource(data);
+    irb.setSource(data, XContentType.JSON);
     irb.execute().actionGet();
     if (refreshIndex) {
       ESUtil.refreshIndex(dt);

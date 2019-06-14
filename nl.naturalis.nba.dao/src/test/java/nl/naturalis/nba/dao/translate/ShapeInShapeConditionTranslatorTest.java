@@ -25,7 +25,6 @@ import nl.naturalis.nba.dao.test.TestPerson;
 import nl.naturalis.nba.dao.translate.ConditionTranslator;
 import nl.naturalis.nba.dao.translate.ShapeInShapeConditionTranslator;
 
-@SuppressWarnings("static-method")
 public class ShapeInShapeConditionTranslatorTest {
 
 	private static MappingInfo<TestPerson> mappingInfo;

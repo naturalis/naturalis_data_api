@@ -14,7 +14,6 @@ import org.junit.Test;
 /**
  * Test class for ExceptionUtil.java
  */
-@SuppressWarnings({"static-method"})
 public class ExceptionUtilTest {
 
     /**

@@ -58,15 +58,15 @@ public class GatheringSiteCoordinates implements INbaModelObject {
 		if (longitudeDecimal == null || latitudeDecimal == null) {
 			return null;
 		}
-		/**
-		 * Edit 18.01.2019
-		 * 
-		 * The introduction of a Document Validator requires us to
-		 * skip the creation of a GeoShape and leave generation of
-		 * that to Elasticsearch.
-		 */
-		// return new Point(longitudeDecimal, latitudeDecimal);
-		return null;
+    /**
+     * Edit 18.01.2019
+     * 
+     * The introduction of a Document Validator requires us to
+     * skip the creation of a GeoShape and leave generation of
+     * that to Elasticsearch.
+     */
+    // return new Point(longitudeDecimal, latitudeDecimal);
+    return null;
 	}
 
 	public Double getLongitudeDecimal()

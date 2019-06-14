@@ -40,7 +40,6 @@ import nl.naturalis.nba.rest.exception.HTTP400Exception;
  * 
  */
 
-@SuppressWarnings("static-method")
 public class HttpGroupByScientificNameQuerySpecBuilderTest {
 
 	@Before

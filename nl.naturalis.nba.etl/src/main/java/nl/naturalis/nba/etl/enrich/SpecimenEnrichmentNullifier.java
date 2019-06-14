@@ -6,6 +6,7 @@ import static nl.naturalis.nba.etl.ETLUtil.logDuration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.logging.log4j.Logger;
@@ -14,8 +15,8 @@ import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nba.api.model.Specimen;
+import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.api.model.TaxonomicEnrichment;
-import nl.naturalis.nba.api.model.TaxonomicIdentification;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.util.es.DirtyDocumentIterator;
@@ -78,32 +79,41 @@ public class SpecimenEnrichmentNullifier {
 		DocumentType<Specimen> dt = SPECIMEN;
 		QuerySpec qs = new QuerySpec();
 		qs.setConstantScore(true);
-		qs.setSize(batchSize);
+		
+		// Only CRS specimens have multimedia enrichments
 		if (!nullifyTaxonomicEnrichments) {
 			qs.addCondition(new QueryCondition("sourceSystem.code", "=", "CRS"));
 		}
+
 		DirtyDocumentIterator<Specimen> iterator = new DirtyDocumentIterator<>(dt, qs);
 		BulkIndexer<Specimen> indexer = new BulkIndexer<>(SPECIMEN);
 		ArrayList<Specimen> batch = new ArrayList<>(batchSize);
 		int processed = 0;
 		int updated = 0;
-		logger.info("Processing specimens");
+		
+		logger.info("Processing {} specimens", iterator.size());
 		for (Specimen specimen : iterator) {
 			boolean modified = false;
+
 			if (nullifyTaxonomicEnrichments) {
-				for (TaxonomicIdentification si : specimen.getIdentifications()) {
+			  List<SpecimenIdentification> updatedIdentifications = new ArrayList<>(specimen.getIdentifications().size());
+				for (SpecimenIdentification si : specimen.getIdentifications()) {
 					if (si.getTaxonomicEnrichments() != null) {
 						si.setTaxonomicEnrichments(null);
 						modified = true;
 					}
+					updatedIdentifications.add(si);
 				}
+				specimen.setIdentifications(updatedIdentifications);
 			}
+
 			if (nullifyMultiMediaUris && specimen.getSourceSystem() == SourceSystem.CRS) {
 				if (specimen.getAssociatedMultiMediaUris() != null) {
 					specimen.setAssociatedMultiMediaUris(null);
 					modified = true;
 				}
 			}
+
 			if (modified) {
 				batch.add(specimen);
 				++updated;

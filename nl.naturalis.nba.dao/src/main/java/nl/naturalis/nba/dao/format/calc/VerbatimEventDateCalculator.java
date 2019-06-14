@@ -1,10 +1,13 @@
 package nl.naturalis.nba.dao.format.calc;
 
 import static nl.naturalis.nba.dao.format.FormatUtil.EMPTY_STRING;
-import static nl.naturalis.nba.dao.format.FormatUtil.formatDate;
+import static nl.naturalis.nba.dao.format.FormatUtil.formatISO8601ShortDate;
 
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Map;
+
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.dao.format.CalculatorInitializationException;
@@ -27,7 +30,7 @@ public class VerbatimEventDateCalculator implements ICalculator {
   }
 
 	@Override
-	public Object calculateValue(EntityObject entity)
+	public String calculateValue(EntityObject entity)
 	{
 		Specimen specimen = (Specimen) entity.getDocument();
 		if (specimen.getGatheringEvent() == null) {
@@ -38,10 +41,23 @@ public class VerbatimEventDateCalculator implements ICalculator {
 			return EMPTY_STRING;
 		}
 		OffsetDateTime endDate = specimen.getGatheringEvent().getDateTimeEnd();
-		if (endDate == null || beginDate.equals(endDate)) {
-			return formatDate(beginDate);
+		if (endDate == null || isSameDay(beginDate, endDate)) {
+			return formatISO8601ShortDate(beginDate);
 		}
-		return formatDate(beginDate) + " | " + formatDate(endDate);
+		return formatISO8601ShortDate(beginDate) + " / " + formatISO8601ShortDate(endDate);
+	}
+	
+	private static boolean isSameDay(OffsetDateTime begin, OffsetDateTime end)
+	{
+	  if (begin == null || end == null) return false;
+	  ZonedDateTime b = begin.atZoneSameInstant(ZoneId.of("Europe/Paris"));
+	  ZonedDateTime e = end.atZoneSameInstant(ZoneId.of("Europe/Paris"));
+	  if (b.getYear() == e.getYear() && 
+	      b.getMonth() == e.getMonth() &&
+	      b.getDayOfMonth() == e.getDayOfMonth()) {
+	    return true;
+	    }
+	  return false;
 	}
 
 }

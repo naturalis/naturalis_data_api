@@ -19,9 +19,8 @@ import nl.naturalis.nba.utils.convert.Stringifier;
 import nl.naturalis.nba.utils.convert.Translator;
 
 /**
- * Test class for ArryUtil.java
+ * Test class for ArrayUtil.java
  */
-@SuppressWarnings({"static-method","cast"})
 public class ArrayUtilTest {
 
     /**
@@ -31,7 +30,6 @@ public class ArrayUtilTest {
      * Test to check conversion of primitive int array to Integer array.
      * 
      */
-
     @Test
     public void testBox_01() {
         int[] inputArray = {1, 2, 3, 4, 5, 6, 7};
@@ -76,11 +74,11 @@ public class ArrayUtilTest {
     @Test
     public void testStringifyTArray_01() {
 
-        Integer int1 = new Integer(1);
-        Integer int2 = new Integer(2);
-        Integer int3 = new Integer(3);
-        Integer int4 = new Integer(4);
-        Integer int5 = new Integer(5);
+        Integer int1 = Integer.valueOf(1);
+        Integer int2 = Integer.valueOf(2);
+        Integer int3 = Integer.valueOf(3);
+        Integer int4 = Integer.valueOf(4);
+        Integer int5 = Integer.valueOf(5);
 
         Object[] inputArray = {int1, int2, int3, int4, int5};
         String[] actualResult = ArrayUtil.stringify(inputArray);
@@ -103,15 +101,16 @@ public class ArrayUtilTest {
     @Test
     public void testStringifyTArrayStringifierOptionalObjs() {
 
-        Integer int1 = new Integer(1);
-        Integer int2 = new Integer(2);
-        Integer int3 = new Integer(3);
-        Integer int4 = new Integer(4);
-        Integer int5 = new Integer(5);
+        Integer int1 = Integer.valueOf(1);
+        Integer int2 = Integer.valueOf(2);
+        Integer int3 = Integer.valueOf(3);
+        Integer int4 = Integer.valueOf(4);
+        Integer int5 = Integer.valueOf(5);
 
         Object[] inputArray = {int1, int2, int3, int4, int5};
         String[] expectedResult = {"1", "2", "3", "4", "5"};
 
+        @SuppressWarnings("unchecked")
         Stringifier<Object> callback = mock(Stringifier.class);
 
         when(callback.execute(inputArray[0], "")).thenReturn("1");
@@ -157,15 +156,16 @@ public class ArrayUtilTest {
     @Test
     public void testStringifyCollectionOfTStringifierOptionalObjs() {
 
-        Integer int1 = new Integer(1);
-        Integer int2 = new Integer(2);
-        Integer int3 = new Integer(3);
-        Integer int4 = new Integer(4);
-        Integer int5 = new Integer(5);
+        Integer int1 = Integer.valueOf(1);
+        Integer int2 = Integer.valueOf(2);
+        Integer int3 = Integer.valueOf(3);
+        Integer int4 = Integer.valueOf(4);
+        Integer int5 = Integer.valueOf(5);
 
         Object[] inputArray = {int1, int2, int3, int4, int5};
         String[] expectedResult = {"1", "2", "3", "4", "5"};
 
+        @SuppressWarnings("unchecked")
         Stringifier<Object> callback = mock(Stringifier.class);
         when(callback.execute(inputArray[0], "")).thenReturn("1");
         when(callback.execute(inputArray[1], "")).thenReturn("2");
@@ -400,6 +400,7 @@ public class ArrayUtilTest {
         String expectedResult_02 = "";
         String expectedResult_03 = "1null2null3null4null5";
 
+        @SuppressWarnings("unchecked")
         Stringifier<Integer> callback = mock(Stringifier.class);
 
         when(callback.execute(testInput[0], "")).thenReturn("1");

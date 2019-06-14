@@ -147,25 +147,10 @@ class CoLTaxonTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, Taxon
 				warn("RecordURI not set. Missing Catalogue Of Life URL");
 		}
 		else {
-			String[] chunks = refs.split("annual-checklist");
-			if (chunks.length != 2) {
-				if (!suppressErrors)
-					warn("RecordURI not set. Could not parse URL: \"%s\"", refs);
-			}
-			else {
-				StringBuilder url = new StringBuilder(96);
-				url.append(chunks[0]);
-				url.append("annual-checklist");
-				url.append('/');
-				url.append(colYear);
-				url.append(chunks[1]);
-				try {
-					taxon.setRecordURI(URI.create(url.toString()));
-				}
-				catch (IllegalArgumentException e) {
-					if (!suppressErrors)
-						warn("RecordURI not set. Invalid URL: \"%s\"", refs);
-				}
+			try {
+				taxon.setRecordURI(URI.create(refs));
+			} catch (IllegalArgumentException e) {
+				if (!suppressErrors) warn("RecordURI not set. Invalid URL: \"%s\"", refs);
 			}
 		}
 	}

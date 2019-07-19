@@ -106,14 +106,14 @@ public class BrahmsSpecimenImporter {
     logDuration(logger, getClass(), start);
   }
 
-  private void processFile(File f, ETLStatistics globalStats) {
+  private void processFile(File f, ETLStatistics globalStats) 
+  {
     long start = System.currentTimeMillis();
     logger.info("Processing file {}", f.getAbsolutePath());
     ETLStatistics myStats = new ETLStatistics();
     CSVExtractor<BrahmsCsvField> extractor = null;
     BrahmsSpecimenTransformer transformer = null;
     DocumentObjectWriter<Specimen> loader = null;
-
     try {
       extractor = createExtractor(f, myStats);
       transformer = new BrahmsSpecimenTransformer(myStats);
@@ -134,13 +134,16 @@ public class BrahmsSpecimenImporter {
           logger.info("Documents indexed: {}", myStats.documentsIndexed);
         }
       }
-    } catch (TextParsingException e) {
-      logger.error("Parsing of file: {} failed!", f.getAbsolutePath());
+    } 
+    catch (TextParsingException e) {
+      logger.error("Parsing of csv file: {} failed!", f.getAbsolutePath());
       logger.error("Processing ended at line: {}", e.getLineIndex());
-    } catch (OutOfMemoryError e) {
+    } 
+    catch (OutOfMemoryError e) {
       logger.error("Parsing of file: {} failed!", f.getAbsolutePath());
       logger.error("Cause: {}", e.getMessage());
-    } finally {
+    } 
+    finally {
       loader.flush();
       IOUtil.close(loader);
     }

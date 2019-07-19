@@ -16,7 +16,7 @@ import java.io.File;
 import java.nio.charset.Charset;
 
 import org.apache.logging.log4j.Logger;
-
+import com.univocity.parsers.common.TextParsingException;
 import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.dao.DaoRegistry;
@@ -219,8 +219,9 @@ public class BrahmsImportAll {
 			  multimediaLoader.suppressErrors(suppressErrors);
 			}
 			for (CSVRecordInfo<BrahmsCsvField> rec : extractor) {
-				if (rec == null)
+				if (rec == null) {
 					continue;
+				}
 				specimenLoader.write(specimenTransformer.transform(rec));
 				multimediaLoader.write(multimediaTransformer.transform(rec));
 				if (specimenStats.recordsProcessed != 0
@@ -232,6 +233,14 @@ public class BrahmsImportAll {
 				}
 			}
 		}
+    catch (TextParsingException e) {
+      logger.error("Parsing of csv file: {} failed!", f.getAbsolutePath());
+      logger.error("Processing ended at line: {}", e.getLineIndex());
+    } 
+    catch (OutOfMemoryError e) {
+      logger.error("Parsing of file: {} failed!", f.getAbsolutePath());
+      logger.error("Cause: {}", e.getMessage());
+    } 
 		finally {
 			IOUtil.close(specimenLoader, multimediaLoader);
 		}

@@ -96,8 +96,6 @@ public class GeoImporter {
 		DocumentObjectWriter<GeoArea> loader = null;
 		try {
 			extractor = createExtractor(f, fileStats);
-		  // Watch out: the geojson column can be very (very!) wide
-			extractor.setMaxCharsPerColumn(10000000);
 			transformer = new GeoTransformer(fileStats);
 			
 			if (toFile) {

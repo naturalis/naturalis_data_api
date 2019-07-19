@@ -1,15 +1,12 @@
 package nl.naturalis.nba.etl;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static nl.naturalis.nba.utils.StringUtil.lpad;
-
 import java.io.File;
 import java.nio.charset.Charset;
 import java.util.Iterator;
-
 import org.apache.logging.log4j.Logger;
-
 import com.univocity.parsers.common.ParsingContext;
+import com.univocity.parsers.common.TextParsingException;
 import com.univocity.parsers.common.record.Record;
 import com.univocity.parsers.csv.CsvFormat;
 import com.univocity.parsers.csv.CsvParser;
@@ -23,11 +20,12 @@ import com.univocity.parsers.csv.CsvParserSettings;
  * @author Tom Gilissen
  *
  */
-public class CSVExtractor<T extends Enum<T>> implements Iterator<CSVRecordInfo<T>>, Iterable<CSVRecordInfo<T>> {
+public class CSVExtractor<T extends Enum<T>>
+    implements Iterator<CSVRecordInfo<T>>, Iterable<CSVRecordInfo<T>> {
 
   /**
-   * Thrown by a {@code CSVExtractor} if a client specified an invalid field number (less than zero or
-   * greater than the number of fields in the CSV record).
+   * Thrown by a {@code CSVExtractor} if a client specified an invalid field number (less than zero
+   * or greater than the number of fields in the CSV record).
    * 
    * @author Ayco Holleman
    *
@@ -46,12 +44,12 @@ public class CSVExtractor<T extends Enum<T>> implements Iterator<CSVRecordInfo<T
   private static final Logger logger = ETLRegistry.getInstance().getLogger(CSVExtractor.class);
 
   private final File csvFile;
-  
+
   private CsvParserSettings settings;
   private CsvParser parser;
   private ParsingContext context;
   private Iterator<Record> iterator;
-  
+
   private final ETLStatistics stats;
   private CsvFormat csvFormat;
   private char delimiter;
@@ -63,9 +61,15 @@ public class CSVExtractor<T extends Enum<T>> implements Iterator<CSVRecordInfo<T
    * Creates a CSV extractor for the specified CSV file and updating the specified statistics object
    * as it extracts records from the file.
    * 
+   * Note: MaxCharsPerColumn has been disabled (-1) by default. This has been done because we
+   * consider the format of the source csv file to be correct. If not, OutOfMemoryErrors may
+   * occur. If you're not sure about the source file, use setMaxCharsPerColumn(int n) to set
+   * a maximum value.
+   *        
    * @param csvFile
    * @param stats
-   */  
+   * 
+   */
   public CSVExtractor(File csvFile, Class<? extends Enum<?>> csvClass, ETLStatistics stats) {
     checkEncoding();
     this.csvFile = csvFile;
@@ -73,6 +77,7 @@ public class CSVExtractor<T extends Enum<T>> implements Iterator<CSVRecordInfo<T
     this.delimiter = '\t';
     this.charset = UTF_8;
     settings = new CsvParserSettings();
+    settings.setMaxCharsPerColumn(-1);
     settings.setSkipEmptyLines(true);
     setDelimiter(delimiter);
     this.numFields = csvClass.getEnumConstants().length;
@@ -134,19 +139,17 @@ public class CSVExtractor<T extends Enum<T>> implements Iterator<CSVRecordInfo<T
   }
 
   /**
-   * Returns the value used for escaping values where the field 
-   * delimiter is part of the value (e.g. the value " a , b " is 
-   * parsed as a , b).
+   * Returns the value used for escaping values where the field delimiter is part of the value (e.g.
+   * the value " a , b " is parsed as a , b).
    * 
    * @return
    */
   public char getQuote() {
     return settings.getFormat().getQuote();
   }
-  
+
   /**
-   * Sets the the value used for escaping values where the field 
-   * delimiter is part of the value.
+   * Sets the the value used for escaping values where the field delimiter is part of the value.
    * 
    * @param quote
    */
@@ -173,7 +176,8 @@ public class CSVExtractor<T extends Enum<T>> implements Iterator<CSVRecordInfo<T
   }
 
   /**
-   * Returns the maximum number of characters to read in each column. The default is 4096 characters.
+   * Returns the maximum number of characters to read in each column. The default is 4096
+   * characters.
    * 
    * @return
    */
@@ -223,20 +227,21 @@ public class CSVExtractor<T extends Enum<T>> implements Iterator<CSVRecordInfo<T
 
   @Override
   public CSVRecordInfo<T> next() {
-    if (iterator == null)
+    if (iterator == null) {
       throw new IllegalStateException("Iterator not initialized");
-    
-      context = parser.getContext();
-      Long lineNumber = context.currentLine(); // CurrentLine is the line that's up for parsing next
-      Record record = iterator.next();
-      if (record.getValues().length != numFields) {
-        stats.badInput++;
-        String msg = String.format("Number of fields (%s) does not match the required number of fields (%s). Line has been skipped.", record.getValues().length, numFields);
-        logger.error(message(lineNumber, msg));
-        return null;
-      }
-      CSVRecordInfo<T> csvRecord = new CSVRecordInfo<>(record, lineNumber);
-      return csvRecord;
+    }
+    context = parser.getContext();
+    Long lineNumber = context.currentLine(); // CurrentLine is the line that's up for parsing next
+    Record record = iterator.next();
+    if (record.getValues().length != numFields) {
+      stats.badInput++;
+      String msg = String.format(
+          "Number of fields (%s) does not match the required number of fields (%s). Line has been skipped.",
+          record.getValues().length, numFields);
+      throw new TextParsingException(context, msg);
+    }
+    CSVRecordInfo<T> csvRecord = new CSVRecordInfo<>(record, lineNumber);
+    return csvRecord;
   }
 
   @Override
@@ -247,11 +252,11 @@ public class CSVExtractor<T extends Enum<T>> implements Iterator<CSVRecordInfo<T
   private static void checkEncoding() {
     /*
      * Make sure the JVM's default encoding is UTF-8. The main reason we want this to be the case is
-     * that CSVParser.parse(String, CSVFormat) parses the String using the JVM's default encoding. Note
-     * that for the CSVParser itself, it doesn't really matter whether the file encoding is UTF-8,
-     * ISO-8995-1 or Cp1252, because all delimiters (end-of-field, end-of-record) are encoded
-     * identically in these character sets, so tokenizing the CSV file won't be a problem. Nevertheless,
-     * we JUST WANT THINGS TO BE UTF-8 ACROSS THE BOARD.
+     * that CSVParser.parse(String, CSVFormat) parses the String using the JVM's default encoding.
+     * Note that for the CSVParser itself, it doesn't really matter whether the file encoding is
+     * UTF-8, ISO-8995-1 or Cp1252, because all delimiters (end-of-field, end-of-record) are encoded
+     * identically in these character sets, so tokenizing the CSV file won't be a problem.
+     * Nevertheless, we JUST WANT THINGS TO BE UTF-8 ACROSS THE BOARD.
      */
     if (!Charset.defaultCharset().equals(UTF_8)) {
       logger.error("CSV imports require a default character encoding of UTF-8");
@@ -259,10 +264,6 @@ public class CSVExtractor<T extends Enum<T>> implements Iterator<CSVRecordInfo<T
       String message = "Invalid default character encoding: " + Charset.defaultCharset().name();
       throw new ETLRuntimeException(message);
     }
-  }
-
-  private static String message(long line, String msg) {
-    return "Line " + lpad(line, 6, '0', " | ") + msg;
   }
 
 }

@@ -94,7 +94,12 @@ public class CrsMultiMediaImportOffline {
 		stats.setOneToMany(true);
 		transformer = new CrsMultiMediaTransformer(stats);
 		transformer.setSuppressErrors(suppressErrors);
-
+		
+    // Temporary (?) modification to allow for enrichment during the specimen import
+    if (DaoRegistry.getInstance().getConfiguration().get("etl.enrich", "false").equals("true")) {
+      transformer.setEnrich(true);
+      logger.info("Taxonomic enrichment of Specimen documents: true");
+    }
 		SexNormalizer.getInstance().resetStatistics();
 		SpecimenTypeStatusNormalizer.getInstance().resetStatistics();
 		PhaseOrStageNormalizer.getInstance().resetStatistics();

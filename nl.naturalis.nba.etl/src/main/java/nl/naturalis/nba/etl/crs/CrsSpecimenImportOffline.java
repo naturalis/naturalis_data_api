@@ -93,7 +93,12 @@ public class CrsSpecimenImportOffline {
 		stats = new ETLStatistics();
 		transformer = new CrsSpecimenTransformer(stats);
 		transformer.setSuppressErrors(suppressErrors);
-
+		
+		// Temporary (?) modification to allow for enrichment during the specimen import
+		if (DaoRegistry.getInstance().getConfiguration().get("etl.enrich", "false").equals("true")) {
+		  transformer.setEnrich(true);
+		  logger.info("Taxonomic enrichment of Specimen documents: true");
+		}
 		SexNormalizer.getInstance().resetStatistics();
 		SpecimenTypeStatusNormalizer.getInstance().resetStatistics();
 		PhaseOrStageNormalizer.getInstance().resetStatistics();

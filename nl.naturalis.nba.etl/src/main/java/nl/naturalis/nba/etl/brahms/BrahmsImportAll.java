@@ -205,6 +205,14 @@ public class BrahmsImportAll {
 			extractor = createExtractor(f, extractionStats);
 			specimenTransformer = new BrahmsSpecimenTransformer(specimenStats);
 			multimediaTransformer = new BrahmsMultiMediaTransformer(multimediaStats);
+			
+      // Temporary (?) modification to allow for enrichment during the specimen import
+      if (DaoRegistry.getInstance().getConfiguration().get("etl.enrich", "false").equals("true")) {
+        specimenTransformer.setEnrich(true);
+        logger.info("Taxonomic enrichment of Specimen documents: true");
+        multimediaTransformer.setEnrich(true);
+        logger.info("Taxonomic enrichment of Multimedia documents: true");
+      }
 
 			if (toFile) {
 	       logger.info("ETL Output: Writing the documents to the file system");

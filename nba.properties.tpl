@@ -68,6 +68,7 @@ nl.naturalis.nba.taxon.groupByScientificName.cacheTreshold=3000
 # the document store (etl.output=es) or write them to the file 
 # system (etl.output=file).
 etl.output=es
+etl.enrich=false
 
 crs.specimens.url.initial=http\://crs.naturalis.nl/atlantispubliek/oai.axd?verb\=ListRecords&metadataprefix\=oai_crs_object
 crs.specimens.url.resume=http\://crs.naturalis.nl/atlantispubliek/oai.axd?verb\=ListRecords&resumptionToken\=%s

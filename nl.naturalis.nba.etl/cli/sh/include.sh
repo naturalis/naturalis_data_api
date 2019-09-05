@@ -19,7 +19,8 @@ queue_size=1000
 # system and document type before importing the data for that source
 # system and document type (currently only picked up by Brahms
 # importers; other importers just do it).
-truncate=true
+# truncate=true
+truncate=false
 
 # Whether or not to do a dry run (transform/validate the source data
 # but not index it)

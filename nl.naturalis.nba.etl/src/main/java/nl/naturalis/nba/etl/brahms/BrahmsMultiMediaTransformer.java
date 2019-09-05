@@ -14,6 +14,7 @@ import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.VERNACULAR;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.YEARIDENT;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getDefaultClassification;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getScientificName;
+import static nl.naturalis.nba.etl.enrich.EnrichmentUtil.createEnrichments;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -21,14 +22,23 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import nl.naturalis.nba.api.InvalidQueryException;
+import nl.naturalis.nba.api.QueryCondition;
+import nl.naturalis.nba.api.QueryResult;
+import nl.naturalis.nba.api.QueryResultItem;
+import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.DefaultClassification;
 import nl.naturalis.nba.api.model.MultiMediaContentIdentification;
 import nl.naturalis.nba.api.model.MultiMediaGatheringEvent;
 import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.ServiceAccessPoint;
+import nl.naturalis.nba.api.model.Taxon;
+import nl.naturalis.nba.api.model.TaxonomicEnrichment;
 import nl.naturalis.nba.api.model.VernacularName;
+import nl.naturalis.nba.dao.TaxonDao;
 import nl.naturalis.nba.etl.CSVRecordInfo;
+import nl.naturalis.nba.etl.ETLRuntimeException;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.MimeTypeCache;
 import nl.naturalis.nba.etl.MimeTypeCacheFactory;
@@ -44,12 +54,21 @@ class BrahmsMultiMediaTransformer extends BrahmsTransformer<MultiMediaObject> {/
   private static final String DEFAULT_IMAGE_QUALITY = "ac:GoodQuality";
   private static final String DEFAULT_MIME_TYPE = "image/jpeg";
   private final MimeTypeCache mimetypeCache;
+  private boolean enrich = false;
 
   BrahmsMultiMediaTransformer(ETLStatistics stats)
 	{
 		super(stats);
 		mimetypeCache = MimeTypeCacheFactory.getInstance().getCache();
 	}
+  
+  void setEnrich(boolean enrich) {
+    this.enrich = enrich;
+  }
+  
+  boolean doEnrich() {
+    return enrich;
+  }
 
 	@Override
 	protected List<MultiMediaObject> doTransform()
@@ -98,6 +117,9 @@ class BrahmsMultiMediaTransformer extends BrahmsTransformer<MultiMediaObject> {/
 			if (description != null) mmo.setDescription(description.replaceAll("\u00001", ""));
 			mmo.setGatheringEvents(Arrays.asList(getMultiMediaGatheringEvent(input)));
 			mmo.setIdentifications(Arrays.asList(getIdentification()));
+     if (doEnrich()) {
+        enrichIdentification(mmo);
+      }
 			mmo.addServiceAccessPoint(newServiceAccessPoint(uri));
 			stats.objectsAccepted++;
 			return mmo;
@@ -113,6 +135,54 @@ class BrahmsMultiMediaTransformer extends BrahmsTransformer<MultiMediaObject> {/
 			return null;
 		}
 	}
+	
+  /*
+   * Temporary (?) modification to allow for enrichment during the specimen import
+   * 
+   * Retrieve taxonomic data from CoL and NSR and add it to the identification(s)
+   */
+  private void enrichIdentification(MultiMediaObject mmo) 
+  {
+    // A specimen can have one or more identifications
+    // We need to check all identifications
+    for (MultiMediaContentIdentification identification : mmo.getIdentifications()) {
+      
+      // The scientificNameGroup is the "id" to link with the taxon documents
+      String scientificNameGroup = identification.getScientificName().getScientificNameGroup();
+      
+      String field = "acceptedName.scientificNameGroup";
+      QueryCondition condition = new QueryCondition(field, "EQUALS_IC", scientificNameGroup);
+      QuerySpec query = new QuerySpec();
+      query.addCondition(condition);
+      query.setConstantScore(true);
+      
+      TaxonDao dao = new TaxonDao();
+      QueryResult<Taxon> result;
+      try {
+        result = dao.query(query);
+      }
+      catch (InvalidQueryException e) {
+        throw new ETLRuntimeException(e);
+      }
+      
+      if (result.getTotalSize() == 0) {
+        // No enrichment data available
+        continue;
+      }
+
+      List<Taxon> taxa = new ArrayList<>();
+      for (QueryResultItem<Taxon> item : result) {
+        taxa.add(item.getItem());
+      }
+      
+      List<TaxonomicEnrichment> enrichment = null;
+      enrichment = createEnrichments(taxa);
+      
+      if (enrichment != null) {
+        identification.setTaxonomicEnrichments(enrichment);
+      }
+    }
+  }
 
 	private static MultiMediaObject newMultiMediaObject()
 	{

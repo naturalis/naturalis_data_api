@@ -35,7 +35,8 @@ import nl.naturalis.nba.dao.TaxonDao;
 import nl.naturalis.nba.etl.ETLRuntimeException;
 import nl.naturalis.nba.utils.FileUtil;
 
-class EnrichmentUtil {
+//TODO: Made public because of enrichment during SpecimenTransformation
+public class EnrichmentUtil {
 
 	private static final Logger logger = getLogger(EnrichmentUtil.class);
 
@@ -73,7 +74,9 @@ class EnrichmentUtil {
 		return createTaxonLookupTable(names);
 	}
 
-	static List<TaxonomicEnrichment> createEnrichments(List<Taxon> taxa)
+  // Temporary (?) modification to allow for enrichment during the specimen import
+	// Method was: package private
+	public static List<TaxonomicEnrichment> createEnrichments(List<Taxon> taxa)
 	{
 	  List<TaxonomicEnrichment> enrichments = new ArrayList<>(taxa.size());
 	  for (Taxon taxon : taxa) {

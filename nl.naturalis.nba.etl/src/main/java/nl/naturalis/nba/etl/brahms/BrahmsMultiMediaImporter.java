@@ -14,6 +14,7 @@ import java.io.File;
 import java.nio.charset.Charset;
 
 import org.apache.logging.log4j.Logger;
+import com.univocity.parsers.common.TextParsingException;
 import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.dao.DaoRegistry;
 import nl.naturalis.nba.dao.ESClientManager;
@@ -121,7 +122,7 @@ public class BrahmsMultiMediaImporter {
 		logDuration(logger, getClass(), start);
 	}
 
-	private void processFile(File f, ETLStatistics globalStats)
+	private void processFile(File f, ETLStatistics globalStats) 
 	{
 		long start = System.currentTimeMillis();
 		logger.info("Processing file {}", f.getAbsolutePath());
@@ -133,6 +134,11 @@ public class BrahmsMultiMediaImporter {
 		try {
 			extractor = createExtractor(f, myStats);
 			transformer = new BrahmsMultiMediaTransformer(myStats);
+	    // Temporary (?) modification to allow for enrichment during the specimen import
+	    if (DaoRegistry.getInstance().getConfiguration().get("etl.enrich", "false").equals("true")) {
+	      transformer.setEnrich(true);
+	      logger.info("Taxonomic enrichment of Specimen documents: true");
+	    }
 			if (DaoRegistry.getInstance().getConfiguration().get("etl.output", "file").equals("file")) {
         logger.info("ETL Output: Writing the multimedia documents to the file system");
         loader = new BrahmsMultiMediaJsonNDWriter(f.getName(), myStats);
@@ -142,15 +148,24 @@ public class BrahmsMultiMediaImporter {
 			  loader = new BrahmsMultiMediaLoader(loaderQueueSize, myStats);
 			}
 			for (CSVRecordInfo<BrahmsCsvField> rec : extractor) {
-				if (rec == null)
+				if (rec == null) {
 					continue;
+				}
 				loader.write(transformer.transform(rec));
 				if (myStats.recordsProcessed != 0 && myStats.recordsProcessed % 50000 == 0) {
 					logger.info("Records processed: {}", myStats.recordsProcessed);
 					logger.info("Documents indexed: {}", myStats.documentsIndexed);
 				}
 			}
-		}
+		} 
+		catch (TextParsingException e) {
+      logger.error("Parsing of csv file: {} failed!", f.getAbsolutePath());
+      logger.error("Processing ended at line: {}", e.getLineIndex());
+    } 
+		catch (OutOfMemoryError e) {
+      logger.error("Parsing of file: {} failed!", f.getAbsolutePath());
+      logger.error("Cause: {}", e.getMessage());
+    }
 		finally {
 		  loader.flush();
 			IOUtil.close(loader);

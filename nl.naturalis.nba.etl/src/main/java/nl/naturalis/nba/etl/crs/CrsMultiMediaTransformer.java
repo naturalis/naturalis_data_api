@@ -11,6 +11,7 @@ import static nl.naturalis.nba.etl.MimeTypeCache.MEDIALIB_URL_START;
 import static nl.naturalis.nba.etl.MimeTypeCache.MEDIALIB_HTTPS_URL;
 import static nl.naturalis.nba.etl.TransformUtil.getSystemClassification;
 import static nl.naturalis.nba.etl.normalize.Normalizer.NOT_MAPPED;
+import static nl.naturalis.nba.etl.enrich.EnrichmentUtil.createEnrichments;
 import static nl.naturalis.nba.utils.StringUtil.rpad;
 import static nl.naturalis.nba.utils.xml.DOMUtil.getChild;
 import static nl.naturalis.nba.utils.xml.DOMUtil.getDescendant;
@@ -23,6 +24,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.w3c.dom.Element;
+import nl.naturalis.nba.api.InvalidQueryException;
+import nl.naturalis.nba.api.QueryCondition;
+import nl.naturalis.nba.api.QueryResult;
+import nl.naturalis.nba.api.QueryResultItem;
+import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.DefaultClassification;
 import nl.naturalis.nba.api.model.GatheringSiteCoordinates;
 import nl.naturalis.nba.api.model.Monomial;
@@ -33,9 +39,13 @@ import nl.naturalis.nba.api.model.Person;
 import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.ServiceAccessPoint;
 import nl.naturalis.nba.api.model.SpecimenTypeStatus;
+import nl.naturalis.nba.api.model.Taxon;
+import nl.naturalis.nba.api.model.TaxonomicEnrichment;
 import nl.naturalis.nba.api.model.VernacularName;
 import nl.naturalis.nba.common.es.ESDateInput;
+import nl.naturalis.nba.dao.TaxonDao;
 import nl.naturalis.nba.etl.AbstractXMLTransformer;
+import nl.naturalis.nba.etl.ETLRuntimeException;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.MimeTypeCache;
 import nl.naturalis.nba.etl.MimeTypeCacheFactory;
@@ -73,6 +83,7 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 	private String databaseID;
 	private String[] testGenera;
 	private MultiMediaObject first;
+	private boolean enrich = false;
 
 	CrsMultiMediaTransformer(ETLStatistics stats)
 	{
@@ -84,6 +95,14 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 		sexNormalizer = SexNormalizer.getInstance();
 		testGenera = getTestGenera();
 	}
+	
+  protected void setEnrich(boolean enrich) {
+    this.enrich = enrich;
+  }
+  
+  protected boolean doEnrich() {
+    return enrich;
+  }
 
 	@Override
 	protected String getObjectID()
@@ -159,6 +178,7 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 			return null;
 		}
 		stats.recordsAccepted++;
+		
 		first = null;
 		ArrayList<MultiMediaObject> mmos = new ArrayList<>(frmDigitaleBestandenElems.size());
 		for (int i = 0; i < frmDigitaleBestandenElems.size(); i++) {
@@ -221,10 +241,65 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 			first.setIdentifications(identifications);
 			List<String> themes = themeCache.lookup(objectID, MULTI_MEDIA_OBJECT, CRS);
 			first.setTheme(themes);
+	    if (doEnrich()) {
+	      enrichIdentification(first);
+	    }
 			return first;
 		}
 		return initializeFromFirst();
 	}
+	
+  /*
+   * Temporary (?) modification to allow for enrichment during the specimen import
+   * 
+   * Retrieve taxonomic data from CoL and NSR and add it to the identification(s)
+   */
+  private void enrichIdentification(MultiMediaObject mmo) {
+    
+    // A specimen can have one or more identifications
+    // We need to check all identifications
+    
+    for (MultiMediaContentIdentification identification : mmo.getIdentifications()) {
+      
+      // The scientificNameGroup is the "id" to link with the taxon documents
+      String scientificNameGroup = identification.getScientificName().getScientificNameGroup();
+      
+      String field = "acceptedName.scientificNameGroup";
+      QueryCondition condition = new QueryCondition(field, "EQUALS_IC", scientificNameGroup);
+      QuerySpec query = new QuerySpec();
+      query.addCondition(condition);
+      query.setConstantScore(true);
+      
+      TaxonDao dao = new TaxonDao();
+      QueryResult<Taxon> result;
+      try {
+        result = dao.query(query);
+      }
+      catch (InvalidQueryException e) {
+        throw new ETLRuntimeException(e);
+      }
+      
+      if (result.getTotalSize() == 0) {
+        // No enrichment data available
+        continue;
+      }
+
+      List<Taxon> taxa = new ArrayList<>();
+      for (QueryResultItem<Taxon> item : result) {
+        taxa.add(item.getItem());
+      }
+      
+      List<TaxonomicEnrichment> enrichment = null;
+      enrichment = createEnrichments(taxa);
+      
+      if (enrichment != null) {
+        identification.setTaxonomicEnrichments(enrichment);
+      }
+      
+    }
+    
+  }
+
 
 	/*
 	 * Create a new multimedia object, initialized with the values from the

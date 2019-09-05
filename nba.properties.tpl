@@ -40,7 +40,7 @@ elasticsearch.index.3.types=GeoArea
 
 
 # **************************
-# REST service-only seetings
+# REST service-only settings
 # **************************
 
 # The maximum number of groups that Elasticsearch can collect when 

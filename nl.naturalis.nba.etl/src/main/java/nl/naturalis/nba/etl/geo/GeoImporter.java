@@ -1,6 +1,7 @@
 package nl.naturalis.nba.etl.geo;
 
 import static nl.naturalis.nba.dao.DocumentType.GEO_AREA;
+import static nl.naturalis.nba.etl.ETLConstants.SYSPROP_ETL_OUTPUT;
 import static nl.naturalis.nba.etl.geo.GeoImportUtil.getCsvFiles;
 
 import java.io.File;
@@ -40,7 +41,9 @@ public class GeoImporter {
 			System.exit(1);
 		}
 		finally {
-			ESUtil.refreshIndex(GEO_AREA);
+		  if (!DaoRegistry.getInstance().getConfiguration().get(SYSPROP_ETL_OUTPUT, "es").equals("file")) {
+		    ESUtil.refreshIndex(GEO_AREA);
+		  }
 			ESClientManager.getInstance().closeClient();
 		}
 	}
@@ -72,7 +75,9 @@ public class GeoImporter {
 	public void importAll()
 	{
 		long start = System.currentTimeMillis();
-		ETLUtil.truncate(GEO_AREA);
+		if (!DaoRegistry.getInstance().getConfiguration().get(SYSPROP_ETL_OUTPUT, "es").equals("file")) {
+		  ETLUtil.truncate(GEO_AREA);
+		}
 		File[] csvFiles = getCsvFiles();
 		if (csvFiles.length == 0) {
 			logger.info("No CSV files to process");

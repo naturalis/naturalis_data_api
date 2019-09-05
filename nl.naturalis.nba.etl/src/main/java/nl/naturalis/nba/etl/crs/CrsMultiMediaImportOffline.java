@@ -2,6 +2,7 @@ package nl.naturalis.nba.etl.crs;
 
 import static nl.naturalis.nba.api.model.SourceSystem.CRS;
 import static nl.naturalis.nba.dao.DocumentType.MULTI_MEDIA_OBJECT;
+import static nl.naturalis.nba.etl.ETLConstants.SYSPROP_ETL_OUTPUT;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -63,6 +64,7 @@ public class CrsMultiMediaImportOffline {
 
 	private final boolean suppressErrors;
 	private final int esBulkRequestSize;
+	private final boolean shouldUpdateES;
 
 	private ETLStatistics stats;
 	private CrsMultiMediaTransformer transformer;
@@ -74,6 +76,8 @@ public class CrsMultiMediaImportOffline {
 		String key = ETLConstants.SYSPROP_LOADER_QUEUE_SIZE;
 		String val = System.getProperty(key, "1000");
 		esBulkRequestSize = Integer.parseInt(val);
+		shouldUpdateES = DaoRegistry.getInstance().getConfiguration().get(SYSPROP_ETL_OUTPUT, "es").equals("file") ? false : true;
+		logger.info("shouldUpdateES: {}", shouldUpdateES);
 	}
 
 	/**
@@ -88,7 +92,9 @@ public class CrsMultiMediaImportOffline {
 			logger.error("No multimedia oai.xml files found. Check nda-import.propties");
 			return;
 		}
-		ETLUtil.truncate(MULTI_MEDIA_OBJECT, CRS);
+		if (shouldUpdateES) {
+		  ETLUtil.truncate(MULTI_MEDIA_OBJECT, CRS);
+		}
 		int cacheFailuresBegin = MimeTypeCacheFactory.getInstance().getCache().getMisses();
 		stats = new ETLStatistics();
 		stats.setOneToMany(true);
@@ -156,7 +162,9 @@ public class CrsMultiMediaImportOffline {
 				logger.info("Documents indexed: {}", stats.documentsIndexed);
 			}
 		}
-		loader.flush();
+		if (shouldUpdateES) {
+		  loader.flush();
+		}
 		IOUtil.close(loader);
 	}
 

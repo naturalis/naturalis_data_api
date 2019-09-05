@@ -3,6 +3,7 @@ package nl.naturalis.nba.etl.nsr;
 import static nl.naturalis.nba.api.model.SourceSystem.NSR;
 import static nl.naturalis.nba.dao.DocumentType.MULTI_MEDIA_OBJECT;
 import static nl.naturalis.nba.dao.DocumentType.TAXON;
+import static nl.naturalis.nba.etl.ETLConstants.SYSPROP_ETL_OUTPUT;
 import static nl.naturalis.nba.etl.ETLConstants.SYSPROP_LOADER_QUEUE_SIZE;
 import static nl.naturalis.nba.etl.ETLConstants.SYSPROP_SUPPRESS_ERRORS;
 import static nl.naturalis.nba.etl.ETLUtil.getLogger;
@@ -62,10 +63,10 @@ public class NsrImporter {
 			System.exit(1);
 		}
 		finally {
-			if (args.length == 0 || args[0].equalsIgnoreCase("taxa")) {
+		  if (shouldUpdateES && (args.length == 0 || args[0].equalsIgnoreCase("taxa"))) {
 				ESUtil.refreshIndex(TAXON);
 			}
-			if (args.length == 0 || args[0].equalsIgnoreCase("multimedia")) {
+		  if (shouldUpdateES && (args.length == 0 || args[0].equalsIgnoreCase("multimedia"))) {
 				ESUtil.refreshIndex(MULTI_MEDIA_OBJECT);
 			}
 			ESClientManager.getInstance().closeClient();
@@ -73,6 +74,7 @@ public class NsrImporter {
 	}
 
 	private static final Logger logger = getLogger(NsrImporter.class);
+	private static final boolean shouldUpdateES = DaoRegistry.getInstance().getConfiguration().get(SYSPROP_ETL_OUTPUT, "es").equals("file") ? false : true;
 
 	private final int loaderQueueSize;
 	private final boolean suppressErrors;
@@ -84,6 +86,7 @@ public class NsrImporter {
 		String val = System.getProperty(SYSPROP_LOADER_QUEUE_SIZE, "1000");
 		loaderQueueSize = Integer.parseInt(val);
 		toFile = DaoRegistry.getInstance().getConfiguration().get("etl.output", "file").equals("file");
+		
 	}
 
 	/**
@@ -98,8 +101,11 @@ public class NsrImporter {
 			logger.info("No XML files to process");
 			return;
 		}
-		ETLUtil.truncate(TAXON, NSR);
-		ETLUtil.truncate(MULTI_MEDIA_OBJECT, NSR);
+		
+		if (shouldUpdateES) {
+  		ETLUtil.truncate(TAXON, NSR);
+  		ETLUtil.truncate(MULTI_MEDIA_OBJECT, NSR);
+		}
 		ETLStatistics taxonStats = new ETLStatistics();
 		ETLStatistics mediaStats = new ETLStatistics();
 		mediaStats.setOneToMany(true);
@@ -182,7 +188,9 @@ public class NsrImporter {
 			logger.info("No XML files to process");
 			return;
 		}
-		ETLUtil.truncate(TAXON, NSR);
+		if (shouldUpdateES) {
+		  ETLUtil.truncate(TAXON, NSR);
+		}
 		ETLStatistics stats = new ETLStatistics();
 		NsrTaxonTransformer transformer = new NsrTaxonTransformer(stats);
 		transformer.setSuppressErrors(suppressErrors);
@@ -232,7 +240,9 @@ public class NsrImporter {
 			logger.info("No XML files to process");
 			return;
 		}
-		ETLUtil.truncate(MULTI_MEDIA_OBJECT, NSR);
+		if (shouldUpdateES) {
+		  ETLUtil.truncate(MULTI_MEDIA_OBJECT, NSR);
+		}
 		ETLStatistics stats = new ETLStatistics();
 		stats.setOneToMany(true);
 		NsrMultiMediaTransformer transformer = new NsrMultiMediaTransformer(stats);

@@ -50,7 +50,22 @@ public interface ETLConstants {
 	 * a source system before starting an import for that source system.
 	 */
 	String SYSPROP_TRUNCATE = "nl.naturalis.nba.etl.truncate";
+	
+	/**
+	 * &34;etl.output&34;. Optional system property that defines where the 
+	 * output of the ETL process should go. To the document store (es), which is
+	 * the default (also when the property is NOT set), or the the file system
+	 * (file).
+	 */
+	String SYSPROP_ETL_OUTPUT = "etl.output";
 
+	/**
+	 * &34;etl.enrich&34;. Boolean property which defines whether the documents
+	 * should be enriched during the import process (in contrast to the 
+	 * enrichment during the standalone process),
+	 */
+	String SYSPROP_ETL_ENRICH = "etl.enrich";
+	
 	/**
 	 * &34;nl.naturalis.nba.etl.name.batchSize&34;.
 	 */

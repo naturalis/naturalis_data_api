@@ -2,6 +2,7 @@ package nl.naturalis.nba.etl.crs;
 
 import static nl.naturalis.nba.api.model.SourceSystem.CRS;
 import static nl.naturalis.nba.dao.DocumentType.SPECIMEN;
+import static nl.naturalis.nba.etl.ETLConstants.SYSPROP_ETL_OUTPUT;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -64,6 +65,7 @@ public class CrsSpecimenImportOffline {
 
 	private final boolean suppressErrors;
 	private final int esBulkRequestSize;
+	private final boolean shouldUpdateES;
 
 	private ETLStatistics stats;
 	private CrsSpecimenTransformer transformer;
@@ -75,6 +77,8 @@ public class CrsSpecimenImportOffline {
 		String key = ETLConstants.SYSPROP_LOADER_QUEUE_SIZE;
 		String val = System.getProperty(key, "1000");
 		esBulkRequestSize = Integer.parseInt(val);
+		shouldUpdateES = DaoRegistry.getInstance().getConfiguration().get(SYSPROP_ETL_OUTPUT, "es").equals("file") ? false : true;
+		logger.info("shouldUpdateES: {}", shouldUpdateES);
 	}
 
 	/**
@@ -89,7 +93,9 @@ public class CrsSpecimenImportOffline {
 			logger.error("No specimen oai.xml files found. Check nba.propties");
 			return;
 		}
-		ETLUtil.truncate(SPECIMEN, CRS);
+		if (shouldUpdateES) {
+		  ETLUtil.truncate(SPECIMEN, CRS);
+		}
 		stats = new ETLStatistics();
 		transformer = new CrsSpecimenTransformer(stats);
 		transformer.setSuppressErrors(suppressErrors);
@@ -150,7 +156,9 @@ public class CrsSpecimenImportOffline {
 				logger.info("Documents indexed: {}", stats.documentsIndexed);
 			}
 		}
-		loader.flush();
+		if (shouldUpdateES) {
+		  loader.flush();
+		}
 		IOUtil.close(loader);
 	}
 

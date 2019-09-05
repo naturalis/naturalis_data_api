@@ -6,6 +6,7 @@ import static nl.naturalis.nba.dao.DocumentType.SPECIMEN;
 import static nl.naturalis.nba.etl.ETLConstants.SYSPROP_LOADER_QUEUE_SIZE;
 import static nl.naturalis.nba.etl.ETLConstants.SYSPROP_SUPPRESS_ERRORS;
 import static nl.naturalis.nba.etl.ETLConstants.SYSPROP_TRUNCATE;
+import static nl.naturalis.nba.etl.ETLConstants.SYSPROP_ETL_OUTPUT;
 import static nl.naturalis.nba.etl.ETLUtil.getDuration;
 import static nl.naturalis.nba.etl.ETLUtil.logDuration;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.backup;
@@ -60,8 +61,10 @@ public class BrahmsImportAll {
 
 			}
 			finally {
-				ESUtil.refreshIndex(SPECIMEN);
-				ESUtil.refreshIndex(MULTI_MEDIA_OBJECT);
+			  if (!DaoRegistry.getInstance().getConfiguration().get(SYSPROP_ETL_OUTPUT, "es").equals("file")) {
+  				ESUtil.refreshIndex(SPECIMEN);
+  				ESUtil.refreshIndex(MULTI_MEDIA_OBJECT);
+			  }
 				ESClientManager.getInstance().closeClient();
 			}
 		}
@@ -146,7 +149,7 @@ public class BrahmsImportAll {
 		ETLStatistics mStats = new ETLStatistics();
 		mStats.setOneToMany(true);
 		try {
-			if (ConfigObject.isEnabled(SYSPROP_TRUNCATE, true)) {
+			if (ConfigObject.isEnabled(SYSPROP_TRUNCATE, true) && !(DaoRegistry.getInstance().getConfiguration().get("etl.output", "es").equals("file"))) {
 				ETLUtil.truncate(SPECIMEN, BRAHMS);
 				ETLUtil.truncate(MULTI_MEDIA_OBJECT, BRAHMS);
 			}

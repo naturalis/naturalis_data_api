@@ -1,6 +1,7 @@
 package nl.naturalis.nba.dao;
 
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
+import static nl.naturalis.nba.dao.DocumentType.SPECIMEN;
 import static nl.naturalis.nba.dao.aggregation.AggregationQueryFactory.createAggregationQuery;
 import static nl.naturalis.nba.dao.aggregation.AggregationType.COUNT;
 import static nl.naturalis.nba.dao.aggregation.AggregationType.COUNT_DISTINCT_VALUES;
@@ -11,6 +12,8 @@ import static nl.naturalis.nba.dao.util.es.ESUtil.executeSearchRequest;
 import static nl.naturalis.nba.dao.util.es.ESUtil.newSearchRequest;
 import static nl.naturalis.nba.dao.util.es.ESUtil.toDocumentObject;
 import static nl.naturalis.nba.utils.debug.DebugUtil.printCall;
+import static org.elasticsearch.index.query.QueryBuilders.constantScoreQuery;
+import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -33,8 +36,10 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.IndicesAdminClient;
 import org.elasticsearch.common.bytes.BytesReference;
 import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.index.query.ConstantScoreQueryBuilder;
 import org.elasticsearch.index.query.IdsQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.TermQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import nl.naturalis.nba.api.INbaAccess;
 import nl.naturalis.nba.api.InvalidQueryException;
@@ -68,23 +73,38 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
     if (logger.isDebugEnabled()) {
       logger.debug(printCall("find", id));
     }
-    GetRequestBuilder request = ESUtil.esClient().prepareGet();
-    String index = dt.getIndexInfo().getName();
-    String type = dt.getName();
-    request.setIndex(index);
-    request.setType(type);
-    request.setId(id);
-    GetResponse response = request.execute().actionGet();
-    if (!response.isExists()) {
-      if (logger.isDebugEnabled()) {
-        logger.debug("{} with id \"{}\" not found", dt, id);
-      }
+//    GetRequestBuilder request = ESUtil.esClient().prepareGet();
+//    String index = dt.getIndexInfo().getName();
+//    String type = dt.getName();
+//    request.setIndex(index);
+//    request.setType(type);
+//    request.setId(id);
+//    GetResponse response = request.execute().actionGet();
+//    if (!response.isExists()) {
+//      if (logger.isDebugEnabled()) {
+//        logger.debug("{} with id \"{}\" not found", dt, id);
+//      }
+//      return null;
+//    }
+//    byte[] json = BytesReference.toBytes(response.getSourceAsBytesRef());
+//    T obj = JsonUtil.deserialize(dt.getObjectMapper(), json, dt.getJavaType());
+//    obj.setId(id);
+//    return obj;
+
+    String[] ids = new String[] {id};    
+    T[] docs = findByIds(ids);
+    if (docs.length == 0) {
+      logger.debug("{} with id \"{}\" not found", dt, id);
       return null;
     }
-    byte[] json = BytesReference.toBytes(response.getSourceAsBytesRef());
-    T obj = JsonUtil.deserialize(dt.getObjectMapper(), json, dt.getJavaType());
-    obj.setId(id);
-    return obj;
+    else if (docs.length == 1) {
+      return docs[0];
+    }
+    else {
+      logger.debug("{} with id \"{}\" is found more than once: {} {}s", dt, id, docs.length, dt);
+      return null;
+    }
+    
   }
 
   @Override

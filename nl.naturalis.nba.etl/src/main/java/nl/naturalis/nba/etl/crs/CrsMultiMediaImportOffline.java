@@ -3,6 +3,7 @@ package nl.naturalis.nba.etl.crs;
 import static nl.naturalis.nba.api.model.SourceSystem.CRS;
 import static nl.naturalis.nba.dao.DocumentType.MULTI_MEDIA_OBJECT;
 import static nl.naturalis.nba.etl.ETLConstants.SYSPROP_ETL_OUTPUT;
+import static nl.naturalis.nba.etl.ETLConstants.SYSPROP_ETL_ENRICH;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -51,20 +52,25 @@ public class CrsMultiMediaImportOffline {
 			System.exit(1);
 		}
 		finally {
-			ESUtil.refreshIndex(MULTI_MEDIA_OBJECT);
+		  if (shouldUpdateES) {
+		    ESUtil.refreshIndex(MULTI_MEDIA_OBJECT);
+		  }
 			ESClientManager.getInstance().closeClient();
 		}
 	}
 
 	private static final Logger logger;
+	private static final boolean shouldUpdateES;
+	private static final boolean doEnrich;
 
 	static {
 		logger = ETLRegistry.getInstance().getLogger(CrsMultiMediaImportOffline.class);
+		shouldUpdateES = DaoRegistry.getInstance().getConfiguration().get(SYSPROP_ETL_OUTPUT, "es").equals("file") ? false : true;
+		doEnrich = DaoRegistry.getInstance().getConfiguration().get(SYSPROP_ETL_ENRICH, "false").equals("true");
 	}
 
 	private final boolean suppressErrors;
 	private final int esBulkRequestSize;
-	private final boolean shouldUpdateES;
 
 	private ETLStatistics stats;
 	private CrsMultiMediaTransformer transformer;
@@ -76,7 +82,6 @@ public class CrsMultiMediaImportOffline {
 		String key = ETLConstants.SYSPROP_LOADER_QUEUE_SIZE;
 		String val = System.getProperty(key, "1000");
 		esBulkRequestSize = Integer.parseInt(val);
-		shouldUpdateES = DaoRegistry.getInstance().getConfiguration().get(SYSPROP_ETL_OUTPUT, "es").equals("file") ? false : true;
 		logger.info("shouldUpdateES: {}", shouldUpdateES);
 	}
 
@@ -101,8 +106,7 @@ public class CrsMultiMediaImportOffline {
 		transformer = new CrsMultiMediaTransformer(stats);
 		transformer.setSuppressErrors(suppressErrors);
 		
-    // Temporary (?) modification to allow for enrichment during the specimen import
-    if (DaoRegistry.getInstance().getConfiguration().get("etl.enrich", "false").equals("true")) {
+    if (doEnrich) {
       transformer.setEnrich(true);
       logger.info("Taxonomic enrichment of Specimen documents: true");
     }

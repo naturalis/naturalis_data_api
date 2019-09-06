@@ -52,20 +52,25 @@ public class CrsSpecimenImportOffline {
 			System.exit(1);
 		}
 		finally {
-			ESUtil.refreshIndex(SPECIMEN);
+		  if (shouldUpdateES) {
+		    ESUtil.refreshIndex(SPECIMEN);
+		  }
 			ESClientManager.getInstance().closeClient();
 		}
 	}
 
 	private static final Logger logger;
+  private static final boolean shouldUpdateES;
+  private static final boolean doEnrich;
 
 	static {
 		logger = ETLRegistry.getInstance().getLogger(CrsSpecimenImportOffline.class);
+		shouldUpdateES = DaoRegistry.getInstance().getConfiguration().get(SYSPROP_ETL_OUTPUT, "es").equals("file") ? false : true;
+		doEnrich = DaoRegistry.getInstance().getConfiguration().get("etl.enrich", "false").equals("true");
 	}
 
 	private final boolean suppressErrors;
 	private final int esBulkRequestSize;
-	private final boolean shouldUpdateES;
 
 	private ETLStatistics stats;
 	private CrsSpecimenTransformer transformer;
@@ -77,7 +82,6 @@ public class CrsSpecimenImportOffline {
 		String key = ETLConstants.SYSPROP_LOADER_QUEUE_SIZE;
 		String val = System.getProperty(key, "1000");
 		esBulkRequestSize = Integer.parseInt(val);
-		shouldUpdateES = DaoRegistry.getInstance().getConfiguration().get(SYSPROP_ETL_OUTPUT, "es").equals("file") ? false : true;
 		logger.info("shouldUpdateES: {}", shouldUpdateES);
 	}
 
@@ -100,8 +104,7 @@ public class CrsSpecimenImportOffline {
 		transformer = new CrsSpecimenTransformer(stats);
 		transformer.setSuppressErrors(suppressErrors);
 		
-		// Temporary (?) modification to allow for enrichment during the specimen import
-		if (DaoRegistry.getInstance().getConfiguration().get("etl.enrich", "false").equals("true")) {
+		if (doEnrich) {
 		  transformer.setEnrich(true);
 		  logger.info("Taxonomic enrichment of Specimen documents: true");
 		}

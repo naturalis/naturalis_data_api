@@ -2,6 +2,7 @@ package nl.naturalis.nba.etl.brahms;
 
 import static nl.naturalis.nba.api.model.SourceSystem.BRAHMS;
 import static nl.naturalis.nba.dao.DocumentType.SPECIMEN;
+import static nl.naturalis.nba.etl.ETLConstants.SYSPROP_ETL_OUTPUT;
 import static nl.naturalis.nba.etl.ETLConstants.SYSPROP_LOADER_QUEUE_SIZE;
 import static nl.naturalis.nba.etl.ETLConstants.SYSPROP_SUPPRESS_ERRORS;
 import static nl.naturalis.nba.etl.ETLConstants.SYSPROP_TRUNCATE;
@@ -55,14 +56,17 @@ public class BrahmsSpecimenImporter {
   }
 
   private static final Logger logger = getLogger(BrahmsSpecimenImporter.class);
+  
 
   private final int loaderQueueSize;
   private final boolean suppressErrors;
+  private final boolean shouldUpdateES;
 
   public BrahmsSpecimenImporter() {
     suppressErrors = ConfigObject.isEnabled(SYSPROP_SUPPRESS_ERRORS);
     String val = System.getProperty(SYSPROP_LOADER_QUEUE_SIZE, "1000");
     loaderQueueSize = Integer.parseInt(val);
+    shouldUpdateES = DaoRegistry.getInstance().getConfiguration().get(SYSPROP_ETL_OUTPUT, "es").equals("file") ? false : true;
   }
 
   public void importCsvFile(String path) {
@@ -94,7 +98,7 @@ public class BrahmsSpecimenImporter {
     SpecimenTypeStatusNormalizer.getInstance().resetStatistics();
     ThemeCache.getInstance().resetMatchCounters();
     ETLStatistics stats = new ETLStatistics();
-    if (ConfigObject.isEnabled(SYSPROP_TRUNCATE, true)) {
+    if (ConfigObject.isEnabled(SYSPROP_TRUNCATE, true) && !shouldUpdateES) {
       ETLUtil.truncate(SPECIMEN, BRAHMS);
     }
     for (File f : csvFiles) {

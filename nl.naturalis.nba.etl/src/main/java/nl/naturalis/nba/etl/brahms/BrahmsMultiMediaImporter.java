@@ -2,6 +2,7 @@ package nl.naturalis.nba.etl.brahms;
 
 import static nl.naturalis.nba.api.model.SourceSystem.BRAHMS;
 import static nl.naturalis.nba.dao.DocumentType.MULTI_MEDIA_OBJECT;
+import static nl.naturalis.nba.etl.ETLConstants.SYSPROP_ETL_OUTPUT;
 import static nl.naturalis.nba.etl.ETLConstants.SYSPROP_LOADER_QUEUE_SIZE;
 import static nl.naturalis.nba.etl.ETLConstants.SYSPROP_SUPPRESS_ERRORS;
 import static nl.naturalis.nba.etl.ETLConstants.SYSPROP_TRUNCATE;
@@ -64,12 +65,14 @@ public class BrahmsMultiMediaImporter {
 
 	private final int loaderQueueSize;
 	private final boolean suppressErrors;
+	private final boolean shouldUpdateES;
 
 	public BrahmsMultiMediaImporter()
 	{
 		suppressErrors = ConfigObject.isEnabled(SYSPROP_SUPPRESS_ERRORS);
 		String val = System.getProperty(SYSPROP_LOADER_QUEUE_SIZE, "1000");
 		loaderQueueSize = Integer.parseInt(val);
+		shouldUpdateES = DaoRegistry.getInstance().getConfiguration().get(SYSPROP_ETL_OUTPUT, "es").equals("file") ? false : true;
 	}
 
 	public void importCsvFile(String path)
@@ -110,7 +113,7 @@ public class BrahmsMultiMediaImporter {
 		ThemeCache.getInstance().resetMatchCounters();
 		ETLStatistics stats = new ETLStatistics();
 		stats.setOneToMany(true);
-		if (ConfigObject.isEnabled(SYSPROP_TRUNCATE, true)) {
+		if (ConfigObject.isEnabled(SYSPROP_TRUNCATE, true) && !shouldUpdateES) {
 			ETLUtil.truncate(MULTI_MEDIA_OBJECT, BRAHMS);
 		}
 		for (File f : csvFiles) {

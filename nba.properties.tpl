@@ -38,6 +38,10 @@ elasticsearch.index.2.types=MultiMediaObject
 elasticsearch.index.3.name=geoareas
 elasticsearch.index.3.types=GeoArea
 
+# When one or more indexes are share with an alias, then set this
+# property to true
+elasticsearch.aliases=false
+
 
 # **************************
 # REST service-only settings
@@ -61,7 +65,7 @@ nl.naturalis.nba.taxon.groupByScientificName.cacheTreshold=3000
 
 
 # **************************
-# ETL module-only seetings
+# ETL module-only settings
 # **************************
 
 # The ETL can either push the documents it creates directly into 

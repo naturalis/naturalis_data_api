@@ -142,8 +142,8 @@ public class ESClientManager {
       String cluster = config.required("elasticsearch.cluster.name");
       String host = config.required("elasticsearch.transportaddress.host");
       String port = config.get("elasticsearch.transportaddress.port");
-      String fmt = "Cluster: %s. Host: %s. Port: %s. Is Elasticsearch down?";
-      String msg = String.format(fmt, cluster, host, port);
+      String fmt = "Cluster: %s. Host: %s. Port: %s. Message: %s. Is Elasticsearch down?";
+      String msg = String.format(fmt, cluster, host, port, e.getMessage());
       logger.error(msg);
       throw new ConnectionFailureException(msg);
     }

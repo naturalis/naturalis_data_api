@@ -72,10 +72,9 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
   public T find(String id) {
     if (logger.isDebugEnabled()) {
       logger.debug(printCall("find", id));
-    }
-    
+    }    
     // When aliases are being used, searching for an id needs to be done a term query
-    if (ConfigObject.isEnabled("elasticsearch.aliases")) {
+    if (Boolean.parseBoolean(DaoRegistry.getInstance().getConfiguration().get("elasticsearch.aliases", "false") )) {
       String[] ids = new String[] {id};
       String type = dt.getName();
       SearchRequestBuilder request = newSearchRequest(dt);

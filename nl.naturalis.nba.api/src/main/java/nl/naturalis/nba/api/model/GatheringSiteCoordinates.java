@@ -65,8 +65,8 @@ public class GatheringSiteCoordinates implements INbaModelObject {
      * skip the creation of a GeoShape and leave generation of
      * that to Elasticsearch.
      */
-    // return new Point(longitudeDecimal, latitudeDecimal);
-    return null;
+    return new Point(longitudeDecimal, latitudeDecimal);
+    //return null;
 	}
 
 	public Double getLongitudeDecimal()

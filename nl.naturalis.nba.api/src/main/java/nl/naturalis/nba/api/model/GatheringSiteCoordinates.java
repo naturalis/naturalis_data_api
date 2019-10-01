@@ -55,18 +55,13 @@ public class GatheringSiteCoordinates implements INbaModelObject {
 	@GeoShape(pointsOnly = true)
 	public Point getGeoShape()
 	{
-		if (longitudeDecimal == null || latitudeDecimal == null) {
-			return null;
-		}
-    /**
-     * Edit 18.01.2019
-     * 
-     * The introduction of a Document Validator requires us to
-     * skip the creation of a GeoShape and leave generation of
-     * that to Elasticsearch.
-     */
-    return new Point(longitudeDecimal, latitudeDecimal);
-    //return null;
+//		if (longitudeDecimal == null || latitudeDecimal == null) {
+//			return null;
+//		}
+		// edit 01-10-2019
+		// disabled creation of geoShape. This task has (temporarily) been moved to the Infuser (Colander)
+    // return new Point(longitudeDecimal, latitudeDecimal);
+		return null;
 	}
 
 	public Double getLongitudeDecimal()

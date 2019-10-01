@@ -1,3 +1,6 @@
+RELEASE NOTES v 2.20.1
+* Some minor bug fixes
+
 RELEASE NOTES v 2.20
 * Moved to Java 11
 * Several minor updates and bug fixes

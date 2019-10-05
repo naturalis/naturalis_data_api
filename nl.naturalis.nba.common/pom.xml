@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>nl.naturalis.nba</groupId>
 		<artifactId>nba-motherpom</artifactId>
-		<version>2.20-SNAPSHOT</version>
+		<version>2.20.1</version>
 	</parent>
 
 	<artifactId>nl.naturalis.nba.common</artifactId>
@@ -24,12 +24,12 @@
 		<dependency>
 			<groupId>nl.naturalis.nba</groupId>
 			<artifactId>nl.naturalis.nba.api</artifactId>
-			<version>2.20-SNAPSHOT</version>
+			<version>2.20.1</version>
 		</dependency>
 		<dependency>
 			<groupId>nl.naturalis.nba</groupId>
 			<artifactId>nl.naturalis.nba.utils</artifactId>
-			<version>2.20-SNAPSHOT</version>
+			<version>2.20.1</version>
 		</dependency>
 
 		<dependency>

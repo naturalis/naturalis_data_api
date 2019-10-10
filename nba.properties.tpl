@@ -38,14 +38,13 @@ elasticsearch.index.2.types=MultiMediaObject
 elasticsearch.index.3.name=geoareas
 elasticsearch.index.3.types=GeoArea
 
-# When one or more indexes are share with an alias, then set this
-# property to true
-elasticsearch.aliases=false
-
-
 # **************************
 # REST service-only settings
 # **************************
+
+# Set this property to true, when one or more indexes are
+# shared by an alias
+elasticsearch.aliases=false
 
 # The maximum number of groups that Elasticsearch can collect when 
 # aggregating a set of documents
@@ -71,8 +70,15 @@ nl.naturalis.nba.taxon.groupByScientificName.cacheTreshold=3000
 # The ETL can either push the documents it creates directly into 
 # the document store (etl.output=es) or write them to the file 
 # system (etl.output=file).
+# Default output: es
+# Default enrich: false
 etl.output=es
 etl.enrich=false
+
+# Set this property to true when you require the index(es) to be 
+# recreated at the beginning of a new import
+# Default: true
+nl.naturalis.nba.etl.truncate=true
 
 crs.specimens.url.initial=http\://crs.naturalis.nl/atlantispubliek/oai.axd?verb\=ListRecords&metadataprefix\=oai_crs_object
 crs.specimens.url.resume=http\://crs.naturalis.nl/atlantispubliek/oai.axd?verb\=ListRecords&resumptionToken\=%s

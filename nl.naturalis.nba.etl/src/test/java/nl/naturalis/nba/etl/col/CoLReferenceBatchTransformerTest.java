@@ -2,20 +2,18 @@ package nl.naturalis.nba.etl.col;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.when;
+
+import static org.mockito.Mockito.*;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+
 import nl.naturalis.nba.api.model.Reference;
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.etl.AllTests;
@@ -26,9 +24,6 @@ import nl.naturalis.nba.utils.reflect.ReflectionUtil;
  * Test class for CoLReferenceBatchTransformer.java
  *
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(CSVRecordInfo.class)
-@PowerMockIgnore("javax.management.*")
 @SuppressWarnings({"unchecked"})
 public class CoLReferenceBatchTransformerTest {
 
@@ -58,11 +53,10 @@ public class CoLReferenceBatchTransformerTest {
    * method calls the ES so the texa data needs to be present in the ES store (which are loading
    * into the ES in the setUp())
    */
-  @Ignore
   @Test
   public void testTransform() {
 
-    CSVRecordInfo<CoLReferenceCsvField> record = PowerMockito.mock(CSVRecordInfo.class);
+    CSVRecordInfo<CoLReferenceCsvField> record = mock(CSVRecordInfo.class);
 
     when(record.get(CoLReferenceCsvField.taxonID)).thenReturn("6931870");
     when(record.get(CoLReferenceCsvField.creator)).thenReturn("Pfeiffer, L.");
@@ -118,11 +112,10 @@ public class CoLReferenceBatchTransformerTest {
    * Since this method calls the ES so the data needs to be present in the ES store (which are
    * loaded into the ES in the setUp()
    */
-  @Ignore
   @Test
   public void testCreateLookupTable() {
 
-    CSVRecordInfo<CoLReferenceCsvField> record = PowerMockito.mock(CSVRecordInfo.class);
+    CSVRecordInfo<CoLReferenceCsvField> record = mock(CSVRecordInfo.class);
 
     when(record.get(CoLReferenceCsvField.taxonID)).thenReturn("6931870");
     when(record.get(CoLReferenceCsvField.creator)).thenReturn("Pfeiffer, L.");
@@ -135,8 +128,7 @@ public class CoLReferenceBatchTransformerTest {
     List<CSVRecordInfo<CoLReferenceCsvField>> list = new ArrayList<>();
     list.add(record);
 
-    Object returned = ReflectionUtil.callStatic(CoLReferenceBatchTransformer.class,
-        "createLookupTable", new Class[] {ArrayList.class}, new Object[] {list});
+    Object returned = ReflectionUtil.callStatic(CoLReferenceBatchTransformer.class, "createLookupTable", new Class[] {ArrayList.class}, new Object[] {list});
     HashMap<String, Taxon> actualResults = (HashMap<String, Taxon>) returned;
 
     String expectedKey = "6931870";
@@ -164,11 +156,10 @@ public class CoLReferenceBatchTransformerTest {
    * 
    * Test to verify createSynonym method returns a correct {@Reference} object.
    */
-  @Ignore
   @Test
   public void testCreateReference() {
 
-    CSVRecordInfo<CoLReferenceCsvField> record = PowerMockito.mock(CSVRecordInfo.class);
+    CSVRecordInfo<CoLReferenceCsvField> record = mock(CSVRecordInfo.class);
 
     when(record.get(CoLReferenceCsvField.taxonID)).thenReturn("6931870");
     when(record.get(CoLReferenceCsvField.creator)).thenReturn("Pfeiffer, L.");

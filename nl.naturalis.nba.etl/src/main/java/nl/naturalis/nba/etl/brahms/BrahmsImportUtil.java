@@ -39,24 +39,19 @@ import nl.naturalis.nba.etl.TransformUtil;
  * @author Ayco Holleman
  *
  */
-class BrahmsImportUtil {//Class made public for test purpose
+class BrahmsImportUtil {
 
-	private static final Logger logger = ETLRegistry.getInstance()
-			.getLogger(BrahmsImportUtil.class);
+	private static final Logger logger = ETLRegistry.getInstance().getLogger(BrahmsImportUtil.class);
 	private static final SimpleDateFormat fileNameDateFormatter = new SimpleDateFormat("yyyyMMdd");
 
-	BrahmsImportUtil()
-	{
-	}
+	BrahmsImportUtil() {}
 
-	
 	/**
 	 * Provides a list of CSV files to process. Only files whose name end with
 	 * {@code .csv} (case-insensitive) will be processed.
 	 * 
 	 * @return
-	 */
-	
+	 */	
 	public static File[] getCsvFiles()
 	{
 		File[] files = getDataDir().listFiles(new FilenameFilter() {
@@ -237,7 +232,7 @@ class BrahmsImportUtil {//Class made public for test purpose
 		return sc;
 	}
 
-	private static String getAuthor(CSVRecordInfo<BrahmsCsvField> record)
+	public static String getAuthor(CSVRecordInfo<BrahmsCsvField> record)
 	{
 		if (record.get(SP3) == null) {
 			if (record.get(SP2) == null) {
@@ -249,13 +244,13 @@ class BrahmsImportUtil {//Class made public for test purpose
 	}
     
 
-	private static String getInfraspecificMarker(CSVRecordInfo<BrahmsCsvField> record)
+	public static String getInfraspecificMarker(CSVRecordInfo<BrahmsCsvField> record)
 	{
 		String s = record.get(RANK2);
 		return s == null ? record.get(RANK1) : s;
 	}
 	
-	private static String getInfraspecificEpithet(CSVRecordInfo<BrahmsCsvField> record)
+	public static String getInfraspecificEpithet(CSVRecordInfo<BrahmsCsvField> record)
 	{
 		String s = record.get(SP3);
 		return s == null ? record.get(SP2) : s;

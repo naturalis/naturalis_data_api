@@ -2,25 +2,25 @@ package nl.naturalis.nba.etl.crs;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+
 import java.util.Date;
+
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
+
 import nl.naturalis.nba.utils.reflect.ReflectionUtil;
+
 /**
  * Test class for CrsImportUtil.java
  */
-@SuppressWarnings({"static-access", "deprecation"})
-@Ignore
 public class CrsImportUtilTest {
 
   /**
    * @throws java.lang.Exception
    */
   @Before
-  public void setUp() throws Exception {
-  }
+  public void setUp() throws Exception {}
 
   /**
    * @throws java.lang.Exception
@@ -34,14 +34,14 @@ public class CrsImportUtilTest {
    * 
    * Test method to verify the callSpecimenService(Date, Date)
    */
-
+  @SuppressWarnings("static-access")
   @Test
   public void testCallSpecimenServiceDate() {
 
     CrsImportUtil crsImportUtil = ReflectionUtil.newInstance(CrsImportUtil.class, new Object[] {});
 
-    Date fromDate = new Date(2017, 11, 25);
-    Date untilDate = new Date(2016, 11, 27);
+    Date fromDate = java.sql.Date.valueOf("2017-11-25");
+    Date untilDate = java.sql.Date.valueOf("2016-11-27");
 
     byte[] result = crsImportUtil.callSpecimenService(fromDate, untilDate);
     assertNotNull("01",result);
@@ -54,7 +54,9 @@ public class CrsImportUtilTest {
    */
   @Test
   public void testCallSpecimenServiceString() {
-
+    
+    // TODO: implement unit test
+    
   }
 
   /**
@@ -63,7 +65,9 @@ public class CrsImportUtilTest {
    */
   @Test
   public void testCallMultimediaServiceDateDate() {
-
+    
+    // TODO: implement unit test
+    
   }
 
   /**
@@ -73,6 +77,8 @@ public class CrsImportUtilTest {
   @Test
   public void testCallMultimediaServiceString() {
 
+    // TODO: implement unit test
+    
   }
 
 }

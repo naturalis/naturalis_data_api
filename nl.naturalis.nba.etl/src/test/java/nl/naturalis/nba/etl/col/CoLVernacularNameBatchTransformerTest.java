@@ -2,20 +2,18 @@ package nl.naturalis.nba.etl.col;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.when;
+
+import static org.mockito.Mockito.*;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.api.model.VernacularName;
 import nl.naturalis.nba.etl.AllTests;
@@ -26,9 +24,6 @@ import nl.naturalis.nba.utils.reflect.ReflectionUtil;
  * Test class for CoLVernacularNameBatchTransformer.java
  *
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(CSVRecordInfo.class)
-@PowerMockIgnore("javax.management.*")
 @SuppressWarnings({"unchecked"})
 public class CoLVernacularNameBatchTransformerTest {
 
@@ -57,11 +52,10 @@ public class CoLVernacularNameBatchTransformerTest {
    * method calls the ES so the texa data needs to be present in the ES store (which are loading
    * into the ES in the setUp())
    */
-  @Ignore
   @Test
   public void testTransform() {
 
-    CSVRecordInfo<CoLVernacularNameCsvField> csvRecordInfo = PowerMockito.mock(CSVRecordInfo.class);
+    CSVRecordInfo<CoLVernacularNameCsvField> csvRecordInfo = mock(CSVRecordInfo.class);
     when(csvRecordInfo.get(CoLVernacularNameCsvField.taxonID)).thenReturn("6931870");
     when(csvRecordInfo.get(CoLVernacularNameCsvField.vernacularName)).thenReturn("pinhead spot");
     when(csvRecordInfo.get(CoLVernacularNameCsvField.language)).thenReturn("English US");
@@ -111,11 +105,10 @@ public class CoLVernacularNameBatchTransformerTest {
    * Since this method calls the ES so the data needs to be present in the ES store (which are
    * loaded into the ES in the setUp()
    */
-  @Ignore
   @Test
   public void testCreateLookupTable() {
 
-    CSVRecordInfo<CoLVernacularNameCsvField> csvRecordInfo = PowerMockito.mock(CSVRecordInfo.class);
+    CSVRecordInfo<CoLVernacularNameCsvField> csvRecordInfo = mock(CSVRecordInfo.class);
     when(csvRecordInfo.get(CoLVernacularNameCsvField.taxonID)).thenReturn("6931870");
     when(csvRecordInfo.get(CoLVernacularNameCsvField.vernacularName)).thenReturn("pinhead spot");
     when(csvRecordInfo.get(CoLVernacularNameCsvField.language)).thenReturn("English US");
@@ -156,11 +149,10 @@ public class CoLVernacularNameBatchTransformerTest {
    * Test to verify createSynonym method returns a correct VernacularName object.
    * 
    */
-  @Ignore
   @Test
   public void testCreateVernacularName() {
 
-    CSVRecordInfo<CoLVernacularNameCsvField> csvRecordInfo = PowerMockito.mock(CSVRecordInfo.class);
+    CSVRecordInfo<CoLVernacularNameCsvField> csvRecordInfo = mock(CSVRecordInfo.class);
     when(csvRecordInfo.get(CoLVernacularNameCsvField.taxonID)).thenReturn("6931870");
     when(csvRecordInfo.get(CoLVernacularNameCsvField.vernacularName)).thenReturn("pinhead spot");
     when(csvRecordInfo.get(CoLVernacularNameCsvField.language)).thenReturn("English US");

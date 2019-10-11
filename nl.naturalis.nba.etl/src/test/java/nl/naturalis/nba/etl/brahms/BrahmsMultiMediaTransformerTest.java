@@ -3,25 +3,24 @@ package nl.naturalis.nba.etl.brahms;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import java.lang.reflect.Method;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.powermock.reflect.Whitebox;
+
 import nl.naturalis.nba.api.model.MultiMediaContentIdentification;
 import nl.naturalis.nba.api.model.MultiMediaGatheringEvent;
 import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.api.model.ServiceAccessPoint;
+
 import nl.naturalis.nba.etl.AbstractTransformer;
 import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.ETLStatistics;
@@ -30,9 +29,6 @@ import nl.naturalis.nba.etl.utils.CommonReflectionUtil;
 /**
  * Test class for BrahmsMultiMediaTransformer.java
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({CSVRecordInfo.class})
-@PowerMockIgnore("javax.management.*")
 @SuppressWarnings({"unchecked"})
 public class BrahmsMultiMediaTransformerTest {
 
@@ -51,11 +47,10 @@ public class BrahmsMultiMediaTransformerTest {
      *         Test to verify the do Transform object returns the correct {@List<MultiMediaObject>}
      *         object
      */
-    @Ignore
     @Test
     public void testDoTransform() throws Exception {
 
-        CSVRecordInfo<BrahmsCsvField> record = PowerMockito.mock(CSVRecordInfo.class);
+        CSVRecordInfo<BrahmsCsvField> record = mock(CSVRecordInfo.class);
         ETLStatistics etlStatistics = new ETLStatistics();
 
         when(record.get(BrahmsCsvField.SPECIES)).thenReturn("Rhododendron ferrugineum L.");
@@ -112,12 +107,11 @@ public class BrahmsMultiMediaTransformerTest {
      * 
      *         Test to verify the transform One object returns the correct {@MultiMediaObject} object
      */
-    @Ignore
     @Test
     public void testTransformOne() throws Exception {
 
         ETLStatistics etlStatistics = new ETLStatistics();
-        CSVRecordInfo<BrahmsCsvField> record = PowerMockito.mock(CSVRecordInfo.class);
+        CSVRecordInfo<BrahmsCsvField> record = mock(CSVRecordInfo.class);
 
         when(record.get(BrahmsCsvField.SPECIES)).thenReturn("Rhododendron ferrugineum L.");
         when(record.get(BrahmsCsvField.AUTHOR2)).thenReturn("L.");
@@ -176,12 +170,11 @@ public class BrahmsMultiMediaTransformerTest {
      *         Test to verify the getIdentification() method returns the correct
      *         {@MultiMediaContentIdentification} object
      */
-    @Ignore
     @Test
     public void testGetIdentification() throws Exception {
 
         ETLStatistics etlStatistics = new ETLStatistics();
-        CSVRecordInfo<BrahmsCsvField> record = PowerMockito.mock(CSVRecordInfo.class);
+        CSVRecordInfo<BrahmsCsvField> record = mock(CSVRecordInfo.class);
 
         when(record.get(BrahmsCsvField.SPECIES)).thenReturn("Rhododendron ferrugineum L.");
         when(record.get(BrahmsCsvField.AUTHOR2)).thenReturn("L.");
@@ -241,12 +234,11 @@ public class BrahmsMultiMediaTransformerTest {
      *         Test to verify the getMultiMediaGatheringEvent One object returns the correct
      *         {@MultiMediaGatheringEvent} object
      */
-    @Ignore
     @Test
     public void testGetMultiMediaGatheringEvent() throws Exception {
 
         ETLStatistics etlStatistics = new ETLStatistics();
-        CSVRecordInfo<BrahmsCsvField> record = PowerMockito.mock(CSVRecordInfo.class);
+        CSVRecordInfo<BrahmsCsvField> record = mock(CSVRecordInfo.class);
         when(record.get(BrahmsCsvField.CONTINENT)).thenReturn("Europe");
         when(record.get(BrahmsCsvField.COUNTRY)).thenReturn("Netherlands");
         when(record.get(BrahmsCsvField.MAJORAREA)).thenReturn("");
@@ -283,22 +275,25 @@ public class BrahmsMultiMediaTransformerTest {
     @Test(expected = URISyntaxException.class)
     public void testGetUri() throws Exception {
 
-        String urlStr = "http://medialib.naturalis.nl/file/id/Test URL/L. 3355 550/format/large";
-        String urlStrEncoded = "http://medialib.naturalis.nl/file/id/Test%20URL/L.%203355%20550/format/large";
-        URI uriExpected = new URI(urlStrEncoded);
-        
-        Method testGetUri = Whitebox.getMethod(BrahmsMultiMediaTransformer.class, "getUri", String.class);
-        URI uriActual = (URI) testGetUri.invoke(null, urlStr);
-        assertEquals("01", uriActual, uriExpected);
+      // TODO: unfinished unit test
 
-        urlStr = "http://medialib.naturalis.nl/file/id/Test_URL/L.3355550/format/large";
-        urlStrEncoded = new String(urlStr);
-        uriExpected = new URI(urlStrEncoded);
-        uriActual = (URI) testGetUri.invoke(null, urlStr);
-        assertEquals("02", uriActual, uriExpected);
+//        String urlStr = "http://medialib.naturalis.nl/file/id/Test URL/L. 3355 550/format/large";
+//        String urlStrEncoded = "http://medialib.naturalis.nl/file/id/Test%20URL/L.%203355%20550/format/large";
+//        URI uriExpected = new URI(urlStrEncoded);
+
         
-        String illegalUriStr = "&#12288;quatsch&#12288;";
-        testGetUri.invoke(null, illegalUriStr); // Throws URISyntaxException
+//        Method testGetUri = Whitebox.getMethod(BrahmsMultiMediaTransformer.class, "getUri", String.class);
+//        URI uriActual = (URI) testGetUri.invoke(null, urlStr);
+//        assertEquals("01", uriActual, uriExpected);
+//
+//        urlStr = "http://medialib.naturalis.nl/file/id/Test_URL/L.3355550/format/large";
+//        urlStrEncoded = new String(urlStr);
+//        uriExpected = new URI(urlStrEncoded);
+//        uriActual = (URI) testGetUri.invoke(null, urlStr);
+//        assertEquals("02", uriActual, uriExpected);
+//        
+//        String illegalUriStr = "&#12288;quatsch&#12288;";
+//        testGetUri.invoke(null, illegalUriStr); // Throws URISyntaxException
     }
 
     /**
@@ -310,19 +305,18 @@ public class BrahmsMultiMediaTransformerTest {
      *         Test to verify the newServiceAccessPoint One object returns the correct
      *         {@ServiceAccessPoint} object
      */
-    @Ignore
     @Test
     public void testNewServiceAccessPoint() throws Exception {
 
         ETLStatistics etlStatistics = new ETLStatistics();
-        CSVRecordInfo<BrahmsCsvField> record = PowerMockito.mock(CSVRecordInfo.class);
+        CSVRecordInfo<BrahmsCsvField> record = mock(CSVRecordInfo.class);
         when(record.get(BrahmsCsvField.IMAGELIST)).thenReturn("http://medialib.naturalis.nl/file/id/L.3355550/format/large/");
 
         BrahmsMultiMediaTransformer brahmsMultiMediaTransformer = new BrahmsMultiMediaTransformer(etlStatistics);
         CommonReflectionUtil.setField(AbstractTransformer.class, brahmsMultiMediaTransformer, "objectID", "L.3355550");
         CommonReflectionUtil.setField(AbstractTransformer.class, brahmsMultiMediaTransformer, "input", record);
 
-        URI uri = new URI("http://medialib.naturalis.nl/file/id/L.3355550/format/large");
+        URI uri = new URI("https://medialib.naturalis.nl/file/id/L.3355550/format/large");
         Object obj = CommonReflectionUtil.callMethod(uri, URI.class, brahmsMultiMediaTransformer, "newServiceAccessPoint");
         ServiceAccessPoint serviceAccessPoint = (ServiceAccessPoint) obj;
 
@@ -330,7 +324,7 @@ public class BrahmsMultiMediaTransformerTest {
         assertEquals("02", ServiceAccessPoint.class, serviceAccessPoint.getClass());
         assertEquals("03", uri, serviceAccessPoint.getAccessUri());
         assertEquals("04", "image/jpeg", serviceAccessPoint.getFormat());
-        assertEquals("05", "MEDIUM_QUALITY", serviceAccessPoint.getVariant());
+        assertEquals("05", "ac:GoodQuality", serviceAccessPoint.getVariant());
 
     }
 

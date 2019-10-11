@@ -52,7 +52,6 @@ import nl.naturalis.nba.dao.exception.DaoException;
 import nl.naturalis.nba.dao.translate.QuerySpecTranslator;
 import nl.naturalis.nba.dao.util.es.DirtyDocumentIterator;
 import nl.naturalis.nba.dao.util.es.ESUtil;
-import nl.naturalis.nba.utils.ConfigObject;
 
 public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 

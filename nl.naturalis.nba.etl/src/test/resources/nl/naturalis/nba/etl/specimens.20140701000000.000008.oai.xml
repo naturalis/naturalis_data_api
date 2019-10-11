@@ -51,7 +51,7 @@
             <abcd:IdentificationQualifier2 />
             <abcd:IdentificationQualifier3 />
             <abcd:InformalNameString />
-            <abcd:Identifier />
+            <abcd:Identifier>Co de Boswachter</abcd:Identifier>
             <abcd:IdentificationDate>19801122</abcd:IdentificationDate>
             <abcd:VarietalNameString />
             <abcd:RockType>Test_Rock</abcd:RockType>

@@ -4,32 +4,28 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.times;
+
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.logging.log4j.Logger;
+
 import org.joda.time.DateTime;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+
 import nl.naturalis.nba.etl.col.CoLTaxonImporter;
 import nl.naturalis.nba.utils.reflect.ReflectionUtil;
 
 /**
  * Test class for ETLUtil.java
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(ETLUtil.class)
-@PowerMockIgnore("javax.management.*")
 @Ignore
 public class ETLUtilTest {
   
@@ -91,16 +87,21 @@ public class ETLUtilTest {
    * @throws Exception
    * 
    */
+  @Ignore
   @Test
   public void testLogDuration() throws Exception {
 
-    Logger logger = ETLUtil.getLogger(Loader.class);
-    long timeStamp = 12585L;
-    PowerMockito.mockStatic(ETLUtil.class);
-   
-    ETLUtil.logDuration(logger, logger.getClass(), timeStamp);
-    PowerMockito.verifyStatic(ETLUtil.class, times(1));
-    ETLUtil.logDuration(logger, logger.getClass(), timeStamp);
+    // TODO: unfinished unit test
+    // NOTE: Mockito cannot test static methods
+    
+//    Logger logger = ETLUtil.getLogger(Loader.class);
+//    long timeStamp = 12585L;
+
+//    PowerMockito.mockStatic(ETLUtil.class);
+//   
+//    ETLUtil.logDuration(logger, logger.getClass(), timeStamp);
+//    PowerMockito.verifyStatic(ETLUtil.class, times(1));
+//    ETLUtil.logDuration(logger, logger.getClass(), timeStamp);
 
   }
 

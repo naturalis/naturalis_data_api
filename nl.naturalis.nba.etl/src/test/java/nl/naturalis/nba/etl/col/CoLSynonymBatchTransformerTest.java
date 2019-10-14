@@ -3,20 +3,18 @@ package nl.naturalis.nba.etl.col;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.when;
+
+import static org.mockito.Mockito.*;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+
 import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.etl.AllTests;
@@ -27,9 +25,6 @@ import nl.naturalis.nba.utils.reflect.ReflectionUtil;
  * Test class for CoLSynonymBatchTransformer.java
  *
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(CSVRecordInfo.class)
-@PowerMockIgnore("javax.management.*")
 @SuppressWarnings({"unchecked"})
 public class CoLSynonymBatchTransformerTest {
 
@@ -62,11 +57,10 @@ public class CoLSynonymBatchTransformerTest {
    * 
    * @throws Exception
    */
-  @Ignore
   @Test
   public void testTransform() throws Exception {
 
-    CSVRecordInfo<CoLTaxonCsvField> record = PowerMockito.mock(CSVRecordInfo.class);
+    CSVRecordInfo<CoLTaxonCsvField> record = mock(CSVRecordInfo.class);
 
     when(record.get(CoLTaxonCsvField.taxonID)).thenReturn("6931870");
     when(record.get(CoLTaxonCsvField.identifier)).thenReturn(
@@ -139,11 +133,10 @@ public class CoLSynonymBatchTransformerTest {
    * 
    * @throws Exception
    */
-  @Ignore
   @Test
   public void testCreateLookupTable() throws Exception {
 
-    CSVRecordInfo<CoLTaxonCsvField> record = PowerMockito.mock(CSVRecordInfo.class);
+    CSVRecordInfo<CoLTaxonCsvField> record = mock(CSVRecordInfo.class);
 
     when(record.get(CoLTaxonCsvField.taxonID)).thenReturn("6931870");
     when(record.get(CoLTaxonCsvField.identifier)).thenReturn(
@@ -211,11 +204,10 @@ public class CoLSynonymBatchTransformerTest {
    * 
    * @throws Exception
    */
-  @Ignore
   @Test
   public void testCreateSynonym() throws Exception {
 
-    CSVRecordInfo<CoLTaxonCsvField> record = PowerMockito.mock(CSVRecordInfo.class);
+    CSVRecordInfo<CoLTaxonCsvField> record = mock(CSVRecordInfo.class);
 
     when(record.get(CoLTaxonCsvField.taxonID)).thenReturn("6931870");
     when(record.get(CoLTaxonCsvField.identifier)).thenReturn(
@@ -272,11 +264,10 @@ public class CoLSynonymBatchTransformerTest {
    * 
    * @throws Exception
    */
-  @Ignore
   @Test
   public void testHasSynonym() throws Exception {
 
-    CSVRecordInfo<CoLTaxonCsvField> record = PowerMockito.mock(CSVRecordInfo.class);
+    CSVRecordInfo<CoLTaxonCsvField> record = mock(CSVRecordInfo.class);
 
     when(record.get(CoLTaxonCsvField.taxonID)).thenReturn("6931870");
     when(record.get(CoLTaxonCsvField.identifier)).thenReturn(

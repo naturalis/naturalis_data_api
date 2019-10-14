@@ -1,15 +1,14 @@
-/**
- * 
- */
 package nl.naturalis.nba.etl.geo;
 
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertNotNull;
+
 import java.io.File;
 import java.util.Arrays;
+
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
+
 import org.junit.Test;
 import nl.naturalis.nba.utils.reflect.ReflectionUtil;
 
@@ -17,16 +16,12 @@ import nl.naturalis.nba.utils.reflect.ReflectionUtil;
  * 
  * Test class for GeoImportUtil.java
  * 
- * @author Plabon
- *
  */
-@Ignore
 public class GeoImportUtilTest {
 
   /**
    * @throws java.lang.Exception
    */
-
   @Before
   public void setUp() throws Exception {}
 

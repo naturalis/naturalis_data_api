@@ -60,18 +60,12 @@ class CoLTaxonTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, Taxon
 		allowedTaxonRanks = Arrays.asList("species", "infraspecies");
 	}
 
-	private String colYear;
 	private String[] testGenera;
 
 	public CoLTaxonTransformer(ETLStatistics stats)
 	{
 		super(stats);
 		testGenera = getTestGenera();
-	}
-
-	public void setColYear(String colYear)
-	{
-		this.colYear = colYear;
 	}
 
 	@Override

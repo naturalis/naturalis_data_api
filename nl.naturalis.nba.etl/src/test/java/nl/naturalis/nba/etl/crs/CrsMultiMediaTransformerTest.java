@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +18,7 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.internal.util.reflection.Whitebox;
+
 import org.w3c.dom.Element;
 
 import nl.naturalis.nba.api.model.GatheringEvent;
@@ -74,7 +75,12 @@ public class CrsMultiMediaTransformerTest {
     List<MultiMediaObject> transformed = null;
     CrsMultiMediaTransformer crsMultiMediaTransformer = new CrsMultiMediaTransformer(etlStatistics);
     String[] testGenera = new String[] {"malus", "parus", "larus", "bombus", "rhododendron", "felix", "tulipa", "rosa", "canis", "passer", "trientalis"};
-    Whitebox.setInternalState(crsMultiMediaTransformer, "testGenera", testGenera);
+    
+    Class<CrsMultiMediaTransformer> testedClass = CrsMultiMediaTransformer.class;
+    Field privateField = testedClass.getDeclaredField("testGenera");
+    privateField.setAccessible(true);
+    privateField.set(crsMultiMediaTransformer, testGenera);
+    
     CrsExtractor extractor = new CrsExtractor(multimediaFile, etlStatistics);
 
     for (XMLRecordInfo extracted : extractor) {

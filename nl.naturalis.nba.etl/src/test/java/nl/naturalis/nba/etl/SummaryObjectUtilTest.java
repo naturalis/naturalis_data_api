@@ -2,13 +2,16 @@ package nl.naturalis.nba.etl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+
 import nl.naturalis.nba.api.model.DefaultClassification;
 import nl.naturalis.nba.api.model.Expert;
 import nl.naturalis.nba.api.model.GatheringEvent;
@@ -37,6 +40,7 @@ import nl.naturalis.nba.api.model.summary.SummarySpecimen;
 import nl.naturalis.nba.api.model.summary.SummarySpecimenIdentification;
 import nl.naturalis.nba.api.model.summary.SummaryTaxon;
 import nl.naturalis.nba.api.model.summary.SummaryVernacularName;
+
 import nl.naturalis.nba.utils.reflect.ReflectionUtil;
 
 /**
@@ -44,7 +48,6 @@ import nl.naturalis.nba.utils.reflect.ReflectionUtil;
  *
  */
 @SuppressWarnings({"unchecked"})
-@Ignore
 public class SummaryObjectUtilTest {
 
   /**
@@ -263,12 +266,15 @@ public class SummaryObjectUtilTest {
 
   /**
    * Test method for
-   * {@link nl.naturalis.nba.etl.SummaryObjectUtil#copySiteCoordinates(List<GatheringSiteCoordinates>
-   * )}.
+   * {@link nl.naturalis.nba.etl.SummaryObjectUtil#copySiteCoordinates(List<GatheringSiteCoordinates>)}.
    * 
-   * Test to verify copySiteCoordinates returns a an expected List<SummaryGatheringSiteCoordinates>
-   * object
+   * Test to verify copySiteCoordinates returns a an expected List<SummaryGatheringSiteCoordinates> object
+   * 
+   * NOTE (01-10-2019): this cannot not be tested because at the creation of GatheringSiteCoordinates no
+   * longer a GeoShape is created.
+   * 
    */
+  @Ignore
   @Test
   public void testCopySiteCoordinates() {
 
@@ -279,18 +285,15 @@ public class SummaryObjectUtilTest {
     List<GatheringSiteCoordinates> coordinates = new ArrayList<>();
     coordinates.add(siteCoordinates);
 
-    Object obj = ReflectionUtil.callStatic(SummaryObjectUtil.class, "copySiteCoordinates",
-        new Class[] {List.class}, new Object[] {coordinates});
+    Object obj = ReflectionUtil.callStatic(SummaryObjectUtil.class, "copySiteCoordinates", new Class[] {List.class}, new Object[] {coordinates});
     List<SummaryGatheringSiteCoordinates> actual = (List<SummaryGatheringSiteCoordinates>) obj;
 
     Double expectedLatitude = 51.433333;
     Double expectedLongitude = 5.016667;
 
     assertNotNull(actual);
-    assertEquals("01", expectedLatitude, actual.get(0).getGeoShape().getCoordinates().getLatitude(),
-        .000001);
-    assertEquals("02", expectedLongitude,
-        actual.get(0).getGeoShape().getCoordinates().getLongitude(), .000001);
+    assertEquals("01", expectedLatitude,  actual.get(0).getGeoShape().getCoordinates().getLatitude(), .000001);
+    assertEquals("02", expectedLongitude, actual.get(0).getGeoShape().getCoordinates().getLongitude(), .000001);
   }
 
   /**

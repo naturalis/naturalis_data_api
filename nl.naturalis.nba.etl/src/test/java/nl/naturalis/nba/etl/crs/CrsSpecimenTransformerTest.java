@@ -18,7 +18,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Element;
-
+import nl.naturalis.nba.api.model.Agent;
 import nl.naturalis.nba.api.model.AreaClass;
 import nl.naturalis.nba.api.model.AssociatedTaxon;
 import nl.naturalis.nba.api.model.BioStratigraphy;
@@ -157,13 +157,13 @@ public class CrsSpecimenTransformerTest {
     expectedSid.setRockType("Test_Rock");
     expectedSid.setAssociatedFossilAssemblage("Test_Assemblage");
     expectedSid.setRockMineralUsage("Test_Minerals");
-
-    assertTrue(identification.isPreferred());
-
-    assertEquals("01",expectedSid.getRockType(), identification.getRockType());
-    assertEquals("02",expectedSid.getAssociatedFossilAssemblage(),
-        identification.getAssociatedFossilAssemblage());
-    assertEquals("03",expectedSid.getRockMineralUsage(), identification.getRockMineralUsage());
+    expectedSid.addIdentifier(new Agent("Co de Boswachter"));
+    
+    assertTrue("01", identification.isPreferred());
+    assertEquals("02",expectedSid.getRockType(), identification.getRockType());
+    assertEquals("03",expectedSid.getAssociatedFossilAssemblage(), identification.getAssociatedFossilAssemblage());
+    assertEquals("04",expectedSid.getRockMineralUsage(), identification.getRockMineralUsage());
+    assertEquals("05",expectedSid.getIdentifiers().get(0).getAgentText(), identification.getIdentifiers().get(0).getAgentText());
   }
 
   /**

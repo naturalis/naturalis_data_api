@@ -28,6 +28,7 @@ import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QueryResultItem;
 import nl.naturalis.nba.api.QuerySpec;
+import nl.naturalis.nba.api.model.Agent;
 import nl.naturalis.nba.api.model.AreaClass;
 import nl.naturalis.nba.api.model.AssociatedTaxon;
 import nl.naturalis.nba.api.model.BioStratigraphy;
@@ -360,6 +361,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
         si.setPreferred(s == null || s.equals("1"));
         si.setTypeStatus(getTypeStatus(elem));
         si.setDateIdentified(date(elem, "abcd:IdentificationDate"));
+        si.addIdentifier(new Agent(val(elem, "abcd:Identifier")));
         si.setAssociatedFossilAssemblage(val(elem, "abcd:AssociatedFossilAssemblage"));
         si.setAssociatedMineralName(val(elem, "abcd:AssociatedMineralName"));
         si.setRockMineralUsage(val(elem, "abcd:RockMineralUsage"));

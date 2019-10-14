@@ -3,17 +3,16 @@ package nl.naturalis.nba.etl.geo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
 import java.util.List;
+
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+
 import nl.naturalis.nba.api.model.GeoArea;
 import nl.naturalis.nba.etl.AbstractTransformer;
 import nl.naturalis.nba.etl.CSVRecordInfo;
@@ -24,9 +23,6 @@ import nl.naturalis.nba.etl.utils.CommonReflectionUtil;
  * Test class for GeoTransformer.java
  *
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(CSVRecordInfo.class)
-@PowerMockIgnore("javax.management.*")
 @SuppressWarnings({"unchecked"})
 public class GeoTransformerTest {
 
@@ -34,8 +30,7 @@ public class GeoTransformerTest {
    * @throws java.lang.Exception
    */
   @Before
-  public void setUp() throws Exception {
-  }
+  public void setUp() throws Exception {}
 
   /**
    * @throws java.lang.Exception
@@ -50,11 +45,10 @@ public class GeoTransformerTest {
    * 
    * @throws Exception
    */
-  @Ignore
   @Test
   public void testDoTransform() throws Exception {
 
-    CSVRecordInfo<GeoCsvField> record = PowerMockito.mock(CSVRecordInfo.class);
+    CSVRecordInfo<GeoCsvField> record = mock(CSVRecordInfo.class);
     ETLStatistics etlStatistics = new ETLStatistics();
 
     String geoJson =

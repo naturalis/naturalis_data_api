@@ -6,6 +6,7 @@ import static nl.naturalis.nba.dao.util.es.ESUtil.getElasticsearchId;
 import static nl.naturalis.nba.etl.ETLConstants.LICENCE;
 import static nl.naturalis.nba.etl.ETLConstants.LICENCE_TYPE;
 import static nl.naturalis.nba.etl.ETLConstants.SOURCE_INSTITUTION_ID;
+import static nl.naturalis.nba.etl.MimeTypeCache.MEDIALIB_HTTPS_URL;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.DAYIDENT;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.IMAGELIST;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.MONTHIDENT;
@@ -235,14 +236,27 @@ class BrahmsMultiMediaTransformer extends BrahmsTransformer<MultiMediaObject> {/
 	private ServiceAccessPoint newServiceAccessPoint(URI uri)
 	{
     String mimeType = DEFAULT_MIME_TYPE;
-    Pattern pattern = Pattern.compile("^.*id/(.*)/format/.*$");
+    Pattern pattern = Pattern.compile("^.*id/(.*)/format/(.*)$");
     Matcher matcher = pattern.matcher(uri.getRawPath());
     String mediaObjectId = "";
+    String format = "large";
     if (matcher.matches()) {
       mediaObjectId = matcher.group(1);
+      format = matcher.group(2);
       mimeType = mimetypeCache.getMimeType(mediaObjectId);
+    } else {
+      return null;
     }
-		return new ServiceAccessPoint(uri, mimeType, DEFAULT_IMAGE_QUALITY);
+    URI httpsUri;
+    try {
+      httpsUri = new URI(MEDIALIB_HTTPS_URL + mediaObjectId + "/format/" + format );
+    } catch (URISyntaxException e) {
+      if (logger.isDebugEnabled()) {
+        debug("Incorrect URI for use in ServiceAccessPoint");
+      }
+      return null;
+    }
+		return new ServiceAccessPoint(httpsUri, mimeType, DEFAULT_IMAGE_QUALITY);
 	}
 
 }

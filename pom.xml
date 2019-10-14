@@ -51,9 +51,9 @@
 		<apache-http-client.version>4.5.6</apache-http-client.version>
 		<apache-http-core.version>4.4.10</apache-http-core.version>
 		<apache-commons-io.version>2.6</apache-commons-io.version>
-		<apache-commons-lang3.version>3.5</apache-commons-lang3.version>
-		<apache-commons-text.version>1.1</apache-commons-text.version>
-		<apache-commons-compress.version>1.18</apache-commons-compress.version>
+		<apache-commons-lang3.version>3.9</apache-commons-lang3.version>
+		<apache-commons-text.version>1.8</apache-commons-text.version>
+		<apache-commons-compress.version>1.19</apache-commons-compress.version>
 		<apache-logging.version>2.7</apache-logging.version>
 
 		<elasticsearch.version>5.6.15</elasticsearch.version>

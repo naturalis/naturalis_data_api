@@ -35,18 +35,18 @@
 		<!-- *** Check for updates: mvn versions:display-dependency-updates -->
 		<!-- *** Check dependencies: mvn dependency:analyze -->
 		<javax-xml-bind.version>2.3.1</javax-xml-bind.version>
-		<javax-mail.version>1.5.5</javax-mail.version>
+		<javax-mail.version>1.6.2</javax-mail.version>
 		<javax-activation.version>1.1.1</javax-activation.version>
 		<javax-persistence.version>2.1.0-RC2</javax-persistence.version>
 		<javax-jms.version>1.0.1.Final</javax-jms.version>
 		<javax.ws.rs-api.version>2.0.1</javax.ws.rs-api.version>
-		<javax-ejb.version>3.2</javax-ejb.version>
+		<javax-ejb.version>3.2.2</javax-ejb.version>
 		<javax-cdi-api.version>1.2</javax-cdi-api.version>
 		<javax-servlet-api.version>2.5</javax-servlet-api.version>
 
-		<jackson.version>2.9.9</jackson.version>
-		<jackson-databind.version>2.9.10</jackson-databind.version>
-		<geojson.version>1.8</geojson.version>
+		<jackson.version>2.10.0.pr3</jackson.version>
+		<jackson-databind.version>2.10.0.pr3</jackson-databind.version>
+		<geojson.version>1.12</geojson.version>
 
 		<apache-http-client.version>4.5.6</apache-http-client.version>
 		<apache-http-core.version>4.4.10</apache-http-core.version>
@@ -60,25 +60,25 @@
 		<apache-lucene.version>6.6.1</apache-lucene.version>
 
 		<osgi.version>4.3.1</osgi.version>
-		<com.univocity.version>2.7.5</com.univocity.version>
-		<com.lmax.disruptor.version>3.3.5</com.lmax.disruptor.version>
-		<com.conversantmedia.disruptor.version>1.2.8-JDK7</com.conversantmedia.disruptor.version>
+		<com.univocity.version>2.8.3</com.univocity.version>
+		<com.lmax.disruptor.version>3.4.2</com.lmax.disruptor.version>
+		<com.conversantmedia.disruptor.version>1.2.15</com.conversantmedia.disruptor.version>
 		<jctools.version>1.2.1</jctools.version>
 		<snakeyaml.version>1.15</snakeyaml.version>
 		<stax2.version>3.1.4</stax2.version>
-		<woodstox.version>5.0.2</woodstox.version>
+		<woodstox.version>6.0.2</woodstox.version>
 		<fusesource.version>1.13</fusesource.version>
 
 		<kafka-clients.version>0.10.0.1</kafka-clients.version>
 		<lz4.version>1.3.0</lz4.version>
 		<jeromq.version>0.3.5</jeromq.version>
-		<com.beust.version>1.48</com.beust.version>
-		<swagger.version>1.5.13</swagger.version>
+		<com.beust.version>1.78</com.beust.version>
+		<swagger.version>1.5.24</swagger.version>
 		<resteasy-jaxrs.version>3.0.19.Final</resteasy-jaxrs.version>
 		<org.reflections.version>0.9.11</org.reflections.version>
 		<spatial4j.version>0.6</spatial4j.version>
 		<joda-time.version>2.9.5</joda-time.version>
-		<com.h2database.version>1.4.197</com.h2database.version>
+		<com.h2database.version>1.4.200</com.h2database.version>
 
 		<junit.version>4.12</junit.version>
 		<mockito-core.version>3.1.0</mockito-core.version>

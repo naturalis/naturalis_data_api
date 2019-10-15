@@ -19,4 +19,4 @@ ADD log4j2.xml /payload/software/conf/log4j2.xml
 WORKDIR /payload/software/sh
 ADD run.sh run.sh
 RUN chmod +x run.sh
-CMD ./run.sh
+#CMD ./run.sh

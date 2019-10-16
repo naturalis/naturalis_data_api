@@ -28,7 +28,13 @@ public final class ETLUtil {
 
   static {
     purlBuilder = getPurlBuilder();
-    purlSpecimenPath = purlBuilder.getPath() + "/naturalis/specimen/";
+    // TODO: why is this???
+//    if (purlBuilder.getPath() != null) {
+//      purlSpecimenPath = purlBuilder.getPath() + "/naturalis/specimen/";
+//    } else {
+//      purlSpecimenPath = "/naturalis/specimen/";
+//    }
+    purlSpecimenPath = "/naturalis/specimen/";
   }
 
    public ETLUtil() {}

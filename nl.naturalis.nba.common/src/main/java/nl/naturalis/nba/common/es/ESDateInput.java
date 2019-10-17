@@ -89,7 +89,7 @@ public final class ESDateInput {
 	 * Formats a classic {@link Date java.util.Date} string according to the
 	 * date format pattern used by the NBA indices.
 	 * 
-	 * @param dateString
+	 * @param date
 	 * @return
 	 */
 	public static String format(Date date)

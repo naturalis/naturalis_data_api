@@ -26,7 +26,6 @@ import nl.naturalis.nba.utils.reflect.ReflectionUtil;
 /**
  * Test class for ETLUtil.java
  */
-@Ignore
 public class ETLUtilTest {
   
   @Test
@@ -59,7 +58,7 @@ public class ETLUtilTest {
     String purl = ETLUtil.getSpecimenPurl("L  0219");
 
     assertNotNull(purl);
-    assertEquals("01", "http://data.biodiversitydata.nl/naturalis/specimen/L%20%200219", purl);
+    assertEquals("01", "https://data.biodiversitydata.nl/naturalis/specimen/L%20%200219", purl);
   }
 
   /**
@@ -169,13 +168,12 @@ public class ETLUtilTest {
    * 
    * @throws Exception
    * 
-   *         Test to verify the array of genera that is returned by getTestGeneral
+   * Test to verify the array of genera that is returned by getTestGeneral
    */
   @Test
   public void testGetTestGenera() throws Exception {
     String[] actual = ETLUtil.getTestGenera();
-    String[] expected = {"malus", "parus", "larus", "bombus", "rhododendron", "felix", "tulipa",
-        "rosa", "canis", "passer", "trientalis"};
+    String[] expected = {"malus", "parus", "larus", "bombus", "rhododendron", "felix", "tulipa", "rosa", "canis", "passer", "trientalis"};
 
     assertNotNull("01",expected);
     assertArrayEquals("02",expected, actual);
@@ -191,9 +189,8 @@ public class ETLUtilTest {
   @Test
   public void testGetPurlBuilder() throws Exception {
 
-    String expectedUrl = "http://data.biodiversitydata.nl";
-    URIBuilder actualBuilder =
-        (URIBuilder) ReflectionUtil.callStatic(ETLUtil.class, "getPurlBuilder", new Object[] {});
+    String expectedUrl = "https://data.biodiversitydata.nl";
+    URIBuilder actualBuilder = (URIBuilder) ReflectionUtil.callStatic(ETLUtil.class, "getPurlBuilder", new Object[] {});
 
     assertNotNull("01",actualBuilder);
     assertEquals("02",expectedUrl, actualBuilder.toString());

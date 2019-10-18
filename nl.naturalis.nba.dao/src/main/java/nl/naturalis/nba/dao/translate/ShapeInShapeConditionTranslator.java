@@ -1,8 +1,9 @@
 package nl.naturalis.nba.dao.translate;
 
-import static org.elasticsearch.common.geo.builders.ShapeBuilders.newMultiPolygon;
-import static org.elasticsearch.common.geo.builders.ShapeBuilders.newPolygon;
-import static org.elasticsearch.index.query.QueryBuilders.geoShapeQuery;
+import org.locationtech.spatial4j.shape.Shape;
+//import static org.elasticsearch.common.geo.builders.ShapeBuilders.newMultiPolygon;
+//import static org.elasticsearch.common.geo.builders.ShapeBuilders.newPolygon;
+//import static org.elasticsearch.index.query.QueryBuilders.geoShapeQuery;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -33,6 +34,9 @@ import nl.naturalis.nba.dao.exception.DaoException;
  * into a {@link GeoJsonObject}).
  * 
  * @author Ayco Holleman
+ * 
+ * 
+ * TODO: checkout https://www.elastic.co/guide/en/elasticsearch/client/java-api/current/java-geo-queries.html
  *
  */
 class ShapeInShapeConditionTranslator extends ConditionTranslator {
@@ -45,13 +49,14 @@ class ShapeInShapeConditionTranslator extends ConditionTranslator {
 	@Override
 	QueryBuilder translateCondition() throws InvalidConditionException
 	{
-		String field = condition.getField().toString();
-		try {
-			return geoShapeQuery(field, getShape());
-		}
-		catch (IOException e) {
-			throw new DaoException(e);
-		}
+//		String field = condition.getField().toString();
+//		try {
+//			return geoShapeQuery(field, getShape());
+//		}
+//		catch (IOException e) {
+//			throw new DaoException(e);
+//		}
+	  return null;
 	}
 
 	@Override
@@ -61,21 +66,22 @@ class ShapeInShapeConditionTranslator extends ConditionTranslator {
 
 	private ShapeBuilder getShape() throws InvalidConditionException
 	{
-		Object value = condition.getValue();
-		Class<?> cls = value.getClass();
-		if (cls == Polygon.class) {
-			Polygon geoJsonPolygon = (Polygon) value;
-			return createESPolygon(geoJsonPolygon);
-		}
-		else if (cls == MultiPolygon.class) {
-			MultiPolygon geoJsonMulti = (MultiPolygon) value;
-			MultiPolygonBuilder elasticMulti = newMultiPolygon();
-			for (List<List<LngLatAlt>> geoJsonPolygon : geoJsonMulti.getCoordinates()) {
-				elasticMulti.polygon(createESPolygon(geoJsonPolygon));
-			}
-			return elasticMulti;
-		}
-		throw new InvalidConditionException("Unsupported geo shape: " + cls.getSimpleName());
+//		Object value = condition.getValue();
+//		Class<?> cls = value.getClass();
+//		if (cls == Polygon.class) {
+//			Polygon geoJsonPolygon = (Polygon) value;
+//			return createESPolygon(geoJsonPolygon);
+//		}
+//		else if (cls == MultiPolygon.class) {
+//			MultiPolygon geoJsonMulti = (MultiPolygon) value;
+//			MultiPolygonBuilder elasticMulti = newMultiPolygon();
+//			for (List<List<LngLatAlt>> geoJsonPolygon : geoJsonMulti.getCoordinates()) {
+//				elasticMulti.polygon(createESPolygon(geoJsonPolygon));
+//			}
+//			return elasticMulti;
+//		}
+//		throw new InvalidConditionException("Unsupported geo shape: " + cls.getSimpleName());
+	  return null;
 	}
 
 	private static PolygonBuilder createESPolygon(Polygon geoJsonPolygon)
@@ -85,15 +91,16 @@ class ShapeInShapeConditionTranslator extends ConditionTranslator {
 
 	private static PolygonBuilder createESPolygon(List<List<LngLatAlt>> coords)
 	{
-		Iterator<List<LngLatAlt>> rings = coords.iterator();
-		List<LngLatAlt> exterior = rings.next();
-		PolygonBuilder esPolygon = newPolygon(convertRing(exterior));
-		while (rings.hasNext()) {
-			List<LngLatAlt> hole = rings.next();
-			List<Coordinate> coordinates = convertRing(hole);
-			esPolygon.hole(new LineStringBuilder(coordinates));
-		}
-		return esPolygon;
+//		Iterator<List<LngLatAlt>> rings = coords.iterator();
+//		List<LngLatAlt> exterior = rings.next();
+//		PolygonBuilder esPolygon = newPolygon(convertRing(exterior));
+//		while (rings.hasNext()) {
+//			List<LngLatAlt> hole = rings.next();
+//			List<Coordinate> coordinates = convertRing(hole);
+//			esPolygon.hole(new LineStringBuilder(coordinates));
+//		}
+//		return esPolygon;
+	  return null;
 	}
 
 	private static List<Coordinate> convertRing(List<LngLatAlt> polyonCoords)

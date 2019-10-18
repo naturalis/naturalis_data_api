@@ -5,13 +5,17 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.apache.logging.log4j.Logger;
+
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.client.AdminClient;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.IndicesAdminClient;
+import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.QueryBuilder;
+
 import org.junit.Test;
+
 import nl.naturalis.nba.api.model.GeoArea;
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.api.model.MultiMediaObject;
@@ -180,7 +184,7 @@ public class DaoTestUtil {
 		return client().admin();
 	}
 
-	private static Client client()
+	private static RestHighLevelClient client()
 	{
 		return ESClientManager.getInstance().getClient();
 	}

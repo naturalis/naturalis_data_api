@@ -102,7 +102,6 @@
 			<artifactId>swagger-annotations</artifactId>
 		</dependency>
 
-
 		<!-- TEST -->
 		<dependency>
 			<groupId>junit</groupId>

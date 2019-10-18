@@ -43,7 +43,8 @@
 			<artifactId>jaxb-api</artifactId>
 		</dependency>
 
-        <!-- This dependency is needed, even though "mvn dependency:analyze" tells us it isn't-->
+		<!-- This dependency is needed, even though "mvn dependency:analyze" tells 
+			us it isn't -->
 		<dependency>
 			<groupId>org.glassfish.jaxb</groupId>
 			<artifactId>jaxb-runtime</artifactId>
@@ -57,7 +58,12 @@
 
 		<dependency>
 			<groupId>org.elasticsearch.client</groupId>
-			<artifactId>transport</artifactId>
+			<artifactId>elasticsearch-rest-client</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.elasticsearch.client</groupId>
+			<artifactId>elasticsearch-rest-high-level-client</artifactId>
 		</dependency>
 
 		<dependency>
@@ -65,6 +71,12 @@
 			<artifactId>elasticsearch</artifactId>
 		</dependency>
 
+        <!-- Needed b/c elasticsearch doesn't hide it behind its API -->
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-join</artifactId>
+        </dependency>
+        
 		<dependency>
 			<groupId>com.vividsolutions</groupId>
 			<artifactId>jts</artifactId>
@@ -91,20 +103,25 @@
 			<artifactId>geojson-jackson</artifactId>
 		</dependency>
 
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-text</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>org.locationtech.spatial4j</groupId>
+			<artifactId>spatial4j</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.locationtech.jts</groupId>
+			<artifactId>jts-core</artifactId>
+		</dependency>
+
+
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-text</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>com.univocity</groupId>
 			<artifactId>univocity-parsers</artifactId>
-		</dependency>
-
-		<dependency>
-			<!-- Needed b/c elasticsearch doesn't hide it behind its API -->
-			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-join</artifactId>
 		</dependency>
 
 		<dependency>

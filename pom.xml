@@ -54,15 +54,15 @@
 		<apache-commons-compress.version>1.19</apache-commons-compress.version>
 		<apache-logging.version>2.12.1</apache-logging.version>
 
-		<elasticsearch.version>5.6.13</elasticsearch.version>
-		<apache-lucene.version>6.6.1</apache-lucene.version>
+		<elasticsearch.version>7.4.0</elasticsearch.version>
+		<apache-lucene.version>8.2.0</apache-lucene.version>
 
 		<!-- JSON -->
 		<jackson.version>2.10.0</jackson.version>
 		<jackson-databind.version>2.10.0</jackson-databind.version>
 		<resteasy-jaxrs.version>3.9.0.Final</resteasy-jaxrs.version>
 		<geojson.version>1.12</geojson.version>
-		<spatial4j.version>0.6</spatial4j.version>
+		<spatial4j.version>0.7</spatial4j.version>
 
 		<osgi.version>6.0.0</osgi.version>
 		<com.univocity.version>2.8.3</com.univocity.version>
@@ -188,10 +188,32 @@
 				<version>${geojson.version}</version>
 			</dependency>
 
+			<dependency>
+				<groupId>org.locationtech.spatial4j</groupId>
+				<artifactId>spatial4j</artifactId>
+				<version>${spatial4j.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.locationtech.jts</groupId>
+				<artifactId>jts-core</artifactId>
+				<version>1.15.0</version>
+				<exclusions>
+					<exclusion>
+						<groupId>xerces</groupId>
+						<artifactId>xercesImpl</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+
 			<!-- ELASTICSEARCH / LUCENE -->
 			<dependency>
 				<groupId>org.elasticsearch.client</groupId>
-				<artifactId>transport</artifactId>
+				<artifactId>elasticsearch-rest-client</artifactId>
+				<version>${elasticsearch.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.elasticsearch.client</groupId>
+				<artifactId>elasticsearch-rest-high-level-client</artifactId>
 				<version>${elasticsearch.version}</version>
 			</dependency>
 			<dependency>
@@ -199,15 +221,11 @@
 				<artifactId>elasticsearch</artifactId>
 				<version>${elasticsearch.version}</version>
 			</dependency>
+			
 			<dependency>
 				<groupId>org.apache.lucene</groupId>
 				<artifactId>lucene-join</artifactId>
-				<version>6.3.0</version>
-			</dependency>
-			<dependency>
-				<groupId>joda-time</groupId>
-				<artifactId>joda-time</artifactId>
-				<version>${joda-time.version}</version>
+				<version>${apache-lucene.version}</version>
 			</dependency>
 
 			<!-- APACHE -->
@@ -258,6 +276,11 @@
 			</dependency>
 
 			<!-- OTHER -->
+			<dependency>
+				<groupId>joda-time</groupId>
+				<artifactId>joda-time</artifactId>
+				<version>${joda-time.version}</version>
+			</dependency>
 			<dependency>
 				<groupId>org.jctools</groupId>
 				<artifactId>jctools-core</artifactId>
@@ -400,11 +423,6 @@
 				<groupId>org.reflections</groupId>
 				<artifactId>reflections</artifactId>
 				<version>${org.reflections.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.locationtech.spatial4j</groupId>
-				<artifactId>spatial4j</artifactId>
-				<version>${spatial4j.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.univocity</groupId>

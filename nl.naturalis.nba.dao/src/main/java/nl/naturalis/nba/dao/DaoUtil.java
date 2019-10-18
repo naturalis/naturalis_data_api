@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.logging.log4j.Logger;
-import org.elasticsearch.search.aggregations.bucket.terms.support.IncludeExclude;
+//import org.elasticsearch.search.aggregations.bucket.terms.support.IncludeExclude;
 import org.geojson.GeoJsonObject;
 
 import nl.naturalis.nba.api.Filter;
@@ -123,22 +123,24 @@ public class DaoUtil {
 	static final String ERR_BAD_FILTER = "Accept filter and Reject filter must "
 			+ "have the same type (regular expression or string array)";
 
-	public static IncludeExclude translateFilter(Filter filter) throws InvalidQueryException
+	//public static IncludeExclude translateFilter(Filter filter) throws InvalidQueryException
+	public static Object translateFilter(Filter filter) throws InvalidQueryException
 	{
-		IncludeExclude ie = null;
-		if (filter.getAcceptRegexp() != null || filter.getRejectRegexp() != null) {
-			if (filter.getAcceptValues() != null || filter.getRejectValues() != null) {
-				throw new InvalidQueryException(ERR_BAD_FILTER);
-			}
-			ie = new IncludeExclude(filter.getAcceptRegexp(), filter.getRejectRegexp());
-		}
-		else if (filter.getAcceptValues() != null || filter.getRejectValues() != null) {
-			if (filter.getAcceptRegexp() != null || filter.getRejectRegexp() != null) {
-				throw new InvalidQueryException(ERR_BAD_FILTER);
-			}
-			ie = new IncludeExclude(filter.getAcceptValues(), filter.getRejectValues());
-		}
-		return ie;
+//		IncludeExclude ie = null;
+//		if (filter.getAcceptRegexp() != null || filter.getRejectRegexp() != null) {
+//			if (filter.getAcceptValues() != null || filter.getRejectValues() != null) {
+//				throw new InvalidQueryException(ERR_BAD_FILTER);
+//			}
+//			ie = new IncludeExclude(filter.getAcceptRegexp(), filter.getRejectRegexp());
+//		}
+//		else if (filter.getAcceptValues() != null || filter.getRejectValues() != null) {
+//			if (filter.getAcceptRegexp() != null || filter.getRejectRegexp() != null) {
+//				throw new InvalidQueryException(ERR_BAD_FILTER);
+//			}
+//			ie = new IncludeExclude(filter.getAcceptValues(), filter.getRejectValues());
+//		}
+//		return ie;
+	  return null;
 	}
 
 	private static void prune(QueryCondition condition, List<QueryCondition> siblings)

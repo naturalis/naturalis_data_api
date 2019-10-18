@@ -1,7 +1,6 @@
 package nl.naturalis.nba.dao.format;
 
 import java.net.URI;
-import java.util.Map;
 
 /**
  * <p>
@@ -11,8 +10,8 @@ import java.util.Map;
  * Different formats have different string escaping rules, so for each format
  * there will be different implementations of {@code IField}. However, the main
  * purpose of this interface is to define where the field gets its value
- * <b>from</b> rather than how to format the value. The {@link #getValue(Map)
- * getValue} method takes a Map&lt;String, Object&gt; instance as input.
+ * <b>from</b> rather than how to format the value. The {@link #getValue 
+ * EntityObject entity} method takes a EntityObject instance as input.
  * Implementations of {@code IField} define how to extract a value from this
  * map. Although the use of a Map&lt;String, Object&gt; instance is strongly
  * suggestive of Elasticsearch (it is what you get when you call the
@@ -31,13 +30,13 @@ import java.util.Map;
  * the value to be written. The calculator may or may not use the data contained
  * in the Elasticsearch document.
  * <li><b>Constant fields</b> write a fixed value. This type of fields ignores
- * the Elasticsearch document passed to the {@link #getValue(Map) getValue}
+ * the Elasticsearch document passed to the {@link #getValue EntityObject entity}
  * method and simply return a string literal.
  * </ol>
  * </p>
  * 
- * @see ITypedFieldFactory
- * @see FieldConfigurator
+ * @see IFieldFactory
+ * @see FieldBuilder
  * 
  * @author Ayco Holleman
  *

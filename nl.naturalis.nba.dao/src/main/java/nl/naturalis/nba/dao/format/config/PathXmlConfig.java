@@ -21,9 +21,9 @@ import javax.xml.bind.annotation.XmlValue;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="PathXmlConfig">
- *   &lt;simpleContent>
- *     &lt;extension base="&lt;http://www.w3.org/2001/XMLSchema>string">
+ * &lt;complexType name="PathXmlConfig"&gt;
+ *   &lt;simpleContent&gt;
+ *     &lt;extension base="&lt;http://www.w3.org/2001/XMLSchema>string"&gt;
  *       &lt;attribute name="relative" type="{http://www.w3.org/2001/XMLSchema}boolean" />
  *     &lt;/extension>
  *   &lt;/simpleContent>

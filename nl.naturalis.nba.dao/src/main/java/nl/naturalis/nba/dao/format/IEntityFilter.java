@@ -1,6 +1,7 @@
 package nl.naturalis.nba.dao.format;
 
 import java.util.Map;
+import nl.naturalis.nba.api.QuerySpec;
 
 /**
  * An entity filter implements custom logic to determine if the

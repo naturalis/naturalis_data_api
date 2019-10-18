@@ -3,7 +3,6 @@ package nl.naturalis.nba.dao.format;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.common.InvalidPathException;
@@ -56,7 +55,7 @@ public class DocumentFlattener {
 	 * @param entitiesPerDocument
 	 *            An estimate of the average number of entities per document.
 	 *            This will be used as the initial list size for the list
-	 *            returned by the {@link #flatten(Map) flatten} method.
+	 *            returned by the {@link #flatten Object document} method.
 	 */
 	public DocumentFlattener(Path pathToEntity, int entitiesPerDocument)
 	{

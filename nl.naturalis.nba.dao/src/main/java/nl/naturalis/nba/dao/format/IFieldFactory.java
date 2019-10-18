@@ -5,7 +5,7 @@ import java.net.URI;
 import nl.naturalis.nba.api.Path;
 
 /**
- * A {@code ITypedFieldFactory} produces format-specific versions of data set
+ * A {@code I FieldFactory} produces format-specific versions of data set
  * fields. For each format (CSV, XML, etc.) a concrete implementation must be
  * provided that produces {@link IField} instances that format and escape values
  * as appropriate for that format.
@@ -33,8 +33,8 @@ public interface IFieldFactory {
 	 * 
 	 * @param name
 	 * @param term
+	 * @param isCoreId
 	 * @param calculator
-	 * @param args
 	 * @return
 	 */
 	IField createdCalculatedField(String name, URI term, Boolean isCoreId, ICalculator calculator)

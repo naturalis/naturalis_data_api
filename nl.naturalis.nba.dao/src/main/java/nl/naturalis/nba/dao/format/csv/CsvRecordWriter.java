@@ -1,11 +1,10 @@
 package nl.naturalis.nba.dao.format.csv;
 
-import static org.apache.commons.lang3.StringEscapeUtils.escapeCsv;
+import static org.apache.commons.text.StringEscapeUtils.escapeCsv;
 
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.Map;
-
 import nl.naturalis.nba.dao.format.DataSetWriteException;
 import nl.naturalis.nba.dao.format.EntityObject;
 import nl.naturalis.nba.dao.format.IField;

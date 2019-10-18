@@ -2,7 +2,8 @@ package nl.naturalis.nba.utils.debug;
 
 import static nl.naturalis.nba.utils.ClassUtil.isNumber;
 import static nl.naturalis.nba.utils.StringUtil.zpad;
-import static org.apache.commons.lang3.StringEscapeUtils.escapeJava;
+
+import static org.apache.commons.text.StringEscapeUtils.escapeJava;
 
 import java.io.File;
 import java.io.IOException;

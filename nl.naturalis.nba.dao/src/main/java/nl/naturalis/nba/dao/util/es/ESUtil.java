@@ -1,8 +1,11 @@
 package nl.naturalis.nba.dao.util.es;
 
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
+import static nl.naturalis.nba.utils.StringUtil.fromInputStream;
+
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -10,31 +13,35 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import org.apache.logging.log4j.Logger;
-import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
-import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
+import org.elasticsearch.ElasticsearchException;
+import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequestBuilder;
-import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
 import org.elasticsearch.action.admin.indices.mapping.put.PutMappingRequestBuilder;
-import org.elasticsearch.action.admin.indices.mapping.put.PutMappingResponse;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequestBuilder;
 import org.elasticsearch.action.admin.indices.refresh.RefreshResponse;
 import org.elasticsearch.action.admin.indices.settings.get.GetSettingsRequest;
 import org.elasticsearch.action.admin.indices.settings.get.GetSettingsResponse;
 import org.elasticsearch.action.admin.indices.settings.put.UpdateSettingsRequest;
-import org.elasticsearch.action.admin.indices.settings.put.UpdateSettingsResponse;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.get.GetResponse;
+import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.IndicesAdminClient;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.client.core.AcknowledgedResponse;
+import org.elasticsearch.client.indices.CreateIndexRequest;
+import org.elasticsearch.client.indices.CreateIndexResponse;
 import org.elasticsearch.common.bytes.BytesReference;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.settings.Settings.Builder;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.IndexNotFoundException;
+import org.elasticsearch.rest.RestStatus;
 import org.elasticsearch.search.SearchHit;
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QuerySpec;
@@ -65,7 +72,7 @@ public class ESUtil {
    * 
    * @return
    */
-  public static Client esClient() {
+  public static RestHighLevelClient esClient() {
     return ESClientManager.getInstance().getClient();
   }
 
@@ -98,15 +105,13 @@ public class ESUtil {
    * @param dt
    * @return
    */
-  public static SearchRequestBuilder newSearchRequest(DocumentType<?> dt) {
+  public static SearchRequest newSearchRequest(DocumentType<?> dt) {
     String index = dt.getIndexInfo().getName();
     String type = dt.getName();
     if (logger.isDebugEnabled()) {
       logger.debug("New search request: {}/{}", index, type);
     }
-    SearchRequestBuilder request = esClient().prepareSearch(index);
-    request.setTypes(type);
-    return request;
+    return new SearchRequest(index);
   }
 
   /**
@@ -235,16 +240,33 @@ public class ESUtil {
    */
   public static void deleteIndex(String index) {
     logger.info("Deleting index {}", index);
-    DeleteIndexRequestBuilder request = indices().prepareDelete(index);
+
+    // ES5
+//    DeleteIndexRequestBuilder request = indices().prepareDelete(index);
+//    try {
+//      DeleteIndexResponse response = request.execute().actionGet();
+//      if (!response.isAcknowledged()) {
+//        throw new RuntimeException("Failed to delete index " + index);
+//      }
+//      logger.info("Index deleted");
+//    } catch (IndexNotFoundException e) {
+//      logger.info("No such index \"{}\" (nothing deleted)", index);
+//    }
+
+    // ES7
     try {
-      DeleteIndexResponse response = request.execute().actionGet();
-      if (!response.isAcknowledged()) {
-        throw new RuntimeException("Failed to delete index " + index);
-      }
+      DeleteIndexRequest request = new DeleteIndexRequest(index);
+      esClient().indices().delete(request, RequestOptions.DEFAULT);
       logger.info("Index deleted");
-    } catch (IndexNotFoundException e) {
+    } catch (ElasticsearchException exception) {
+      if (exception.status() == RestStatus.NOT_FOUND) {
+        logger.info("No such index \"{}\" (nothing deleted)", index);
+      }
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
       logger.info("No such index \"{}\" (nothing deleted)", index);
     }
+
   }
 
   /**
@@ -278,24 +300,42 @@ public class ESUtil {
     // First load non-user-configurable settings
     String resource = "/es-settings.json";
     InputStream is = ESUtil.class.getResourceAsStream(resource);
-    Builder builder = Settings.builder();
+    
+    // ES5
+//    Builder builder = Settings.builder();
+//    try {
+//      builder.loadFromStream(resource, is);
+//    } catch (IOException e) {
+//      throw new DaoException(e);
+//    }
+//    // Then add user-configurable settings
+//    builder.put("index.number_of_shards", indexInfo.getNumShards());
+//    builder.put("index.number_of_replicas", indexInfo.getNumReplicas());
+//    CreateIndexRequestBuilder request = indices().prepareCreate(index);
+//    request.setSettings(builder.build());
+//    CreateIndexResponse response = request.execute().actionGet();
+//    if (!response.isAcknowledged()) {
+//      throw new DaoException("Failed to create index " + index);
+//    }
+//    for (DocumentType<?> dt : indexInfo.getTypes()) {
+//      createType(dt);
+//    }
+    
+    // ES7
+    CreateIndexRequest request = new CreateIndexRequest(index); 
+    String result = fromInputStream(is);
+    request.settings(result, XContentType.JSON);
+    request.settings(Settings.builder() 
+        .put("index.number_of_shards", indexInfo.getNumShards())
+        .put("index.number_of_replicas", indexInfo.getNumReplicas())
+    );
     try {
-      builder.loadFromStream(resource, is);
+      esClient().indices().create(request, RequestOptions.DEFAULT);
+      logger.info("Index {} created", index);
     } catch (IOException e) {
-      throw new DaoException(e);
-    }
-    // Then add user-configurable settings
-    builder.put("index.number_of_shards", indexInfo.getNumShards());
-    builder.put("index.number_of_replicas", indexInfo.getNumReplicas());
-    CreateIndexRequestBuilder request = indices().prepareCreate(index);
-    request.setSettings(builder.build());
-    CreateIndexResponse response = request.execute().actionGet();
-    if (!response.isAcknowledged()) {
       throw new DaoException("Failed to create index " + index);
     }
-    for (DocumentType<?> dt : indexInfo.getTypes()) {
-      createType(dt);
-    }
+    
   }
 
   /**

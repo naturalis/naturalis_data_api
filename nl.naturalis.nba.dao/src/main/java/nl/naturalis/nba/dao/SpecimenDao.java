@@ -58,7 +58,9 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 		request.setQuery(csq);
 		request.setSize(0);
 		SearchResponse response = executeSearchRequest(request);
-		return response.getHits().getTotalHits() != 0;
+		//return response.getHits().getTotalHits() != 0;
+		// TODO: migrate to ES7
+		return response.getHits().getTotalHits().value != 0;
 	}
 
 	@Override

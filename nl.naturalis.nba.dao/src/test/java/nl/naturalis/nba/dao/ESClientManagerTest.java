@@ -15,6 +15,8 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.cluster.health.ClusterHealthStatus;
 import org.elasticsearch.common.xcontent.XContentHelper;
 import org.elasticsearch.common.xcontent.XContentType;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.junit.Test;
 
@@ -47,8 +49,16 @@ public class ESClientManagerTest {
 	  }
 	  if (healthStatus != ClusterHealthStatus.GREEN) { }
 	  assertEquals(ClusterHealthStatus.GREEN, healthStatus);
+	}
+	
+	
+	@Test
+	public void testLogger() {
 	  
-	  
+	  System.setProperty("log4j.configurationFile","/home/tom/Projects/nba/config/log4j2-test.xml");
+	  Logger logger = LogManager.getLogger(ESClientManagerTest.class.getName());
+	  System.out.println("Test");
+	  logger.info("Test");
 	  
 	}
 

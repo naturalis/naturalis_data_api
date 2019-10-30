@@ -74,14 +74,10 @@ public class ESClientManager {
    */
   public synchronized RestHighLevelClient getClient() {
     if (client == null) {
-      logger.info("Connecting to Elasticsearch cluster");
-      System.out.println("Connecting to Elasticsearch cluster");
-      
+      logger.info("Connecting to Elasticsearch cluster");      
       HttpHost[] hosts = getHosts();
       client = new RestHighLevelClient(RestClient.builder(hosts));
-      
       logger.info("Connected");
-      System.out.println("Connected");
     }
     ping();
     return client;
@@ -96,7 +92,6 @@ public class ESClientManager {
   public synchronized void closeClient() {
     if (client != null) {
       logger.info("Disconnecting from Elasticsearch cluster");
-      System.out.println("Disconnecting from Elasticsearch cluster");
       try {
         client.close();
       } catch (IOException e) {
@@ -123,11 +118,7 @@ public class ESClientManager {
     
     String s = config.required("elasticsearch.transportaddress.host");
     logger.info("Host(s): " + s);
-    System.out.println("Host(s): " + s);
-    
-    String names[] = s.trim().split(",");
-    System.out.println(Arrays.toString(names));
-    
+    String names[] = s.trim().split(",");    
     int numberOfHosts = names.length;
     HttpHost[] hosts = new HttpHost[numberOfHosts];
     int[] ports = getPorts(numberOfHosts);

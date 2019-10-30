@@ -1,5 +1,6 @@
 package nl.naturalis.nba.etl;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Instant;
@@ -8,13 +9,15 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
+
 import org.apache.logging.log4j.Logger;
-import org.elasticsearch.action.admin.indices.refresh.RefreshRequestBuilder;
-import org.elasticsearch.client.Client;
-import org.elasticsearch.client.IndicesAdminClient;
+
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.TermQueryBuilder;
-import org.elasticsearch.index.reindex.DeleteByQueryAction;
-import org.elasticsearch.index.reindex.DeleteByQueryRequestBuilder;
+import org.elasticsearch.index.reindex.BulkByScrollResponse;
+import org.elasticsearch.index.reindex.DeleteByQueryRequest;
+
 import nl.naturalis.nba.api.model.Agent;
 import nl.naturalis.nba.api.model.AreaClass;
 import nl.naturalis.nba.api.model.AssociatedTaxon;
@@ -129,19 +132,31 @@ public class CreateTestDocument {
   
   public void deleteTestDocs() {
     
-    Client client = ESUtil.esClient();
+    RestHighLevelClient client = ESUtil.esClient();
     TermQueryBuilder qb = new TermQueryBuilder("collectionType", "epyTnoitcelloc");
     
-    DeleteByQueryRequestBuilder response = DeleteByQueryAction.INSTANCE.newRequestBuilder(client);
-    response.filter(qb);
-    response.source("specimen", "multimedia");
-    long deleted = response.get().getDeleted();
-    logger.info(deleted + " test documents have been deleted");
-
-    // Refresh index
-    IndicesAdminClient iac = ESUtil.esClient().admin().indices();
-    RefreshRequestBuilder rrb = iac.prepareRefresh("specimen", "multimedia");
-    rrb.execute().actionGet();
+    
+    // ES5
+//    DeleteByQueryRequestBuilder response = DeleteByQueryAction.INSTANCE.newRequestBuilder(client);
+//    response.filter(qb);
+//    response.source("specimen", "multimedia");
+//    long deleted = response.get().getDeleted();
+//    logger.info(deleted + " test documents have been deleted");
+//
+//    // Refresh index
+//    IndicesAdminClient iac = ESUtil.esClient().admin().indices();
+//    RefreshRequestBuilder rrb = iac.prepareRefresh("specimen", "multimedia");
+//    rrb.execute().actionGet();
+    
+    // ES7
+    DeleteByQueryRequest request = new DeleteByQueryRequest("collectionType", "epyTnoitcelloc");
+    request.setRefresh(true);
+    try {
+      BulkByScrollResponse bulkResponse = client.deleteByQuery(request, RequestOptions.DEFAULT);
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
   }
 
 

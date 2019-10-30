@@ -292,7 +292,9 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
   private QueryResult<T> createSearchResult(SearchRequestBuilder request) {
     SearchResponse response = executeSearchRequest(request);
     QueryResult<T> result = new QueryResult<>();
-    result.setTotalSize(response.getHits().getTotalHits());
+    //result.setTotalSize(response.getHits().getTotalHits());
+    // TODO: migrate to ES7
+    result.setTotalSize(response.getHits().getTotalHits().value);
     result.setResultSet(createItems(response));
     return result;
   }

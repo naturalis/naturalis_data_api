@@ -11,8 +11,10 @@ import static nl.naturalis.nba.utils.CollectionUtil.hasElements;
 import static org.elasticsearch.index.query.QueryBuilders.constantScoreQuery;
 import java.util.List;
 import org.apache.logging.log4j.Logger;
+import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortBuilder;
 import nl.naturalis.nba.api.InvalidConditionException;
 import nl.naturalis.nba.api.InvalidQueryException;
@@ -58,11 +60,12 @@ public class QuerySpecTranslator {
    * @throws InvalidQueryException
    * @throws NoSuchFieldException
    */
-  public SearchRequestBuilder translate() throws InvalidQueryException {
+  public SearchRequest translate() throws InvalidQueryException {
     if (logger.isDebugEnabled()) {
       logger.debug("Translating QuerySpec:\n{}", toPrettyJson(prune(spec)));
     }
-    SearchRequestBuilder request = newSearchRequest(dt);
+    SearchRequest request = newSearchRequest(dt);
+    SearchSourceBuilder sourceBuilder = new SearchSourceBuilder(); 
     if (spec.getConditions() != null && !spec.getConditions().isEmpty()) {
       overrideNonScoringIfNecessary();
       QueryBuilder query;
@@ -71,7 +74,11 @@ public class QuerySpecTranslator {
       } else {
         query = translateConditions();
       }
-      request.setQuery(query);
+      // ES5
+      //request.setQuery(query);
+      // ES7
+      sourceBuilder.query(query);
+      
     }
     if (spec.getFields() != null) {
       if (spec.getFields().isEmpty()) {
@@ -80,15 +87,19 @@ public class QuerySpecTranslator {
         addFields(request);
       }
     }
-    request.setFrom(spec.getFrom() == null ? 0 : spec.getFrom());
-    request.setSize(spec.getSize() == null ? DEFAULT_SIZE : spec.getSize());
+    // ES5
+//    request.setFrom(spec.getFrom() == null ? 0 : spec.getFrom());
+//    request.setSize(spec.getSize() == null ? DEFAULT_SIZE : spec.getSize());
+    // ES7
+    sourceBuilder.from(spec.getFrom() == null ? 0 : spec.getFrom());
+    sourceBuilder.size(spec.getSize() == null ? DEFAULT_SIZE : spec.getSize());
     if (spec.getSortFields() != null) {
       SortFieldsTranslator sfTranslator = new SortFieldsTranslator(spec, dt);
       for (SortBuilder<?> sortBuilder : sfTranslator.translate()) {
         request.addSort(sortBuilder);
       }
     }
-
+    request.source(sourceBuilder);
     return request;
   }
 

@@ -13,7 +13,7 @@ import org.elasticsearch.client.IndicesAdminClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.QueryBuilder;
-
+import org.junit.Ignore;
 import org.junit.Test;
 
 import nl.naturalis.nba.api.model.GeoArea;
@@ -152,23 +152,25 @@ public class DaoTestUtil {
 		saveObject(id, null, object, refreshIndex);
 	}
 
+	@Ignore
 	@Test
-	public static void saveObject(String id, String parentId, IDocumentObject obj,
-			boolean refreshIndex)
+	public static void saveObject(String id, String parentId, IDocumentObject obj, boolean refreshIndex)
 	{
 		DocumentType<?> dt = DocumentType.forClass(obj.getClass());
 		String index = dt.getIndexInfo().getName();
 		String type = dt.getName();
-		IndexRequestBuilder irb = client().prepareIndex(index, type);
-		if (id != null) {
-			irb.setId(id);
-		}
-		if (parentId != null) {
-			irb.setParent(parentId);
-		}
-		byte[] data = JsonUtil.serialize(obj);
-		irb.setSource(data, XContentType.JSON);
-		irb.execute().actionGet();
+
+//		IndexRequestBuilder irb = client().prepareIndex(index, type);
+//		if (id != null) {
+//			irb.setId(id);
+//		}
+//		if (parentId != null) {
+//			irb.setParent(parentId);
+//		}
+//		byte[] data = JsonUtil.serialize(obj);
+//		irb.setSource(data, XContentType.JSON);
+//		irb.execute().actionGet();
+		
 		if (refreshIndex) {
 			ESUtil.refreshIndex(dt);
 		}
@@ -181,7 +183,8 @@ public class DaoTestUtil {
 
 	private static AdminClient admin()
 	{
-		return client().admin();
+		// return client().admin();
+	  return null;
 	}
 
 	private static RestHighLevelClient client()

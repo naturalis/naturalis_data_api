@@ -25,21 +25,27 @@ import org.apache.logging.log4j.Logger;
 
 import org.elasticsearch.action.DocWriteResponse.Result;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequestBuilder;
+import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.delete.DeleteRequestBuilder;
 import org.elasticsearch.action.delete.DeleteResponse;
+import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetRequestBuilder;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.IndicesAdminClient;
+import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.common.bytes.BytesReference;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.IdsQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.rest.RestStatus;
 import org.elasticsearch.search.SearchHit;
-
+import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import nl.naturalis.nba.api.INbaAccess;
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.QueryResult;
@@ -71,46 +77,89 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
   public T find(String id) {
     if (logger.isDebugEnabled()) {
       logger.debug(printCall("find", id));
-    }    
+    }
+    String index = dt.getIndexInfo().getName();
+    SearchRequest request = new SearchRequest();
+    request.indices(index);
+    SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+    
+    
     // When aliases are being used, searching for an id needs to be done a term query
     if (Boolean.parseBoolean(DaoRegistry.getInstance().getConfiguration().get("elasticsearch.aliases", "false") )) {
       String[] ids = new String[] {id};
-      String type = dt.getName();
-      SearchRequestBuilder request = newSearchRequest(dt);
-      IdsQueryBuilder query = QueryBuilders.idsQuery(type);
+      // ES5
+//      SearchRequestBuilder request = newSearchRequest(dt);
+//      IdsQueryBuilder query = QueryBuilders.idsQuery(type);
+//      query.addIds(ids);
+//      request.setQuery(query);
+//      T[] docs = processSearchRequest(request);
+//      if (docs.length == 0) {
+//        logger.debug("{} with id \"{}\" not found", dt, id);
+//        return null;
+//      }
+//      else if (docs.length == 1) {
+//        return docs[0];
+//      }
+//      else {
+//        logger.debug("{} with id \"{}\" found in more than one index", dt, id);
+//        String msg = String.format("The given id \"%s\"has been found in more that one index, which is not allowed", id);
+//        throw new DaoException(msg);
+//      }
+      
+      // ES7
+      IdsQueryBuilder query = QueryBuilders.idsQuery();
       query.addIds(ids);
-      request.setQuery(query);
-      T[] docs = processSearchRequest(request);
-      if (docs.length == 0) {
-        logger.debug("{} with id \"{}\" not found", dt, id);
-        return null;
-      }
-      else if (docs.length == 1) {
-        return docs[0];
-      }
-      else {
-        logger.debug("{} with id \"{}\" found in more than one index", dt, id);
-        String msg = String.format("The given id \"%s\"has been found in more that one index, which is not allowed", id);
-        throw new DaoException(msg);
+      searchSourceBuilder.query(query);
+      request.source(searchSourceBuilder);
+      SearchResponse response;
+      try {
+        response = ESUtil.esClient().search(request, RequestOptions.DEFAULT);
+        T[] docs = processQueryResponse(response);
+        if (docs.length == 1) {
+          return docs[0];
+        } else {
+          logger.debug("{} with id \"{}\" found in more than one index", dt, id);
+          String msg = String.format("The given id \"%s\"has been found in more that one index, which is not allowed", id);
+          throw new DaoException(msg);        
+        }      
+      } catch (IOException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
       }
     }
     // If no aliases are used, the document can be accessed directly using the "document path"
-    GetRequestBuilder request = ESUtil.esClient().prepareGet();
-    String index = dt.getIndexInfo().getName();
-    String type = dt.getName();
-    request.setIndex(index);
-    request.setType(type);
-    request.setId(id);
-    GetResponse response = request.execute().actionGet();
-    if (!response.isExists()) {
-      if (logger.isDebugEnabled()) {
-        logger.debug("{} with id \"{}\" not found", dt, id);
-      }
-      return null;
+    
+    // ES5
+//    GetRequestBuilder request = ESUtil.esClient().prepareGet();
+//    request.setIndex(index);
+//    request.setType(type);
+//    request.setId(id);
+//    GetResponse response = request.execute().actionGet();
+//    if (!response.isExists()) {
+//      if (logger.isDebugEnabled()) {
+//        logger.debug("{} with id \"{}\" not found", dt, id);
+//      }
+//      return null;
+//    }
+//    byte[] json = BytesReference.toBytes(response.getSourceAsBytesRef());
+//    T obj = JsonUtil.deserialize(dt.getObjectMapper(), json, dt.getJavaType());
+//    obj.setId(id);
+//    return obj;
+    
+    // ES7
+    GetRequest getRequest = new GetRequest(index, id);
+    T obj = null;
+    try {
+      GetResponse response = ESUtil.esClient().get(getRequest, RequestOptions.DEFAULT);
+      byte[] json = BytesReference.toBytes(response.getSourceAsBytesRef());
+      obj = JsonUtil.deserialize(dt.getObjectMapper(), json, dt.getJavaType());
+      obj.setId(id);
+      return obj;
+
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
     }
-    byte[] json = BytesReference.toBytes(response.getSourceAsBytesRef());
-    T obj = JsonUtil.deserialize(dt.getObjectMapper(), json, dt.getJavaType());
-    obj.setId(id);
     return obj;
   }
 
@@ -148,8 +197,7 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
       logger.debug(printCall("count", querySpec));
     }
     @SuppressWarnings("unchecked")
-    AggregationQuery<T, Long> aggregationQuery =
-        (AggregationQuery<T, Long>) createAggregationQuery(COUNT, dt, null, null, querySpec);
+    AggregationQuery<T, Long> aggregationQuery = (AggregationQuery<T, Long>) createAggregationQuery(COUNT, dt, null, null, querySpec);
     return aggregationQuery.getResult().longValue();
   }
 
@@ -230,14 +278,32 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
   public boolean delete(String id, boolean immediate) {
     String index = dt.getIndexInfo().getName();
     String type = dt.getName();
-    DeleteRequestBuilder request = ESUtil.esClient().prepareDelete(index, type, id);
-    DeleteResponse response = request.execute().actionGet();
-    if (immediate) {
-      IndicesAdminClient iac = ESUtil.esClient().admin().indices();
-      RefreshRequestBuilder rrb = iac.prepareRefresh(index);
-      rrb.execute().actionGet();
+    boolean deleted = false;
+
+    // ES5
+//    DeleteRequestBuilder request = ESUtil.esClient().prepareDelete(index, type, id);
+//    DeleteResponse response = request.execute().actionGet();
+//    if (immediate) {
+//      IndicesAdminClient iac = ESUtil.esClient().admin().indices();
+//      RefreshRequestBuilder rrb = iac.prepareRefresh(index);
+//      rrb.execute().actionGet();
+//    }
+//    return response.getResult() == Result.DELETED;
+    
+    // ES7
+    DeleteRequest request = new DeleteRequest(index, id);
+    try {
+      DeleteResponse deleteResponse = ESUtil.esClient().delete(request, RequestOptions.DEFAULT);
+      logger.info("Deleted document with id \"{}\" from index \"{}\"", deleteResponse.getId(), deleteResponse.getIndex());
+      deleted = true;
+    } catch (IOException e) {
+      logger.error("Failed to delete document with id \"{}\" from index \"{}\"", index, id);
+      e.printStackTrace();
     }
-    return response.getResult() == Result.DELETED;
+    return deleted;
+    
+    
+    
   }
 
   public void downloadQuery(QuerySpec querySpec, OutputStream out) throws InvalidQueryException, IOException {

@@ -66,7 +66,8 @@ public class ETLDaoUtil {
       request.id(id);       
     }
     String jsonString = JsonUtil.toJson(obj);
-    request.source(jsonString, XContentType.JSON); 
+    request.source(jsonString, XContentType.JSON);
+    request.setRefreshPolicy("true");
     try {
       IndexResponse indexResponse = client().index(request, RequestOptions.DEFAULT);
       if (indexResponse.getResult() == DocWriteResponse.Result.CREATED) {

@@ -65,7 +65,8 @@ public class QuerySpecTranslator {
       logger.debug("Translating QuerySpec:\n{}", toPrettyJson(prune(spec)));
     }
     SearchRequest request = newSearchRequest(dt);
-    SearchSourceBuilder sourceBuilder = new SearchSourceBuilder(); 
+    SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+    
     if (spec.getConditions() != null && !spec.getConditions().isEmpty()) {
       overrideNonScoringIfNecessary();
       QueryBuilder query;
@@ -78,32 +79,65 @@ public class QuerySpecTranslator {
       //request.setQuery(query);
       // ES7
       sourceBuilder.query(query);
-      
     }
+    
     if (spec.getFields() != null) {
       if (spec.getFields().isEmpty()) {
-        request.setFetchSource(false);
+        // ES5
+        // request.setFetchSource(false);
+        sourceBuilder.fetchSource(false);
       } else {
-        addFields(request);
+        addFields(sourceBuilder);
       }
     }
+    
     // ES5
-//    request.setFrom(spec.getFrom() == null ? 0 : spec.getFrom());
-//    request.setSize(spec.getSize() == null ? DEFAULT_SIZE : spec.getSize());
+    // request.setFrom(spec.getFrom() == null ? 0 : spec.getFrom());
+    // request.setSize(spec.getSize() == null ? DEFAULT_SIZE : spec.getSize());
     // ES7
     sourceBuilder.from(spec.getFrom() == null ? 0 : spec.getFrom());
     sourceBuilder.size(spec.getSize() == null ? DEFAULT_SIZE : spec.getSize());
+
     if (spec.getSortFields() != null) {
       SortFieldsTranslator sfTranslator = new SortFieldsTranslator(spec, dt);
       for (SortBuilder<?> sortBuilder : sfTranslator.translate()) {
-        request.addSort(sortBuilder);
+        // ES5
+        // request.addSort(sortBuilder);
+        // ES7
+        sourceBuilder.sort(sortBuilder);
       }
     }
+    
     request.source(sourceBuilder);
+    logger.info(">>> {}", request.toString());
     return request;
   }
 
-  private void addFields(SearchRequestBuilder request) throws InvalidQueryException {
+  // ES5
+//  private void addFields(SearchRequestBuilder request) throws InvalidQueryException {
+//    MappingInfo<?> mappingInfo = new MappingInfo<>(dt.getMapping());
+//    List<Path> fields = spec.getFields();
+//    for (Path field : fields) {
+//      if (field.toString().equals("id")) {
+//        /*
+//         * This is a special field that can be used to retrieve the Elasticsearch document ID, which
+//         * is not part of the document itself, but it IS an allowed field, populated through
+//         * SearchHit.getId() rather than through document data.
+//         */
+//        continue;
+//      }
+//      try {
+//        mappingInfo.getField(field);
+//      } catch (NoSuchFieldException e) {
+//        throw new InvalidQueryException(e.getMessage());
+//      }
+//    }
+//    String[] include = stringify(fields);
+//    request.setFetchSource(include, null);
+//  }
+
+  // ES7
+  private void addFields(SearchSourceBuilder sourceBuilder) throws InvalidQueryException {
     MappingInfo<?> mappingInfo = new MappingInfo<>(dt.getMapping());
     List<Path> fields = spec.getFields();
     for (Path field : fields) {
@@ -122,9 +156,10 @@ public class QuerySpecTranslator {
       }
     }
     String[] include = stringify(fields);
-    request.setFetchSource(include, null);
+    sourceBuilder.fetchSource(include, null);
   }
 
+  
   private QueryBuilder translateConditions() throws InvalidConditionException {
     List<QueryCondition> conditions = spec.getConditions();
     if (conditions.size() == 1) {

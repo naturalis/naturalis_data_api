@@ -7,9 +7,12 @@ import static nl.naturalis.nba.dao.util.es.ESUtil.createIndex;
 import static nl.naturalis.nba.dao.util.es.ESUtil.deleteIndex;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+
 import org.apache.logging.log4j.Logger;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
+
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.MultiMediaObject;
@@ -37,6 +40,10 @@ public class CreateTestDocumentTest {
     logger.info("Starting tests");
     deleteIndex(DocumentType.SPECIMEN);
     createIndex(DocumentType.SPECIMEN);
+    
+    deleteIndex(DocumentType.MULTI_MEDIA_OBJECT);
+    createIndex(DocumentType.MULTI_MEDIA_OBJECT);
+
   }
 
   @Test

@@ -120,17 +120,36 @@ public class ESUtil {
    * @param request
    * @return
    */
-  public static SearchResponse executeSearchRequest(SearchRequestBuilder request) {
+//  ES5
+//  public static SearchResponse executeSearchRequest(SearchRequestBuilder request) {
+//    if (logger.isDebugEnabled()) {
+//      logger.debug("Executing search request:\n{}", request);
+//    }
+//    SearchResponse response = request.get();
+//    if (logger.isDebugEnabled()) {
+//      logger.debug("Documents found: {}", response.getHits().getTotalHits());
+//    }
+//    return response;
+//  }
+// ES7
+  public static SearchResponse executeSearchRequest(SearchRequest request) {
     if (logger.isDebugEnabled()) {
       logger.debug("Executing search request:\n{}", request);
     }
-    SearchResponse response = request.get();
-    if (logger.isDebugEnabled()) {
-      logger.debug("Documents found: {}", response.getHits().getTotalHits());
+    SearchResponse response = null;
+    try {
+      response = esClient().search(request, RequestOptions.DEFAULT);
+      if (logger.isDebugEnabled()) {
+        logger.debug("Documents found: {}", response.getHits().getTotalHits());
+      }
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
     }
     return response;
   }
 
+  
   /**
    * Generates the value of the Elasticsearch _id field based on the source system of the record and
    * the id the record had in the source system. Values for the _id field are never auto-generated

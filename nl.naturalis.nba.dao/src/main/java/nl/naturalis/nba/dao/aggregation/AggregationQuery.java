@@ -103,7 +103,6 @@ public abstract class AggregationQuery<T extends IDocumentObject, U> {
     sourceBuilder.from(0);
     request.source(sourceBuilder);
     return request;
-
   }
   
   protected static int getMaxNumGroups()

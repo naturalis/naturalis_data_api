@@ -109,7 +109,6 @@ public class QuerySpecTranslator {
     }
     
     request.source(sourceBuilder);
-    logger.info(">>> {}", request.toString());
     return request;
   }
 

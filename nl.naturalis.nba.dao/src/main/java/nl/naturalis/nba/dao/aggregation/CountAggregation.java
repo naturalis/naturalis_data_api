@@ -12,7 +12,6 @@ import org.elasticsearch.action.search.SearchResponse;
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.IDocumentObject;
-import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.DocumentType;
 
 public class CountAggregation<T extends IDocumentObject> extends AggregationQuery<T, Long> {
@@ -38,8 +37,6 @@ public class CountAggregation<T extends IDocumentObject> extends AggregationQuer
       logger.debug(printCall("Executing count with: ", querySpec));
     }
     SearchRequest request = createSearchRequest(querySpec);
-    logger.info(">>> request: \n{}", JsonUtil.toPrettyJson(request));
-    
     return executeSearchRequest(request);
 
   }

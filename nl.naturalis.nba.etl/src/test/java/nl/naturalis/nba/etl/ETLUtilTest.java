@@ -28,16 +28,20 @@ import nl.naturalis.nba.utils.reflect.ReflectionUtil;
  */
 public class ETLUtilTest {
   
+  private static final Logger logger = ETLRegistry.getInstance().getLogger(ETLUtilTest.class);
+  
   @Test
   public void test() {}
 
   @Before
   public void setUp() throws Exception {
 
+    logger.info("Begin setUp");
     // First import a test data row into the ES store .
     CoLTaxonImporter cti = new CoLTaxonImporter();
     String path = AllTests.class.getResource("taxa.txt").getPath();
     cti.importCsv(path);
+    logger.info("csv has bee loaded!");
     System.setProperty("nl.naturalis.nba.etl.testGenera", "malus,parus,larus,bombus,rhododendron,felix,tulipa,rosa,canis,passer,trientalis");
   }
 

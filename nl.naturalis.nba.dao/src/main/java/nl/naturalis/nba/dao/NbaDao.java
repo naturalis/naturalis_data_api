@@ -23,29 +23,23 @@ import java.util.Map;
 
 import org.apache.logging.log4j.Logger;
 
-import org.elasticsearch.action.DocWriteResponse.Result;
-import org.elasticsearch.action.admin.indices.refresh.RefreshRequestBuilder;
+import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.elasticsearch.action.delete.DeleteRequest;
-import org.elasticsearch.action.delete.DeleteRequestBuilder;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetRequest;
-import org.elasticsearch.action.get.GetRequestBuilder;
 import org.elasticsearch.action.get.GetResponse;
-import org.elasticsearch.action.index.IndexRequestBuilder;
+import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.IndicesAdminClient;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.common.bytes.BytesReference;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.IdsQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.rest.RestStatus;
 import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+
 import nl.naturalis.nba.api.INbaAccess;
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.QueryResult;
@@ -124,7 +118,8 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
         }      
       } catch (IOException e) {
         // TODO Auto-generated catch block
-        e.printStackTrace();
+        // e.printStackTrace();
+        throw new DaoException(e.getMessage());
       }
     }
     // If no aliases are used, the document can be accessed directly using the "document path"
@@ -174,11 +169,23 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
       throw new DaoException(msg);
     }
     String type = dt.getName();
-    SearchRequestBuilder request = newSearchRequest(dt);
-    IdsQueryBuilder query = QueryBuilders.idsQuery(type);
-    query.addIds(ids);
-    request.setQuery(query);
-    request.setSize(ids.length);
+    // ES5
+//    SearchRequestBuilder request = newSearchRequest(dt);
+//    IdsQueryBuilder query = QueryBuilders.idsQuery(type);
+//    IdsQueryBuilder query = QueryBuilders.idsQuery();
+//    query.addIds(ids);
+//    request.setQuery(query);
+//    request.setSize(ids.length);
+//    return processSearchRequest(request);
+    // ES7
+    SearchRequest request = newSearchRequest(dt);
+    IdsQueryBuilder query = QueryBuilders.idsQuery();
+    query.addIds(ids);   
+    SearchSourceBuilder sourceBuilder = new SearchSourceBuilder(); 
+    sourceBuilder.query(query);
+    sourceBuilder.size(ids.length);
+    request.source(sourceBuilder);    
+    
     return processSearchRequest(request);
   }
 
@@ -262,17 +269,38 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
       String pattern = "New save request (index={};type={};id={})";
       logger.debug(pattern, index, type, id);
     }
-    IndexRequestBuilder request = ESUtil.esClient().prepareIndex(index, type, id);
+
+    // ES5
+//    IndexRequestBuilder request = ESUtil.esClient().prepareIndex(index, type, id);
+//    byte[] source = JsonUtil.serialize(apiObject);
+//    request.setSource(source, XContentType.JSON);
+//    IndexResponse response = request.execute().actionGet();
+//    if (immediate) {
+//      IndicesAdminClient iac = ESUtil.esClient().admin().indices();
+//      RefreshRequestBuilder rrb = iac.prepareRefresh(index);
+//      rrb.execute().actionGet();
+//    }    
+//    apiObject.setId(response.getId());
+//    return response.getId();
+    
+    // ES7
+    IndexRequest request = new IndexRequest();
     byte[] source = JsonUtil.serialize(apiObject);
-    request.setSource(source, XContentType.JSON);
-    IndexResponse response = request.execute().actionGet();
-    if (immediate) {
-      IndicesAdminClient iac = ESUtil.esClient().admin().indices();
-      RefreshRequestBuilder rrb = iac.prepareRefresh(index);
-      rrb.execute().actionGet();
+    request.source(source, XContentType.JSON);
+    IndexResponse response;
+    try {
+      response = ESUtil.esClient().index(request, RequestOptions.DEFAULT);
+      if (immediate) {
+        RefreshRequest refreshRequest = new RefreshRequest(index);
+        ESUtil.esClient().indices().refresh(refreshRequest, RequestOptions.DEFAULT);
+      }
+      apiObject.setId(response.getId());
+      return response.getId();
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      // e.printStackTrace();
+      throw new DaoException(String.format("Failed to save object with id %s: %s", id, e.getMessage()));
     }
-    apiObject.setId(response.getId());
-    return response.getId();
   }
 
   public boolean delete(String id, boolean immediate) {
@@ -336,7 +364,7 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
 
   abstract T[] createDocumentObjectArray(int length);
 
-  T[] processSearchRequest(SearchRequestBuilder request) {
+  T[] processSearchRequest(SearchRequest request) {
     SearchResponse response = executeSearchRequest(request);
     return processQueryResponse(response);
   }
@@ -355,7 +383,7 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
     return items;
   }
 
-  private QueryResult<T> createSearchResult(SearchRequestBuilder request) {
+  private QueryResult<T> createSearchResult(SearchRequest request) {
     SearchResponse response = executeSearchRequest(request);
     QueryResult<T> result = new QueryResult<>();
     //result.setTotalSize(response.getHits().getTotalHits());

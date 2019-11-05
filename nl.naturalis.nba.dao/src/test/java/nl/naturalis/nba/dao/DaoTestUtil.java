@@ -1,26 +1,24 @@
 package nl.naturalis.nba.dao;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Map;
 
 import org.apache.logging.log4j.Logger;
-
-import org.elasticsearch.action.index.IndexRequestBuilder;
-import org.elasticsearch.client.AdminClient;
-import org.elasticsearch.client.Client;
-import org.elasticsearch.client.IndicesAdminClient;
+import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.QueryBuilder;
-import org.junit.Ignore;
-import org.junit.Test;
 
 import nl.naturalis.nba.api.model.GeoArea;
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.common.json.JsonUtil;
+import nl.naturalis.nba.dao.exception.DaoException;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 
 public class DaoTestUtil {
@@ -93,12 +91,14 @@ public class DaoTestUtil {
 	{
 		if (specimen.getId() == null) {
 			String id = specimen.getUnitID() + "@" + specimen.getSourceSystem().getCode();
-			saveObject(id, null, specimen, refreshIndex);
+			// saveObject(id, null, specimen, refreshIndex);
+			saveObject(id, specimen, refreshIndex);
 		}
 		else {
 			String id = specimen.getId();
 			specimen.setId(null);
-			saveObject(id, null, specimen, refreshIndex);
+			// saveObject(id, null, specimen, refreshIndex);
+			saveObject(id, specimen, refreshIndex);
 			specimen.setId(id);
 		}
 	}
@@ -107,12 +107,14 @@ public class DaoTestUtil {
 	  {
 	    if (mmo.getId() == null) {
 	      String id = mmo.getUnitID() + "@" + mmo.getSourceSystem().getCode();
-	      saveObject(id, null, mmo, refreshIndex);
+	      // saveObject(id, null, mmo, refreshIndex);
+	      saveObject(id, mmo, refreshIndex);
 	    }
 	    else {
 	      String id = mmo.getId();
 	      mmo.setId(null);
-	      saveObject(id, null, mmo, refreshIndex);
+	      // saveObject(id, null, mmo, refreshIndex);
+	      saveObject(id, mmo, refreshIndex);
 	      mmo.setId(id);
 	    }
 	  }
@@ -131,35 +133,68 @@ public class DaoTestUtil {
 	{
 		if (area.getId() == null) {
 			String id = area.getSourceSystemId() + "@" + area.getSourceSystem().getCode();
-			saveObject(id, null, area, refreshIndex);
+			// saveObject(id, null, area, refreshIndex);
+			saveObject(id, area, refreshIndex);
 		}
 		else {
 			String id = area.getId();
 			area.setId(null);
-			saveObject(id, null, area, refreshIndex);
+			// saveObject(id, null, area, refreshIndex);
+			saveObject(id, area, refreshIndex);
 			area.setId(id);
 		}
 	}
 
-
 	public static void saveObject(IDocumentObject object, boolean refreshIndex)
 	{
-		saveObject(null, null, object, refreshIndex);
+		// saveObject(null, null, object, refreshIndex);
+	  saveObject(null, object, refreshIndex);
 	}
 
-	public static void saveObject(String id, IDocumentObject object, boolean refreshIndex)
-	{
-		saveObject(id, null, object, refreshIndex);
-	}
+//	public static void saveObject(String id, IDocumentObject object, boolean refreshIndex)
+//	{
+//		// saveObject(id, null, object, refreshIndex);
+//	  saveObject(id, object, refreshIndex);
+//	}
+	
+	 public static void saveObject(String id, IDocumentObject obj, boolean refreshIndex)
+	  {
+	    DocumentType<?> dt = DocumentType.forClass(obj.getClass());
+	    String index = dt.getIndexInfo().getName();
+	    String type = dt.getName();
+	    IndexRequest request = new IndexRequest();
+	    request.index(index);
+	    if (id != null) {
+	      request.id(id);
+	    }
+	    byte[] source = JsonUtil.serialize(obj);
+	    request.source(source, XContentType.JSON);
+	    try {
+        IndexResponse indexResponse = ESUtil.esClient().index(request, RequestOptions.DEFAULT);
+        if (refreshIndex) {
+          ESUtil.refreshIndex(dt);
+        }   
+      } catch (IOException e) {
+        // TODO Auto-generated catch block
+        // e.printStackTrace();
+        throw new DaoException(String.format("Failed to index document in index \"%s\": %s", index, e.getMessage()));
+      }
+	  }
 
-	@Ignore
-	@Test
-	public static void saveObject(String id, String parentId, IDocumentObject obj, boolean refreshIndex)
-	{
-		DocumentType<?> dt = DocumentType.forClass(obj.getClass());
-		String index = dt.getIndexInfo().getName();
-		String type = dt.getName();
+	
+	
+//  ES5
+	 
+//	  public static void saveObject(String id, IDocumentObject object, boolean refreshIndex)
+//	  {
+//	    saveObject(id, null, object, refreshIndex);
+//	  }
 
+//	public static void saveObject(String id, String parentId, IDocumentObject obj, boolean refreshIndex)
+//	{
+//		DocumentType<?> dt = DocumentType.forClass(obj.getClass());
+//		String index = dt.getIndexInfo().getName();
+//		String type = dt.getName();
 //		IndexRequestBuilder irb = client().prepareIndex(index, type);
 //		if (id != null) {
 //			irb.setId(id);
@@ -170,22 +205,21 @@ public class DaoTestUtil {
 //		byte[] data = JsonUtil.serialize(obj);
 //		irb.setSource(data, XContentType.JSON);
 //		irb.execute().actionGet();
-		
-		if (refreshIndex) {
-			ESUtil.refreshIndex(dt);
-		}
-	}
+//		if (refreshIndex) {
+//			ESUtil.refreshIndex(dt);
+//		}		
+//	}
 
-	public static IndicesAdminClient indices()
-	{
-		return admin().indices();
-	}
-
-	private static AdminClient admin()
-	{
-		// return client().admin();
-	  return null;
-	}
+//	public static IndicesAdminClient indices()
+//	{
+//		return admin().indices();
+//	}
+//
+//	private static AdminClient admin()
+//	{
+//		// return client().admin();
+//	  return null;
+//	}
 
 	private static RestHighLevelClient client()
 	{

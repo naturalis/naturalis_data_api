@@ -15,12 +15,12 @@ import java.util.Arrays;
 import java.util.Set;
 
 import org.apache.logging.log4j.Logger;
-import org.elasticsearch.action.search.SearchRequestBuilder;
+import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.ConstantScoreQueryBuilder;
 import org.elasticsearch.index.query.TermQueryBuilder;
 import org.elasticsearch.search.SearchHit;
-
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import nl.naturalis.nba.api.GroupByScientificNameQueryResult;
 import nl.naturalis.nba.api.GroupByScientificNameQuerySpec;
 import nl.naturalis.nba.api.ISpecimenAccess;
@@ -52,14 +52,25 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 		if (logger.isDebugEnabled()) {
 			logger.debug(printCall("exists", unitID));
 		}
-		SearchRequestBuilder request = newSearchRequest(SPECIMEN);
+		// ES5
+//		SearchRequestBuilder request = newSearchRequest(SPECIMEN);
+//		TermQueryBuilder tqb = termQuery("unitID", unitID);
+//		ConstantScoreQueryBuilder csq = constantScoreQuery(tqb);
+//		request.setQuery(csq);
+//		request.setSize(0);
+//		SearchResponse response = executeSearchRequest(request);
+		//return response.getHits().getTotalHits() != 0;
+//		return response.getHits().getTotalHits().value != 0;
+
+		// ES7
+		SearchRequest request = newSearchRequest(SPECIMEN);
 		TermQueryBuilder tqb = termQuery("unitID", unitID);
 		ConstantScoreQueryBuilder csq = constantScoreQuery(tqb);
-		request.setQuery(csq);
-		request.setSize(0);
+		SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+		sourceBuilder.query(csq);
+		sourceBuilder.size(0);
+		request.source(sourceBuilder);
 		SearchResponse response = executeSearchRequest(request);
-		//return response.getHits().getTotalHits() != 0;
-		// TODO: migrate to ES7
 		return response.getHits().getTotalHits().value != 0;
 	}
 
@@ -69,11 +80,20 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 		if (logger.isDebugEnabled()) {
 			logger.debug(printCall("findByUnitID", unitID));
 		}
-		SearchRequestBuilder request = newSearchRequest(SPECIMEN);
-		TermQueryBuilder tqb = termQuery("unitID", unitID);
-		ConstantScoreQueryBuilder csq = constantScoreQuery(tqb);
-		request.setQuery(csq);
-		return processSearchRequest(request);
+		// ES5
+//		SearchRequestBuilder request = newSearchRequest(SPECIMEN);
+//		TermQueryBuilder tqb = termQuery("unitID", unitID);
+//		ConstantScoreQueryBuilder csq = constantScoreQuery(tqb);
+//		request.setQuery(csq);
+//		return processSearchRequest(request);
+		// ES7
+		SearchRequest request = newSearchRequest(SPECIMEN);
+    TermQueryBuilder tqb = termQuery("unitID", unitID);
+    ConstantScoreQueryBuilder csq = constantScoreQuery(tqb);
+    SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+    sourceBuilder.query(csq);
+    request.source(sourceBuilder);
+    return processSearchRequest(request);
 	}
 
 	private static String[] namedCollections;
@@ -103,18 +123,34 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 		if (logger.isDebugEnabled()) {
 			logger.debug(printCall("getIdsInCollection", collectionName));
 		}
-		TermQueryBuilder tq = termQuery("theme", collectionName);
-		ConstantScoreQueryBuilder csq = constantScoreQuery(tq);
-		SearchRequestBuilder request = newSearchRequest(SPECIMEN);
-		request.setQuery(csq);
-		request.setFetchSource(false);
-		SearchResponse response = executeSearchRequest(request);
-		SearchHit[] hits = response.getHits().getHits();
-		String[] ids = new String[hits.length];
-		for (int i = 0; i < hits.length; ++i) {
-			ids[i] = hits[i].getId();
-		}
-		return ids;
+		// ES5
+//		TermQueryBuilder tq = termQuery("theme", collectionName);
+//		ConstantScoreQueryBuilder csq = constantScoreQuery(tq);
+//		SearchRequestBuilder request = newSearchRequest(SPECIMEN);
+//		request.setQuery(csq);
+//		request.setFetchSource(false);
+//		SearchResponse response = executeSearchRequest(request);
+//		SearchHit[] hits = response.getHits().getHits();
+//		String[] ids = new String[hits.length];
+//		for (int i = 0; i < hits.length; ++i) {
+//			ids[i] = hits[i].getId();
+//		}
+//		return ids;
+		// ES7
+    TermQueryBuilder tq = termQuery("theme", collectionName);
+    ConstantScoreQueryBuilder csq = constantScoreQuery(tq);
+    SearchRequest request = newSearchRequest(SPECIMEN);
+    SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+    sourceBuilder.query(csq);
+    sourceBuilder.fetchSource(false);
+    request.source(sourceBuilder);
+    SearchResponse response = executeSearchRequest(request);
+    SearchHit[] hits = response.getHits().getHits();
+    String[] ids = new String[hits.length];
+    for (int i = 0; i < hits.length; ++i) {
+      ids[i] = hits[i].getId();
+    }
+    return ids;
 	}
 
 	@Override

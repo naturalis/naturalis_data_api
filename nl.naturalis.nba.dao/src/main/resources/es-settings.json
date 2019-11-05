@@ -20,6 +20,7 @@
 		}
 	},
 	"index": {
+	    "max_ngram_diff": "12",
 		"mapping" : {
 			"nested_fields" : {
 				"limit" : 75

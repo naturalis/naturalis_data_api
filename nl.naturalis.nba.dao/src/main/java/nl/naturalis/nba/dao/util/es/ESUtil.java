@@ -2,40 +2,50 @@ package nl.naturalis.nba.dao.util.es;
 
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static nl.naturalis.nba.utils.StringUtil.fromInputStream;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.ElasticsearchException;
+import org.elasticsearch.action.DocWriteResponse;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequestBuilder;
+import org.elasticsearch.action.admin.indices.mapping.put.PutMappingRequest;
 import org.elasticsearch.action.admin.indices.mapping.put.PutMappingRequestBuilder;
+import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequestBuilder;
 import org.elasticsearch.action.admin.indices.refresh.RefreshResponse;
 import org.elasticsearch.action.admin.indices.settings.get.GetSettingsRequest;
 import org.elasticsearch.action.admin.indices.settings.get.GetSettingsResponse;
 import org.elasticsearch.action.admin.indices.settings.put.UpdateSettingsRequest;
+import org.elasticsearch.action.bulk.BulkItemResponse;
+import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.delete.DeleteRequest;
+import org.elasticsearch.action.delete.DeleteResponse;
+import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.support.master.AcknowledgedResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.IndicesAdminClient;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.client.core.AcknowledgedResponse;
 import org.elasticsearch.client.indices.CreateIndexRequest;
 import org.elasticsearch.client.indices.CreateIndexResponse;
+import org.elasticsearch.client.indices.GetIndexRequest;
+import org.elasticsearch.client.indices.GetIndexResponse;
 import org.elasticsearch.common.bytes.BytesReference;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.settings.Settings.Builder;
@@ -120,18 +130,18 @@ public class ESUtil {
    * @param request
    * @return
    */
-//  ES5
-//  public static SearchResponse executeSearchRequest(SearchRequestBuilder request) {
-//    if (logger.isDebugEnabled()) {
-//      logger.debug("Executing search request:\n{}", request);
-//    }
-//    SearchResponse response = request.get();
-//    if (logger.isDebugEnabled()) {
-//      logger.debug("Documents found: {}", response.getHits().getTotalHits());
-//    }
-//    return response;
-//  }
-// ES7
+  // ES5
+  // public static SearchResponse executeSearchRequest(SearchRequestBuilder request) {
+  // if (logger.isDebugEnabled()) {
+  // logger.debug("Executing search request:\n{}", request);
+  // }
+  // SearchResponse response = request.get();
+  // if (logger.isDebugEnabled()) {
+  // logger.debug("Documents found: {}", response.getHits().getTotalHits());
+  // }
+  // return response;
+  // }
+  // ES7
   public static SearchResponse executeSearchRequest(SearchRequest request) {
     if (logger.isDebugEnabled()) {
       logger.debug("Executing search request:\n{}", request);
@@ -149,7 +159,6 @@ public class ESUtil {
     return response;
   }
 
-  
   /**
    * Generates the value of the Elasticsearch _id field based on the source system of the record and
    * the id the record had in the source system. Values for the _id field are never auto-generated
@@ -261,16 +270,16 @@ public class ESUtil {
     logger.info("Deleting index {}", index);
 
     // ES5
-//    DeleteIndexRequestBuilder request = indices().prepareDelete(index);
-//    try {
-//      DeleteIndexResponse response = request.execute().actionGet();
-//      if (!response.isAcknowledged()) {
-//        throw new RuntimeException("Failed to delete index " + index);
-//      }
-//      logger.info("Index deleted");
-//    } catch (IndexNotFoundException e) {
-//      logger.info("No such index \"{}\" (nothing deleted)", index);
-//    }
+    // DeleteIndexRequestBuilder request = indices().prepareDelete(index);
+    // try {
+    // DeleteIndexResponse response = request.execute().actionGet();
+    // if (!response.isAcknowledged()) {
+    // throw new RuntimeException("Failed to delete index " + index);
+    // }
+    // logger.info("Index deleted");
+    // } catch (IndexNotFoundException e) {
+    // logger.info("No such index \"{}\" (nothing deleted)", index);
+    // }
 
     // ES7
     try {
@@ -319,42 +328,60 @@ public class ESUtil {
     // First load non-user-configurable settings
     String resource = "/es-settings.json";
     InputStream is = ESUtil.class.getResourceAsStream(resource);
-    
+
     // ES5
-//    Builder builder = Settings.builder();
-//    try {
-//      builder.loadFromStream(resource, is);
-//    } catch (IOException e) {
-//      throw new DaoException(e);
-//    }
-//    // Then add user-configurable settings
-//    builder.put("index.number_of_shards", indexInfo.getNumShards());
-//    builder.put("index.number_of_replicas", indexInfo.getNumReplicas());
-//    CreateIndexRequestBuilder request = indices().prepareCreate(index);
-//    request.setSettings(builder.build());
-//    CreateIndexResponse response = request.execute().actionGet();
-//    if (!response.isAcknowledged()) {
-//      throw new DaoException("Failed to create index " + index);
-//    }
-//    for (DocumentType<?> dt : indexInfo.getTypes()) {
-//      createType(dt);
-//    }
-    
+    // Builder builder = Settings.builder();
+    // try {
+    // builder.loadFromStream(resource, is);
+    // } catch (IOException e) {
+    // throw new DaoException(e);
+    // }
+    // // Then add user-configurable settings
+    // builder.put("index.number_of_shards", indexInfo.getNumShards());
+    // builder.put("index.number_of_replicas", indexInfo.getNumReplicas());
+    // CreateIndexRequestBuilder request = indices().prepareCreate(index);
+    // request.setSettings(builder.build());
+    // CreateIndexResponse response = request.execute().actionGet();
+    // if (!response.isAcknowledged()) {
+    // throw new DaoException("Failed to create index " + index);
+    // }
+    // for (DocumentType<?> dt : indexInfo.getTypes()) {
+    // createType(dt);
+    // }
+
     // ES7
-    CreateIndexRequest request = new CreateIndexRequest(index); 
-    String result = fromInputStream(is);
-    request.settings(result, XContentType.JSON);
-    request.settings(Settings.builder() 
-        .put("index.number_of_shards", indexInfo.getNumShards())
-        .put("index.number_of_replicas", indexInfo.getNumReplicas())
-    );
+    CreateIndexRequest createIndexRequest = new CreateIndexRequest(index);
+    String jsonStr = fromInputStream(is);
+
+    // Unfortunately, you add settings to a CreateIndexRequest and later on
+    // add other settings to it. You need to collect all settings and set
+    // them at once.
+
+    // createIndexRequest.settings(jsonStr, XContentType.JSON);
+    // createIndexRequest.settings(Settings.builder()
+    // .put("index.number_of_shards", indexInfo.getNumShards())
+    // .put("index.number_of_replicas", indexInfo.getNumReplicas())
+    // );
+
+    Map<String, Object> settings = JsonUtil.deserialize(jsonStr);
+    Map<String, Object> indexSettings;
+    if (settings.containsKey("index")) {
+      indexSettings = (Map<String, Object>) settings.get("index");
+    } else {
+      indexSettings = new HashMap<>();
+    }
+    indexSettings.put("number_of_shards", indexInfo.getNumShards());
+    indexSettings.put("number_of_replicas", indexInfo.getNumReplicas());
+    settings.put("index", indexSettings);
+    createIndexRequest.settings(settings);
+
     try {
-      esClient().indices().create(request, RequestOptions.DEFAULT);
+      esClient().indices().create(createIndexRequest, RequestOptions.DEFAULT);
       logger.info("Index {} created", index);
     } catch (IOException e) {
-      throw new DaoException("Failed to create index " + index);
+      throw new DaoException(
+          String.format("Failed to create index \"%s\": %s", index, e.getMessage()));
     }
-    
   }
 
   /**
@@ -376,18 +403,37 @@ public class ESUtil {
    * @return
    */
   public static String getIndexSetting(IndexInfo indexInfo, String setting) {
+
+    // ES5
+    // String index = indexInfo.getName();
+    // GetSettingsRequest request = new GetSettingsRequest();
+    // GetSettingsResponse response = indices().getSettings(request).actionGet();
+    // try {
+    // return response.getSetting(index, setting);
+    // }
+    // /*
+    // * Hack to work around a nasty feature in Elasticsearch (2.3.3). A NullPointerException is
+    // * thrown if the index does not exist, or if no settings have been explicitly set for it.
+    // */
+    // catch (NullPointerException e) {
+    // return null;
+    // }
+
+    // ES7
     String index = indexInfo.getName();
-    GetSettingsRequest request = new GetSettingsRequest();
-    GetSettingsResponse response = indices().getSettings(request).actionGet();
+    GetSettingsRequest getSettingsRequest = new GetSettingsRequest();
+    getSettingsRequest.includeDefaults(true); // defaults will be returned for settings not
+                                              // explicitly set on the index
+    GetSettingsResponse getSettingsResponse;
     try {
-      return response.getSetting(index, setting);
-    }
-    /*
-     * Hack to work around a nasty feature in Elasticsearch (2.3.3). A NullPointerException is
-     * thrown if the index does not exist, or if no settings have been explicitly set for it.
-     */
-    catch (NullPointerException e) {
-      return null;
+      getSettingsResponse =
+          esClient().indices().getSettings(getSettingsRequest, RequestOptions.DEFAULT);
+      return getSettingsResponse.getSetting(index, setting);
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      // e.printStackTrace();
+      throw new DaoException(
+          String.format("Failed to retrieve %s setting from index \"%s\": %s", e.getMessage()));
     }
   }
 
@@ -411,17 +457,41 @@ public class ESUtil {
    */
   public static Map<String, String> getIndexSettings(IndexInfo indexInfo, String... settings) {
     String index = indexInfo.getName();
-    GetSettingsRequest request = new GetSettingsRequest();
-    GetSettingsResponse response = indices().getSettings(request).actionGet();
-    LinkedHashMap<String, String> result = new LinkedHashMap<>();
-    for (String setting : settings) {
-      try {
-        result.put(setting, response.getSetting(index, setting));
-      } catch (NullPointerException e) {
-        result.put(setting, null);
+
+    // ES5
+    // GetSettingsRequest request = new GetSettingsRequest();
+    // GetSettingsResponse response = indices().getSettings(request).actionGet();
+    // LinkedHashMap<String, String> result = new LinkedHashMap<>();
+    // for (String setting : settings) {
+    // try {
+    // result.put(setting, response.getSetting(index, setting));
+    // } catch (NullPointerException e) {
+    // result.put(setting, null);
+    // }
+    // }
+    // return result;
+
+    // ES7
+    GetSettingsRequest request = new GetSettingsRequest().indices(index);
+    try {
+      GetSettingsResponse getSettingsResponse =
+          esClient().indices().getSettings(request, RequestOptions.DEFAULT);
+      LinkedHashMap<String, String> result = new LinkedHashMap<>();
+      for (String setting : settings) {
+        try {
+          result.put(setting, getSettingsResponse.getSetting(index, setting));
+        } catch (NullPointerException e) {
+          result.put(setting, null);
+        }
       }
+      return result;
+
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      // e.printStackTrace();
+      throw new DaoException(String.format(
+          "Failed to retrieve index settings from index \"%s\": %s", index, e.getMessage()));
     }
-    return result;
   }
 
   /**
@@ -441,11 +511,29 @@ public class ESUtil {
    */
   public static void refreshIndex(IndexInfo indexInfo) {
     String index = indexInfo.getName();
-    RefreshRequestBuilder request = indices().prepareRefresh(index);
-    request.execute().actionGet();
-    RefreshResponse response = request.execute().actionGet();
-    if (response.getFailedShards() != 0) {
-      logger.error("Index refresh failed index " + indexInfo.getName());
+
+    // ES5
+    // RefreshRequestBuilder request = indices().prepareRefresh(index);
+    // request.execute().actionGet();
+    // RefreshResponse response = request.execute().actionGet();
+    // if (response.getFailedShards() != 0) {
+    // logger.error("Index refresh failed index " + indexInfo.getName());
+    // }
+
+    // ES7
+    RefreshRequest request = new RefreshRequest(index);
+    try {
+      RefreshResponse refreshResponse =
+          esClient().indices().refresh(request, RequestOptions.DEFAULT);
+      int failedShards = refreshResponse.getFailedShards();
+      if (failedShards != 0) {
+        logger.error("Index refresh failed index " + index);
+      }
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      // e.printStackTrace();
+      throw new DaoException(
+          String.format("Failed to refresh index \"%s\":", index, e.getMessage()));
     }
   }
 
@@ -467,19 +555,42 @@ public class ESUtil {
    * @return The original refresh interval
    */
   public static Object disableAutoRefresh(IndexInfo indexInfo) {
+    // TODO: no unit test yet
     String index = indexInfo.getName();
     logger.info("Disabling auto-refresh for index " + index);
     Object origValue = getAutoRefreshInterval(indexInfo);
+
+    // ES5
+    // UpdateSettingsRequest request = new UpdateSettingsRequest(index);
+    // Builder builder = Settings.builder();
+    // builder.put("index.refresh_interval", -1);
+    // request.settings(builder.build());
+    // UpdateSettingsResponse response = indices().updateSettings(request).actionGet();
+    // if (!response.isAcknowledged()) {
+    // String msg = "Failed to disable auto-refresh for index " + index;
+    // throw new DaoException(msg);
+    // }
+    // return origValue;
+
+    // ES7
     UpdateSettingsRequest request = new UpdateSettingsRequest(index);
-    Builder builder = Settings.builder();
-    builder.put("index.refresh_interval", -1);
-    request.settings(builder.build());
-    UpdateSettingsResponse response = indices().updateSettings(request).actionGet();
-    if (!response.isAcknowledged()) {
-      String msg = "Failed to disable auto-refresh for index " + index;
-      throw new DaoException(msg);
+    String settingKey = "index.refresh_interval";
+    int settingValue = -1;
+    Settings settings = Settings.builder().put(settingKey, settingValue).build();
+    request.settings(settings);
+    try {
+      AcknowledgedResponse updateSettingsResponse =
+          esClient().indices().putSettings(request, RequestOptions.DEFAULT);
+      boolean acknowledged = updateSettingsResponse.isAcknowledged();
+      if (acknowledged)
+        return origValue;
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      // e.printStackTrace();
+      throw new DaoException(String.format("Failed to disable autorefresh for index \"%s\": %s",
+          index, e.getMessage()));
     }
-    return origValue;
+    return null;
   }
 
   /**
@@ -489,20 +600,42 @@ public class ESUtil {
    * @param interval
    */
   public static void setAutoRefreshInterval(IndexInfo indexInfo, String interval) {
+    // TODO: no unit test yet
     if (interval == null) {
       logger.warn("Setting the index refresh interval to null has no effect");
       return;
     }
     String index = indexInfo.getName();
     logger.info("Updating index refresh interval for index " + index);
+
+    // ES5
+    // UpdateSettingsRequest request = new UpdateSettingsRequest(index);
+    // Builder builder = Settings.builder();
+    // builder.put("index.refresh_interval", interval);
+    // request.settings(builder.build());
+    // UpdateSettingsResponse response = indices().updateSettings(request).actionGet();
+    // if (!response.isAcknowledged()) {
+    // String msg = "Failed to update index refresh interval for index " + index;
+    // throw new DaoException(msg);
+    // }
+
+    // ES7
     UpdateSettingsRequest request = new UpdateSettingsRequest(index);
-    Builder builder = Settings.builder();
-    builder.put("index.refresh_interval", interval);
-    request.settings(builder.build());
-    UpdateSettingsResponse response = indices().updateSettings(request).actionGet();
-    if (!response.isAcknowledged()) {
-      String msg = "Failed to update index refresh interval for index " + index;
-      throw new DaoException(msg);
+    String settingKey = "index.refresh_interval";
+    String settingValue = interval;
+    Settings settings = Settings.builder().put(settingKey, settingValue).build();
+    request.settings(settings);
+    String msg = "Failed to disable autorefresh for index \"%s\": %s";
+    try {
+      AcknowledgedResponse updateSettingsResponse =
+          esClient().indices().putSettings(request, RequestOptions.DEFAULT);
+      boolean acknowledged = updateSettingsResponse.isAcknowledged();
+      if (!acknowledged)
+        throw new DaoException(String.format(msg, index, ""));
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      // e.printStackTrace();
+      throw new DaoException(String.format(msg, index, e.getMessage()));
     }
   }
 
@@ -512,17 +645,43 @@ public class ESUtil {
    * @param dt
    */
   public static <T extends IDocumentObject> void createType(DocumentType<T> dt) {
+    // TODO: no unit test yet
     String index = dt.getIndexInfo().getName();
     String type = dt.getName();
     logger.info("Creating type {} in index {}", type, index);
-    PutMappingRequestBuilder request = indices().preparePutMapping(index);
+
+    // ES5
+    // PutMappingRequestBuilder request = indices().preparePutMapping(index);
+    // MappingSerializer<T> serializer = new MappingSerializer<>();
+    // String source = serializer.serialize(dt.getMapping());
+    // request.setSource(source, XContentType.JSON);
+    // request.setType(type);
+    // try {
+    // PutMappingResponse response = request.execute().actionGet();
+    // if (!response.isAcknowledged()) {
+    // throw new DaoException("Failed to create type " + type);
+    // }
+    // } catch (Throwable t) {
+    // String fmt = "Failed to create type %s: %s";
+    // String msg = String.format(fmt, type, t.getMessage());
+    // if (logger.isDebugEnabled()) {
+    // logger.debug(t);
+    // }
+    // throw new DaoException(msg);
+    // }
+
+    // ES7
+    // TODO: not ready yet!!!
+    
+    PutMappingRequest request = new PutMappingRequest(index);
     MappingSerializer<T> serializer = new MappingSerializer<>();
     String source = serializer.serialize(dt.getMapping());
-    request.setSource(source, XContentType.JSON);
-    request.setType(type);
+    request.source(source, XContentType.JSON);
     try {
-      PutMappingResponse response = request.execute().actionGet();
-      if (!response.isAcknowledged()) {
+      AcknowledgedResponse putMappingResponse =
+          esClient().indices().putMapping(request, RequestOptions.DEFAULT);
+      boolean acknowledged = putMappingResponse.isAcknowledged();
+      if (!acknowledged) {
         throw new DaoException("Failed to create type " + type);
       }
     } catch (Throwable t) {
@@ -533,6 +692,7 @@ public class ESUtil {
       }
       throw new DaoException(msg);
     }
+
   }
 
   /**
@@ -550,19 +710,44 @@ public class ESUtil {
     DirtyDocumentIterator<T> extractor = new DirtyDocumentIterator<>(dt, qs);
     String index = dt.getIndexInfo().getName();
     String type = dt.getName();
-    Client client = ESClientManager.getInstance().getClient();
+    // ES5
+    // Client client = ESClientManager.getInstance().getClient();
+    // Collection<T> batch = extractor.nextBatch();
+    // while (batch != null) {
+    // BulkRequestBuilder brb = client.prepareBulk();
+    // for (T obj : batch) {
+    // brb.add(new DeleteRequest(index, type, obj.getId()));
+    // }
+    // BulkResponse response = brb.get();
+    // if (response.hasFailures()) {
+    // throw new DaoException("Error while deleting documents from " + type);
+    // }
+    // batch = extractor.nextBatch();
+    // }
+
+    // ES7
+    RestHighLevelClient client = ESClientManager.getInstance().getClient();
     Collection<T> batch = extractor.nextBatch();
     while (batch != null) {
-      BulkRequestBuilder brb = client.prepareBulk();
+      BulkRequest request = new BulkRequest();
       for (T obj : batch) {
-        brb.add(new DeleteRequest(index, type, obj.getId()));
+        request.add(new DeleteRequest(index, obj.getId()));
       }
-      BulkResponse response = brb.get();
-      if (response.hasFailures()) {
-        throw new DaoException("Error while deleting documents from " + type);
+      BulkResponse response;
+      try {
+        response = client.bulk(request, RequestOptions.DEFAULT);
+        if (response.hasFailures()) {
+          throw new DaoException("Error while deleting documents from " + type);
+        }
+      } catch (IOException e) {
+        // TODO Auto-generated catch block
+        // e.printStackTrace();
+        throw new DaoException(String.format("Error while deleting documents from index %s: %s",
+            index, e.getMessage()));
       }
       batch = extractor.nextBatch();
     }
+
     refreshIndex(dt);
     logger.info("Documents deleted: {}", extractor.size());
   }
@@ -584,16 +769,39 @@ public class ESUtil {
     DirtyDocumentIterator<T> extractor = new DirtyDocumentIterator<>(dt, qs);
     String index = dt.getIndexInfo().getName();
     String type = dt.getName();
-    Client client = ESClientManager.getInstance().getClient();
+    RestHighLevelClient client = ESClientManager.getInstance().getClient();
     Collection<T> batch = extractor.nextBatch();
+
+    // ES5
+    // while (batch != null) {
+    // BulkRequestBuilder brb = client.prepareBulk();
+    // for (T obj : batch) {
+    // brb.add(new DeleteRequest(index, type, obj.getId()));
+    // }
+    // BulkResponse response = brb.get();
+    // if (response.hasFailures()) {
+    // throw new DaoException("Error while deleting documents from " + type);
+    // }
+    // batch = extractor.nextBatch();
+    // }
+
+    // ES7
     while (batch != null) {
-      BulkRequestBuilder brb = client.prepareBulk();
+      BulkRequest request = new BulkRequest();
       for (T obj : batch) {
-        brb.add(new DeleteRequest(index, type, obj.getId()));
+        request.add(new DeleteRequest(index, obj.getId()));
       }
-      BulkResponse response = brb.get();
-      if (response.hasFailures()) {
-        throw new DaoException("Error while deleting documents from " + type);
+      BulkResponse response;
+      try {
+        response = client.bulk(request, RequestOptions.DEFAULT);
+        if (response.hasFailures()) {
+          throw new DaoException("Error while deleting documents from " + type);
+        }
+      } catch (IOException e) {
+        // TODO Auto-generated catch block
+        // e.printStackTrace();
+        throw new DaoException(String.format("Error while deleting documents from index \"%s\": %s",
+            index, e.getMessage()));
       }
       batch = extractor.nextBatch();
     }
@@ -608,14 +816,26 @@ public class ESUtil {
    * @return HashMap<String, String>
    */
   public static Map<String, Object> getNbaMetadata() {
-    Client client = esClient();
+    RestHighLevelClient client = esClient();
     String index = "meta";
     String documentType = "importdata";
     String _id = "importdata";
-    GetResponse query = client.prepareGet(index, documentType, _id).get();
-    return query.getSourceAsMap();
+    // GetResponse query = client.prepareGet(index, documentType, _id).get();
+    // return query.getSourceAsMap();
+    GetRequest request = new GetRequest(index, _id);
+    GetResponse response;
+    try {
+      response = client.get(request, RequestOptions.DEFAULT);
+      return response.getSourceAsMap();
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+      throw new DaoException(
+          String.format("Error while retrieving nba metadata: %s", index, e.getMessage()));
+    }
   }
 
+  @Deprecated
   private static IndicesAdminClient indices() {
     return ESClientManager.getInstance().getClient().admin().indices();
   }

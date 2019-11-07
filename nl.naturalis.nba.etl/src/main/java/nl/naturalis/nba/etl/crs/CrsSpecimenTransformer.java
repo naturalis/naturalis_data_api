@@ -389,43 +389,41 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
     }
 
     private ScientificName getScientificName(Element elem, String collectionType) {
+        
         ScientificName sn = new ScientificName();
-        sn.setFullScientificName(val(elem, "abcd:FullScientificNameString"));
+
+        String subSpeciesEpithetStr = val(elem, "abcd:subspeciesepithet");
+        String taxonCoverageStr = val(elem, "abcd:taxonCoverage");
+        String fullScientificNameStr = val(elem, "abcd:FullScientificNameString");
+        
         sn.setGenusOrMonomial(val(elem, "abcd:GenusOrMonomial"));
         sn.setSubgenus(val(elem, "abcd:Subgenus"));
         sn.setSpecificEpithet(val(elem, "abcd:SpeciesEpithet"));
-        String s = val(elem, "abcd:subspeciesepithet");
-        if (s == null) {
-            s = val(elem, "abcd:InfrasubspecificName");
+        if (subSpeciesEpithetStr == null) {
+            subSpeciesEpithetStr = val(elem, "abcd:InfrasubspecificName");
         }
-        sn.setInfraspecificEpithet(s);
+        sn.setInfraspecificEpithet(subSpeciesEpithetStr);
         sn.setNameAddendum(val(elem, "abcd:NameAddendum"));
         sn.setAuthorshipVerbatim(val(elem, "abcd:AuthorTeamOriginalAndYear"));
-        if (sn.getFullScientificName() == null) {
+        
+        // Try to compile a full scientific name from specific elements first
+        if (sn.getGenusOrMonomial() != null) {
             StringBuilder sb = new StringBuilder();
-            if (sn.getGenusOrMonomial() != null) {
-                sb.append(sn.getGenusOrMonomial()).append(' ');
-            } else {
-                String taxonCoverage = val(elem, "abcd:taxonCoverage");
-                if (taxonCoverage != null) {
-                    sb.append(taxonCoverage).append(' ');
-                }
-            }
+            sb.append(sn.getGenusOrMonomial()).append(' ');
             if (sn.getSubgenus() != null)
-                sb.append(sn.getSubgenus()).append(' ');
+                sb.append('(').append(sn.getSubgenus()).append(") ");
             if (sn.getSpecificEpithet() != null)
                 sb.append(sn.getSpecificEpithet()).append(' ');
             if (sn.getInfraspecificEpithet() != null)
                 sb.append(sn.getInfraspecificEpithet()).append(' ');
-            if (sn.getAuthorshipVerbatim() != null) {
-                if (sn.getAuthorshipVerbatim().charAt(0) != '(')
-                    sb.append('(');
+            if (sn.getAuthorshipVerbatim() != null)
                 sb.append(sn.getAuthorshipVerbatim());
-                if (sn.getAuthorshipVerbatim().charAt(sn.getAuthorshipVerbatim().length() - 1) != ')')
-                    sb.append(')');
-            }
             if (sb.length() != 0)
                 sn.setFullScientificName(sb.toString().trim());
+        } else if (fullScientificNameStr != null) {
+          sn.setFullScientificName(fullScientificNameStr); // Otherwise, use the string from the import file
+        } else {
+          sn.setFullScientificName(taxonCoverageStr); // or, the taxonCoverage if there is nothing else
         }
         if (collectionType.equals("Mineralogy and Petrology") || collectionType.equals("Mineralogy") || collectionType.equals("Petrology")) {
             if (sn.getFullScientificName() != null) {

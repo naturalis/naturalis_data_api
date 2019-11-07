@@ -393,13 +393,36 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 	private ScientificName getScientificName(Element ncrsDeterminationElem)
 	{
 		ScientificName sn = new ScientificName();
-		sn.setFullScientificName(val(ncrsDeterminationElem, "dwc:scientificName"));
+    String taxonCoverageStr = val(ncrsDeterminationElem, "abcd:taxonCoverage");
+    String fullScientificNameStr = val(ncrsDeterminationElem, "abcd:FullScientificNameString");
+		
 		sn.setGenusOrMonomial(val(ncrsDeterminationElem, "abcd:GenusOrMonomial"));
 		sn.setSubgenus(val(ncrsDeterminationElem, "abcd:Subgenus"));
 		sn.setSpecificEpithet(val(ncrsDeterminationElem, "abcd:SpeciesEpithet"));
 		sn.setInfraspecificEpithet(val(ncrsDeterminationElem, "abcd:subspeciesepithet"));
 		sn.setNameAddendum(val(ncrsDeterminationElem, "abcd:NameAddendum"));
 		sn.setAuthorshipVerbatim(val(ncrsDeterminationElem, "dwc:nameAccordingTo"));
+
+		// Try to compile a full scientific name from specific elements first
+		if (sn.getGenusOrMonomial() != null) {
+      StringBuilder sb = new StringBuilder();
+      sb.append(sn.getGenusOrMonomial()).append(' ');
+      if (sn.getSubgenus() != null)
+          sb.append('(').append(sn.getSubgenus()).append(") ");
+      if (sn.getSpecificEpithet() != null)
+          sb.append(sn.getSpecificEpithet()).append(' ');
+      if (sn.getInfraspecificEpithet() != null)
+          sb.append(sn.getInfraspecificEpithet()).append(' ');
+      if (sn.getAuthorshipVerbatim() != null)
+          sb.append(sn.getAuthorshipVerbatim());
+      if (sb.length() != 0)
+          sn.setFullScientificName(sb.toString().trim());
+		} else if (fullScientificNameStr != null) {
+		  sn.setFullScientificName(fullScientificNameStr); // Otherwise, use the string from the import file
+		} else {
+		  sn.setFullScientificName(taxonCoverageStr); // or, the taxonCoverage if there is nothing else
+		}
+		
 		TransformUtil.setScientificNameGroup(sn);
 		return sn;
 	}

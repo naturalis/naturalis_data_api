@@ -7,7 +7,7 @@ public class ThemeCacheTest {
   @Test
   public void testThemeCache() {
     
-    ThemeCache themeCache = ThemeCache.getInstance();
+    ThemeCache.getInstance();
     
   }
 

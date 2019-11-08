@@ -1,6 +1,6 @@
 package nl.naturalis.nba.dao.format.csv;
 
-import static org.apache.commons.lang3.StringEscapeUtils.escapeCsv;
+import static org.apache.commons.text.StringEscapeUtils.escapeCsv;
 
 import static org.junit.Assert.*;
 

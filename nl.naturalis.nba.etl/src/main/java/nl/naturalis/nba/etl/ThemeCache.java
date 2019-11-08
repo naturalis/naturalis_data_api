@@ -120,8 +120,14 @@ public class ThemeCache {
 		File thematicSearchDir = getThematicSearchDir();
 		Properties props = loadConfig(thematicSearchDir);
 		if (props != null) {
+		  if (props.containsKey("version")) {
+		    logger.info("Using theme definitions version: {}", props.getProperty("version"));
+		  }
 			for (Object prop : props.keySet()) {
 				String s = (String) prop;
+				if (s.equals("version")) {
+				  continue;
+				}
 				int x = s.indexOf('.');
 				String code = x == -1 ? s : s.substring(0, x);
 				if (isThemeLoaded(code)) {

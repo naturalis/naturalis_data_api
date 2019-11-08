@@ -1,3 +1,8 @@
+RELEASE NOTES v 2.20.2
+* A few minor modifications to the ETL module 
+  to address changes in some source systems 
+  and to improve the logging of imports
+
 RELEASE NOTES v 2.20.1
 * Some minor bug fixes
 

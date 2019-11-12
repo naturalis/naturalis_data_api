@@ -34,6 +34,7 @@ import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.XMLRecordInfo;
 import nl.naturalis.nba.etl.utils.CommonReflectionUtil;
 import nl.naturalis.nba.utils.reflect.ReflectionUtil;
+import nl.naturalis.nba.utils.xml.DOMUtil;
 
 /**
  * Test class for CrsSpecimenTransformer.java
@@ -248,10 +249,10 @@ public class CrsMultiMediaTransformerTest {
   public void testGetScientificName() throws Exception {
 
     ETLStatistics etlStatistics = new ETLStatistics();
+    ScientificName sn = null;
     CrsMultiMediaTransformer crsMultiMediaTransformer = new CrsMultiMediaTransformer(etlStatistics);
     CrsExtractor extractor = new CrsExtractor(multimediaFile, etlStatistics);
-    ScientificName sn = null;
-    for (XMLRecordInfo extracted : extractor) {
+    outerloop: for (XMLRecordInfo extracted : extractor) {
 
       CommonReflectionUtil.setField(AbstractTransformer.class, crsMultiMediaTransformer, "objectID", "RMNH.INS.867435");
       CommonReflectionUtil.setField(AbstractTransformer.class, crsMultiMediaTransformer, "input", extracted);
@@ -259,8 +260,11 @@ public class CrsMultiMediaTransformerTest {
       List<Element> ncsrDeterminationElems = getDescendants(oaiDcElem, "ncrsDetermination");
 
       for (Element element : ncsrDeterminationElems) {
+        String fullScientificNameStr = DOMUtil.getDescendantValue(element, "dwc:scientificName");
         Object obj = ReflectionUtil.call(crsMultiMediaTransformer, "getScientificName", new Class[] {Element.class}, new Object[] {element});
         sn = (ScientificName) obj;
+        if (sn != null && fullScientificNameStr.equals("Aedes kabaenensis"))
+          break outerloop;
       }
       ScientificName expectedSn = new ScientificName();
       expectedSn.setFullScientificName("Aedes kabaenensis");
@@ -273,8 +277,65 @@ public class CrsMultiMediaTransformerTest {
       assertEquals("03", expectedSn.getScientificNameGroup(), sn.getScientificNameGroup());
 
     }
-
   }
+  
+  /**
+   * Test method for
+   * {@link nl.naturalis.nba.etl.crs.CrsSpecimenTransformer#getScientificName(Element element, String collectionType)},
+   * but aimed at testing the construction of the full scientific name.
+   * 
+   * @throws Exception
+   * 
+   * Test method to verify the getIdentification method returns an expected ScientificName object
+   * 
+   */
+  @Test
+  public void testGetScientificName_02() throws Exception {
+
+    ETLStatistics etlStatistics = new ETLStatistics();
+    ScientificName scientificName = null;
+    CrsMultiMediaTransformer crsMultiMediaTransformer = new CrsMultiMediaTransformer(etlStatistics);
+    CrsExtractor extractor = new CrsExtractor(multimediaFile, etlStatistics);
+    
+    for (XMLRecordInfo extracted : extractor) {
+      Element rootElement = extracted.getRecord();
+      List<Element> elems = DOMUtil.getDescendants(rootElement, "ncrsDetermination");
+      for (Element element : elems) {
+        
+        String fullScientificNameStr = DOMUtil.getDescendantValue(element, "dwc:scientificName");
+        
+        Object scientificNameObj = ReflectionUtil.call(crsMultiMediaTransformer, "getScientificName",
+            new Class[] {Element.class}, new Object[] {element});
+        scientificName = (ScientificName) scientificNameObj;
+
+        if (scientificName != null && fullScientificNameStr.equals("fullscientificnametest01")) {
+          ScientificName expectedSn = new ScientificName();
+          expectedSn.setFullScientificName("Aaaaa (bbbbb) ccccc ddddd Abc1234");
+          assertEquals("01", expectedSn.getFullScientificName(), scientificName.getFullScientificName());
+        }
+
+        if (scientificName != null && fullScientificNameStr.equals("fullscientificnametest02")) {
+          ScientificName expectedSn = new ScientificName();
+          expectedSn.setFullScientificName("Aaaaa (bbbbb) ccccc eeeee Abc1234");
+          assertEquals("02", expectedSn.getFullScientificName(), scientificName.getFullScientificName());
+        }
+
+        if (scientificName != null && fullScientificNameStr.equals("fullscientificnametest03")) {
+          ScientificName expectedSn = new ScientificName();
+          expectedSn.setFullScientificName("fullscientificnametest03");
+          assertEquals("03", expectedSn.getFullScientificName(), scientificName.getFullScientificName());
+        }
+        
+        String test = DOMUtil.getDescendantValue(element, "abcd:IdentificationQualifier3");
+        if (scientificName != null && test.equals("fullscientificnametest04")) {
+          ScientificName expectedSn = new ScientificName();
+          expectedSn.setFullScientificName("TAXONCOVERAGE");
+          assertEquals("04", expectedSn.getFullScientificName(), scientificName.getFullScientificName());
+        }
+      }
+    }
+  }
+
 
   /**
    * Test method for {@link nl.naturalis.nba.etl.crs.CrsMultiMediaTransformer#getTitle()}.

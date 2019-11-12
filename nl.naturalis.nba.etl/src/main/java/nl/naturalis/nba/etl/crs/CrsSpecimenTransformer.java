@@ -49,6 +49,7 @@ import nl.naturalis.nba.api.model.SpecimenTypeStatus;
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.api.model.TaxonRelationType;
 import nl.naturalis.nba.api.model.TaxonomicEnrichment;
+import nl.naturalis.nba.api.model.TaxonomicRank;
 import nl.naturalis.nba.api.model.VernacularName;
 import nl.naturalis.nba.common.es.ESDateInput;
 import nl.naturalis.nba.dao.TaxonDao;
@@ -392,13 +393,12 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
         
         ScientificName sn = new ScientificName();
 
-        String subSpeciesEpithetStr = val(elem, "abcd:subspeciesepithet");
-        String taxonCoverageStr = val(elem, "abcd:taxonCoverage");
-        String fullScientificNameStr = val(elem, "abcd:FullScientificNameString");
+        List<Element> elems = DOMUtil.getChildren(elem, "ncrsHighername");
         
         sn.setGenusOrMonomial(val(elem, "abcd:GenusOrMonomial"));
         sn.setSubgenus(val(elem, "abcd:Subgenus"));
         sn.setSpecificEpithet(val(elem, "abcd:SpeciesEpithet"));
+        String subSpeciesEpithetStr = val(elem, "abcd:subspeciesepithet");
         if (subSpeciesEpithetStr == null) {
             subSpeciesEpithetStr = val(elem, "abcd:InfrasubspecificName");
         }
@@ -406,12 +406,15 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
         sn.setNameAddendum(val(elem, "abcd:NameAddendum"));
         sn.setAuthorshipVerbatim(val(elem, "abcd:AuthorTeamOriginalAndYear"));
         
-        // Try to compile a full scientific name from specific elements first
+        // fullScientificName
+        String fullScientificNameStr = val(elem, "abcd:FullScientificNameString");
+
+        // 1. First, try to compile a full scientific name from higher name elements
         if (sn.getGenusOrMonomial() != null) {
             StringBuilder sb = new StringBuilder();
             sb.append(sn.getGenusOrMonomial()).append(' ');
             if (sn.getSubgenus() != null)
-                sb.append('(').append(sn.getSubgenus()).append(") ");
+                sb.append("(").append(sn.getSubgenus()).append(") ");
             if (sn.getSpecificEpithet() != null)
                 sb.append(sn.getSpecificEpithet()).append(' ');
             if (sn.getInfraspecificEpithet() != null)
@@ -421,9 +424,9 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
             if (sb.length() != 0)
                 sn.setFullScientificName(sb.toString().trim());
         } else if (fullScientificNameStr != null) {
-          sn.setFullScientificName(fullScientificNameStr); // Otherwise, use the string from the import file
+          sn.setFullScientificName(fullScientificNameStr); // 2. Otherwise, use the string from the import file
         } else {
-          sn.setFullScientificName(taxonCoverageStr); // or, the taxonCoverage if there is nothing else
+          sn.setFullScientificName(getBestTaxonCoverage(elems)); // 3. or, the taxonCoverage if there is nothing else
         }
         if (collectionType.equals("Mineralogy and Petrology") || collectionType.equals("Mineralogy") || collectionType.equals("Petrology")) {
             if (sn.getFullScientificName() != null) {
@@ -433,6 +436,32 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
             TransformUtil.setScientificNameGroup(sn);
         }
         return sn;
+    }
+    
+    /**
+     * getBestTaxonCoverage returns the taxon coverage with the most specific taxonomic rank 
+     * as a String. 
+     * domain : most general rank
+     * ...
+     * subtribe : most specific rank
+     * 
+     * @param elems : The elements of the ncrsHighername element
+     * @return taxonCoverage
+     */
+    private String getBestTaxonCoverage(List<Element> elems) {
+      if (elems == null) return null;
+      
+      String taxonCoverageStr = null;
+      int ordinal = -1;
+      for (Element elem : elems) {
+        String taxonRankStr = val(elem, "abcd:HigherTaxonRank");
+        TaxonomicRank rank = TaxonomicRank.parse(taxonRankStr);
+        if (rank != null && rank.ordinal() > ordinal) {
+          taxonCoverageStr = val(elem, "abcd:taxonCoverage");
+          ordinal = rank.ordinal();
+        }
+      }
+      return taxonCoverageStr;
     }
 
     private static List<Monomial> getSystemClassification(Element elem, ScientificName sn) {

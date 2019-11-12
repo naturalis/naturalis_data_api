@@ -29,6 +29,7 @@
             <abcd:DateTimeStart>19370510</abcd:DateTimeStart>
             <abcd:DateTimeEnd>19370512</abcd:DateTimeEnd>
           </ncrsdatagroup>
+          
           <ncrsDetermination>
             <abcd:PreferredFlag>1</abcd:PreferredFlag>
             <dwc:scientificName>Aedes kabaenensis</dwc:scientificName>
@@ -54,6 +55,121 @@
               <abcd:HigherTaxonRank>order</abcd:HigherTaxonRank>
             </ncrsHighername>
           </ncrsDetermination>
+          
+          <ncrsDetermination>
+            <abcd:PreferredFlag>0</abcd:PreferredFlag>
+            <dwc:scientificName>fullscientificnametest01</dwc:scientificName>
+            <dwc:vernacularName>TestVernacularName</dwc:vernacularName>
+            <dwc:identifiedBy />
+            <abcd:GenusOrMonomial>Aaaaa</abcd:GenusOrMonomial>
+            <abcd:Subgenus>bbbbb</abcd:Subgenus>
+            <abcd:SpeciesEpithet>ccccc</abcd:SpeciesEpithet>
+            <abcd:InfrasubspecificRank />
+            <abcd:subspeciesepithet>ddddd</abcd:subspeciesepithet>
+            <abcd:InfrasubspecificName>eeeee</abcd:InfrasubspecificName>
+            <abcd:NameAddendum />
+            <dwc:nameAccordingTo>Abc1234</dwc:nameAccordingTo>
+            <abcd:IdentificationQualifier1>TestQualifier1</abcd:IdentificationQualifier1>
+            <abcd:IdentificationQualifier2>TestQualifier2</abcd:IdentificationQualifier2>
+            <abcd:IdentificationQualifier3 />
+            <abcd:TypeStatus>isotype</abcd:TypeStatus>
+            <ncrsHighername>
+              <ac:taxonCoverage>Culicidae</ac:taxonCoverage>
+              <abcd:HigherTaxonRank>family</abcd:HigherTaxonRank>
+            </ncrsHighername>
+            <ncrsHighername>
+              <ac:taxonCoverage>Diptera</ac:taxonCoverage>
+              <abcd:HigherTaxonRank>order</abcd:HigherTaxonRank>
+            </ncrsHighername>
+          </ncrsDetermination>
+          
+          <ncrsDetermination>
+            <abcd:PreferredFlag>0</abcd:PreferredFlag>
+            <dwc:scientificName>fullscientificnametest02</dwc:scientificName>
+            <dwc:vernacularName>TestVernacularName</dwc:vernacularName>
+            <dwc:identifiedBy />
+            <abcd:GenusOrMonomial>Aaaaa</abcd:GenusOrMonomial>
+            <abcd:Subgenus>bbbbb</abcd:Subgenus>
+            <abcd:SpeciesEpithet>ccccc</abcd:SpeciesEpithet>
+            <abcd:InfrasubspecificRank />
+            <abcd:subspeciesepithet />
+            <abcd:InfrasubspecificName>eeeee</abcd:InfrasubspecificName>
+            <dwc:nameAccordingTo>Abc1234</dwc:nameAccordingTo>
+            <abcd:NameAddendum />
+            <abcd:IdentificationQualifier1>TestQualifier1</abcd:IdentificationQualifier1>
+            <abcd:IdentificationQualifier2>TestQualifier2</abcd:IdentificationQualifier2>
+            <abcd:IdentificationQualifier3 />
+            <abcd:TypeStatus>isotype</abcd:TypeStatus>
+            <ncrsHighername>
+              <ac:taxonCoverage>Culicidae</ac:taxonCoverage>
+              <abcd:HigherTaxonRank>family</abcd:HigherTaxonRank>
+            </ncrsHighername>
+            <ncrsHighername>
+              <ac:taxonCoverage>Diptera</ac:taxonCoverage>
+              <abcd:HigherTaxonRank>order</abcd:HigherTaxonRank>
+            </ncrsHighername>
+          </ncrsDetermination>
+          
+          <ncrsDetermination>
+            <abcd:PreferredFlag>0</abcd:PreferredFlag>
+            <dwc:scientificName>fullscientificnametest03</dwc:scientificName>
+            <dwc:vernacularName>TestVernacularName</dwc:vernacularName>
+            <dwc:identifiedBy />
+            <abcd:GenusOrMonomial />
+            <abcd:Subgenus>bbbbb</abcd:Subgenus>
+            <abcd:SpeciesEpithet>ccccc</abcd:SpeciesEpithet>
+            <abcd:InfrasubspecificRank />
+            <abcd:subspeciesepithet />
+            <abcd:InfrasubspecificName>eeeee</abcd:InfrasubspecificName>
+            <dwc:nameAccordingTo>Abc1234</dwc:nameAccordingTo>
+            <abcd:NameAddendum />
+            <abcd:IdentificationQualifier1>TestQualifier1</abcd:IdentificationQualifier1>
+            <abcd:IdentificationQualifier2>TestQualifier2</abcd:IdentificationQualifier2>
+            <abcd:IdentificationQualifier3 />
+            <abcd:TypeStatus>isotype</abcd:TypeStatus>
+            <ncrsHighername>
+              <ac:taxonCoverage>Culicidae</ac:taxonCoverage>
+              <abcd:HigherTaxonRank>family</abcd:HigherTaxonRank>
+            </ncrsHighername>
+            <ncrsHighername>
+              <ac:taxonCoverage>Diptera</ac:taxonCoverage>
+              <abcd:HigherTaxonRank>order</abcd:HigherTaxonRank>
+            </ncrsHighername>
+          </ncrsDetermination>
+          
+          <ncrsDetermination>
+            <abcd:PreferredFlag>0</abcd:PreferredFlag>
+            <dwc:scientificName />
+            <dwc:nameAccordingTo />
+            <dwc:vernacularName>TestVernacularName</dwc:vernacularName>
+            <dwc:identifiedBy />
+            <abcd:GenusOrMonomial />
+            <abcd:Subgenus>bbbbb</abcd:Subgenus>
+            <abcd:SpeciesEpithet>ccccc</abcd:SpeciesEpithet>
+            <abcd:InfrasubspecificRank />
+            <abcd:subspeciesepithet />
+            <abcd:InfrasubspecificName>eeeee</abcd:InfrasubspecificName>
+            <dwc:nameAccordingTo>Abc1234</dwc:nameAccordingTo>
+            <abcd:NameAddendum />
+            <abcd:IdentificationQualifier1>TestQualifier1</abcd:IdentificationQualifier1>
+            <abcd:IdentificationQualifier2>TestQualifier2</abcd:IdentificationQualifier2>
+            <abcd:IdentificationQualifier3>fullscientificnametest04</abcd:IdentificationQualifier3>
+            <abcd:TypeStatus>isotype</abcd:TypeStatus>
+            <ncrsHighername>
+              <ac:taxonCoverage>Culicidae</ac:taxonCoverage>
+              <abcd:HigherTaxonRank>family</abcd:HigherTaxonRank>
+            </ncrsHighername>
+            <ncrsHighername>
+              <ac:taxonCoverage>Diptera</ac:taxonCoverage>
+              <abcd:HigherTaxonRank>order</abcd:HigherTaxonRank>
+            </ncrsHighername>
+            <ncrsHighername>
+              <ac:taxonCoverage>TAXONCOVERAGE</ac:taxonCoverage>
+              <abcd:HigherTaxonRank>subtribe</abcd:HigherTaxonRank>
+            </ncrsHighername>
+            
+          </ncrsDetermination>
+          
           <ncrsGatheringSites>
             <Iptc4xmpExt:WorldRegion>Asia</Iptc4xmpExt:WorldRegion>
             <Iptc4xmpExt:CountryName>Indonesia</Iptc4xmpExt:CountryName>

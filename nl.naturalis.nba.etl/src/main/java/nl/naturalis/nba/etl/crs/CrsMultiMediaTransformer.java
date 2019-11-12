@@ -41,6 +41,7 @@ import nl.naturalis.nba.api.model.ServiceAccessPoint;
 import nl.naturalis.nba.api.model.SpecimenTypeStatus;
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.api.model.TaxonomicEnrichment;
+import nl.naturalis.nba.api.model.TaxonomicRank;
 import nl.naturalis.nba.api.model.VernacularName;
 import nl.naturalis.nba.common.es.ESDateInput;
 import nl.naturalis.nba.dao.TaxonDao;
@@ -392,18 +393,25 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 
 	private ScientificName getScientificName(Element ncrsDeterminationElem)
 	{
+	  
 		ScientificName sn = new ScientificName();
-    String taxonCoverageStr = val(ncrsDeterminationElem, "abcd:taxonCoverage");
-    String fullScientificNameStr = val(ncrsDeterminationElem, "abcd:FullScientificNameString");
+	
+    List<Element> elems = DOMUtil.getChildren(ncrsDeterminationElem, "ncrsHighername");
 		
 		sn.setGenusOrMonomial(val(ncrsDeterminationElem, "abcd:GenusOrMonomial"));
 		sn.setSubgenus(val(ncrsDeterminationElem, "abcd:Subgenus"));
 		sn.setSpecificEpithet(val(ncrsDeterminationElem, "abcd:SpeciesEpithet"));
-		sn.setInfraspecificEpithet(val(ncrsDeterminationElem, "abcd:subspeciesepithet"));
+    String subSpeciesEpithetStr = val(ncrsDeterminationElem, "abcd:subspeciesepithet");
+    if (subSpeciesEpithetStr == null) {
+        subSpeciesEpithetStr = val(ncrsDeterminationElem, "abcd:InfrasubspecificName");
+    }
+		sn.setInfraspecificEpithet(subSpeciesEpithetStr);
 		sn.setNameAddendum(val(ncrsDeterminationElem, "abcd:NameAddendum"));
 		sn.setAuthorshipVerbatim(val(ncrsDeterminationElem, "dwc:nameAccordingTo"));
 
-		// Try to compile a full scientific name from specific elements first
+		// fullScientificName
+		String fullScientificNameStr = val(ncrsDeterminationElem, "dwc:scientificName");
+		// 1. First. try to compile a full scientific name from specific elements
 		if (sn.getGenusOrMonomial() != null) {
       StringBuilder sb = new StringBuilder();
       sb.append(sn.getGenusOrMonomial()).append(' ');
@@ -418,14 +426,40 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
       if (sb.length() != 0)
           sn.setFullScientificName(sb.toString().trim());
 		} else if (fullScientificNameStr != null) {
-		  sn.setFullScientificName(fullScientificNameStr); // Otherwise, use the string from the import file
+		  sn.setFullScientificName(fullScientificNameStr); // 2. Otherwise, use the string from the import file
 		} else {
-		  sn.setFullScientificName(taxonCoverageStr); // or, the taxonCoverage if there is nothing else
+		  sn.setFullScientificName(getBestTaxonCoverage(elems)); // 3. or, the taxonCoverage if there is nothing else
 		}
-		
 		TransformUtil.setScientificNameGroup(sn);
 		return sn;
 	}
+	
+  /**
+   * getBestTaxonCoverage returns the taxon coverage with the most specific taxonomic rank 
+   * as a String. 
+   * domain : most general rank
+   * ...
+   * subtribe : most specific rank
+   * 
+   * @param elems : The elements of the ncrsHighername element
+   * @return taxonCoverage
+   */
+  private String getBestTaxonCoverage(List<Element> elems) {
+    if (elems == null) return null;
+    
+    String taxonCoverageStr = null;
+    int ordinal = -1;
+    for (Element elem : elems) {
+      String taxonRankStr = val(elem, "abcd:HigherTaxonRank");
+      TaxonomicRank rank = TaxonomicRank.parse(taxonRankStr);
+      if (rank != null && rank.ordinal() > ordinal) {
+        taxonCoverageStr = val(elem, "ac:taxonCoverage");
+        ordinal = rank.ordinal();
+      }
+    }
+    return taxonCoverageStr;
+  }
+
 
 	private String getTitle(Element frmDigitalebestandenElem, String unitID)
 	{

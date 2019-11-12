@@ -11,12 +11,14 @@ import static org.elasticsearch.index.query.QueryBuilders.geoShapeQuery;
 import java.util.Collection;
 
 import org.apache.logging.log4j.Logger;
-import org.elasticsearch.action.search.SearchRequestBuilder;
+
+import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.GeoShapeQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.SearchHit;
+
 import org.geojson.GeoJsonObject;
 
 import nl.naturalis.nba.api.InvalidConditionException;
@@ -111,8 +113,9 @@ class ShapeInLocalityConditionTranslator extends ConditionTranslator {
 		String field = condition.getField().toString();
 		String id = getIdForLocality(locality);
 		String index = GEO_AREA.getIndexInfo().getName();
-		String type = GEO_AREA.getName();
-		GeoShapeQueryBuilder query = geoShapeQuery(field, id, type);
+		//String type = GEO_AREA.getName();
+		//GeoShapeQueryBuilder query = geoShapeQuery(field, id, type);
+		GeoShapeQueryBuilder query = geoShapeQuery(field, id);
 		query.indexedShapeIndex(index);
 		return query;
 	}
@@ -129,10 +132,14 @@ class ShapeInLocalityConditionTranslator extends ConditionTranslator {
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(new QueryCondition("locality", EQUALS, locality));
 		QuerySpecTranslator translator = new QuerySpecTranslator(qs, GEO_AREA);
-		SearchRequestBuilder request;
+		// SearchRequestBuilder request;
+		SearchRequest request;
+		boolean fetchSource = false;
 		try {
-			request = translator.translate();
-			request.setFetchSource(false);
+		  // ES5
+		  // request = translator.translate();
+		  // request.setFetchSource(false);
+		  request = translator.translate(fetchSource);
 		}
 		catch (InvalidQueryException e) {
 			// We made this one ourselves, so eh ...

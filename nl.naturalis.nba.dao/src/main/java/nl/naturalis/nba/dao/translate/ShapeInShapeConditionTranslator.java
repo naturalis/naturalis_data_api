@@ -74,7 +74,7 @@ class ShapeInShapeConditionTranslator extends ConditionTranslator {
 //		}
 //		else if (cls == MultiPolygon.class) {
 //			MultiPolygon geoJsonMulti = (MultiPolygon) value;
-//			MultiPolygonBuilder elasticMulti = newMultiPolygon();
+//			MultiPolygonBuilder elasticMulti = new MultiPolygon();
 //			for (List<List<LngLatAlt>> geoJsonPolygon : geoJsonMulti.getCoordinates()) {
 //				elasticMulti.polygon(createESPolygon(geoJsonPolygon));
 //			}

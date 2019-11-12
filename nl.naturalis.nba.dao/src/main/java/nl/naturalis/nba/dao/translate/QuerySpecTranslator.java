@@ -77,6 +77,7 @@ public class QuerySpecTranslator {
       }
       // ES5
       //request.setQuery(query);
+      
       // ES7
       sourceBuilder.query(query);
     }
@@ -112,6 +113,49 @@ public class QuerySpecTranslator {
     return request;
   }
 
+  public SearchRequest translate(boolean fetchSource) throws InvalidQueryException {
+    if (logger.isDebugEnabled()) {
+      logger.debug("Translating QuerySpec:\n{}", toPrettyJson(prune(spec)));
+    }
+    SearchRequest request = newSearchRequest(dt);
+    SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+    
+    if (spec.getConditions() != null && !spec.getConditions().isEmpty()) {
+      overrideNonScoringIfNecessary();
+      QueryBuilder query;
+      if (spec.isConstantScore()) {
+        query = constantScoreQuery(translateConditions());
+      } else {
+        query = translateConditions();
+      }
+      sourceBuilder.query(query);
+    }
+    
+    if (spec.getFields() != null) {
+      if (spec.getFields().isEmpty()) {
+        sourceBuilder.fetchSource(false);
+      } else {
+        addFields(sourceBuilder);
+      }
+    }
+    
+    sourceBuilder.from(spec.getFrom() == null ? 0 : spec.getFrom());
+    sourceBuilder.size(spec.getSize() == null ? DEFAULT_SIZE : spec.getSize());
+    sourceBuilder.fetchSource(fetchSource);
+
+    if (spec.getSortFields() != null) {
+      SortFieldsTranslator sfTranslator = new SortFieldsTranslator(spec, dt);
+      for (SortBuilder<?> sortBuilder : sfTranslator.translate()) {
+        sourceBuilder.sort(sortBuilder);
+      }
+    }
+    
+    request.source(sourceBuilder);
+    return request;
+  }
+
+  
+  
   // ES5
 //  private void addFields(SearchRequestBuilder request) throws InvalidQueryException {
 //    MappingInfo<?> mappingInfo = new MappingInfo<>(dt.getMapping());

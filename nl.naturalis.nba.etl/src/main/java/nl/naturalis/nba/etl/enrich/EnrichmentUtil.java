@@ -29,6 +29,7 @@ import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.api.model.TaxonomicEnrichment;
 import nl.naturalis.nba.api.model.VernacularName;
+import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.DaoRegistry;
 import nl.naturalis.nba.dao.MultiMediaObjectDao;
 import nl.naturalis.nba.dao.TaxonDao;
@@ -209,7 +210,8 @@ public class EnrichmentUtil {
 		query.addCondition(condition);
 		query.setConstantScore(true);
 		// TODO: softcode with index.max_result_window setting using TaxonMetaDataDao
-		query.setSize(50000);
+		//query.setSize(50000);
+		query.setSize(10000);
 		TaxonDao dao = new TaxonDao();
 		QueryResult<Taxon> result;
 		try {
@@ -221,6 +223,7 @@ public class EnrichmentUtil {
 		catch (InvalidQueryException e) {
 			throw new ETLRuntimeException(e);
 		}
+		logger.debug(">>> Result: {}", JsonUtil.toPrettyJson(result));
 		return result;
 	}
 

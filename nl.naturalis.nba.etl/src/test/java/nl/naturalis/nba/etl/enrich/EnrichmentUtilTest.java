@@ -2,6 +2,7 @@ package nl.naturalis.nba.etl.enrich;
 
 import static nl.naturalis.nba.dao.util.es.ESUtil.createIndex;
 import static nl.naturalis.nba.dao.util.es.ESUtil.deleteIndex;
+import static nl.naturalis.nba.etl.ETLUtil.getLogger;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import java.io.File;
@@ -9,6 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.apache.logging.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,6 +27,7 @@ import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.api.model.TaxonomicEnrichment;
 import nl.naturalis.nba.api.model.TaxonomicStatus;
 import nl.naturalis.nba.api.model.VernacularName;
+import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.etl.AllTests;
 import nl.naturalis.nba.etl.col.CoLTaxonImporter;
@@ -43,6 +46,8 @@ import nl.naturalis.nba.utils.reflect.ReflectionUtil;
 public class EnrichmentUtilTest {
 
   String dirPath = null;
+  
+  private static final Logger logger = getLogger(EnrichmentUtilTest.class);
 
   /**
    * @throws java.lang.Exception
@@ -92,12 +97,15 @@ public class EnrichmentUtilTest {
 
     Specimen specimen = new Specimen();
     specimen.addIndentification(identification);
-
     List<Specimen> specimens = new ArrayList<>();
     specimens.add(specimen);
 
     Map<String, List<Taxon>> actual = EnrichmentUtil.createTaxonLookupTableForSpecimens(specimens);
-    String actualKeyValue = actual.entrySet().stream().map(i -> i.getKey()).findFirst().get();
+    
+    String actualKeyValue = null;
+    if (actual.entrySet().size() > 0) {
+      actualKeyValue = actual.entrySet().stream().map(i -> i.getKey()).findFirst().get();
+    }
 
     List<Taxon> taxonList = actual.get(actualKeyValue);
 
@@ -109,12 +117,9 @@ public class EnrichmentUtilTest {
 
     assertEquals("01", expectedKeyValue, actualKeyValue);
     assertEquals("02", expectedId, taxonList.get(0).getId());
-    assertEquals("03", expectedScientificNameGroup,
-        taxonList.get(0).getAcceptedName().getScientificNameGroup());
-    assertEquals("04", expectedFullScientificName,
-        taxonList.get(0).getAcceptedName().getFullScientificName());
-    assertEquals("05", expectedAuthorshipVerbatim,
-        taxonList.get(0).getAcceptedName().getAuthorshipVerbatim());
+    assertEquals("03", expectedScientificNameGroup, taxonList.get(0).getAcceptedName().getScientificNameGroup());
+    assertEquals("04", expectedFullScientificName,  taxonList.get(0).getAcceptedName().getFullScientificName());
+    assertEquals("05", expectedAuthorshipVerbatim,  taxonList.get(0).getAcceptedName().getAuthorshipVerbatim());
 
   }
 

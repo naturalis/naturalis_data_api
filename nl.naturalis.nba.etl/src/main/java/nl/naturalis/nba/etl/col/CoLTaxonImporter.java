@@ -5,7 +5,7 @@ import static nl.naturalis.nba.etl.ETLUtil.logDuration;
 import java.io.File;
 import java.util.List;
 import org.apache.logging.log4j.Logger;
-import nl.naturalis.nba.api.model.SourceSystem;
+
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.dao.DaoRegistry;
 import nl.naturalis.nba.dao.ESClientManager;
@@ -16,7 +16,6 @@ import nl.naturalis.nba.etl.DocumentObjectWriter;
 import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.ETLRuntimeException;
 import nl.naturalis.nba.etl.ETLStatistics;
-import nl.naturalis.nba.etl.ETLUtil;
 import nl.naturalis.nba.utils.IOUtil;
 
 /**
@@ -66,8 +65,8 @@ public class CoLTaxonImporter extends CoLImporter {
       File f = new File(path);
       if (!f.exists())
         throw new ETLRuntimeException("No such file: " + path);
-      if (!toFile)
-        ETLUtil.truncate(TAXON, SourceSystem.COL);
+//      if (!toFile)
+//        ETLUtil.truncate(TAXON, SourceSystem.COL);
       stats = new ETLStatistics();
       extractor = createExtractor(stats, f);
       extractor.setDelimiter('\t');

@@ -13,10 +13,8 @@ import static nl.naturalis.nba.etl.ETLUtil.logDuration;
 import static nl.naturalis.nba.etl.SummaryObjectUtil.copyScientificName;
 import static nl.naturalis.nba.etl.SummaryObjectUtil.copySourceSystem;
 import static nl.naturalis.nba.etl.SummaryObjectUtil.copySummaryVernacularName;
-import static org.elasticsearch.index.query.QueryBuilders.constantScoreQuery;
-import static org.elasticsearch.index.query.QueryBuilders.termQuery;
-import static org.elasticsearch.index.query.QueryBuilders.termsQuery;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -24,12 +22,17 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.apache.logging.log4j.Logger;
-import org.elasticsearch.action.search.SearchRequestBuilder;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.index.query.TermQueryBuilder;
-import org.elasticsearch.index.query.TermsQueryBuilder;
-import org.elasticsearch.search.SearchHit;
+import org.apache.lucene.search.TotalHits;
 
+import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.index.query.ConstantScoreQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.TermQueryBuilder;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import nl.naturalis.nba.api.QuerySpec;
@@ -42,6 +45,7 @@ import nl.naturalis.nba.api.model.VernacularName;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.ESClientManager;
+import nl.naturalis.nba.dao.exception.DaoException;
 import nl.naturalis.nba.dao.util.es.AcidDocumentIterator;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.BulkIndexException;
@@ -296,62 +300,141 @@ public class MultimediaTaxonomicEnricher {
 			}
 		}
 		DocumentType<Taxon> dt = TAXON;
-		SearchRequestBuilder request = newSearchRequest(dt);
-		TermsQueryBuilder query = termsQuery("acceptedName.scientificNameGroup", groups);
-		request.setQuery(constantScoreQuery(query));
-		request.setSize(10000);
-		SearchResponse response = executeSearchRequest(request);
-		SearchHit[] hits = response.getHits().getHits();
-		if (hits.length == 0) {
-			return null;
-		}
-		if (response.getHits().getTotalHits() > 10000) {
-			throw new ETLRuntimeException("Too many taxa found for current batch of multimedia");
-		}
-		HashMap<String, List<Taxon>> table = new HashMap<>(groups.size());
-		ObjectMapper om = dt.getObjectMapper();
-		for (SearchHit hit : hits) {
-			Taxon taxon = om.convertValue(hit.getSource(), dt.getJavaType());
-			taxon.setId(hit.getId());
-			List<Taxon> taxa = table.get(taxon.getAcceptedName().getScientificNameGroup());
-			if (taxa == null) {
-				taxa = new ArrayList<>(2);
-				table.put(taxon.getAcceptedName().getScientificNameGroup(), taxa);
-			}
-			taxa.add(taxon);
-		}
-		return table;
+		
+		// ES 5
+//		SearchRequestBuilder request = newSearchRequest(dt);
+//		TermsQueryBuilder query = termsQuery("acceptedName.scientificNameGroup", groups);
+//		request.setQuery(constantScoreQuery(query));
+//		request.setSize(10000);
+//		SearchResponse response = executeSearchRequest(request);
+//		SearchHit[] hits = response.getHits().getHits();
+//		if (hits.length == 0) {
+//			return null;
+//		}
+//		if (response.getHits().getTotalHits() > 10000) {
+//			throw new ETLRuntimeException("Too many taxa found for current batch of multimedia");
+//		}
+//		HashMap<String, List<Taxon>> table = new HashMap<>(groups.size());
+//		ObjectMapper om = dt.getObjectMapper();
+//		for (SearchHit hit : hits) {
+//			Taxon taxon = om.convertValue(hit.getSource(), dt.getJavaType());
+//			taxon.setId(hit.getId());
+//			List<Taxon> taxa = table.get(taxon.getAcceptedName().getScientificNameGroup());
+//			if (taxa == null) {
+//				taxa = new ArrayList<>(2);
+//				table.put(taxon.getAcceptedName().getScientificNameGroup(), taxa);
+//			}
+//			taxa.add(taxon);
+//		}
+//		return table;
+		
+		// ES 7
+    SearchRequest searchRequest = newSearchRequest(dt);
+    
+    SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+    TermQueryBuilder termQuery = QueryBuilders.termQuery("acceptedName.scientificNameGroup", groups);
+    ConstantScoreQueryBuilder constantScoreQuery = QueryBuilders.constantScoreQuery(termQuery); 
+    searchSourceBuilder.query(constantScoreQuery);
+    searchSourceBuilder.from(0);
+    searchSourceBuilder.size(10000);
+    searchRequest.source(searchSourceBuilder);
+    
+    SearchResponse searchResponse;
+    try {
+      searchResponse = ESClientManager.getInstance().getClient().search(searchRequest, RequestOptions.DEFAULT);
+      SearchHits hits = searchResponse.getHits();
+      TotalHits totalHits = hits.getTotalHits();
+      long numHits = totalHits.value;
+      if (numHits == 0) {
+        return null;
+      }
+      if (numHits > 10000) {
+        throw new ETLRuntimeException("Too many taxa found for current batch of multimedia");
+      }
+      
+      HashMap<String, List<Taxon>> table = new HashMap<>(groups.size());
+      ObjectMapper om = dt.getObjectMapper();
+      for (SearchHit hit : hits) {
+        Taxon taxon = om.convertValue(hit.getSourceAsString(), dt.getJavaType());
+        taxon.setId(hit.getId());
+        List<Taxon> taxa = table.get(taxon.getAcceptedName().getScientificNameGroup());
+        if (taxa == null) {
+          taxa = new ArrayList<>(2);
+          table.put(taxon.getAcceptedName().getScientificNameGroup(), taxa);
+        }
+        taxa.add(taxon);
+      
+      }
+    return table;
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      throw new DaoException(String.format("Failed to query the taxon index: %s", e.getMessage())); 
+    }
 	}
 
 	@SuppressWarnings("unused")
 	private static List<Taxon> loadTaxaWithNameGroup(String nameGroup)
 	{
 		DocumentType<Taxon> dt = TAXON;
-		SearchRequestBuilder request = newSearchRequest(dt);
-		TermQueryBuilder query = termQuery("acceptedName.scientificNameGroup", nameGroup);
-		request.setQuery(constantScoreQuery(query));
-		int maxDocs = 10000;
-		request.setSize(maxDocs);
-		SearchResponse response = executeSearchRequest(request);
-		SearchHit[] hits = response.getHits().getHits();
-		if (hits.length == 0) {
-			return null;
-		}
-		if (response.getHits().getTotalHits() > maxDocs) {
-			/*
-			 * That would be really interesting because ordinarily you would
-			 * expect one or two (COL and/or NSR).
-			 */
-			throw new ETLRuntimeException("Too many taxa for name group " + nameGroup);
-		}
-		List<Taxon> result = new ArrayList<>(hits.length);
-		ObjectMapper om = dt.getObjectMapper();
-		for (SearchHit hit : hits) {
-			Taxon taxon = om.convertValue(hit.getSource(), dt.getJavaType());
-			taxon.setId(hit.getId());
-			result.add(taxon);
-		}
-		return result;
+
+		// ES 5
+//		SearchRequestBuilder request = newSearchRequest(dt);
+//		TermQueryBuilder query = termQuery("acceptedName.scientificNameGroup", nameGroup);
+//		request.setQuery(constantScoreQuery(query));
+//		int maxDocs = 10000;
+//		request.setSize(maxDocs);
+//		SearchResponse response = executeSearchRequest(request);
+//		SearchHit[] hits = response.getHits().getHits();
+//		if (hits.length == 0) {
+//			return null;
+//		}
+//		if (response.getHits().getTotalHits() > maxDocs) {
+//			/*
+//			 * That would be really interesting because ordinarily you would
+//			 * expect one or two (COL and/or NSR).
+//			 */
+//			throw new ETLRuntimeException("Too many taxa for name group " + nameGroup);
+//		}
+//		List<Taxon> result = new ArrayList<>(hits.length);
+//		ObjectMapper om = dt.getObjectMapper();
+//		for (SearchHit hit : hits) {
+//			Taxon taxon = om.convertValue(hit.getSource(), dt.getJavaType());
+//			taxon.setId(hit.getId());
+//			result.add(taxon);
+//		}
+//		return result;
+
+	// ES 7
+    SearchRequest searchRequest = newSearchRequest(dt);
+    SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+    int maxDocs = 10000;
+    sourceBuilder.from(0); 
+    sourceBuilder.size(maxDocs);
+    
+    TermQueryBuilder termQuery = new TermQueryBuilder("acceptedName.scientificNameGroup", nameGroup);
+    ConstantScoreQueryBuilder constantScoreQuery = new ConstantScoreQueryBuilder(termQuery);
+    sourceBuilder.query(constantScoreQuery);
+
+    SearchResponse response = executeSearchRequest(searchRequest);
+    SearchHit[] hits = response.getHits().getHits();
+    if (hits.length == 0) {
+      return null;
+    }
+    if (response.getHits().getTotalHits().value > maxDocs) {
+      /*
+       * That would be really interesting because ordinarily you would
+       * expect one or two (COL and/or NSR).
+       */
+      throw new ETLRuntimeException("Too many taxa for name group " + nameGroup);
+    }
+    List<Taxon> result = new ArrayList<>(hits.length);
+    ObjectMapper om = dt.getObjectMapper();
+    for (SearchHit hit : hits) {
+      Taxon taxon = om.convertValue(hit.getSourceAsString(), dt.getJavaType());
+      taxon.setId(hit.getId());
+      result.add(taxon);
+    }
+    return result;
 	}
 
 }

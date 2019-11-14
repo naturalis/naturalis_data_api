@@ -10,6 +10,7 @@ import static nl.naturalis.nba.etl.ETLUtil.logDuration;
 import static nl.naturalis.nba.etl.SummaryObjectUtil.copyScientificName;
 import static nl.naturalis.nba.etl.SummaryObjectUtil.copySourceSystem;
 import static nl.naturalis.nba.etl.SummaryObjectUtil.copySummaryVernacularName;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,14 +20,13 @@ import java.util.List;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.lucene.search.TotalHits;
+
 import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.index.query.ConstantScoreQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.TermQueryBuilder;
-import org.elasticsearch.index.query.TermsQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
@@ -336,7 +336,6 @@ public class SpecimenTaxonomicEnricher {
     searchSourceBuilder.query(constantScoreQuery); 
     searchSourceBuilder.from(0); 
     searchSourceBuilder.size(10000); 
-    
     searchRequest.source(searchSourceBuilder);
    
     SearchResponse searchResponse;
@@ -377,31 +376,64 @@ public class SpecimenTaxonomicEnricher {
 	private static List<Taxon> loadTaxaWithNameGroup(String nameGroup)
 	{
 		DocumentType<Taxon> dt = TAXON;
-		SearchRequestBuilder request = newSearchRequest(dt);
-		TermQueryBuilder query = termQuery("acceptedName.scientificNameGroup", nameGroup);
-		request.setQuery(constantScoreQuery(query));
-		int maxDocs = 10000;
-		request.setSize(maxDocs);
-		SearchResponse response = executeSearchRequest(request);
-		SearchHit[] hits = response.getHits().getHits();
-		if (hits.length == 0) {
-			return null;
-		}
-		if (response.getHits().getTotalHits() > maxDocs) {
-			/*
-			 * That would be really interesting because ordinarily you would
-			 * expect one or two (COL and/or NSR).
-			 */
-			throw new ETLRuntimeException("Too many taxa for name group " + nameGroup);
-		}
-		List<Taxon> result = new ArrayList<>(hits.length);
-		ObjectMapper om = dt.getObjectMapper();
-		for (SearchHit hit : hits) {
-			Taxon taxon = om.convertValue(hit.getSource(), dt.getJavaType());
-			taxon.setId(hit.getId());
-			result.add(taxon);
-		}
-		return result;
+
+		// ES 5
+//		SearchRequestBuilder request = newSearchRequest(dt);
+//		TermQueryBuilder query = termQuery("acceptedName.scientificNameGroup", nameGroup);
+//		request.setQuery(constantScoreQuery(query));
+//		int maxDocs = 10000;
+//		request.setSize(maxDocs);
+//		SearchResponse response = executeSearchRequest(request);
+//		SearchHit[] hits = response.getHits().getHits();
+//		if (hits.length == 0) {
+//			return null;
+//		}
+//		if (response.getHits().getTotalHits() > maxDocs) {
+//			/*
+//			 * That would be really interesting because ordinarily you would
+//			 * expect one or two (COL and/or NSR).
+//			 */
+//			throw new ETLRuntimeException("Too many taxa for name group " + nameGroup);
+//		}
+//		List<Taxon> result = new ArrayList<>(hits.length);
+//		ObjectMapper om = dt.getObjectMapper();
+//		for (SearchHit hit : hits) {
+//			Taxon taxon = om.convertValue(hit.getSource(), dt.getJavaType());
+//			taxon.setId(hit.getId());
+//			result.add(taxon);
+//		}
+//		return result;
+
+		// ES 7
+    SearchRequest request = newSearchRequest(dt);
+    SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+    int maxDocs = 10000;
+    sourceBuilder.from(0); 
+    sourceBuilder.size(maxDocs);
+    TermQueryBuilder termQuery = new TermQueryBuilder("acceptedName.scientificNameGroup", nameGroup);
+    ConstantScoreQueryBuilder query = new ConstantScoreQueryBuilder(termQuery);
+    sourceBuilder.query(query);
+    
+    SearchResponse response = executeSearchRequest(request);
+    SearchHit[] hits = response.getHits().getHits();
+    if (hits.length == 0) {
+      return null;
+    }
+    if (response.getHits().getTotalHits().value > maxDocs) {
+      /*
+       * That would be really interesting because ordinarily you would
+       * expect one or two (COL and/or NSR).
+       */
+      throw new ETLRuntimeException("Too many taxa for name group " + nameGroup);
+    }
+    List<Taxon> result = new ArrayList<>(hits.length);
+    ObjectMapper om = dt.getObjectMapper();
+    for (SearchHit hit : hits) {
+      Taxon taxon = om.convertValue(hit.getSourceAsString(), dt.getJavaType());
+      taxon.setId(hit.getId());
+      result.add(taxon);
+    }
+    return result;
 	}
 
 }

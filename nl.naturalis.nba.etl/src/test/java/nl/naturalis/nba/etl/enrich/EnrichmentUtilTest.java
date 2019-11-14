@@ -54,20 +54,32 @@ public class EnrichmentUtilTest {
    */
   @Before
   public void setUp() throws Exception {
+    
+    logger.info("(Re)creating test indices for unit test");
+    
     // delete and create new index..
     deleteIndex(DocumentType.SPECIMEN);
     createIndex(DocumentType.SPECIMEN);
     deleteIndex(DocumentType.MULTI_MEDIA_OBJECT);
     createIndex(DocumentType.MULTI_MEDIA_OBJECT);
+    deleteIndex(DocumentType.TAXON);
+    createIndex(DocumentType.TAXON);
 
-    // Saving a test MultiMedia Object in ES..
+    logger.info("Importing some test documents");
+    // Saving a test MultiMedia Object in ES
     MultiMediaObject mockMmo = DataMockUtil.generateMultiMediaMockObj();
     ETLDaoUtil.saveMultiMediaObject(mockMmo, true);
+    
+    // Saving a test Specimen Object in ES
+    Specimen mockSpecimen = DataMockUtil.generateSpecimenMockObject();
+    ETLDaoUtil.saveSpecimen(mockSpecimen, true);
 
+    // Import test Taxon Documents
     CoLTaxonImporter cti = new CoLTaxonImporter();
     String path = AllTests.class.getResource("taxa.txt").getPath();
     cti.importCsv(path);
 
+    logger.info("Test setup is ready");
   }
 
   /**

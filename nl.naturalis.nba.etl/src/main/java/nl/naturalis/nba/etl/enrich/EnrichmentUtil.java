@@ -223,7 +223,6 @@ public class EnrichmentUtil {
 		catch (InvalidQueryException e) {
 			throw new ETLRuntimeException(e);
 		}
-		logger.debug(">>> Result: {}", JsonUtil.toPrettyJson(result));
 		return result;
 	}
 

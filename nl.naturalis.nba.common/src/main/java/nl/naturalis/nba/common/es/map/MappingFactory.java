@@ -159,12 +159,19 @@ public class MappingFactory {
 				break;
 			case GEO_SHAPE:
 				sf = new GeoShapeField();
-				if (fm.getAnnotation(GeoShape.class) != null) {
-					GeoShape annotation = fm.getAnnotation(GeoShape.class);
-					GeoShapeField gsf = (GeoShapeField) sf;
-					gsf.setPrecision(annotation.precision());
-					gsf.setPoints_only(annotation.pointsOnly());
-				}
+// TODO: clean up
+/*
+ * geo_shape in ES 7 no longer supports the mapping options:
+ * - points_only
+ * - precision
+ * - strategy
+ */
+//				if (fm.getAnnotation(GeoShape.class) != null) {
+//					GeoShape annotation = fm.getAnnotation(GeoShape.class);
+//					GeoShapeField gsf = (GeoShapeField) sf;
+//					gsf.setPrecision(annotation.precision());
+//					gsf.setPoints_only(annotation.pointsOnly());
+//				}
 				break;
 			default:
 				sf = new SimpleField(esType);

@@ -52,7 +52,7 @@ public class GatheringSiteCoordinates implements INbaModelObject {
 	 * @return
 	 */
 	@JsonProperty
-	@GeoShape(pointsOnly = true)
+	@GeoShape//(pointsOnly = true) // Disabled as of ES7 (no longer supports points_only mapping option)
 	public Point getGeoShape()
 	{
 //		if (longitudeDecimal == null || latitudeDecimal == null) {

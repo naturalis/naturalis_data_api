@@ -15,6 +15,7 @@ import org.elasticsearch.common.xcontent.XContentType;
 
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.api.model.MultiMediaObject;
+import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.ESClientManager;
@@ -38,6 +39,20 @@ public class ETLDaoUtil {
     }
   }
   
+  public static void saveSpecimen(Specimen specimen, boolean refreshIndex)
+  {
+    if (specimen.getId() == null) {
+      String id = specimen.getUnitID() + "@" + specimen.getSourceSystem().getCode();
+      saveObject(id, null, specimen, refreshIndex);
+    }
+    else {
+      String id = specimen.getId();
+      specimen.setId(null);
+      saveObject(id, null, specimen, refreshIndex);
+      specimen.setId(id);
+    }
+  }
+
   
   public static void saveObject(String id, String parentId, IDocumentObject obj, boolean refreshIndex) {
     DocumentType<?> dt = DocumentType.forClass(obj.getClass());

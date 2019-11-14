@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import javax.management.RuntimeErrorException;
+
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.bulk.BulkItemResponse;
 import org.elasticsearch.action.bulk.BulkRequest;
@@ -15,6 +15,7 @@ import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.common.xcontent.XContentType;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -120,7 +121,6 @@ public class BulkIndexer<T extends IDocumentObject> {
       }
 		  bulkRequest.add(indexRequest);
 		}
-		logger.info(">>>>>>>>>> BulkRequest is ready");
 		
 		try {
       BulkResponse bulkResponse = client.bulk(bulkRequest, RequestOptions.DEFAULT);
@@ -136,13 +136,12 @@ public class BulkIndexer<T extends IDocumentObject> {
               logger.error("Failed to index document {}: {}", failure.getId(), failure.getMessage());              
           }
         }
-      } else {
-        logger.info(">>>>>>>>> No errors doing the BulkRequest");
       }
       if (hasFailed) throw new BulkIndexException(bulkResponse, documents);
     } catch (IOException e) {
       // TODO Auto-generated catch block
-      e.printStackTrace();
+      // e.printStackTrace();
+      throw new ETLRuntimeException("Failed to execute a bulk index: " + e.getMessage());
     }
 	}
 

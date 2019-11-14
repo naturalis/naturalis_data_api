@@ -130,9 +130,6 @@ public class ESUtil {
   
   // ES7
   public static SearchResponse executeSearchRequest(SearchRequest request) {
-    if (logger.isDebugEnabled()) {
-      logger.debug("Executing search request:\n{}", request);
-    }
     SearchResponse response = null;
     try {
       response = esClient().search(request, RequestOptions.DEFAULT);
@@ -141,7 +138,9 @@ public class ESUtil {
       }
     } catch (IOException e) {
       // TODO Auto-generated catch block
+      logger.error("Error while execuring the search request:\n" + JsonUtil.toPrettyJson(request.source()));
       e.printStackTrace();
+      throw new DaoException("Failed to execute the search request: " + e.getMessage()) ;
     }
     return response;
   }
@@ -367,6 +366,9 @@ public class ESUtil {
     } catch (IOException e) {
       throw new DaoException(
           String.format("Failed to create index \"%s\": %s", index, e.getMessage()));
+    }
+    for (DocumentType<?> dt : indexInfo.getTypes()) {
+      createType(dt);
     }
   }
 

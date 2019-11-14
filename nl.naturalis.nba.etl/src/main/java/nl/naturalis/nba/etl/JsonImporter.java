@@ -11,7 +11,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import org.apache.logging.log4j.Logger;
+import org.elasticsearch.ElasticsearchException;
+import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
+import org.elasticsearch.action.admin.indices.refresh.RefreshResponse;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.rest.RestStatus;
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.DaoRegistry;
@@ -119,9 +125,29 @@ public class JsonImporter {
   }
   
   private void refresh() {
-    Client client = ESClientManager.getInstance().getClient();
+    // ES 5
+//    Client client = ESClientManager.getInstance().getClient();
+//    String index = docType.getIndexInfo().getName();
+//    client.admin().indices().prepareRefresh(index).get();
+    
+    // ES 7
+    RestHighLevelClient client = ESClientManager.getInstance().getClient();
     String index = docType.getIndexInfo().getName();
-    client.admin().indices().prepareRefresh(index).get();
+    try {
+      RefreshRequest request = new RefreshRequest(index); 
+      client.indices().refresh(request, RequestOptions.DEFAULT);
+    } catch (ElasticsearchException e) {
+      if (e.status() == RestStatus.NOT_FOUND) {
+        logger.error(String.format("Failed to refresh the index \"%s\": %s", index, e.getMessage()));        
+      } else {
+        // TODO Auto-generated catch block
+        logger.error(String.format("Failed to refresh the index \"%s\": %s", index, e.getMessage()));
+      }
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      // e.printStackTrace();
+      logger.error(String.format("Failed to refresh the index \"%s\": %s", index, e.getMessage()));
+    }
   }
   
   public static File[] getJsonFiles(String documentType) {

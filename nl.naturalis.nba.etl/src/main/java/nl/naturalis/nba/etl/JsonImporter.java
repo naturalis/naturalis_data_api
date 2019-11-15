@@ -2,6 +2,7 @@ package nl.naturalis.nba.etl;
 
 import static nl.naturalis.nba.etl.ETLConstants.SYSPROP_DRY_RUN;
 import static nl.naturalis.nba.etl.ETLUtil.getLogger;
+
 import java.io.File;
 import java.io.FileReader;
 import java.io.FilenameFilter;
@@ -10,14 +11,15 @@ import java.io.LineNumberReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+
 import org.apache.logging.log4j.Logger;
+
 import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
-import org.elasticsearch.action.admin.indices.refresh.RefreshResponse;
-import org.elasticsearch.client.Client;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.rest.RestStatus;
+
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.DaoRegistry;

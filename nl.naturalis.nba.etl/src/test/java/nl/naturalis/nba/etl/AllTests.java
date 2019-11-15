@@ -53,5 +53,4 @@ import nl.naturalis.nba.etl.nsr.NsrTaxonTransformerTest;
     SummaryObjectUtilTest.class    
 })
 
-public class AllTests {
-}
+public class AllTests {}

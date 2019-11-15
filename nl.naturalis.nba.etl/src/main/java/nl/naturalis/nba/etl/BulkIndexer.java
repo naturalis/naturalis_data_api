@@ -73,10 +73,11 @@ public class BulkIndexer<T extends IDocumentObject> {
 		}
 		RestHighLevelClient client = ESClientManager.getInstance().getClient();
 		String index = dt.getIndexInfo().getName();
-		String type = dt.getName();
+
 		ObjectMapper om = dt.getObjectMapper();
 		
 		// ES5
+//		String type = dt.getName();
 //		BulkRequestBuilder brb = client.prepareBulk();
 //		brb.setTimeout(REQUEST_TIMEOUT);
 //		for (int i = 0; i < documents.size(); ++i) {

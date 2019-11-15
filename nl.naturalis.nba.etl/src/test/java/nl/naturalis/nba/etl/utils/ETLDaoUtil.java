@@ -57,9 +57,10 @@ public class ETLDaoUtil {
   public static void saveObject(String id, String parentId, IDocumentObject obj, boolean refreshIndex) {
     DocumentType<?> dt = DocumentType.forClass(obj.getClass());
     String index = dt.getIndexInfo().getName();
-    String type = dt.getName();
+    
 
     // ES5
+//    String type = dt.getName();
 //    IndexRequestBuilder irb = client().prepareIndex(index, type);
 //    if (id != null) {
 //      irb.setId(id);

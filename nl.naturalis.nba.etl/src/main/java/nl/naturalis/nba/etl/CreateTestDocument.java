@@ -133,7 +133,6 @@ public class CreateTestDocument {
   public void deleteTestDocs() {
     
     RestHighLevelClient client = ESUtil.esClient();
-    TermQueryBuilder qb = new TermQueryBuilder("collectionType", "epyTnoitcelloc");
     
     
     // ES5
@@ -149,13 +148,19 @@ public class CreateTestDocument {
 //    rrb.execute().actionGet();
     
     // ES7
-    DeleteByQueryRequest request = new DeleteByQueryRequest("collectionType", "epyTnoitcelloc");
+    DeleteByQueryRequest request = new DeleteByQueryRequest("specimen", "multimedia");
+    TermQueryBuilder query = new TermQueryBuilder("collectionType", "epyTnoitcelloc");
+    request.setQuery(query);
     request.setRefresh(true);
+    
     try {
       BulkByScrollResponse bulkResponse = client.deleteByQuery(request, RequestOptions.DEFAULT);
+      long deleted = bulkResponse.getDeleted();
+      logger.info(deleted + " test documents have been deleted");
     } catch (IOException e) {
       // TODO Auto-generated catch block
-      e.printStackTrace();
+      // e.printStackTrace();
+      throw new ETLRuntimeException("Failed to delete test documents");
     }
   }
 

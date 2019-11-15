@@ -1,12 +1,14 @@
 package nl.naturalis.nba.etl.enrich;
 
 import static org.junit.Assert.assertEquals;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
+
 import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
@@ -20,7 +22,10 @@ import nl.naturalis.nba.utils.reflect.ReflectionUtil;
 /**
  * Test Class for SpecimenMultimediaEnricher.java
  * 
- * @author Plabon
+ * NOTE: this test has lost its usage: multimedia enrichment of CRS specimens
+ * is done during Specimen Transformation.
+ * 
+ * @see {@link nl.naturalis.nba.etl.crs.CrsSpecimenTransformer#getAssociatedMultiMediaUris()}
  *
  */
 @SuppressWarnings({"unchecked"})
@@ -56,7 +61,6 @@ public class SpecimenMultimediaEnricherTest {
    * Test method to verify enrichSpecimens method returns an expected List<Specimen> object
    */
   @Test
-  @Ignore
   public void enrichSpecimens() {
 
     ScientificName scientificName = new ScientificName();

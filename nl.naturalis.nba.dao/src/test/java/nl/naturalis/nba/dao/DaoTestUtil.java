@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
@@ -161,7 +160,7 @@ public class DaoTestUtil {
 	  {
 	    DocumentType<?> dt = DocumentType.forClass(obj.getClass());
 	    String index = dt.getIndexInfo().getName();
-	    String type = dt.getName();
+	    // String type = dt.getName();
 	    IndexRequest request = new IndexRequest();
 	    request.index(index);
 	    if (id != null) {
@@ -170,7 +169,7 @@ public class DaoTestUtil {
 	    byte[] source = JsonUtil.serialize(obj);
 	    request.source(source, XContentType.JSON);
 	    try {
-        IndexResponse indexResponse = ESUtil.esClient().index(request, RequestOptions.DEFAULT);
+        ESUtil.esClient().index(request, RequestOptions.DEFAULT);
         if (refreshIndex) {
           ESUtil.refreshIndex(dt);
         }   

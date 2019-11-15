@@ -7,15 +7,20 @@ import static nl.naturalis.nba.dao.aggregation.AggregationQueryUtils.getOrdering
 import static nl.naturalis.nba.dao.util.es.ESUtil.executeSearchRequest;
 import static nl.naturalis.nba.utils.debug.DebugUtil.printCall;
 import static org.elasticsearch.search.aggregations.AggregationBuilders.terms;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
+
 import org.apache.logging.log4j.Logger;
-import org.elasticsearch.action.search.SearchRequestBuilder;
+
+import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.search.aggregations.BucketOrder;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
-import org.elasticsearch.search.aggregations.bucket.terms.Terms.Order;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
+
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.IDocumentObject;
@@ -42,7 +47,7 @@ public class GetDistinctValuesFieldAggregation<T extends IDocumentObject>
       String msg = String.format(fmt, getMaxNumGroups(), (from + aggSize));
       throw new InvalidQueryException(msg);
     }
-    SearchRequestBuilder request;
+    SearchRequest request;
     if (querySpec != null) {
       QuerySpec querySpecCopy = new QuerySpec(querySpec);
       querySpecCopy.setSize(0);
@@ -52,13 +57,14 @@ public class GetDistinctValuesFieldAggregation<T extends IDocumentObject>
       request = createSearchRequest(querySpec);      
     }
     if (from > 0) aggSize += from;
-    Order fieldOrder = getOrdering(field, querySpec);
+    BucketOrder fieldOrder = getOrdering(field, querySpec);
 
+    SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
     TermsAggregationBuilder termsAggregation = terms("FIELD");
     termsAggregation.field(field);
     termsAggregation.size(aggSize).order(fieldOrder);
-    request.addAggregation(termsAggregation);
-
+    searchSourceBuilder.aggregation(termsAggregation);
+    request.source(searchSourceBuilder);
     return executeSearchRequest(request);
   }
 

@@ -7,12 +7,15 @@ import static nl.naturalis.nba.dao.aggregation.AggregationQueryUtils.getNestedPa
 import static nl.naturalis.nba.dao.aggregation.AggregationQueryUtils.getOrdering;
 import static nl.naturalis.nba.dao.util.es.ESUtil.executeSearchRequest;
 import static nl.naturalis.nba.utils.debug.DebugUtil.printCall;
+
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
 import org.apache.logging.log4j.Logger;
-import org.elasticsearch.action.search.SearchRequestBuilder;
+
+import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
@@ -22,8 +25,10 @@ import org.elasticsearch.search.aggregations.bucket.terms.LongTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.StringTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
-import org.elasticsearch.search.aggregations.bucket.terms.Terms.Order;
+import org.elasticsearch.search.aggregations.BucketOrder;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.aggregations.bucket.terms.UnmappedTerms;
+
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.IDocumentObject;
@@ -35,8 +40,7 @@ public class GetDistinctValuesNestedFieldPerGroupAggregation<T extends IDocument
   private static final Logger logger =
       getLogger(GetDistinctValuesNestedFieldPerGroupAggregation.class);
 
-  GetDistinctValuesNestedFieldPerGroupAggregation(DocumentType<T> dt, String field, String group,
-      QuerySpec querySpec) {
+  GetDistinctValuesNestedFieldPerGroupAggregation(DocumentType<T> dt, String field, String group, QuerySpec querySpec) {
     super(dt, field, group, querySpec);
     aggSize = getAggregationSize(querySpec);
     from = getAggregationFrom(querySpec);
@@ -52,7 +56,7 @@ public class GetDistinctValuesNestedFieldPerGroupAggregation<T extends IDocument
       String msg = String.format(fmt, getMaxNumGroups(), (from + aggSize));
       throw new InvalidQueryException(msg);
     }
-    SearchRequestBuilder request;
+    SearchRequest request;
     if (querySpec != null) {
       QuerySpec querySpecCopy = new QuerySpec(querySpec);
       querySpecCopy.setSize(0);
@@ -62,21 +66,20 @@ public class GetDistinctValuesNestedFieldPerGroupAggregation<T extends IDocument
       request = createSearchRequest(querySpec);
     }
     String pathToNestedField = getNestedPath(dt, field);
-    if (from > 0)
+    if (from > 0) {
       aggSize += from;
-    Order fieldOrder = getOrdering(field, querySpec);
-    Order groupOrder = getOrdering(group, querySpec);
+    }
+    BucketOrder fieldOrder = getOrdering(field, querySpec);
+    BucketOrder groupOrder = getOrdering(group, querySpec);
 
-    AggregationBuilder fieldAgg =
-        AggregationBuilders.terms("FIELD").field(field).size(aggSize).order(fieldOrder);
-    AggregationBuilder nestedFieldAgg =
-        AggregationBuilders.nested("NESTED_FIELD", pathToNestedField);
+    SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+    AggregationBuilder fieldAgg = AggregationBuilders.terms("FIELD").field(field).size(aggSize).order(fieldOrder);
+    AggregationBuilder nestedFieldAgg = AggregationBuilders.nested("NESTED_FIELD", pathToNestedField);
     nestedFieldAgg.subAggregation(fieldAgg);
-    AggregationBuilder groupAgg =
-        AggregationBuilders.terms("GROUP").field(group).size(aggSize).order(groupOrder);
+    AggregationBuilder groupAgg = AggregationBuilders.terms("GROUP").field(group).size(aggSize).order(groupOrder);
     groupAgg.subAggregation(nestedFieldAgg);
-
-    request.addAggregation(groupAgg);
+    searchSourceBuilder.aggregation(groupAgg);
+    request.source(searchSourceBuilder);
     return executeSearchRequest(request);
   }
 

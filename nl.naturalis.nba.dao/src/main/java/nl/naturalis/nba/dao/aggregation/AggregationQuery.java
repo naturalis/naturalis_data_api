@@ -1,13 +1,16 @@
 package nl.naturalis.nba.dao.aggregation;
 
+import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static nl.naturalis.nba.dao.util.es.ESUtil.newSearchRequest;
+import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.IDocumentObject;
+import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.DaoRegistry;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.translate.QuerySpecTranslator;
@@ -61,6 +64,8 @@ public abstract class AggregationQuery<T extends IDocumentObject, U> {
 
   QuerySpec querySpec;
   DocumentType<T> dt;
+  
+  private static final Logger logger = getLogger(AggregationQuery.class);
 
   AggregationQuery(DocumentType<T> dt, QuerySpec querySpec) {
     this.dt = dt;
@@ -71,16 +76,14 @@ public abstract class AggregationQuery<T extends IDocumentObject, U> {
 
   public abstract U getResult() throws InvalidQueryException;
 
-  /**
-   * Takes a QuerySpec and returns a SearchRequestBuilder that can be used for an aggregation query.
-   * 
-   * @param querySpec
-   * @return
-   * @throws InvalidQueryException
-   */
-  // TODO: Since the Java High Level REST Client does not support request builders, applications that use 
-  // them must be changed to use requests constructors instead.
-  // @Deprecated
+// ES 5
+//  /**
+//   * Takes a QuerySpec and returns a SearchRequestBuilder that can be used for an aggregation query.
+//   * 
+//   * @param querySpec
+//   * @return
+//   * @throws InvalidQueryException
+//   */
 //  SearchRequestBuilder createSearchRequest(QuerySpec querySpec) throws InvalidQueryException {
 //    SearchRequestBuilder request;
 //    if (querySpec == null) {
@@ -91,17 +94,21 @@ public abstract class AggregationQuery<T extends IDocumentObject, U> {
 //    }
 //    request.setSize(0);
 //    return request;
+  /**
+   * Takes a QuerySpec and returns a SearchRequestBuilder that can be used for an aggregation query.
+   * 
+   * @param querySpec
+   * @return
+   * @throws InvalidQueryException
+   */
   SearchRequest createSearchRequest(QuerySpec querySpec) throws InvalidQueryException {
     SearchRequest request;
     if (querySpec == null) {
       request = newSearchRequest(dt);
     } else {
       QuerySpecTranslator translator = new QuerySpecTranslator(querySpec, dt);
-      request = translator.translate();
+      request = translator.translate();  
     }
-    SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
-    sourceBuilder.from(0);
-    request.source(sourceBuilder);
     return request;
   }
   

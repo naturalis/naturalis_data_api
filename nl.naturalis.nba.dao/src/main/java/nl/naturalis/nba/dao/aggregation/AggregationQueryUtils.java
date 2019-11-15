@@ -1,7 +1,7 @@
 package nl.naturalis.nba.dao.aggregation;
 
-import org.elasticsearch.search.aggregations.bucket.terms.Terms;
-import org.elasticsearch.search.aggregations.bucket.terms.Terms.Order;
+import org.elasticsearch.search.aggregations.BucketOrder;
+
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.NoSuchFieldException;
 import nl.naturalis.nba.api.QuerySpec;
@@ -66,21 +66,38 @@ public final class AggregationQueryUtils {
    * @param querySpec
    * @return order
    */
-  static Order getOrdering(String fieldName, QuerySpec querySpec) {
-    Order order = Terms.Order.count(false);
+  static BucketOrder getOrdering(String fieldName, QuerySpec querySpec) {
+    BucketOrder order = BucketOrder.count(false);
     if (querySpec != null && querySpec.getSortFields() != null) {
       for (SortField sortField : querySpec.getSortFields()) {
         if (sortField.getPath().equals(new SortField(fieldName).getPath())) {
           if (sortField.isAscending()) {
-            order = Terms.Order.term(true);
+            order = BucketOrder.key(true);
           } else {
-            order = Terms.Order.term(false);
+            order = BucketOrder.key(false);
           }
         }
       }
     }
     return order;
   }
+
+//  ES 5  
+//  static Order getOrdering(String fieldName, QuerySpec querySpec) {
+//    Order order = Terms.Order.count(false);
+//    if (querySpec != null && querySpec.getSortFields() != null) {
+//      for (SortField sortField : querySpec.getSortFields()) {
+//        if (sortField.getPath().equals(new SortField(fieldName).getPath())) {
+//          if (sortField.isAscending()) {
+//            order = Terms.Order.term(true);
+//          } else {
+//            order = Terms.Order.term(false);
+//          }
+//        }
+//      }
+//    }
+//    return order;
+//  }
   
   /**
    * A field used to aggregate documents must be a searchable field. This method

@@ -11,15 +11,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import org.apache.logging.log4j.Logger;
-import org.elasticsearch.action.search.SearchRequestBuilder;
+import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.BucketOrder;
 import org.elasticsearch.search.aggregations.bucket.terms.LongTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.StringTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
-import org.elasticsearch.search.aggregations.bucket.terms.Terms.Order;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.IDocumentObject;
@@ -47,7 +48,7 @@ public class GetDistinctValuesFieldPerGroupAggregation<T extends IDocumentObject
       String msg = String.format(fmt, getMaxNumGroups(), (from + aggSize));
       throw new InvalidQueryException(msg);
     }
-    SearchRequestBuilder request;
+    SearchRequest request;
     if (querySpec != null) {
       QuerySpec querySpecCopy = new QuerySpec(querySpec);
       querySpecCopy.setSize(0);
@@ -58,16 +59,15 @@ public class GetDistinctValuesFieldPerGroupAggregation<T extends IDocumentObject
     }
     if (from > 0)
       aggSize += from;
-    Order fieldOrder = getOrdering(field, querySpec);
-    Order groupOrder = getOrdering(group, querySpec);
+    BucketOrder fieldOrder = getOrdering(field, querySpec);
+    BucketOrder groupOrder = getOrdering(group, querySpec);
 
-    AggregationBuilder fieldAgg =
-        AggregationBuilders.terms("FIELD").field(field).size(aggSize).order(fieldOrder);
-    AggregationBuilder groupAgg =
-        AggregationBuilders.terms("GROUP").field(group).size(aggSize).order(groupOrder);
+    SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+    AggregationBuilder fieldAgg = AggregationBuilders.terms("FIELD").field(field).size(aggSize).order(fieldOrder);
+    AggregationBuilder groupAgg = AggregationBuilders.terms("GROUP").field(group).size(aggSize).order(groupOrder);
     groupAgg.subAggregation(fieldAgg);
-
-    request.addAggregation(groupAgg);
+    searchSourceBuilder.aggregation(groupAgg);
+    request.source(searchSourceBuilder);
     return executeSearchRequest(request);
   }
 

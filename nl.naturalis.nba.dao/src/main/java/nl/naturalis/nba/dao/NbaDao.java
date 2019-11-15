@@ -210,14 +210,12 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
 
   @SuppressWarnings("unchecked")
   @Override
-  public long countDistinctValues(String forField, QuerySpec querySpec)
-      throws InvalidQueryException {
+  public long countDistinctValues(String forField, QuerySpec querySpec) throws InvalidQueryException {
     if (logger.isDebugEnabled()) {
       logger.debug(printCall("countDistinctValues", forField, querySpec));
     }
-    AggregationQuery<T, Long> aggregationQuery =
-        (AggregationQuery<T, Long>) createAggregationQuery(COUNT_DISTINCT_VALUES, dt, forField,
-            null, querySpec);
+    AggregationQuery<T, Long> aggregationQuery = 
+        (AggregationQuery<T, Long>) createAggregationQuery(COUNT_DISTINCT_VALUES, dt, forField, null, querySpec);
     return aggregationQuery.getResult().longValue();
   }
 

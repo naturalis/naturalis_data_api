@@ -65,7 +65,7 @@ public class QuerySpecTranslator {
       logger.debug("Translating QuerySpec:\n{}", toPrettyJson(prune(spec)));
     }
     SearchRequest request = newSearchRequest(dt);
-    SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+    SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
     
     if (spec.getConditions() != null && !spec.getConditions().isEmpty()) {
       overrideNonScoringIfNecessary();
@@ -79,16 +79,16 @@ public class QuerySpecTranslator {
       //request.setQuery(query);
       
       // ES7
-      sourceBuilder.query(query);
+      searchSourceBuilder.query(query);
     }
     
     if (spec.getFields() != null) {
       if (spec.getFields().isEmpty()) {
         // ES5
         // request.setFetchSource(false);
-        sourceBuilder.fetchSource(false);
+        searchSourceBuilder.fetchSource(false);
       } else {
-        addFields(sourceBuilder);
+        addFields(searchSourceBuilder);
       }
     }
     
@@ -96,8 +96,8 @@ public class QuerySpecTranslator {
     // request.setFrom(spec.getFrom() == null ? 0 : spec.getFrom());
     // request.setSize(spec.getSize() == null ? DEFAULT_SIZE : spec.getSize());
     // ES7
-    sourceBuilder.from(spec.getFrom() == null ? 0 : spec.getFrom());
-    sourceBuilder.size(spec.getSize() == null ? DEFAULT_SIZE : spec.getSize());
+    searchSourceBuilder.from(spec.getFrom() == null ? 0 : spec.getFrom());
+    searchSourceBuilder.size(spec.getSize() == null ? DEFAULT_SIZE : spec.getSize());
 
     if (spec.getSortFields() != null) {
       SortFieldsTranslator sfTranslator = new SortFieldsTranslator(spec, dt);
@@ -105,11 +105,11 @@ public class QuerySpecTranslator {
         // ES5
         // request.addSort(sortBuilder);
         // ES7
-        sourceBuilder.sort(sortBuilder);
+        searchSourceBuilder.sort(sortBuilder);
       }
     }
     
-    request.source(sourceBuilder);
+    request.source(searchSourceBuilder);
     return request;
   }
 

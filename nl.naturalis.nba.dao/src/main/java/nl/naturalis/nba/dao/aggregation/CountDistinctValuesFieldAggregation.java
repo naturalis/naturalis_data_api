@@ -3,12 +3,17 @@ package nl.naturalis.nba.dao.aggregation;
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static nl.naturalis.nba.dao.util.es.ESUtil.executeSearchRequest;
 import static nl.naturalis.nba.utils.debug.DebugUtil.printCall;
+
 import org.apache.logging.log4j.Logger;
-import org.elasticsearch.action.search.SearchRequestBuilder;
+
+import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
-import org.elasticsearch.search.aggregations.metrics.cardinality.Cardinality;
+import org.elasticsearch.search.aggregations.Aggregations;
+import org.elasticsearch.search.aggregations.metrics.Cardinality;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
+
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.IDocumentObject;
@@ -28,9 +33,11 @@ public class CountDistinctValuesFieldAggregation<T extends IDocumentObject>
     if (logger.isDebugEnabled()) {
       logger.debug(printCall("Executing AggregationQuery with: ", field, querySpec));
     }
-    SearchRequestBuilder request = createSearchRequest(querySpec);
+    SearchRequest request = createSearchRequest(querySpec);
+    SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
     AggregationBuilder agg = AggregationBuilders.cardinality("CARDINALITY").field(field);
-    request.addAggregation(agg);
+    searchSourceBuilder.aggregation(agg);
+    request.source(searchSourceBuilder);
     return executeSearchRequest(request);
   }
 
@@ -38,8 +45,9 @@ public class CountDistinctValuesFieldAggregation<T extends IDocumentObject>
   public Long getResult() throws InvalidQueryException {
     Long result = 0L;
     SearchResponse response = executeQuery();
-    Cardinality cardinality = response.getAggregations().get("CARDINALITY");
-    result = cardinality.getValue();
+    Aggregations aggregations = response.getAggregations();
+    Cardinality cardinality = aggregations.get("CARDINALITY");
+    result = cardinality.getValue();    
     return result;
   }
 

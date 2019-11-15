@@ -4,13 +4,17 @@ import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static nl.naturalis.nba.dao.aggregation.AggregationQueryUtils.getNestedPath;
 import static nl.naturalis.nba.dao.util.es.ESUtil.executeSearchRequest;
 import static nl.naturalis.nba.utils.debug.DebugUtil.printCall;
+
 import org.apache.logging.log4j.Logger;
-import org.elasticsearch.action.search.SearchRequestBuilder;
+
+import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.nested.Nested;
-import org.elasticsearch.search.aggregations.metrics.cardinality.Cardinality;
+import org.elasticsearch.search.aggregations.metrics.Cardinality;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
+
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.IDocumentObject;
@@ -30,12 +34,14 @@ public class CountDistinctValuesNestedFieldAggregation<T extends IDocumentObject
     if (logger.isDebugEnabled()) {
       logger.debug(printCall("Executing AggregationQuery with: ", field, querySpec));
     }
-    SearchRequestBuilder request = createSearchRequest(querySpec);
+    SearchRequest request = createSearchRequest(querySpec);
     String nestedPath = getNestedPath(dt, field);
+    SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
     AggregationBuilder nested = AggregationBuilders.nested("NESTED", nestedPath);
     AggregationBuilder agg = AggregationBuilders.cardinality("CARDINALITY").field(field);
     nested.subAggregation(agg);
-    request.addAggregation(nested);
+    searchSourceBuilder.aggregation(nested);
+    request.source(searchSourceBuilder);
     return executeSearchRequest(request);
   }
 

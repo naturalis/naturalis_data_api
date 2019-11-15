@@ -7,6 +7,7 @@ import static nl.naturalis.nba.api.GroupByScientificNameQuerySpec.GroupSort.NAME
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static nl.naturalis.nba.dao.DocumentType.TAXON;
 import static nl.naturalis.nba.dao.util.es.ESUtil.executeSearchRequest;
+
 import static org.elasticsearch.search.aggregations.AggregationBuilders.max;
 import static org.elasticsearch.search.aggregations.AggregationBuilders.terms;
 import static org.elasticsearch.search.aggregations.AggregationBuilders.topHits;
@@ -15,15 +16,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.logging.log4j.Logger;
-import org.elasticsearch.action.search.SearchRequestBuilder;
+
+import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.script.Script;
+import org.elasticsearch.search.aggregations.BucketOrder;
+import org.elasticsearch.search.aggregations.bucket.terms.IncludeExclude;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
-import org.elasticsearch.search.aggregations.bucket.terms.support.IncludeExclude;
-import org.elasticsearch.search.aggregations.metrics.max.MaxAggregationBuilder;
-import org.elasticsearch.search.aggregations.metrics.tophits.TopHitsAggregationBuilder;
+import org.elasticsearch.search.aggregations.metrics.MaxAggregationBuilder;
+import org.elasticsearch.search.aggregations.metrics.TopHitsAggregationBuilder;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 
 import nl.naturalis.nba.api.Filter;
 import nl.naturalis.nba.api.GroupByScientificNameQueryResult;
@@ -89,9 +94,12 @@ public class GroupTaxaByScientificNameHelper {
 		queryCopy.setSize(0);
 		queryCopy.setSortFields(null);
 		QuerySpecTranslator translator = new QuerySpecTranslator(queryCopy, TAXON);
-		SearchRequestBuilder request = translator.translate();
-		request.addAggregation(createAggregation(queryCopy));
+		
+		SearchRequest request = translator.translate();
+		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+		searchSourceBuilder.aggregation(createAggregation(queryCopy));
 		SearchResponse response = executeSearchRequest(request);
+		
 		Terms terms = response.getAggregations().get("TERMS");
 		result.setSumOfOtherDocCounts(terms.getSumOfOtherDocCounts());
 		List<? extends Bucket> buckets = terms.getBuckets();
@@ -134,7 +142,8 @@ public class GroupTaxaByScientificNameHelper {
 			}
 		}
 		result.setResultSet(resultSet);
-		if (getCacheSize() > 0 && response.getTookInMillis() > getCacheTreshold()) {
+		TimeValue took = response.getTook();
+		if (getCacheSize() > 0 && took.getMillis() > getCacheTreshold()) {
 			queryCache.put(query, result);
 		}
 		return result;
@@ -147,16 +156,16 @@ public class GroupTaxaByScientificNameHelper {
 		tab.field("acceptedName.scientificNameGroup");
 		tab.size(getMaxNumBuckets());
 		if (sngQuery.getGroupSort() == NAME_ASC) {
-			tab.order(Terms.Order.term(true));
+			tab.order(BucketOrder.key(true));
 		}
 		else if (sngQuery.getGroupSort() == NAME_DESC) {
-			tab.order(Terms.Order.term(false));
+			tab.order(BucketOrder.key(false));
 		}
 		else if (sngQuery.getGroupSort() == COUNT_DESC) {
-			tab.order(Terms.Order.count(false));
+			tab.order(BucketOrder.count(false));
 		}
 		else if (sngQuery.getGroupSort() == COUNT_ASC) {
-			tab.order(Terms.Order.count(true));
+			tab.order(BucketOrder.count(true));
 		}
 		else { // TOP_HIT_SCORE
 			TopHitsAggregationBuilder thab = topHits("TOP_HITS");
@@ -165,7 +174,7 @@ public class GroupTaxaByScientificNameHelper {
 			MaxAggregationBuilder mab = max("MAX");
 			mab.script(new Script("_score"));
 			tab.subAggregation(mab);
-			tab.order(Terms.Order.aggregation("MAX", false));
+			tab.order(BucketOrder.aggregation("MAX", false));
 		}
 		Filter filter = sngQuery.getGroupFilter();
 		if (filter != null) {

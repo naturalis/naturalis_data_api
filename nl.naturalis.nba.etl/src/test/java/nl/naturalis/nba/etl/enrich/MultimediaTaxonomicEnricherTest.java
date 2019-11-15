@@ -31,7 +31,7 @@ import nl.naturalis.nba.utils.reflect.ReflectionUtil;
  *
  */
 @SuppressWarnings({"unchecked"})
-public class MultimediaTaxonomicEnricher2Test {
+public class MultimediaTaxonomicEnricherTest {
 
   /**
    * @throws java.lang.Exception

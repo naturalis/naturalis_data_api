@@ -15,9 +15,9 @@ import nl.naturalis.nba.etl.crs.CrsImportUtilTest;
 import nl.naturalis.nba.etl.crs.CrsMultiMediaTransformerTest;
 import nl.naturalis.nba.etl.crs.CrsSpecimenTransformerTest;
 import nl.naturalis.nba.etl.enrich.EnrichmentUtilTest;
-import nl.naturalis.nba.etl.enrich.MultimediaTaxonomicEnricher2Test;
+import nl.naturalis.nba.etl.enrich.MultimediaTaxonomicEnricherTest;
 import nl.naturalis.nba.etl.enrich.SpecimenMultimediaEnricherTest;
-import nl.naturalis.nba.etl.enrich.SpecimenTaxonomicEnricher2Test;
+import nl.naturalis.nba.etl.enrich.SpecimenTaxonomicEnricherTest;
 import nl.naturalis.nba.etl.geo.GeoImportUtilTest;
 import nl.naturalis.nba.etl.geo.GeoTransformerTest;
 import nl.naturalis.nba.etl.nsr.NsrImportUtilTest;
@@ -47,9 +47,9 @@ import nl.naturalis.nba.etl.nsr.NsrTaxonTransformerTest;
     NsrMultiMediaTransformerTest.class,
     NsrTaxonTransformerTest.class,
     EnrichmentUtilTest.class,
-    MultimediaTaxonomicEnricher2Test.class,
+    MultimediaTaxonomicEnricherTest.class,
     SpecimenMultimediaEnricherTest.class,
-    SpecimenTaxonomicEnricher2Test.class,
+    SpecimenTaxonomicEnricherTest.class,
     SummaryObjectUtilTest.class    
 })
 

@@ -16,16 +16,21 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import org.apache.logging.log4j.Logger;
-import org.elasticsearch.action.search.SearchRequestBuilder;
+
+import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.IdsQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
-
+import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.api.model.VernacularName;
+import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.CSVRecordInfo;
@@ -113,20 +118,48 @@ class CoLVernacularNameBatchTransformer {
 			ids.add(getElasticsearchId(COL, record.get(taxonID)));
 		}
 		DocumentType<Taxon> dt = TAXON;
-		SearchRequestBuilder request = ESUtil.newSearchRequest(dt);
-		IdsQueryBuilder query = QueryBuilders.idsQuery(dt.getName());
+		
+		// ES 5
+		
+//    SearchRequestBuilder request = ESUtil.newSearchRequest(dt);
+//    IdsQueryBuilder query = QueryBuilders.idsQuery(dt.getName());
+//    query.addIds(ids.toArray(new String[ids.size()]));
+//    request.setQuery(query);
+//    request.setSize(ids.size());
+//    SearchResponse response = ESUtil.executeSearchRequest(request);
+//    SearchHit[] hits = response.getHits().getHits();
+//    HashMap<String, Taxon> taxa = new HashMap<>(hits.length + 4, 1F);
+//    ObjectMapper om = dt.getObjectMapper();
+//    for (SearchHit hit : hits) {
+//      Taxon taxon = om.convertValue(hit.getSource(), dt.getJavaType());
+//      taxon.setId(hit.getId());
+//      taxa.put(taxon.getSourceSystemId(), taxon);
+//    }
+//    return taxa;
+
+		
+		// ES 7
+		SearchRequest searchRequest = ESUtil.newSearchRequest(dt);
+		IdsQueryBuilder query = QueryBuilders.idsQuery();
 		query.addIds(ids.toArray(new String[ids.size()]));
-		request.setQuery(query);
-		request.setSize(ids.size());
-		SearchResponse response = ESUtil.executeSearchRequest(request);
-		SearchHit[] hits = response.getHits().getHits();
-		HashMap<String, Taxon> taxa = new HashMap<>(hits.length + 4, 1F);
+
+		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+		searchSourceBuilder.query(query);
+		searchSourceBuilder.size(ids.size());
+		
+		SearchResponse response = ESUtil.executeSearchRequest(searchRequest);		
+		SearchHits hits = response.getHits();
+		SearchHit[] searchHits = hits.getHits();
+		
+		HashMap<String, Taxon> taxa = new HashMap<>(searchHits.length + 4, 1F);
 		ObjectMapper om = dt.getObjectMapper();
+		
 		for (SearchHit hit : hits) {
-			Taxon taxon = om.convertValue(hit.getSource(), dt.getJavaType());
-			taxon.setId(hit.getId());
+			Taxon taxon = om.convertValue(hit.getSourceAsMap(), dt.getJavaType());
+		  taxon.setId(hit.getId());
 			taxa.put(taxon.getSourceSystemId(), taxon);
 		}
+
 		return taxa;
 	}
 

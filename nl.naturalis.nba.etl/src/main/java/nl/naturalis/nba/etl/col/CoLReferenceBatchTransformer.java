@@ -19,11 +19,14 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import org.apache.logging.log4j.Logger;
-import org.elasticsearch.action.search.SearchRequestBuilder;
+
+import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.IdsQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -118,21 +121,47 @@ class CoLReferenceBatchTransformer {
 			ids.add(getElasticsearchId(COL, record.get(taxonID)));
 		}
 		DocumentType<Taxon> dt = TAXON;
-		SearchRequestBuilder request = ESUtil.newSearchRequest(dt);
-		IdsQueryBuilder query = QueryBuilders.idsQuery(dt.getName());
-		query.addIds(ids.toArray(new String[ids.size()]));
-		request.setQuery(query);
-		request.setSize(ids.size());
-		SearchResponse response = ESUtil.executeSearchRequest(request);
-		SearchHit[] hits = response.getHits().getHits();
-		HashMap<String, Taxon> taxa = new HashMap<>(hits.length + 4, 1F);
-		ObjectMapper om = dt.getObjectMapper();
-		for (SearchHit hit : hits) {
-			Taxon taxon = om.convertValue(hit.getSource(), dt.getJavaType());
-			taxon.setId(hit.getId());
-			taxa.put(taxon.getSourceSystemId(), taxon);
-		}
-		return taxa;
+
+		// ES 5
+//		SearchRequestBuilder request = ESUtil.newSearchRequest(dt);
+//		IdsQueryBuilder query = QueryBuilders.idsQuery(dt.getName());
+//		query.addIds(ids.toArray(new String[ids.size()]));
+//		request.setQuery(query);
+//		request.setSize(ids.size());
+//		SearchResponse response = ESUtil.executeSearchRequest(request);
+//		SearchHit[] hits = response.getHits().getHits();
+//		HashMap<String, Taxon> taxa = new HashMap<>(hits.length + 4, 1F);
+//		ObjectMapper om = dt.getObjectMapper();
+//		for (SearchHit hit : hits) {
+//			Taxon taxon = om.convertValue(hit.getSource(), dt.getJavaType());
+//			taxon.setId(hit.getId());
+//			taxa.put(taxon.getSourceSystemId(), taxon);
+//		}
+//		return taxa;
+		
+		// ES 7
+    SearchRequest searchRequest = ESUtil.newSearchRequest(dt);
+    IdsQueryBuilder query = QueryBuilders.idsQuery();
+    query.addIds(ids.toArray(new String[ids.size()]));
+    
+    SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+    searchSourceBuilder.query(query);
+    searchSourceBuilder.size(ids.size());
+
+    SearchResponse response = ESUtil.executeSearchRequest(searchRequest);
+    SearchHits searchHits = response.getHits();
+    SearchHit[] hits = searchHits.getHits();
+    
+    HashMap<String, Taxon> taxa = new HashMap<>(hits.length + 4, 1F);
+    ObjectMapper om = dt.getObjectMapper();
+    
+    for (SearchHit hit : hits) {
+      Taxon taxon = om.convertValue(hit.getSourceAsMap(), dt.getJavaType());
+      taxon.setId(hit.getId());
+      taxa.put(taxon.getSourceSystemId(), taxon);
+    }
+    
+    return taxa;
 	}
 
 	private static Reference createReference(CSVRecordInfo<CoLReferenceCsvField> record)

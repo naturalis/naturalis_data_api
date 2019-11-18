@@ -5,12 +5,10 @@ import static nl.naturalis.nba.dao.util.es.ESUtil.newSearchRequest;
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.search.builder.SearchSourceBuilder;
 
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.IDocumentObject;
-import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.DaoRegistry;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.translate.QuerySpecTranslator;

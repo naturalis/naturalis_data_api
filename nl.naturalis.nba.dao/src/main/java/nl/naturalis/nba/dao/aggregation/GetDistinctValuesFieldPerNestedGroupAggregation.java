@@ -19,9 +19,13 @@ import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.BucketOrder;
 import org.elasticsearch.search.aggregations.bucket.nested.InternalReverseNested;
 import org.elasticsearch.search.aggregations.bucket.nested.Nested;
+import org.elasticsearch.search.aggregations.bucket.nested.ParsedReverseNested;
 import org.elasticsearch.search.aggregations.bucket.nested.ReverseNestedAggregationBuilder;
 import org.elasticsearch.search.aggregations.bucket.terms.DoubleTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.LongTerms;
+import org.elasticsearch.search.aggregations.bucket.terms.ParsedDoubleTerms;
+import org.elasticsearch.search.aggregations.bucket.terms.ParsedLongTerms;
+import org.elasticsearch.search.aggregations.bucket.terms.ParsedStringTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.StringTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
@@ -67,10 +71,12 @@ public class GetDistinctValuesFieldPerNestedGroupAggregation<T extends IDocument
     String pathToNestedGroup = getNestedPath(dt, group);
     if (from > 0)
       aggSize += from;
+
+    SearchSourceBuilder searchSourceBuilder = (request.source() == null) ? new SearchSourceBuilder() : request.source();
+    
     BucketOrder fieldOrder = getOrdering(field, querySpec);
     BucketOrder groupOrder = getOrdering(group, querySpec);
 
-    SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
     AggregationBuilder fieldAgg = AggregationBuilders.terms("FIELD").field(field).size(aggSize).order(fieldOrder);
     ReverseNestedAggregationBuilder revNestedFieldAgg = AggregationBuilders.reverseNested("REVERSE_NESTED_FIELD");
     revNestedFieldAgg.subAggregation(fieldAgg);
@@ -79,6 +85,7 @@ public class GetDistinctValuesFieldPerNestedGroupAggregation<T extends IDocument
     groupAgg.subAggregation(revNestedFieldAgg);
     nestedGroupAgg.subAggregation(groupAgg);
     searchSourceBuilder.aggregation(nestedGroupAgg);
+    
     request.source(searchSourceBuilder);
     return executeSearchRequest(request);
   }
@@ -108,17 +115,18 @@ public class GetDistinctValuesFieldPerNestedGroupAggregation<T extends IDocument
     for (Bucket bucket : buckets) {
       if (from > 0 && counter++ < from)
         continue;
-      InternalReverseNested nestedField = bucket.getAggregations().get("REVERSE_NESTED_FIELD");
+      
+      ParsedReverseNested nestedField = bucket.getAggregations().get("REVERSE_NESTED_FIELD");
 
       List<? extends Bucket> innerBuckets;
-      if (nestedField.getAggregations().get("FIELD") instanceof StringTerms) {
-        StringTerms fieldTerms = nestedField.getAggregations().get("FIELD");
+      if (nestedField.getAggregations().get("FIELD") instanceof ParsedStringTerms) {
+        ParsedStringTerms fieldTerms = nestedField.getAggregations().get("FIELD");
         innerBuckets = fieldTerms.getBuckets();
-      } else if (nestedField.getAggregations().get("FIELD") instanceof LongTerms) {
-        LongTerms fieldTerms = nestedField.getAggregations().get("FIELD");
+      } else if (nestedField.getAggregations().get("FIELD") instanceof ParsedLongTerms) {
+        ParsedLongTerms fieldTerms = nestedField.getAggregations().get("FIELD");
         innerBuckets = fieldTerms.getBuckets();
-      } else if (nestedField.getAggregations().get("FIELD") instanceof DoubleTerms) {
-        DoubleTerms fieldTerms = nestedField.getAggregations().get("FIELD");
+      } else if (nestedField.getAggregations().get("FIELD") instanceof ParsedDoubleTerms) {
+        ParsedDoubleTerms fieldTerms = nestedField.getAggregations().get("FIELD");
         innerBuckets = fieldTerms.getBuckets();
       } else {
         UnmappedTerms fieldTerms = nestedField.getAggregations().get("FIELD");

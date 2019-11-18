@@ -134,7 +134,8 @@ public class ESUtil {
     try {
       response = esClient().search(request, RequestOptions.DEFAULT);
       if (logger.isDebugEnabled()) {
-        logger.debug("Documents found: {}", response.getHits().getTotalHits());
+        // logger.debug("Documents found: {}", response.getHits().getTotalHits());
+        logger.debug("Documents found: {}", response.getHits().getHits().length);
       }
     } catch (IOException e) {
       // TODO Auto-generated catch block
@@ -253,7 +254,7 @@ public class ESUtil {
    * @param indexInfo
    */
   public static void deleteIndex(String index) {
-    logger.info("Deleting index {}", index);
+    logger.info("Deleting index: {}", index);
 
     // ES5
     // DeleteIndexRequestBuilder request = indices().prepareDelete(index);
@@ -271,14 +272,14 @@ public class ESUtil {
     try {
       DeleteIndexRequest request = new DeleteIndexRequest(index);
       esClient().indices().delete(request, RequestOptions.DEFAULT);
-      logger.info("Index deleted");
+      logger.info("Index deleted: {}", index);
     } catch (ElasticsearchException exception) {
       if (exception.status() == RestStatus.NOT_FOUND) {
-        logger.info("No such index \"{}\" (nothing deleted)", index);
+        logger.info("No such index: {} (nothing deleted)", index);
       }
     } catch (IOException e) {
       // TODO Auto-generated catch block
-      throw new RuntimeException("Failed to delete index " + index);
+      throw new RuntimeException("Failed to delete index: " + index);
     }
   }
 
@@ -309,7 +310,7 @@ public class ESUtil {
    */
   public static void createIndex(IndexInfo indexInfo) {
     String index = indexInfo.getName();
-    logger.info("Creating index {}", index);
+    logger.info("Creating index: {}", index);
     // First load non-user-configurable settings
     String resource = "/es-settings.json";
     InputStream is = ESUtil.class.getResourceAsStream(resource);
@@ -362,10 +363,10 @@ public class ESUtil {
     
     try {
       esClient().indices().create(createIndexRequest, RequestOptions.DEFAULT);
-      logger.info("Index {} created", index);
+      logger.info("Index created: {}", index);
     } catch (IOException e) {
       throw new DaoException(
-          String.format("Failed to create index \"%s\": %s", index, e.getMessage()));
+          String.format("Failed to create index: %s, Error: %s", index, e.getMessage()));
     }
     for (DocumentType<?> dt : indexInfo.getTypes()) {
       createType(dt);
@@ -545,7 +546,7 @@ public class ESUtil {
   public static Object disableAutoRefresh(IndexInfo indexInfo) {
     // TODO: no unit test yet
     String index = indexInfo.getName();
-    logger.info("Disabling auto-refresh for index " + index);
+    logger.info("Disabling auto-refresh for index: " + index);
     Object origValue = getAutoRefreshInterval(indexInfo);
 
     // ES5
@@ -594,7 +595,7 @@ public class ESUtil {
       return;
     }
     String index = indexInfo.getName();
-    logger.info("Updating index refresh interval for index " + index);
+    logger.info("Updating index refresh interval for index: {}", index);
 
     // ES5
     // UpdateSettingsRequest request = new UpdateSettingsRequest(index);
@@ -640,7 +641,7 @@ public class ESUtil {
     // TODO: no unit test yet
     String index = dt.getIndexInfo().getName();
     String type = dt.getName();
-    logger.info("Creating type {} in index {}", type, index);
+    logger.info("Creating type: {}, in index: {}", type, index);
 
     // ES5
     // PutMappingRequestBuilder request = indices().preparePutMapping(index);
@@ -673,7 +674,7 @@ public class ESUtil {
       AcknowledgedResponse putMappingResponse = esClient().indices().putMapping(request, RequestOptions.DEFAULT);
       boolean acknowledged = putMappingResponse.isAcknowledged();
       if (!acknowledged) {
-        throw new DaoException("Failed to create type " + type);
+        throw new DaoException("Failed to create type: " + type);
       }
     } catch (Throwable t) {
       String fmt = "Failed to create type %s: %s";

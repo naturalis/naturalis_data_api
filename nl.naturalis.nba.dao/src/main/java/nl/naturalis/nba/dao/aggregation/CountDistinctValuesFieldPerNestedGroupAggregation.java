@@ -11,19 +11,22 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
 import org.apache.logging.log4j.Logger;
+
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.BucketOrder;
-import org.elasticsearch.search.aggregations.bucket.nested.InternalNested;
-import org.elasticsearch.search.aggregations.bucket.nested.InternalReverseNested;
+import org.elasticsearch.search.aggregations.bucket.nested.ParsedNested;
+import org.elasticsearch.search.aggregations.bucket.nested.ParsedReverseNested;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
 import org.elasticsearch.search.aggregations.metrics.CardinalityAggregationBuilder;
-import org.elasticsearch.search.aggregations.metrics.InternalCardinality;
+import org.elasticsearch.search.aggregations.metrics.ParsedCardinality;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.IDocumentObject;
@@ -68,15 +71,22 @@ public class CountDistinctValuesFieldPerNestedGroupAggregation<T extends IDocume
       groupOrder = BucketOrder.count(true);
     }
 
+    SearchSourceBuilder searchSourceBuilder = (request.source() == null) ? new SearchSourceBuilder() : request.source();
+
     AggregationBuilder fieldAgg = AggregationBuilders.reverseNested("REVERSE_NESTED_FIELD");
-    SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+
     CardinalityAggregationBuilder cardinalityField = AggregationBuilders.cardinality("DISTINCT_VALUES").field(field);
+
     fieldAgg.subAggregation(cardinalityField);
+    
     AggregationBuilder groupAgg = AggregationBuilders.nested("NESTED_GROUP", pathToNestedGroup);
     AggregationBuilder groupTerm = AggregationBuilders.terms("GROUP").field(group).size(aggSize).order(groupOrder);
+    
     groupTerm.subAggregation(fieldAgg);
     groupAgg.subAggregation(groupTerm);
+    
     searchSourceBuilder.aggregation(groupAgg);
+    
     return executeSearchRequest(request);
   }
 
@@ -85,15 +95,16 @@ public class CountDistinctValuesFieldPerNestedGroupAggregation<T extends IDocume
 
     SearchResponse response = executeQuery();
     List<Map<String, Object>> result = new LinkedList<>();
-
-    InternalNested nestedGroup = response.getAggregations().get("NESTED_GROUP");
+    ParsedNested nestedGroup = response.getAggregations().get("NESTED_GROUP");
+    
     Terms groupTerms = nestedGroup.getAggregations().get("GROUP");
+    
     List<? extends Bucket> buckets = groupTerms.getBuckets();
     int counter = 0;
     for (Bucket bucket : buckets) {
       if (from > 0 && counter++ < from) continue;
-      InternalReverseNested fields = bucket.getAggregations().get("REVERSE_NESTED_FIELD");
-      InternalCardinality cardinality = fields.getAggregations().get("DISTINCT_VALUES");
+      ParsedReverseNested fields = bucket.getAggregations().get("REVERSE_NESTED_FIELD");
+      ParsedCardinality cardinality = fields.getAggregations().get("DISTINCT_VALUES");
       Map<String, Object> hashMap = new LinkedHashMap<>(2);
       hashMap.put(group, bucket.getKeyAsString());
       hashMap.put(field, cardinality.getValue());

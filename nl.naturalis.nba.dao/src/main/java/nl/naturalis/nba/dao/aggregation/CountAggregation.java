@@ -8,7 +8,6 @@ import org.apache.logging.log4j.Logger;
 
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
-
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.IDocumentObject;
@@ -38,7 +37,6 @@ public class CountAggregation<T extends IDocumentObject> extends AggregationQuer
     }
     SearchRequest request = createSearchRequest(querySpec);
     return executeSearchRequest(request);
-
   }
 
   @Override

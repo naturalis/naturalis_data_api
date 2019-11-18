@@ -247,14 +247,12 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
 
   @SuppressWarnings("unchecked")
   @Override
-  public List<Map<String, Object>> getDistinctValuesPerGroup(String forGroup, String forField,
-      QuerySpec querySpec) throws InvalidQueryException {
+  public List<Map<String, Object>> getDistinctValuesPerGroup(String forGroup, String forField, QuerySpec querySpec) throws InvalidQueryException {
     if (logger.isDebugEnabled()) {
       logger.debug(printCall("getDistinctValuesPerGroup", forField, forGroup, querySpec));
     }
     AggregationQuery<T, List<Map<String, Object>>> aggregationQuery =
-        (AggregationQuery<T, List<Map<String, Object>>>) createAggregationQuery(
-            GET_DISTINCT_VALUES_PER_GROUP, dt, forField, forGroup, querySpec);
+        (AggregationQuery<T, List<Map<String, Object>>>) createAggregationQuery(GET_DISTINCT_VALUES_PER_GROUP, dt, forField, forGroup, querySpec);
     return aggregationQuery.getResult();
   }
 

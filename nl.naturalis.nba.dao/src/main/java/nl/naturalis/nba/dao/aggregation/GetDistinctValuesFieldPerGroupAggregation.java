@@ -15,15 +15,19 @@ import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.Aggregations;
 import org.elasticsearch.search.aggregations.BucketOrder;
 import org.elasticsearch.search.aggregations.bucket.terms.LongTerms;
+import org.elasticsearch.search.aggregations.bucket.terms.ParsedStringTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.StringTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
+import org.elasticsearch.search.aggregations.bucket.terms.UnmappedTerms;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.IDocumentObject;
+import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.DocumentType;
 
 public class GetDistinctValuesFieldPerGroupAggregation<T extends IDocumentObject>
@@ -31,8 +35,7 @@ public class GetDistinctValuesFieldPerGroupAggregation<T extends IDocumentObject
 
   private static final Logger logger = getLogger(GetDistinctValuesFieldPerGroupAggregation.class);
 
-  GetDistinctValuesFieldPerGroupAggregation(DocumentType<T> dt, String field, String group,
-      QuerySpec querySpec) {
+  GetDistinctValuesFieldPerGroupAggregation(DocumentType<T> dt, String field, String group, QuerySpec querySpec) {
     super(dt, field, group, querySpec);
     aggSize = getAggregationSize(querySpec);
     from = getAggregationFrom(querySpec);
@@ -62,7 +65,8 @@ public class GetDistinctValuesFieldPerGroupAggregation<T extends IDocumentObject
     BucketOrder fieldOrder = getOrdering(field, querySpec);
     BucketOrder groupOrder = getOrdering(group, querySpec);
 
-    SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+    SearchSourceBuilder searchSourceBuilder = (request.source() == null) ? new SearchSourceBuilder() : request.source();
+    
     AggregationBuilder fieldAgg = AggregationBuilders.terms("FIELD").field(field).size(aggSize).order(fieldOrder);
     AggregationBuilder groupAgg = AggregationBuilders.terms("GROUP").field(group).size(aggSize).order(groupOrder);
     groupAgg.subAggregation(fieldAgg);
@@ -95,11 +99,11 @@ public class GetDistinctValuesFieldPerGroupAggregation<T extends IDocumentObject
     for (Bucket bucket : buckets) {
       if (from > 0 && counter++ < from)
         continue;
-
       List<Map<String, Object>> fieldTermsList = new LinkedList<>();
-      if (bucket.getAggregations().get("FIELD") instanceof StringTerms) {
-        StringTerms fieldTerms = bucket.getAggregations().get("FIELD");
-        List<StringTerms.Bucket> innerBuckets = fieldTerms.getBuckets();
+      if (bucket.getAggregations().get("FIELD") instanceof ParsedStringTerms) {
+        ParsedStringTerms fieldTerms = bucket.getAggregations().get("FIELD");
+
+        List<? extends Bucket> innerBuckets = fieldTerms.getBuckets();
         for (Bucket innerBucket : innerBuckets) {
           Map<String, Object> aggregate = new LinkedHashMap<>(2);
           aggregate.put(field, innerBucket.getKeyAsString());
@@ -108,18 +112,26 @@ public class GetDistinctValuesFieldPerGroupAggregation<T extends IDocumentObject
             fieldTermsList.add(aggregate);
           }
         }
-      } else {
-        LongTerms fieldTerms = bucket.getAggregations().get("FIELD");
-        List<LongTerms.Bucket> innerBuckets = fieldTerms.getBuckets();
-        for (Bucket innerBucket : innerBuckets) {
-          Map<String, Object> aggregate = new LinkedHashMap<>(2);
-          aggregate.put(field, innerBucket.getKeyAsString());
-          aggregate.put("count", innerBucket.getDocCount());
-          if (innerBucket.getDocCount() > 0) {
-            fieldTermsList.add(aggregate);
-          }
+      } 
+      else {
+        Aggregations fieldTerms = bucket.getAggregations().get("FIELD");
+        List<?> innerBuckets = fieldTerms.asList();
+        for (Object innerBucket : innerBuckets) {
+          logger.info("> " + innerBucket.toString() + " : " + JsonUtil.toPrettyJson(innerBucket));
         }
       }
+//      else {
+//        LongTerms fieldTerms = bucket.getAggregations().get("FIELD");
+//        List<LongTerms.Bucket> innerBuckets = fieldTerms.getBuckets();
+//        for (Bucket innerBucket : innerBuckets) {
+//          Map<String, Object> aggregate = new LinkedHashMap<>(2);
+//          aggregate.put(field, innerBucket.getKeyAsString());
+//          aggregate.put("count", innerBucket.getDocCount());
+//          if (innerBucket.getDocCount() > 0) {
+//            fieldTermsList.add(aggregate);
+//          }
+//        }
+//      }
 
       Map<String, Object> hashMap = new LinkedHashMap<>(2);
       hashMap.put(group, bucket.getKeyAsString());

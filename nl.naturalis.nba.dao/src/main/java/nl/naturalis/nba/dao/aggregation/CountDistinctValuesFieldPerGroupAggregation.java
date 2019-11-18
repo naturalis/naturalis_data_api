@@ -23,11 +23,13 @@ import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
 import org.elasticsearch.search.aggregations.metrics.CardinalityAggregationBuilder;
 import org.elasticsearch.search.aggregations.metrics.InternalCardinality;
+import org.elasticsearch.search.aggregations.metrics.ParsedCardinality;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.IDocumentObject;
+import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.DocumentType;
 
 public class CountDistinctValuesFieldPerGroupAggregation<T extends IDocumentObject>
@@ -67,7 +69,9 @@ public class CountDistinctValuesFieldPerGroupAggregation<T extends IDocumentObje
     if ( groupOrder.equals(BucketOrder.count(false))) {
       groupOrder = BucketOrder.count(true);
     }
-    SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+    
+    SearchSourceBuilder searchSourceBuilder = (request.source() == null) ? new SearchSourceBuilder() : request.source();
+    
     AggregationBuilder groupAgg = AggregationBuilders.terms("GROUP").field(group).size(aggSize).order(groupOrder);
     CardinalityAggregationBuilder fieldAgg = AggregationBuilders.cardinality("DISTINCT_VALUES").field(field);
     groupAgg.subAggregation(fieldAgg);
@@ -87,7 +91,8 @@ public class CountDistinctValuesFieldPerGroupAggregation<T extends IDocumentObje
     int counter = 0;
     for (Bucket bucket : buckets) {
       if (from > 0 && counter++ < from) continue;
-      InternalCardinality cardinality = bucket.getAggregations().get("DISTINCT_VALUES");
+      //logger.info(">>>\n: {}", JsonUtil.toPrettyJson(bucket.getAggregations().get("DISTINCT_VALUES")));
+      ParsedCardinality cardinality = bucket.getAggregations().get("DISTINCT_VALUES");
       Map<String, Object> hashMap = new LinkedHashMap<>(2);
       hashMap.put(group, bucket.getKeyAsString());
       hashMap.put(field, cardinality.getValue());

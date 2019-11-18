@@ -59,7 +59,8 @@ public class GetDistinctValuesFieldAggregation<T extends IDocumentObject>
     if (from > 0) aggSize += from;
     BucketOrder fieldOrder = getOrdering(field, querySpec);
 
-    SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+    SearchSourceBuilder searchSourceBuilder = (request.source() == null) ? new SearchSourceBuilder() : request.source();
+
     TermsAggregationBuilder termsAggregation = terms("FIELD");
     termsAggregation.field(field);
     termsAggregation.size(aggSize).order(fieldOrder);

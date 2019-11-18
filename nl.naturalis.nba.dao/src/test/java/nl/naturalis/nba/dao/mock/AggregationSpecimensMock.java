@@ -132,7 +132,7 @@ import nl.naturalis.nba.api.model.SpecimenIdentification;
       DefaultClassification classification = new DefaultClassification();
       classification.setKingdom("Animalia");
       classification.setPhylum("Mollusca");
-      classification.setClassName("Cephalopoda");
+      classification.setClassName("Gastropoda"); //("Cephalopoda");
       classification.setOrder("Ammonoidea");
       classification.setFamily("Ussuritidae");
       classification.setGenus("Ussurites");
@@ -237,17 +237,16 @@ import nl.naturalis.nba.api.model.SpecimenIdentification;
 //      gathering.setCountry("United Kingdom");
 //      gathering.setDateTimeBegin(null);
 //      gathering.setGatheringPersons(Arrays.asList(nathanielWallich()));
+//      specimen.setGatheringEvent(gathering);
 
       ScientificName scientificName = new ScientificName();
       scientificName.setFullScientificName("Calciet");
       scientificName.setGenusOrMonomial("Calciet");
      
-
       SpecimenIdentification identification = new SpecimenIdentification();
       identification.setTaxonRank("genus");
       identification.setScientificName(scientificName);
 
-//      specimen.setGatheringEvent(gathering);
       specimen.setIdentifications(Arrays.asList(identification));
       return specimen;
     }
@@ -265,18 +264,22 @@ import nl.naturalis.nba.api.model.SpecimenIdentification;
 //      gathering.setCountry("United Kingdom");
 //      gathering.setDateTimeBegin(null);
 //      gathering.setGatheringPersons(Arrays.asList(nathanielWallich()));
-
+//      specimen.setGatheringEvent(gathering);
+      
       ScientificName scientificName = new ScientificName();
       scientificName.setFullScientificName("Magnetite");
       scientificName.setGenusOrMonomial("Magnetite");
-     
 
       SpecimenIdentification identification = new SpecimenIdentification();
       identification.setTaxonRank("genus");
       identification.setScientificName(scientificName);
 
-//      specimen.setGatheringEvent(gathering);
+//    DefaultClassification classification = new DefaultClassification();
+//    classification.setClassName("Gastropoda");
+//    identification.setDefaultClassification(classification);
+      
       specimen.setIdentifications(Arrays.asList(identification));
+      
       return specimen;
     }
 

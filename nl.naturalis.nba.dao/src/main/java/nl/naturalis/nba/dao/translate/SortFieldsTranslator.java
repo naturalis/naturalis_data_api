@@ -9,6 +9,7 @@ import java.util.List;
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.sort.FieldSortBuilder;
+import org.elasticsearch.search.sort.NestedSortBuilder;
 import org.elasticsearch.search.sort.ScoreSortBuilder;
 import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
@@ -82,11 +83,22 @@ class SortFieldsTranslator {
         }
         if (nestedPath != null) {
           QueryBuilder query = translateConditions(path);
+
+          // ES 5
+//          if (query != null) {
+//            fsb.setNestedFilter(query);
+//          }
+//          fsb.setNestedPath(nestedPath);
+          
+          // ES 7
+          NestedSortBuilder nsb = new NestedSortBuilder(nestedPath);
           if (query != null) {
-            fsb.setNestedFilter(query);
+            nsb.setFilter(query);
           }
-          fsb.setNestedPath(nestedPath);
+          fsb.setNestedSort(nsb);
+
         }
+        
         result[i++] = fsb;
       }
     }

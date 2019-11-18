@@ -22,6 +22,7 @@ import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.nested.Nested;
 import org.elasticsearch.search.aggregations.bucket.terms.DoubleTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.LongTerms;
+import org.elasticsearch.search.aggregations.bucket.terms.ParsedStringTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.StringTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
@@ -72,13 +73,14 @@ public class GetDistinctValuesNestedFieldPerGroupAggregation<T extends IDocument
     BucketOrder fieldOrder = getOrdering(field, querySpec);
     BucketOrder groupOrder = getOrdering(group, querySpec);
 
-    SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+    SearchSourceBuilder searchSourceBuilder = (request.source() == null) ? new SearchSourceBuilder() : request.source();
     AggregationBuilder fieldAgg = AggregationBuilders.terms("FIELD").field(field).size(aggSize).order(fieldOrder);
     AggregationBuilder nestedFieldAgg = AggregationBuilders.nested("NESTED_FIELD", pathToNestedField);
     nestedFieldAgg.subAggregation(fieldAgg);
     AggregationBuilder groupAgg = AggregationBuilders.terms("GROUP").field(group).size(aggSize).order(groupOrder);
     groupAgg.subAggregation(nestedFieldAgg);
     searchSourceBuilder.aggregation(groupAgg);
+    
     request.source(searchSourceBuilder);
     return executeSearchRequest(request);
   }
@@ -110,8 +112,8 @@ public class GetDistinctValuesNestedFieldPerGroupAggregation<T extends IDocument
       Nested nestedField = bucket.getAggregations().get("NESTED_FIELD");
 
       List<? extends Bucket> innerBuckets;
-      if (nestedField.getAggregations().get("FIELD") instanceof StringTerms) {
-        StringTerms fieldTerms = nestedField.getAggregations().get("FIELD");
+      if (nestedField.getAggregations().get("FIELD") instanceof ParsedStringTerms) {
+        ParsedStringTerms fieldTerms = nestedField.getAggregations().get("FIELD");
         innerBuckets = fieldTerms.getBuckets();
       } else if (nestedField.getAggregations().get("FIELD") instanceof LongTerms) {
         LongTerms fieldTerms = nestedField.getAggregations().get("FIELD");

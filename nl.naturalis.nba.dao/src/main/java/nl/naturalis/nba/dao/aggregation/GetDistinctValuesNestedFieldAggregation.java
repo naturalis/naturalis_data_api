@@ -57,6 +57,9 @@ public class GetDistinctValuesNestedFieldAggregation<T extends IDocumentObject>
       request = createSearchRequest(querySpec);      
     }
     if (from > 0) aggSize += from;
+    
+    SearchSourceBuilder searchSourceBuilder = (request.source() == null) ? new SearchSourceBuilder() : request.source();
+    
     String nestedPath = getNestedPath(dt, field);
     BucketOrder fieldOrder = getOrdering(field, querySpec);
 
@@ -64,10 +67,10 @@ public class GetDistinctValuesNestedFieldAggregation<T extends IDocumentObject>
     termsAggregation.field(field);
     termsAggregation.size(aggSize).order(fieldOrder);
 
-    SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
     NestedAggregationBuilder nestedAggregation = nested("NESTED_FIELD", nestedPath);
     nestedAggregation.subAggregation(termsAggregation);
     searchSourceBuilder.aggregation(nestedAggregation);
+    
     request.source(searchSourceBuilder);
     return executeSearchRequest(request);
   }

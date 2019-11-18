@@ -34,9 +34,11 @@ public class CountDistinctValuesFieldAggregation<T extends IDocumentObject>
       logger.debug(printCall("Executing AggregationQuery with: ", field, querySpec));
     }
     SearchRequest request = createSearchRequest(querySpec);
-    SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+    SearchSourceBuilder searchSourceBuilder = (request.source() == null) ? new SearchSourceBuilder() : request.source();
+    
     AggregationBuilder agg = AggregationBuilders.cardinality("CARDINALITY").field(field);
     searchSourceBuilder.aggregation(agg);
+
     request.source(searchSourceBuilder);
     return executeSearchRequest(request);
   }

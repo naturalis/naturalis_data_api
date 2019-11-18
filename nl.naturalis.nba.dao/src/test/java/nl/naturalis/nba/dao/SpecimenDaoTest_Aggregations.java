@@ -32,6 +32,7 @@ import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.SortField;
 import nl.naturalis.nba.api.model.Specimen;
+import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.mock.AggregationSpecimensMock;
 
 /**
@@ -95,8 +96,8 @@ public class SpecimenDaoTest_Aggregations {
 
   @AfterClass
   public static void after() {
-    logger.info("Test finished. Removing test specimens");
-    deleteIndex(DocumentType.SPECIMEN);
+    //logger.info("Test finished. Removing test specimens");
+    //deleteIndex(DocumentType.SPECIMEN);
   }
 
   /*
@@ -132,21 +133,21 @@ public class SpecimenDaoTest_Aggregations {
     // 2. QuerySpec == null && nested field
     querySpec = null;
     field = "identifications.defaultClassification.className";
-    assertEquals("02", 5L, dao.countDistinctValues(field, querySpec));
+    assertEquals("02", 4L, dao.countDistinctValues(field, querySpec));
 
     // 3. QuerySpec =! null && simple field
     querySpec = new QuerySpec();
     QueryCondition condition = new QueryCondition("sourceSystem.code", EQUALS, "CRS");
     querySpec.addCondition(condition);
     field = "collectionType";
-    assertEquals("03", 3L, dao.countDistinctValues(field, querySpec));
+    assertEquals("03", 3L, dao.countDistinctValues(field, querySpec)); 
 
     // 4. QuerySpec =! null && nested field
     querySpec = new QuerySpec();
     condition = new QueryCondition("sourceSystem.code", EQUALS, "CRS");
     querySpec.addCondition(condition);
     field = "identifications.defaultClassification.className";
-    assertEquals("04", 4L, dao.countDistinctValues(field, querySpec));
+    assertEquals("04", 3L, dao.countDistinctValues(field, querySpec));
   }
 
   /*
@@ -355,6 +356,7 @@ public class SpecimenDaoTest_Aggregations {
     group = "sourceSystem.code";
     result = dao.getDistinctValuesPerGroup(group, field, querySpec);
     jsonFile = "CountDistinctValuesPerGroupTest__testResult__08.json";
+    logger.info(result.toString());
     assertTrue("02", jsonListEquals(this.getClass(), result.toString(), jsonFile));
 
     // 3. Simple field and nested group

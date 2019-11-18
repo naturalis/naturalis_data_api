@@ -28,21 +28,15 @@
         ]
     },
     {
-        "identifications.defaultClassification.className" : "Cephalopoda",
-        "count" : 1,
-        "values" : [
-            {
-                "identifications.scientificName.genusOrMonomial" : "Ussurites",
-                "count" : 1
-            }
-        ]
-    },
-    {
         "identifications.defaultClassification.className" : "Gastropoda",
         "count" : 1,
         "values" : [
             {
                 "identifications.scientificName.genusOrMonomial" : "Tectonatica",
+                "count" : 1
+            },
+            {
+                "identifications.scientificName.genusOrMonomial" : "Ussurites",
                 "count" : 1
             }
         ]

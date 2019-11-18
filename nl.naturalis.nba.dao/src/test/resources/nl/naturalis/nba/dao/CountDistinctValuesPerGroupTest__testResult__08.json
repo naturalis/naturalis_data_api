@@ -14,15 +14,11 @@
         "count" : 6,
         "values" : [
             {
-                "identifications.defaultClassification.className" : "Bivalvia",
-                "count" : 1
-            },
-            {
-                "identifications.defaultClassification.className" : "Cephalopoda",
-                "count" : 1
-            },
-            {
                 "identifications.defaultClassification.className" : "Gastropoda",
+                "count" : 2
+            },
+            {
+                "identifications.defaultClassification.className" : "Bivalvia",
                 "count" : 1
             },
             {

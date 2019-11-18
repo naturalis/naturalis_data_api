@@ -21,10 +21,13 @@ import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.BucketOrder;
 import org.elasticsearch.search.aggregations.bucket.nested.InternalNested;
 import org.elasticsearch.search.aggregations.bucket.nested.InternalReverseNested;
+import org.elasticsearch.search.aggregations.bucket.nested.ParsedNested;
+import org.elasticsearch.search.aggregations.bucket.nested.ParsedReverseNested;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
 import org.elasticsearch.search.aggregations.metrics.CardinalityAggregationBuilder;
 import org.elasticsearch.search.aggregations.metrics.InternalCardinality;
+import org.elasticsearch.search.aggregations.metrics.ParsedCardinality;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.QuerySpec;
@@ -71,7 +74,7 @@ public class CountDistinctValuesNestedFieldPerNestedGroupAggregation<T extends I
       groupOrder = BucketOrder.count(true);
     }
 
-    SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+    SearchSourceBuilder searchSourceBuilder = request.source();
     AggregationBuilder fieldAgg = AggregationBuilders.reverseNested("REVERSE_NESTED_FIELD");
     AggregationBuilder fieldNested = AggregationBuilders.nested(field, pathToNestedField);
     CardinalityAggregationBuilder cardinalityField = AggregationBuilders.cardinality("DISTINCT_VALUES").field(field);
@@ -92,15 +95,15 @@ public class CountDistinctValuesNestedFieldPerNestedGroupAggregation<T extends I
     SearchResponse response = executeQuery();
     List<Map<String, Object>> result = new LinkedList<>();
 
-    InternalNested nestedGroup = response.getAggregations().get("NESTED_GROUP");
+    ParsedNested nestedGroup = response.getAggregations().get("NESTED_GROUP");
     Terms groupTerms = nestedGroup.getAggregations().get("GROUP");
     List<? extends Bucket> buckets = groupTerms.getBuckets();
     int counter = 0;
     for (Bucket bucket : buckets) {
       if (from > 0 && counter++ < from) continue;
-      InternalReverseNested fields = bucket.getAggregations().get("REVERSE_NESTED_FIELD");
-      InternalNested nestedFields = fields.getAggregations().get(field);
-      InternalCardinality cardinality = nestedFields.getAggregations().get("DISTINCT_VALUES");
+      ParsedReverseNested fields = bucket.getAggregations().get("REVERSE_NESTED_FIELD");
+      ParsedNested nestedFields = fields.getAggregations().get(field);
+      ParsedCardinality cardinality = nestedFields.getAggregations().get("DISTINCT_VALUES");
       Map<String, Object> hashMap = new LinkedHashMap<>(2);
       hashMap.put(group, bucket.getKeyAsString());
       hashMap.put(field, cardinality.getValue());

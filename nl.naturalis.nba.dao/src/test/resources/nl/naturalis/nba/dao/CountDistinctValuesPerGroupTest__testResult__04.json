@@ -4,16 +4,12 @@
         "identifications.scientificName.genusOrMonomial" : 1
     },
     {
-        "identifications.defaultClassification.className" : "Cephalopoda",
+        "identifications.defaultClassification.className" : "Insecta",
         "identifications.scientificName.genusOrMonomial" : 1
     },
     {
         "identifications.defaultClassification.className" : "Gastropoda",
-        "identifications.scientificName.genusOrMonomial" : 1
-    },
-    {
-        "identifications.defaultClassification.className" : "Insecta",
-        "identifications.scientificName.genusOrMonomial" : 1
+        "identifications.scientificName.genusOrMonomial" : 2
     },
     {
         "identifications.defaultClassification.className" : "Magnoliopsida",

@@ -14,21 +14,20 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.logging.log4j.Logger;
+
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.BucketOrder;
-import org.elasticsearch.search.aggregations.bucket.nested.InternalNested;
-import org.elasticsearch.search.aggregations.bucket.nested.InternalReverseNested;
 import org.elasticsearch.search.aggregations.bucket.nested.ParsedNested;
 import org.elasticsearch.search.aggregations.bucket.nested.ParsedReverseNested;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
 import org.elasticsearch.search.aggregations.metrics.CardinalityAggregationBuilder;
-import org.elasticsearch.search.aggregations.metrics.InternalCardinality;
 import org.elasticsearch.search.aggregations.metrics.ParsedCardinality;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.IDocumentObject;
@@ -39,8 +38,7 @@ public class CountDistinctValuesNestedFieldPerNestedGroupAggregation<T extends I
 
   private static final Logger logger = getLogger(CountDistinctValuesPerGroupAggregation.class);
 
-  CountDistinctValuesNestedFieldPerNestedGroupAggregation(DocumentType<T> dt, String field,
-      String group, QuerySpec querySpec) {
+  CountDistinctValuesNestedFieldPerNestedGroupAggregation(DocumentType<T> dt, String field, String group, QuerySpec querySpec) {
     super(dt, field, group, querySpec);
     aggSize = getAggregationSize(querySpec);
     from = getAggregationFrom(querySpec);
@@ -75,6 +73,7 @@ public class CountDistinctValuesNestedFieldPerNestedGroupAggregation<T extends I
     }
 
     SearchSourceBuilder searchSourceBuilder = request.source();
+    
     AggregationBuilder fieldAgg = AggregationBuilders.reverseNested("REVERSE_NESTED_FIELD");
     AggregationBuilder fieldNested = AggregationBuilders.nested(field, pathToNestedField);
     CardinalityAggregationBuilder cardinalityField = AggregationBuilders.cardinality("DISTINCT_VALUES").field(field);
@@ -85,6 +84,7 @@ public class CountDistinctValuesNestedFieldPerNestedGroupAggregation<T extends I
     groupTerm.subAggregation(fieldAgg);
     groupAgg.subAggregation(groupTerm);
     searchSourceBuilder.aggregation(groupAgg);
+    
     request.source(searchSourceBuilder);
     return executeSearchRequest(request);
   }

@@ -1,8 +1,7 @@
 package nl.naturalis.nba.dao.aggregation;
 
-import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static nl.naturalis.nba.dao.util.es.ESUtil.newSearchRequest;
-import org.apache.logging.log4j.Logger;
+
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 
@@ -63,8 +62,6 @@ public abstract class AggregationQuery<T extends IDocumentObject, U> {
   QuerySpec querySpec;
   DocumentType<T> dt;
   
-  private static final Logger logger = getLogger(AggregationQuery.class);
-
   AggregationQuery(DocumentType<T> dt, QuerySpec querySpec) {
     this.dt = dt;
     this.querySpec = querySpec;

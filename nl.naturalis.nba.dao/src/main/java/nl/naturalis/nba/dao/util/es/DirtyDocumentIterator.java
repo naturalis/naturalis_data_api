@@ -11,10 +11,10 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.logging.log4j.Logger;
-import org.elasticsearch.action.search.SearchRequestBuilder;
+import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.SearchHit;
-
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.SortField;
@@ -155,7 +155,7 @@ public class DirtyDocumentIterator<T extends IDocumentObject> implements IDocume
 		}
 		setBatchSize();
 		qs.setSortFields(Arrays.asList(new SortField("id")));
-		SearchRequestBuilder request;
+		SearchRequest request;
 		try {
 			request = new QuerySpecTranslator(qs, dt).translate();
 		}
@@ -167,7 +167,7 @@ public class DirtyDocumentIterator<T extends IDocumentObject> implements IDocume
 		if (batch.length > 0) {
 			lastUid = dt.getName() + '#' + batch[batch.length - 1].getId();
 		}
-		size = response.getHits().getTotalHits();
+		size = response.getHits().getTotalHits().value;
 		qs.setFrom(null); // The from-value can only be used in the first batch
 		if (querySize == 0) {
 		  querySize = size;
@@ -179,14 +179,16 @@ public class DirtyDocumentIterator<T extends IDocumentObject> implements IDocume
 		if (logger.isDebugEnabled()) {
 			logger.debug("Refreshing document buffer");
 		}
-		SearchRequestBuilder request;
+		SearchRequest request;
 		try {
 			request = new QuerySpecTranslator(qs, dt).translate();
 		}
 		catch (InvalidQueryException e) {
 			throw new DaoException(e);
 		}
-		request.searchAfter(new String[] { lastUid });
+		SearchSourceBuilder searchSourceBuilder = (request.source() == null) ? new SearchSourceBuilder() : request.source();
+		searchSourceBuilder.searchAfter(new String[] { lastUid });
+		request.source(searchSourceBuilder);
 		SearchResponse response = executeSearchRequest(request);
 		batch = response.getHits().getHits();
 		if (batch.length > 0) {

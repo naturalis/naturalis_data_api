@@ -2,15 +2,22 @@ package nl.naturalis.nba.dao.util.es;
 
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static nl.naturalis.nba.dao.util.es.ESUtil.executeSearchRequest;
-
+import java.io.IOException;
 import org.apache.logging.log4j.Logger;
+import org.elasticsearch.action.search.ClearScrollRequest;
+import org.elasticsearch.action.search.ClearScrollResponse;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.search.SearchScrollRequest;
 import org.elasticsearch.action.search.SearchScrollRequestBuilder;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.unit.TimeValue;
+import org.elasticsearch.search.Scroll;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 
@@ -46,7 +53,7 @@ public class AcidScroller implements IScroller {
 
 	private static final Logger logger = getLogger(AcidScroller.class);
 
-	private final SearchRequestBuilder request;
+	private final SearchRequest request;
 
 	private int batchSize = 1000;
 	private int timeout = 500;
@@ -73,7 +80,9 @@ public class AcidScroller implements IScroller {
 		QuerySpecTranslator qst = new QuerySpecTranslator(querySpec, documentType);
 		request = qst.translate();
 		if (querySpec.getSortFields() == null || querySpec.getSortFields().size() == 0) {
-			request.addSort(FieldSortBuilder.DOC_FIELD_NAME, SortOrder.ASC);
+		  SearchSourceBuilder searchSourceBuilder = (request.source() == null) ? new SearchSourceBuilder() : request.source();
+		  searchSourceBuilder.sort(FieldSortBuilder.DOC_FIELD_NAME, SortOrder.ASC);
+			request.source(searchSourceBuilder);
 		}
 	}
 
@@ -81,36 +90,86 @@ public class AcidScroller implements IScroller {
 	public void scroll(SearchHitHandler handler) throws NbaException
 	{
 		TimeValue tv = new TimeValue(timeout);
-		request.setScroll(new TimeValue(timeout));
-		request.setSize(batchSize);
-		SearchResponse response = executeSearchRequest(request);
-		int from = this.from;
-		int size = this.size;
-		int to = from + size;
-		int i = 0;
-		Client client = ESClientManager.getInstance().getClient();
-		SCROLL_LOOP: do {
-			// Ignore everything before the from-th document
-			if (i + response.getHits().getHits().length < from) {
-				i += response.getHits().getHits().length;
-			}
-			for (SearchHit hit : response.getHits().getHits()) {
-				if (size != 0 && i >= to) {
-					break SCROLL_LOOP;
-				}
-				if (i >= from) {
-					if (!handler.handle(hit)) {
-						break SCROLL_LOOP;
-					}
-				}
-				i += 1;
-			}
-			String scrollId = response.getScrollId();
-			SearchScrollRequestBuilder ssrb = client.prepareSearchScroll(scrollId);
-			response = ssrb.setScroll(tv).get();
-		} while (response.getHits().getHits().length != 0);
+		final Scroll scroll = new Scroll(tv);
+		request.scroll(scroll);
+		SearchSourceBuilder searchSourceBuilder = (request.source() == null) ? new SearchSourceBuilder() : request.source();
+		searchSourceBuilder.size(batchSize);
+		request.source(searchSourceBuilder);
+		
+		RestHighLevelClient client = ESClientManager.getInstance().getClient();
+		SearchResponse searchResponse;
+    try {
+      searchResponse = client.search(request, RequestOptions.DEFAULT);
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      throw new NbaException(e.getMessage());
+    } 
+		String scrollId = searchResponse.getScrollId();
+		SearchHit[] searchHits = searchResponse.getHits().getHits();
+
+		while (searchHits != null && searchHits.length > 0) { 
+		    
+		    SearchScrollRequest scrollRequest = new SearchScrollRequest(scrollId); 
+		    scrollRequest.scroll(scroll);
+		    try {
+          searchResponse = client.scroll(scrollRequest, RequestOptions.DEFAULT);
+        } catch (IOException e) {
+          // TODO Auto-generated catch block
+          throw new NbaException(e.getMessage());
+        }
+		    scrollId = searchResponse.getScrollId();
+		    searchHits = searchResponse.getHits().getHits();
+		}
+
+		ClearScrollRequest clearScrollRequest = new ClearScrollRequest(); 
+		clearScrollRequest.addScrollId(scrollId);
+		ClearScrollResponse clearScrollResponse;
+    try {
+      clearScrollResponse = client.clearScroll(clearScrollRequest, RequestOptions.DEFAULT);
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      throw new NbaException(e.getMessage());
+    }
+		boolean succeeded = clearScrollResponse.isSucceeded();		
 	}
 
+// ES 5
+//	 @Override
+//	  public void scroll(SearchHitHandler handler) throws NbaException
+//	  {
+//	    TimeValue tv = new TimeValue(timeout);
+//	    request.setScroll(new TimeValue(timeout));
+//	    request.setSize(batchSize);
+//	    SearchResponse response = executeSearchRequest(request);
+//	    int from = this.from;
+//	    int size = this.size;
+//	    int to = from + size;
+//	    int i = 0;
+//	    RestHighLevelClient client = ESClientManager.getInstance().getClient();
+//	    SCROLL_LOOP: do {
+//	      // Ignore everything before the from-th document
+//	      if (i + response.getHits().getHits().length < from) {
+//	        i += response.getHits().getHits().length;
+//	      }
+//	      for (SearchHit hit : response.getHits().getHits()) {
+//	        if (size != 0 && i >= to) {
+//	          break SCROLL_LOOP;
+//	        }
+//	        if (i >= from) {
+//	          if (!handler.handle(hit)) {
+//	            break SCROLL_LOOP;
+//	          }
+//	        }
+//	        i += 1;
+//	      }
+//	      String scrollId = response.getScrollId();
+//	      SearchScrollRequestBuilder ssrb = client.prepareSearchScroll(scrollId);
+//	      response = ssrb.setScroll(tv).get();
+//	    } while (response.getHits().getHits().length != 0);
+//	  }
+
+	
+	
 	/**
 	 * Returns the size of the scroll window (the number of documents to fetch
 	 * per scroll request). Defaults to 10000 documents.

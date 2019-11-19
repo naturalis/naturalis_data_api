@@ -22,14 +22,12 @@ import org.elasticsearch.search.aggregations.BucketOrder;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
 import org.elasticsearch.search.aggregations.metrics.CardinalityAggregationBuilder;
-import org.elasticsearch.search.aggregations.metrics.InternalCardinality;
 import org.elasticsearch.search.aggregations.metrics.ParsedCardinality;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.IDocumentObject;
-import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.DocumentType;
 
 public class CountDistinctValuesFieldPerGroupAggregation<T extends IDocumentObject>
@@ -37,8 +35,7 @@ public class CountDistinctValuesFieldPerGroupAggregation<T extends IDocumentObje
 
   private static final Logger logger = getLogger(CountDistinctValuesFieldPerGroupAggregation.class);
   
-  CountDistinctValuesFieldPerGroupAggregation(DocumentType<T> dt, String field, String group,
-      QuerySpec querySpec) {
+  CountDistinctValuesFieldPerGroupAggregation(DocumentType<T> dt, String field, String group, QuerySpec querySpec) {
     super(dt, field, group, querySpec);
     aggSize = getAggregationSize(querySpec);
     from = getAggregationFrom(querySpec);
@@ -64,6 +61,7 @@ public class CountDistinctValuesFieldPerGroupAggregation<T extends IDocumentObje
       request = createSearchRequest(querySpec);      
     }
     if (from > 0) aggSize+= from;
+    
     BucketOrder groupOrder = getOrdering(group, querySpec);
     // Default sorting should be descending on count
     if ( groupOrder.equals(BucketOrder.count(false))) {
@@ -76,6 +74,7 @@ public class CountDistinctValuesFieldPerGroupAggregation<T extends IDocumentObje
     CardinalityAggregationBuilder fieldAgg = AggregationBuilders.cardinality("DISTINCT_VALUES").field(field);
     groupAgg.subAggregation(fieldAgg);
     searchSourceBuilder.aggregation(groupAgg);
+    
     request.source(searchSourceBuilder);
     return executeSearchRequest(request);
   }
@@ -91,7 +90,6 @@ public class CountDistinctValuesFieldPerGroupAggregation<T extends IDocumentObje
     int counter = 0;
     for (Bucket bucket : buckets) {
       if (from > 0 && counter++ < from) continue;
-      //logger.info(">>>\n: {}", JsonUtil.toPrettyJson(bucket.getAggregations().get("DISTINCT_VALUES")));
       ParsedCardinality cardinality = bucket.getAggregations().get("DISTINCT_VALUES");
       Map<String, Object> hashMap = new LinkedHashMap<>(2);
       hashMap.put(group, bucket.getKeyAsString());

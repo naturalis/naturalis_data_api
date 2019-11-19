@@ -6,6 +6,7 @@ import static nl.naturalis.nba.dao.aggregation.AggregationQueryUtils.getAggregat
 import static nl.naturalis.nba.dao.aggregation.AggregationQueryUtils.getOrdering;
 import static nl.naturalis.nba.dao.util.es.ESUtil.executeSearchRequest;
 import static nl.naturalis.nba.utils.debug.DebugUtil.printCall;
+
 import static org.elasticsearch.search.aggregations.AggregationBuilders.terms;
 
 import java.util.LinkedHashMap;
@@ -56,15 +57,17 @@ public class GetDistinctValuesFieldAggregation<T extends IDocumentObject>
     } else {
       request = createSearchRequest(querySpec);      
     }
-    if (from > 0) aggSize += from;
-    BucketOrder fieldOrder = getOrdering(field, querySpec);
 
+    if (from > 0) aggSize += from;
+    
     SearchSourceBuilder searchSourceBuilder = (request.source() == null) ? new SearchSourceBuilder() : request.source();
+    BucketOrder fieldOrder = getOrdering(field, querySpec);
 
     TermsAggregationBuilder termsAggregation = terms("FIELD");
     termsAggregation.field(field);
     termsAggregation.size(aggSize).order(fieldOrder);
     searchSourceBuilder.aggregation(termsAggregation);
+    
     request.source(searchSourceBuilder);
     return executeSearchRequest(request);
   }

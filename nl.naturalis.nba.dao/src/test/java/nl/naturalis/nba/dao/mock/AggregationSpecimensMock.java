@@ -4,6 +4,7 @@ import static nl.naturalis.nba.api.model.Sex.FEMALE;
 import static nl.naturalis.nba.api.model.Sex.MALE;
 import static nl.naturalis.nba.api.model.SourceSystem.BRAHMS;
 import static nl.naturalis.nba.api.model.SourceSystem.CRS;
+import static nl.naturalis.nba.api.model.SourceSystem.XC;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

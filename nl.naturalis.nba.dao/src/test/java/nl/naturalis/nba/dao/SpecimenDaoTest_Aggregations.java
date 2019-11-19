@@ -79,6 +79,7 @@ public class SpecimenDaoTest_Aggregations {
     specimen10 = AggregationSpecimensMock.specimen10();
     specimen11 = AggregationSpecimensMock.specimen11();
     specimen12 = AggregationSpecimensMock.specimen12();
+    
     DaoTestUtil.saveSpecimens(
         specimen01, 
         specimen02, 

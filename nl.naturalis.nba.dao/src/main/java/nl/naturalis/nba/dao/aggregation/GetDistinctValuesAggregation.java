@@ -10,7 +10,6 @@ public abstract class GetDistinctValuesAggregation<T extends IDocumentObject, U>
   int aggSize;
   int from;
 
-  
   GetDistinctValuesAggregation(DocumentType<T> dt, String field, QuerySpec querySpec) {
     super(dt, querySpec);
     this.field = field;

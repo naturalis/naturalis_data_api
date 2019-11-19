@@ -20,15 +20,11 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.nested.Nested;
-import org.elasticsearch.search.aggregations.bucket.terms.DoubleTerms;
-import org.elasticsearch.search.aggregations.bucket.terms.LongTerms;
-import org.elasticsearch.search.aggregations.bucket.terms.ParsedStringTerms;
-import org.elasticsearch.search.aggregations.bucket.terms.StringTerms;
+import org.elasticsearch.search.aggregations.bucket.terms.ParsedTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
 import org.elasticsearch.search.aggregations.BucketOrder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.elasticsearch.search.aggregations.bucket.terms.UnmappedTerms;
 
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.QuerySpec;
@@ -38,8 +34,7 @@ import nl.naturalis.nba.dao.DocumentType;
 public class GetDistinctValuesNestedFieldPerGroupAggregation<T extends IDocumentObject>
     extends GetDistinctValuesPerGroupAggregation<T, List<Map<String, Object>>> {
 
-  private static final Logger logger =
-      getLogger(GetDistinctValuesNestedFieldPerGroupAggregation.class);
+  private static final Logger logger = getLogger(GetDistinctValuesNestedFieldPerGroupAggregation.class);
 
   GetDistinctValuesNestedFieldPerGroupAggregation(DocumentType<T> dt, String field, String group, QuerySpec querySpec) {
     super(dt, field, group, querySpec);
@@ -70,10 +65,11 @@ public class GetDistinctValuesNestedFieldPerGroupAggregation<T extends IDocument
     if (from > 0) {
       aggSize += from;
     }
-    BucketOrder fieldOrder = getOrdering(field, querySpec);
-    BucketOrder groupOrder = getOrdering(group, querySpec);
 
     SearchSourceBuilder searchSourceBuilder = (request.source() == null) ? new SearchSourceBuilder() : request.source();
+
+    BucketOrder fieldOrder = getOrdering(field, querySpec);
+    BucketOrder groupOrder = getOrdering(group, querySpec);
     AggregationBuilder fieldAgg = AggregationBuilders.terms("FIELD").field(field).size(aggSize).order(fieldOrder);
     AggregationBuilder nestedFieldAgg = AggregationBuilders.nested("NESTED_FIELD", pathToNestedField);
     nestedFieldAgg.subAggregation(fieldAgg);
@@ -109,23 +105,42 @@ public class GetDistinctValuesNestedFieldPerGroupAggregation<T extends IDocument
     for (Bucket bucket : buckets) {
       if (from > 0 && counter++ < from)
         continue;
+
+//      Nested nestedField = bucket.getAggregations().get("NESTED_FIELD");
+//
+//      List<? extends Bucket> innerBuckets;
+//      if (nestedField.getAggregations().get("FIELD") instanceof ParsedStringTerms) {
+//        ParsedStringTerms fieldTerms = nestedField.getAggregations().get("FIELD");
+//        innerBuckets = fieldTerms.getBuckets();
+//      } else if (nestedField.getAggregations().get("FIELD") instanceof ParsedLongTerms) {
+//        ParsedLongTerms fieldTerms = nestedField.getAggregations().get("FIELD");
+//        innerBuckets = fieldTerms.getBuckets();
+//      } else if (nestedField.getAggregations().get("FIELD") instanceof ParsedDoubleTerms) {
+//        ParsedDoubleTerms fieldTerms = nestedField.getAggregations().get("FIELD");
+//        innerBuckets = fieldTerms.getBuckets();
+//      } else {
+//        UnmappedTerms fieldTerms = nestedField.getAggregations().get("FIELD");
+//        innerBuckets = fieldTerms.getBuckets();
+//      }
+//
+//      List<Map<String, Object>> fieldTermsList = new LinkedList<>();
+//      for (Bucket innerBucket : innerBuckets) {
+//        Map<String, Object> aggregate = new LinkedHashMap<>(2);
+//        aggregate.put(field, innerBucket.getKeyAsString());
+//        aggregate.put("count", innerBucket.getDocCount());
+//        if (innerBucket.getDocCount() > 0) {
+//          fieldTermsList.add(aggregate);
+//        }
+//      }
+      
+      // ParsedStringTerms, ParsedLongTerms and ParsedDoubleTerms are all ParsedTerms
+      
       Nested nestedField = bucket.getAggregations().get("NESTED_FIELD");
-
+      
       List<? extends Bucket> innerBuckets;
-      if (nestedField.getAggregations().get("FIELD") instanceof ParsedStringTerms) {
-        ParsedStringTerms fieldTerms = nestedField.getAggregations().get("FIELD");
-        innerBuckets = fieldTerms.getBuckets();
-      } else if (nestedField.getAggregations().get("FIELD") instanceof LongTerms) {
-        LongTerms fieldTerms = nestedField.getAggregations().get("FIELD");
-        innerBuckets = fieldTerms.getBuckets();
-      } else if (nestedField.getAggregations().get("FIELD") instanceof DoubleTerms) {
-        DoubleTerms fieldTerms = nestedField.getAggregations().get("FIELD");
-        innerBuckets = fieldTerms.getBuckets();
-      } else {
-        UnmappedTerms fieldTerms = nestedField.getAggregations().get("FIELD");
-        innerBuckets = fieldTerms.getBuckets();
-      }
-
+      ParsedTerms fieldTerms = nestedField.getAggregations().get("FIELD");
+      innerBuckets = fieldTerms.getBuckets();
+      
       List<Map<String, Object>> fieldTermsList = new LinkedList<>();
       for (Bucket innerBucket : innerBuckets) {
         Map<String, Object> aggregate = new LinkedHashMap<>(2);
@@ -135,6 +150,7 @@ public class GetDistinctValuesNestedFieldPerGroupAggregation<T extends IDocument
           fieldTermsList.add(aggregate);
         }
       }
+      
       Map<String, Object> hashMap = new LinkedHashMap<>(2);
       hashMap.put(group, bucket.getKeyAsString());
       hashMap.put("count", bucket.getDocCount());

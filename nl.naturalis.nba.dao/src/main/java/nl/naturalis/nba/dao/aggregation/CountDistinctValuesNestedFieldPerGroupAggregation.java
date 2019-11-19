@@ -14,17 +14,16 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.logging.log4j.Logger;
+
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.BucketOrder;
-import org.elasticsearch.search.aggregations.bucket.nested.InternalNested;
 import org.elasticsearch.search.aggregations.bucket.nested.ParsedNested;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
 import org.elasticsearch.search.aggregations.metrics.CardinalityAggregationBuilder;
-import org.elasticsearch.search.aggregations.metrics.InternalCardinality;
 import org.elasticsearch.search.aggregations.metrics.ParsedCardinality;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 
@@ -36,8 +35,7 @@ import nl.naturalis.nba.dao.DocumentType;
 public class CountDistinctValuesNestedFieldPerGroupAggregation<T extends IDocumentObject>
     extends CountDistinctValuesPerGroupAggregation<T, List<Map<String, Object>>> {
 
-  private static final Logger logger =
-      getLogger(CountDistinctValuesNestedFieldPerGroupAggregation.class);
+  private static final Logger logger = getLogger(CountDistinctValuesNestedFieldPerGroupAggregation.class);
 
   CountDistinctValuesNestedFieldPerGroupAggregation(DocumentType<T> dt, String field, String group,
       QuerySpec querySpec) {
@@ -81,6 +79,7 @@ public class CountDistinctValuesNestedFieldPerGroupAggregation<T extends IDocume
     AggregationBuilder groupAgg = AggregationBuilders.terms("GROUP").field(group).size(aggSize).order(groupOrder);
     groupAgg.subAggregation(fieldAgg);
     searchSourceBuilder.aggregation(groupAgg);
+    
     request.source(searchSourceBuilder);
     return executeSearchRequest(request);
   }

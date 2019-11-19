@@ -65,6 +65,7 @@ public class CountDistinctValuesFieldPerNestedGroupAggregation<T extends IDocume
     }
     String pathToNestedGroup = getNestedPath(dt, group);
     if (from > 0) aggSize+= from;
+    
     BucketOrder groupOrder = getOrdering(group, querySpec);
     // Default sorting should be descending on count
     if ( groupOrder.equals(BucketOrder.count(false))) {
@@ -74,19 +75,15 @@ public class CountDistinctValuesFieldPerNestedGroupAggregation<T extends IDocume
     SearchSourceBuilder searchSourceBuilder = (request.source() == null) ? new SearchSourceBuilder() : request.source();
 
     AggregationBuilder fieldAgg = AggregationBuilders.reverseNested("REVERSE_NESTED_FIELD");
-
     CardinalityAggregationBuilder cardinalityField = AggregationBuilders.cardinality("DISTINCT_VALUES").field(field);
-
     fieldAgg.subAggregation(cardinalityField);
-    
     AggregationBuilder groupAgg = AggregationBuilders.nested("NESTED_GROUP", pathToNestedGroup);
     AggregationBuilder groupTerm = AggregationBuilders.terms("GROUP").field(group).size(aggSize).order(groupOrder);
-    
     groupTerm.subAggregation(fieldAgg);
     groupAgg.subAggregation(groupTerm);
-    
     searchSourceBuilder.aggregation(groupAgg);
-    
+
+    request.source(searchSourceBuilder);
     return executeSearchRequest(request);
   }
 

@@ -18,18 +18,8 @@
         ]
     },
     {
-        "identifications.defaultClassification.className" : "Bivalvia",
-        "count" : 1,
-        "values" : [
-            {
-                "identifications.scientificName.genusOrMonomial" : "Musculus",
-                "count" : 1
-            }
-        ]
-    },
-    {
         "identifications.defaultClassification.className" : "Gastropoda",
-        "count" : 1,
+        "count" : 2,
         "values" : [
             {
                 "identifications.scientificName.genusOrMonomial" : "Tectonatica",
@@ -37,6 +27,16 @@
             },
             {
                 "identifications.scientificName.genusOrMonomial" : "Ussurites",
+                "count" : 1
+            }
+        ]
+    },
+    {
+        "identifications.defaultClassification.className" : "Bivalvia",
+        "count" : 1,
+        "values" : [
+            {
+                "identifications.scientificName.genusOrMonomial" : "Musculus",
                 "count" : 1
             }
         ]

@@ -3,18 +3,20 @@ package nl.naturalis.nba.dao.util.es;
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static nl.naturalis.nba.dao.util.es.ESUtil.executeSearchRequest;
 import static nl.naturalis.nba.dao.util.es.ESUtil.newSearchRequest;
-
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import org.apache.logging.log4j.Logger;
-import org.elasticsearch.action.search.SearchRequestBuilder;
+import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.action.search.SearchScrollRequestBuilder;
-import org.elasticsearch.client.Client;
+import org.elasticsearch.action.search.SearchScrollRequest;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 
@@ -43,7 +45,7 @@ public class AcidDocumentIterator<T extends IDocumentObject> implements IDocumen
 	private static final int DEFAULT_TIMEOUT = 30000; // msec
 	private static final int DEFAULT_BATCH_SIZE = 100;
 
-	private final Client client;
+	private final RestHighLevelClient client;
 
 	private final DocumentType<T> dt;
 	private final QuerySpec qs;
@@ -139,7 +141,7 @@ public class AcidDocumentIterator<T extends IDocumentObject> implements IDocumen
 	private T convert(SearchHit hit)
 	{
 		ObjectMapper om = dt.getObjectMapper();
-		T obj = om.convertValue(hit.getSource(), dt.getJavaType());
+		T obj = om.convertValue(hit.getSourceAsString(), dt.getJavaType());
 		obj.setId(hit.getId());
 		return obj;
 	}
@@ -178,10 +180,12 @@ public class AcidDocumentIterator<T extends IDocumentObject> implements IDocumen
 			if (batchSize == 0) {
 				batchSize = DEFAULT_BATCH_SIZE;
 			}
-			SearchRequestBuilder request;
+			SearchRequest request;
 			if (qs == null) {
 				request = newSearchRequest(this.dt);
-				request.addSort(FieldSortBuilder.DOC_FIELD_NAME, SortOrder.ASC);
+				SearchSourceBuilder searchSourceBuilder = (request.source() == null) ? new SearchSourceBuilder() : request.source();
+				searchSourceBuilder.sort(FieldSortBuilder.DOC_FIELD_NAME, SortOrder.ASC);
+				request.source(searchSourceBuilder);
 			}
 			else {
 				try {
@@ -191,10 +195,12 @@ public class AcidDocumentIterator<T extends IDocumentObject> implements IDocumen
 					throw new DaoException(e);
 				}
 			}
-			request.setScroll(timeout);
-			request.setSize(batchSize);
+			request.scroll(timeout);
+			SearchSourceBuilder searchSourceBuilder = (request.source() == null) ? new SearchSourceBuilder() : request.source();
+			searchSourceBuilder.size(batchSize);
+			request.source(searchSourceBuilder);
 			SearchResponse response = executeSearchRequest(request);
-			size = response.getHits().getTotalHits();
+			size = response.getHits().getTotalHits().value;
 			scrollId = response.getScrollId();
 			hits = response.getHits().getHits();
 			ready = true;
@@ -203,11 +209,28 @@ public class AcidDocumentIterator<T extends IDocumentObject> implements IDocumen
 
 	private void scroll()
 	{
-		SearchScrollRequestBuilder ssrb = client.prepareSearchScroll(scrollId);
-		SearchResponse response = ssrb.setScroll(timeout).get();
-		scrollId = response.getScrollId();
-		hits = response.getHits().getHits();
-		hitCounter = 0;
+	  // ES 5
+//		SearchScrollRequestBuilder ssrb = client.prepareSearchScroll(scrollId); 
+//		SearchResponse response = ssrb.setScroll(timeout).get();
+//		scrollId = response.getScrollId();
+//		hits = response.getHits().getHits();
+//		hitCounter = 0;
+	  
+    SearchScrollRequest scrollRequest = new SearchScrollRequest(scrollId);
+    scrollRequest.scroll(timeout);
+    SearchResponse response;
+    try {
+      response = client.scroll(scrollRequest, RequestOptions.DEFAULT);
+      scrollId = response.getScrollId();
+      hits = response.getHits().getHits();
+      hitCounter = 0;
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      // e.printStackTrace();
+      throw new DaoException(e.getMessage());
+    }
+
+	  
 	}
 
 }

@@ -13,8 +13,7 @@ public abstract class GetDistinctValuesPerGroupAggregation<T extends IDocumentOb
   int aggSize;
   int from;
 
-  GetDistinctValuesPerGroupAggregation(DocumentType<T> dt, String field, String group,
-      QuerySpec querySpec) {
+  GetDistinctValuesPerGroupAggregation(DocumentType<T> dt, String field, String group, QuerySpec querySpec) {
     super(dt, field, querySpec);
     this.group = group;
     aggSize = getAggregationSize(querySpec);

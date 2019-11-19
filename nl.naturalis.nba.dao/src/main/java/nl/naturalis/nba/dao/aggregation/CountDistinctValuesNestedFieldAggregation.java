@@ -43,6 +43,7 @@ public class CountDistinctValuesNestedFieldAggregation<T extends IDocumentObject
     AggregationBuilder agg = AggregationBuilders.cardinality("CARDINALITY").field(field);
     nested.subAggregation(agg);
     searchSourceBuilder.aggregation(nested);
+    
     request.source(searchSourceBuilder);
     return executeSearchRequest(request);
   }

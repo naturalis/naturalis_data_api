@@ -8,6 +8,7 @@ import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 
 import nl.naturalis.nba.api.InvalidQueryException;
@@ -39,7 +40,7 @@ public class DirtyScroller implements IScroller {
 	private static final Logger logger = getLogger(DirtyScroller.class);
 
 	private DocumentType<?> dt;
-	private SearchRequestBuilder request;
+	private SearchRequest request;
 
 	private int batchSize = 10000;
 	private int from = 0;
@@ -69,13 +70,17 @@ public class DirtyScroller implements IScroller {
 		}
 		QuerySpecTranslator qst = new QuerySpecTranslator(querySpec, documentType);
 		request = qst.translate();
-		request.addSort("_uid", SortOrder.DESC);
+		SearchSourceBuilder searchSourceBuilder = (request.source() == null) ? new SearchSourceBuilder() : request.source();
+		searchSourceBuilder.sort("_uid", SortOrder.DESC);
+		request.source(searchSourceBuilder);
 	}
 
 	@Override
 	public void scroll(SearchHitHandler handler) throws NbaException
 	{
-		request.setSize(batchSize);
+	  SearchSourceBuilder searchSourceBuilder = (request.source() == null) ? new SearchSourceBuilder() : request.source();
+	  searchSourceBuilder.size(batchSize);
+	  request = request.source(searchSourceBuilder);
 		int from = this.from;
 		int size = this.size;
 		int to = from + size;
@@ -101,8 +106,11 @@ public class DirtyScroller implements IScroller {
 				}
 				i += 1;
 			}
+			
 			String uid = uidStart + hits[hits.length - 1].getId();
-			request.searchAfter(new Object[] { uid });
+			SearchSourceBuilder sourceBuilder = (request.source() == null) ? new SearchSourceBuilder() : request.source();
+			sourceBuilder.searchAfter(new Object[] { uid });
+			request.source(sourceBuilder);
 		} while (true);
 	}
 

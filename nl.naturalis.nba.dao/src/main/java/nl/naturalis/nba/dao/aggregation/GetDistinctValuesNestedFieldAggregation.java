@@ -7,11 +7,15 @@ import static nl.naturalis.nba.dao.aggregation.AggregationQueryUtils.getNestedPa
 import static nl.naturalis.nba.dao.aggregation.AggregationQueryUtils.getOrdering;
 import static nl.naturalis.nba.dao.util.es.ESUtil.executeSearchRequest;
 import static nl.naturalis.nba.utils.debug.DebugUtil.printCall;
+
 import static org.elasticsearch.search.aggregations.AggregationBuilders.nested;
 import static org.elasticsearch.search.aggregations.AggregationBuilders.terms;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
+
 import org.apache.logging.log4j.Logger;
+
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.aggregations.bucket.nested.Nested;
@@ -21,6 +25,7 @@ import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
 import org.elasticsearch.search.aggregations.BucketOrder;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.IDocumentObject;
@@ -77,6 +82,7 @@ public class GetDistinctValuesNestedFieldAggregation<T extends IDocumentObject>
 
   @Override
   public Map<String, Long> getResult() throws InvalidQueryException {
+    
     SearchResponse response = executeQuery();
     Nested nested = response.getAggregations().get("NESTED_FIELD");
     Terms terms = nested.getAggregations().get("FIELD");

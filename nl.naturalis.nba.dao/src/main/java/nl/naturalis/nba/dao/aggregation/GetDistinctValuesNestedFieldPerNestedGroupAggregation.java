@@ -19,21 +19,14 @@ import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
-import org.elasticsearch.search.aggregations.bucket.nested.InternalReverseNested;
 import org.elasticsearch.search.aggregations.bucket.nested.Nested;
 import org.elasticsearch.search.aggregations.bucket.nested.ParsedReverseNested;
 import org.elasticsearch.search.aggregations.bucket.nested.ReverseNestedAggregationBuilder;
-import org.elasticsearch.search.aggregations.bucket.terms.DoubleTerms;
-import org.elasticsearch.search.aggregations.bucket.terms.LongTerms;
-import org.elasticsearch.search.aggregations.bucket.terms.ParsedDoubleTerms;
-import org.elasticsearch.search.aggregations.bucket.terms.ParsedLongTerms;
-import org.elasticsearch.search.aggregations.bucket.terms.ParsedStringTerms;
-import org.elasticsearch.search.aggregations.bucket.terms.StringTerms;
+import org.elasticsearch.search.aggregations.bucket.terms.ParsedTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
 import org.elasticsearch.search.aggregations.BucketOrder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.elasticsearch.search.aggregations.bucket.terms.UnmappedTerms;
 
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.QuerySpec;
@@ -45,8 +38,7 @@ public class GetDistinctValuesNestedFieldPerNestedGroupAggregation<T extends IDo
 
   private static final Logger logger = getLogger(GetDistinctValuesNestedFieldPerNestedGroupAggregation.class);
 
-  public GetDistinctValuesNestedFieldPerNestedGroupAggregation(DocumentType<T> dt, String field,
-      String group, QuerySpec querySpec) {
+  public GetDistinctValuesNestedFieldPerNestedGroupAggregation(DocumentType<T> dt, String field, String group, QuerySpec querySpec) {
     super(dt, field, group, querySpec);
     aggSize = getAggregationSize(querySpec);
     from = getAggregationFrom(querySpec);
@@ -79,6 +71,7 @@ public class GetDistinctValuesNestedFieldPerNestedGroupAggregation<T extends IDo
     BucketOrder groupOrder = getOrdering(group, querySpec);
 
     SearchSourceBuilder searchSourceBuilder = (request.source() == null) ? new SearchSourceBuilder() : request.source();
+    
     AggregationBuilder nestedFieldAgg = AggregationBuilders.nested("NESTED_FIELD", pathToNestedField);
     AggregationBuilder fieldAgg = AggregationBuilders.terms("FIELD").field(field).size(aggSize).order(fieldOrder);
     nestedFieldAgg.subAggregation(fieldAgg);
@@ -119,23 +112,38 @@ public class GetDistinctValuesNestedFieldPerNestedGroupAggregation<T extends IDo
     for (Bucket bucket : buckets) {
       if (from > 0 && counter++ < from)
         continue;
+      
+//      ParsedReverseNested reverseNestedField = bucket.getAggregations().get("REVERSE_NESTED_FIELD");
+//      Nested nestedField = reverseNestedField.getAggregations().get("NESTED_FIELD");
+//      List<? extends Bucket> innerBuckets;
+//      if (nestedField.getAggregations().get("FIELD") instanceof ParsedStringTerms) {
+//        ParsedStringTerms fieldTerms = nestedField.getAggregations().get("FIELD");
+//        innerBuckets = fieldTerms.getBuckets();
+//      } else if (nestedField.getAggregations().get("FIELD") instanceof ParsedLongTerms) {
+//        ParsedLongTerms fieldTerms = nestedField.getAggregations().get("FIELD");
+//        innerBuckets = fieldTerms.getBuckets();
+//      } else if (nestedField.getAggregations().get("FIELD") instanceof ParsedDoubleTerms) {
+//        ParsedDoubleTerms fieldTerms = nestedField.getAggregations().get("FIELD");
+//        innerBuckets = fieldTerms.getBuckets();
+//      } else {
+//        UnmappedTerms fieldTerms = nestedField.getAggregations().get("FIELD");
+//        innerBuckets = fieldTerms.getBuckets();
+//      }
+//
+//      List<Map<String, Object>> fieldTermsList = new LinkedList<>();
+//      for (Bucket innerBucket : innerBuckets) {
+//        Map<String, Object> aggregate = new LinkedHashMap<>(2);
+//        aggregate.put(field, innerBucket.getKeyAsString());
+//        aggregate.put("count", innerBucket.getDocCount());
+//        fieldTermsList.add(aggregate);
+//      }
+      
       ParsedReverseNested reverseNestedField = bucket.getAggregations().get("REVERSE_NESTED_FIELD");
       Nested nestedField = reverseNestedField.getAggregations().get("NESTED_FIELD");
-      List<? extends Bucket> innerBuckets;
-      if (nestedField.getAggregations().get("FIELD") instanceof ParsedStringTerms) {
-        ParsedStringTerms fieldTerms = nestedField.getAggregations().get("FIELD");
-        innerBuckets = fieldTerms.getBuckets();
-      } else if (nestedField.getAggregations().get("FIELD") instanceof ParsedLongTerms) {
-        ParsedLongTerms fieldTerms = nestedField.getAggregations().get("FIELD");
-        innerBuckets = fieldTerms.getBuckets();
-      } else if (nestedField.getAggregations().get("FIELD") instanceof ParsedDoubleTerms) {
-        ParsedDoubleTerms fieldTerms = nestedField.getAggregations().get("FIELD");
-        innerBuckets = fieldTerms.getBuckets();
-      } else {
-        UnmappedTerms fieldTerms = nestedField.getAggregations().get("FIELD");
-        innerBuckets = fieldTerms.getBuckets();
-      }
-
+      
+      ParsedTerms fieldTerms = nestedField.getAggregations().get("FIELD");
+      List<? extends Bucket> innerBuckets = fieldTerms.getBuckets();
+      
       List<Map<String, Object>> fieldTermsList = new LinkedList<>();
       for (Bucket innerBucket : innerBuckets) {
         Map<String, Object> aggregate = new LinkedHashMap<>(2);
@@ -143,6 +151,7 @@ public class GetDistinctValuesNestedFieldPerNestedGroupAggregation<T extends IDo
         aggregate.put("count", innerBucket.getDocCount());
         fieldTermsList.add(aggregate);
       }
+      
       Map<String, Object> hashMap = new LinkedHashMap<>(2);
       hashMap.put(group, bucket.getKeyAsString());
       hashMap.put("count", bucket.getDocCount());

@@ -7,30 +7,27 @@ import static nl.naturalis.nba.dao.aggregation.AggregationQueryUtils.getNestedPa
 import static nl.naturalis.nba.dao.aggregation.AggregationQueryUtils.getOrdering;
 import static nl.naturalis.nba.dao.util.es.ESUtil.executeSearchRequest;
 import static nl.naturalis.nba.utils.debug.DebugUtil.printCall;
+
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
 import org.apache.logging.log4j.Logger;
+
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.BucketOrder;
-import org.elasticsearch.search.aggregations.bucket.nested.InternalReverseNested;
 import org.elasticsearch.search.aggregations.bucket.nested.Nested;
 import org.elasticsearch.search.aggregations.bucket.nested.ParsedReverseNested;
 import org.elasticsearch.search.aggregations.bucket.nested.ReverseNestedAggregationBuilder;
-import org.elasticsearch.search.aggregations.bucket.terms.DoubleTerms;
-import org.elasticsearch.search.aggregations.bucket.terms.LongTerms;
-import org.elasticsearch.search.aggregations.bucket.terms.ParsedDoubleTerms;
-import org.elasticsearch.search.aggregations.bucket.terms.ParsedLongTerms;
-import org.elasticsearch.search.aggregations.bucket.terms.ParsedStringTerms;
-import org.elasticsearch.search.aggregations.bucket.terms.StringTerms;
+import org.elasticsearch.search.aggregations.bucket.terms.ParsedTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
-import org.elasticsearch.search.aggregations.bucket.terms.UnmappedTerms;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.IDocumentObject;
@@ -39,11 +36,9 @@ import nl.naturalis.nba.dao.DocumentType;
 public class GetDistinctValuesFieldPerNestedGroupAggregation<T extends IDocumentObject>
     extends GetDistinctValuesPerGroupAggregation<T, List<Map<String, Object>>> {
 
-  private static final Logger logger =
-      getLogger(GetDistinctValuesFieldPerNestedGroupAggregation.class);
+  private static final Logger logger = getLogger(GetDistinctValuesFieldPerNestedGroupAggregation.class);
 
-  GetDistinctValuesFieldPerNestedGroupAggregation(DocumentType<T> dt, String field, String group,
-      QuerySpec querySpec) {
+  GetDistinctValuesFieldPerNestedGroupAggregation(DocumentType<T> dt, String field, String group, QuerySpec querySpec) {
     super(dt, field, group, querySpec);
     aggSize = getAggregationSize(querySpec);
     from = getAggregationFrom(querySpec);
@@ -116,23 +111,27 @@ public class GetDistinctValuesFieldPerNestedGroupAggregation<T extends IDocument
       if (from > 0 && counter++ < from)
         continue;
       
+//      ParsedReverseNested nestedField = bucket.getAggregations().get("REVERSE_NESTED_FIELD");
+//
+//      List<? extends Bucket> innerBuckets;
+//      if (nestedField.getAggregations().get("FIELD") instanceof ParsedStringTerms) {
+//        ParsedStringTerms fieldTerms = nestedField.getAggregations().get("FIELD");
+//        innerBuckets = fieldTerms.getBuckets();
+//      } else if (nestedField.getAggregations().get("FIELD") instanceof ParsedLongTerms) {
+//        ParsedLongTerms fieldTerms = nestedField.getAggregations().get("FIELD");
+//        innerBuckets = fieldTerms.getBuckets();
+//      } else if (nestedField.getAggregations().get("FIELD") instanceof ParsedDoubleTerms) {
+//        ParsedDoubleTerms fieldTerms = nestedField.getAggregations().get("FIELD");
+//        innerBuckets = fieldTerms.getBuckets();
+//      } else {
+//        UnmappedTerms fieldTerms = nestedField.getAggregations().get("FIELD");
+//        innerBuckets = fieldTerms.getBuckets();
+//      }
+
       ParsedReverseNested nestedField = bucket.getAggregations().get("REVERSE_NESTED_FIELD");
-
-      List<? extends Bucket> innerBuckets;
-      if (nestedField.getAggregations().get("FIELD") instanceof ParsedStringTerms) {
-        ParsedStringTerms fieldTerms = nestedField.getAggregations().get("FIELD");
-        innerBuckets = fieldTerms.getBuckets();
-      } else if (nestedField.getAggregations().get("FIELD") instanceof ParsedLongTerms) {
-        ParsedLongTerms fieldTerms = nestedField.getAggregations().get("FIELD");
-        innerBuckets = fieldTerms.getBuckets();
-      } else if (nestedField.getAggregations().get("FIELD") instanceof ParsedDoubleTerms) {
-        ParsedDoubleTerms fieldTerms = nestedField.getAggregations().get("FIELD");
-        innerBuckets = fieldTerms.getBuckets();
-      } else {
-        UnmappedTerms fieldTerms = nestedField.getAggregations().get("FIELD");
-        innerBuckets = fieldTerms.getBuckets();
-      }
-
+      ParsedTerms fieldTerms = nestedField.getAggregations().get("FIELD");
+      List<? extends Bucket> innerBuckets = fieldTerms.getBuckets();
+      
       List<Map<String, Object>> fieldTermsList = new LinkedList<>();
       for (Bucket innerBucket : innerBuckets) {
         Map<String, Object> aggregate = new LinkedHashMap<>(2);

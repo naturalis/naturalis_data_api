@@ -3,13 +3,14 @@ package nl.naturalis.nba.dao.translate;
 import static nl.naturalis.nba.api.ComparisonOperator.BETWEEN;
 import static nl.naturalis.nba.api.ComparisonOperator.NOT_BETWEEN;
 import static nl.naturalis.nba.dao.DaoTestUtil.queryEquals;
+import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static nl.naturalis.nba.dao.translate.ConditionTranslatorFactory.getTranslator;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
-
+import org.apache.logging.log4j.Logger;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.RangeQueryBuilder;
@@ -28,6 +29,8 @@ import nl.naturalis.nba.dao.translate.ConditionTranslator;
 public class BetweenConditionTranslatorTest {
 
 	private static MappingInfo<TestPerson> mappingInfo;
+	
+	private static final Logger logger = getLogger(BetweenConditionTranslatorTest.class);
 
 	@BeforeClass
 	public static void init()
@@ -122,7 +125,6 @@ public class BetweenConditionTranslatorTest {
 				Arrays.asList(2, 8));
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
-		//System.out.println(query);
 		assertTrue("01", query instanceof RangeQueryBuilder);
 		String file = "translate/search/BetweenConditionTranslatorTest__testTranslate_03.json";
 		assertTrue("02", queryEquals(query, file));
@@ -139,7 +141,6 @@ public class BetweenConditionTranslatorTest {
 				set);
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
-		//System.out.println(query);
 		assertTrue("01", query instanceof BoolQueryBuilder);
 		String file = "translate/search/BetweenConditionTranslatorTest__testTranslate_04.json";
 		assertTrue("02", queryEquals(query, file));

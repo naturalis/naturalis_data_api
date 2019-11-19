@@ -168,7 +168,7 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
       String msg = String.format(fmt, ids.length);
       throw new DaoException(msg);
     }
-    String type = dt.getName();
+    // String type = dt.getName(); // NOT needed any longer
     // ES5
 //    SearchRequestBuilder request = newSearchRequest(dt);
 //    IdsQueryBuilder query = QueryBuilders.idsQuery(type);
@@ -301,7 +301,7 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
 
   public boolean delete(String id, boolean immediate) {
     String index = dt.getIndexInfo().getName();
-    String type = dt.getName();
+    // String type = dt.getName(); // NOT needed any longer
     boolean deleted = false;
 
     // ES5

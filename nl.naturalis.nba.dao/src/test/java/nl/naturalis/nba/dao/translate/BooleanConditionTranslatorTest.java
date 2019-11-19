@@ -4,9 +4,9 @@ import static nl.naturalis.nba.api.ComparisonOperator.NOT_EQUALS;
 import static nl.naturalis.nba.api.ComparisonOperator.EQUALS_IC;
 import static nl.naturalis.nba.dao.translate.ConditionTranslatorFactory.getTranslator;
 import static nl.naturalis.nba.dao.DaoTestUtil.jsonEquals;
-
+import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static org.junit.Assert.assertTrue;
-
+import org.apache.logging.log4j.Logger;
 import org.elasticsearch.index.query.MatchAllQueryBuilder;
 import org.elasticsearch.index.query.MatchNoneQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -20,9 +20,12 @@ import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.Specimen;
+import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.DocumentType;
 
 public class BooleanConditionTranslatorTest {
+  
+  private static final Logger logger = getLogger(BooleanConditionTranslatorTest.class);
   
   @BeforeClass
   public static void init() {}
@@ -51,7 +54,7 @@ public class BooleanConditionTranslatorTest {
     QuerySpecTranslator translator = new QuerySpecTranslator(qs, dt);
     try {
       String jsonFile = "query/BooleanConditionTranslatorTest_testQuery_01.json";
-      String jsonResult = translator.translate().toString();
+      String jsonResult = translator.translate().source().toString();
       assertTrue("02", jsonEquals(this.getClass(), jsonResult, jsonFile));
     } catch (InvalidQueryException e) {
       Assert.fail(String.format("02, %s", e.getMessage()));
@@ -85,7 +88,7 @@ public class BooleanConditionTranslatorTest {
     QuerySpecTranslator translator = new QuerySpecTranslator(qs, dt);
     try {
       String jsonFile = "query/BooleanConditionTranslatorTest_testQuery_02.json";
-      String jsonResult = translator.translate().toString();
+      String jsonResult = translator.translate().source().toString();
       assertTrue("04", jsonEquals(this.getClass(), jsonResult, jsonFile));
     } catch (InvalidQueryException e) {
       Assert.fail(String.format("04, %s", e.getMessage()));

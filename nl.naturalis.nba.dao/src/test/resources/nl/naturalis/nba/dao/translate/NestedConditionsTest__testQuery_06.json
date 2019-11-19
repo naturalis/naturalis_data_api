@@ -1,840 +1,792 @@
 {
-  "from" : 0,
-  "size" : 10,
-  "query" : {
-    "bool" : {
-      "should" : [
+  "from": 0,
+  "size": 10,
+  "query": {
+    "bool": {
+      "should": [
         {
-          "term" : {
-            "license" : {
-              "value" : "CC0",
-              "boost" : 1.0
+          "term": {
+            "license": {
+              "value": "CC0",
+              "boost": 1.0
             }
           }
         },
         {
-          "bool" : {
-            "should" : [
+          "bool": {
+            "should": [
               {
-                "term" : {
-                  "collectionType" : {
-                    "value" : "Botany",
-                    "boost" : 1.0
+                "term": {
+                  "collectionType": {
+                    "value": "Botany",
+                    "boost": 1.0
                   }
                 }
               },
               {
-                "bool" : {
-                  "should" : [
+                "bool": {
+                  "should": [
                     {
-                      "term" : {
-                        "collectionType" : {
-                          "value" : "Mollusca",
-                          "boost" : 1.0
+                      "term": {
+                        "collectionType": {
+                          "value": "Mollusca",
+                          "boost": 1.0
                         }
                       }
                     },
                     {
-                      "term" : {
-                        "collectionType" : {
-                          "value" : "Lepidoptera",
-                          "boost" : 1.0
+                      "term": {
+                        "collectionType": {
+                          "value": "Lepidoptera",
+                          "boost": 1.0
                         }
                       }
                     }
                   ],
-                  "disable_coord" : false,
-                  "adjust_pure_negative" : true,
-                  "boost" : 1.0
+                  "adjust_pure_negative": true,
+                  "boost": 1.0
                 }
               }
             ],
-            "disable_coord" : false,
-            "adjust_pure_negative" : true,
-            "boost" : 1.0
+            "adjust_pure_negative": true,
+            "boost": 1.0
           }
         },
         {
-          "bool" : {
-            "must" : [
+          "bool": {
+            "must": [
               {
-                "nested" : {
-                  "query" : {
-                    "bool" : {
-                      "must" : [
+                "nested": {
+                  "query": {
+                    "bool": {
+                      "must": [
                         {
-                          "bool" : {
-                            "must_not" : [
+                          "bool": {
+                            "must_not": [
                               {
-                                "term" : {
-                                  "gatheringEvent.gatheringPersons.fullName" : {
-                                    "value" : "test",
-                                    "boost" : 1.0
+                                "term": {
+                                  "gatheringEvent.gatheringPersons.fullName": {
+                                    "value": "test",
+                                    "boost": 1.0
                                   }
                                 }
                               }
                             ],
-                            "disable_coord" : false,
-                            "adjust_pure_negative" : true,
-                            "boost" : 1.0
+                            "adjust_pure_negative": true,
+                            "boost": 1.0
                           }
                         },
                         {
-                          "bool" : {
-                            "must_not" : [
+                          "bool": {
+                            "must_not": [
                               {
-                                "exists" : {
-                                  "field" : "gatheringEvent.gatheringPersons.agentText",
-                                  "boost" : 1.0
+                                "exists": {
+                                  "field": "gatheringEvent.gatheringPersons.agentText",
+                                  "boost": 1.0
                                 }
                               }
                             ],
-                            "disable_coord" : false,
-                            "adjust_pure_negative" : true,
-                            "boost" : 1.0
+                            "adjust_pure_negative": true,
+                            "boost": 1.0
                           }
                         }
                       ],
-                      "disable_coord" : false,
-                      "adjust_pure_negative" : true,
-                      "boost" : 1.0
+                      "adjust_pure_negative": true,
+                      "boost": 1.0
                     }
                   },
-                  "path" : "gatheringEvent.gatheringPersons",
-                  "ignore_unmapped" : false,
-                  "score_mode" : "avg",
-                  "boost" : 1.0
+                  "path": "gatheringEvent.gatheringPersons",
+                  "ignore_unmapped": false,
+                  "score_mode": "avg",
+                  "boost": 1.0
                 }
               },
               {
-                "bool" : {
-                  "must" : [
+                "bool": {
+                  "must": [
                     {
-                      "nested" : {
-                        "query" : {
-                          "bool" : {
-                            "must" : [
+                      "nested": {
+                        "query": {
+                          "bool": {
+                            "must": [
                               {
-                                "term" : {
-                                  "associatedMultiMediaUris.format" : {
-                                    "value" : "image/jpeg",
-                                    "boost" : 1.0
+                                "term": {
+                                  "associatedMultiMediaUris.format": {
+                                    "value": "image/jpeg",
+                                    "boost": 1.0
                                   }
                                 }
                               }
                             ],
-                            "disable_coord" : false,
-                            "adjust_pure_negative" : true,
-                            "boost" : 1.0
+                            "adjust_pure_negative": true,
+                            "boost": 1.0
                           }
                         },
-                        "path" : "associatedMultiMediaUris",
-                        "ignore_unmapped" : false,
-                        "score_mode" : "avg",
-                        "boost" : 1.0
+                        "path": "associatedMultiMediaUris",
+                        "ignore_unmapped": false,
+                        "score_mode": "avg",
+                        "boost": 1.0
                       }
                     },
                     {
-                      "bool" : {
-                        "must" : [
+                      "bool": {
+                        "must": [
                           {
-                            "term" : {
-                              "recordBasis" : {
-                                "value" : "FossilSpecimen",
-                                "boost" : 1.0
+                            "term": {
+                              "recordBasis": {
+                                "value": "FossilSpecimen",
+                                "boost": 1.0
                               }
                             }
                           },
                           {
-                            "nested" : {
-                              "query" : {
-                                "bool" : {
-                                  "must" : [
+                            "nested": {
+                              "query": {
+                                "bool": {
+                                  "must": [
                                     {
-                                      "term" : {
-                                        "associatedMultiMediaUris.variant" : {
-                                          "value" : "MEDIUM_QUALITY",
-                                          "boost" : 1.0
+                                      "term": {
+                                        "associatedMultiMediaUris.variant": {
+                                          "value": "MEDIUM_QUALITY",
+                                          "boost": 1.0
                                         }
                                       }
                                     }
                                   ],
-                                  "disable_coord" : false,
-                                  "adjust_pure_negative" : true,
-                                  "boost" : 1.0
+                                  "adjust_pure_negative": true,
+                                  "boost": 1.0
                                 }
                               },
-                              "path" : "associatedMultiMediaUris",
-                              "ignore_unmapped" : false,
-                              "score_mode" : "avg",
-                              "boost" : 1.0
+                              "path": "associatedMultiMediaUris",
+                              "ignore_unmapped": false,
+                              "score_mode": "avg",
+                              "boost": 1.0
                             }
                           }
                         ],
-                        "disable_coord" : false,
-                        "adjust_pure_negative" : true,
-                        "boost" : 1.0
+                        "adjust_pure_negative": true,
+                        "boost": 1.0
                       }
                     }
                   ],
-                  "disable_coord" : false,
-                  "adjust_pure_negative" : true,
-                  "boost" : 1.0
+                  "adjust_pure_negative": true,
+                  "boost": 1.0
                 }
               }
             ],
-            "disable_coord" : false,
-            "adjust_pure_negative" : true,
-            "boost" : 1.0
+            "adjust_pure_negative": true,
+            "boost": 1.0
           }
         },
         {
-          "bool" : {
-            "should" : [
+          "bool": {
+            "should": [
               {
-                "bool" : {
-                  "must" : [
+                "bool": {
+                  "must": [
                     {
-                      "term" : {
-                        "recordBasis" : {
-                          "value" : "Herbarium sheet",
-                          "boost" : 1.0
+                      "term": {
+                        "recordBasis": {
+                          "value": "Herbarium sheet",
+                          "boost": 1.0
                         }
                       }
                     },
                     {
-                      "bool" : {
-                        "must" : [
+                      "bool": {
+                        "must": [
                           {
-                            "term" : {
-                              "recordBasis" : {
-                                "value" : "PreservedSpecimen",
-                                "boost" : 1.0
+                            "term": {
+                              "recordBasis": {
+                                "value": "PreservedSpecimen",
+                                "boost": 1.0
                               }
                             }
                           },
                           {
-                            "nested" : {
-                              "query" : {
-                                "bool" : {
-                                  "must" : [
+                            "nested": {
+                              "query": {
+                                "bool": {
+                                  "must": [
                                     {
-                                      "bool" : {
-                                        "must_not" : [
+                                      "bool": {
+                                        "must_not": [
                                           {
-                                            "term" : {
-                                              "identifications.scientificName.genusOrMonomial" : {
-                                                "value" : "test",
-                                                "boost" : 1.0
+                                            "term": {
+                                              "identifications.scientificName.genusOrMonomial": {
+                                                "value": "test",
+                                                "boost": 1.0
                                               }
                                             }
                                           }
                                         ],
-                                        "disable_coord" : false,
-                                        "adjust_pure_negative" : true,
-                                        "boost" : 1.0
+                                        "adjust_pure_negative": true,
+                                        "boost": 1.0
                                       }
                                     }
                                   ],
-                                  "disable_coord" : false,
-                                  "adjust_pure_negative" : true,
-                                  "boost" : 1.0
+                                  "adjust_pure_negative": true,
+                                  "boost": 1.0
                                 }
                               },
-                              "path" : "identifications",
-                              "ignore_unmapped" : false,
-                              "score_mode" : "avg",
-                              "boost" : 1.0
+                              "path": "identifications",
+                              "ignore_unmapped": false,
+                              "score_mode": "avg",
+                              "boost": 1.0
                             }
                           }
                         ],
-                        "disable_coord" : false,
-                        "adjust_pure_negative" : true,
-                        "boost" : 1.0
+                        "adjust_pure_negative": true,
+                        "boost": 1.0
                       }
                     }
                   ],
-                  "disable_coord" : false,
-                  "adjust_pure_negative" : true,
-                  "boost" : 1.0
+                  "adjust_pure_negative": true,
+                  "boost": 1.0
                 }
               },
               {
-                "bool" : {
-                  "must" : [
+                "bool": {
+                  "must": [
                     {
-                      "nested" : {
-                        "query" : {
-                          "bool" : {
-                            "must" : [
+                      "nested": {
+                        "query": {
+                          "bool": {
+                            "must": [
                               {
-                                "bool" : {
-                                  "must_not" : [
+                                "bool": {
+                                  "must_not": [
                                     {
-                                      "term" : {
-                                        "identifications.scientificName.specificEpithet" : {
-                                          "value" : "test",
-                                          "boost" : 1.0
+                                      "term": {
+                                        "identifications.scientificName.specificEpithet": {
+                                          "value": "test",
+                                          "boost": 1.0
                                         }
                                       }
                                     }
                                   ],
-                                  "disable_coord" : false,
-                                  "adjust_pure_negative" : true,
-                                  "boost" : 1.0
+                                  "adjust_pure_negative": true,
+                                  "boost": 1.0
                                 }
                               },
                               {
-                                "bool" : {
-                                  "must_not" : [
+                                "bool": {
+                                  "must_not": [
                                     {
-                                      "term" : {
-                                        "identifications.scientificName.infraspecificEpithet" : {
-                                          "value" : "test",
-                                          "boost" : 1.0
+                                      "term": {
+                                        "identifications.scientificName.infraspecificEpithet": {
+                                          "value": "test",
+                                          "boost": 1.0
                                         }
                                       }
                                     }
                                   ],
-                                  "disable_coord" : false,
-                                  "adjust_pure_negative" : true,
-                                  "boost" : 1.0
+                                  "adjust_pure_negative": true,
+                                  "boost": 1.0
                                 }
                               }
                             ],
-                            "disable_coord" : false,
-                            "adjust_pure_negative" : true,
-                            "boost" : 1.0
+                            "adjust_pure_negative": true,
+                            "boost": 1.0
                           }
                         },
-                        "path" : "identifications",
-                        "ignore_unmapped" : false,
-                        "score_mode" : "avg",
-                        "boost" : 1.0
+                        "path": "identifications",
+                        "ignore_unmapped": false,
+                        "score_mode": "avg",
+                        "boost": 1.0
                       }
                     }
                   ],
-                  "disable_coord" : false,
-                  "adjust_pure_negative" : true,
-                  "boost" : 1.0
+                  "adjust_pure_negative": true,
+                  "boost": 1.0
                 }
               },
               {
-                "bool" : {
-                  "must" : [
+                "bool": {
+                  "must": [
                     {
-                      "nested" : {
-                        "query" : {
-                          "bool" : {
-                            "must" : [
+                      "nested": {
+                        "query": {
+                          "bool": {
+                            "must": [
                               {
-                                "bool" : {
-                                  "must_not" : [
+                                "bool": {
+                                  "must_not": [
                                     {
-                                      "term" : {
-                                        "gatheringEvent.gatheringPersons.fullName" : {
-                                          "value" : "test",
-                                          "boost" : 1.0
+                                      "term": {
+                                        "gatheringEvent.gatheringPersons.fullName": {
+                                          "value": "test",
+                                          "boost": 1.0
                                         }
                                       }
                                     }
                                   ],
-                                  "disable_coord" : false,
-                                  "adjust_pure_negative" : true,
-                                  "boost" : 1.0
+                                  "adjust_pure_negative": true,
+                                  "boost": 1.0
                                 }
                               },
                               {
-                                "bool" : {
-                                  "must_not" : [
+                                "bool": {
+                                  "must_not": [
                                     {
-                                      "exists" : {
-                                        "field" : "gatheringEvent.gatheringPersons.agentText",
-                                        "boost" : 1.0
+                                      "exists": {
+                                        "field": "gatheringEvent.gatheringPersons.agentText",
+                                        "boost": 1.0
                                       }
                                     }
                                   ],
-                                  "disable_coord" : false,
-                                  "adjust_pure_negative" : true,
-                                  "boost" : 1.0
+                                  "adjust_pure_negative": true,
+                                  "boost": 1.0
                                 }
                               }
                             ],
-                            "disable_coord" : false,
-                            "adjust_pure_negative" : true,
-                            "boost" : 1.0
+                            "adjust_pure_negative": true,
+                            "boost": 1.0
                           }
                         },
-                        "path" : "gatheringEvent.gatheringPersons",
-                        "ignore_unmapped" : false,
-                        "score_mode" : "avg",
-                        "boost" : 1.0
+                        "path": "gatheringEvent.gatheringPersons",
+                        "ignore_unmapped": false,
+                        "score_mode": "avg",
+                        "boost": 1.0
                       }
                     },
                     {
-                      "bool" : {
-                        "must" : [
+                      "bool": {
+                        "must": [
                           {
-                            "nested" : {
-                              "query" : {
-                                "bool" : {
-                                  "must" : [
+                            "nested": {
+                              "query": {
+                                "bool": {
+                                  "must": [
                                     {
-                                      "term" : {
-                                        "associatedMultiMediaUris.format" : {
-                                          "value" : "image/jpeg",
-                                          "boost" : 1.0
+                                      "term": {
+                                        "associatedMultiMediaUris.format": {
+                                          "value": "image/jpeg",
+                                          "boost": 1.0
                                         }
                                       }
                                     }
                                   ],
-                                  "disable_coord" : false,
-                                  "adjust_pure_negative" : true,
-                                  "boost" : 1.0
+                                  "adjust_pure_negative": true,
+                                  "boost": 1.0
                                 }
                               },
-                              "path" : "associatedMultiMediaUris",
-                              "ignore_unmapped" : false,
-                              "score_mode" : "avg",
-                              "boost" : 1.0
+                              "path": "associatedMultiMediaUris",
+                              "ignore_unmapped": false,
+                              "score_mode": "avg",
+                              "boost": 1.0
                             }
                           },
                           {
-                            "bool" : {
-                              "must" : [
+                            "bool": {
+                              "must": [
                                 {
-                                  "term" : {
-                                    "recordBasis" : {
-                                      "value" : "FossilSpecimen",
-                                      "boost" : 1.0
+                                  "term": {
+                                    "recordBasis": {
+                                      "value": "FossilSpecimen",
+                                      "boost": 1.0
                                     }
                                   }
                                 },
                                 {
-                                  "nested" : {
-                                    "query" : {
-                                      "bool" : {
-                                        "must" : [
+                                  "nested": {
+                                    "query": {
+                                      "bool": {
+                                        "must": [
                                           {
-                                            "term" : {
-                                              "associatedMultiMediaUris.variant" : {
-                                                "value" : "MEDIUM_QUALITY",
-                                                "boost" : 1.0
+                                            "term": {
+                                              "associatedMultiMediaUris.variant": {
+                                                "value": "MEDIUM_QUALITY",
+                                                "boost": 1.0
                                               }
                                             }
                                           }
                                         ],
-                                        "disable_coord" : false,
-                                        "adjust_pure_negative" : true,
-                                        "boost" : 1.0
+                                        "adjust_pure_negative": true,
+                                        "boost": 1.0
                                       }
                                     },
-                                    "path" : "associatedMultiMediaUris",
-                                    "ignore_unmapped" : false,
-                                    "score_mode" : "avg",
-                                    "boost" : 1.0
+                                    "path": "associatedMultiMediaUris",
+                                    "ignore_unmapped": false,
+                                    "score_mode": "avg",
+                                    "boost": 1.0
                                   }
                                 }
                               ],
-                              "disable_coord" : false,
-                              "adjust_pure_negative" : true,
-                              "boost" : 1.0
+                              "adjust_pure_negative": true,
+                              "boost": 1.0
                             }
                           }
                         ],
-                        "disable_coord" : false,
-                        "adjust_pure_negative" : true,
-                        "boost" : 1.0
+                        "adjust_pure_negative": true,
+                        "boost": 1.0
                       }
                     }
                   ],
-                  "disable_coord" : false,
-                  "adjust_pure_negative" : true,
-                  "boost" : 1.0
+                  "adjust_pure_negative": true,
+                  "boost": 1.0
                 }
               }
             ],
-            "disable_coord" : false,
-            "adjust_pure_negative" : true,
-            "boost" : 1.0
+            "adjust_pure_negative": true,
+            "boost": 1.0
           }
         },
         {
-          "bool" : {
-            "must" : [
+          "bool": {
+            "must": [
               {
-                "nested" : {
-                  "query" : {
-                    "bool" : {
-                      "must" : [
+                "nested": {
+                  "query": {
+                    "bool": {
+                      "must": [
                         {
-                          "term" : {
-                            "associatedMultiMediaUris.format" : {
-                              "value" : "image/jpeg",
-                              "boost" : 1.0
+                          "term": {
+                            "associatedMultiMediaUris.format": {
+                              "value": "image/jpeg",
+                              "boost": 1.0
                             }
                           }
                         }
                       ],
-                      "disable_coord" : false,
-                      "adjust_pure_negative" : true,
-                      "boost" : 1.0
+                      "adjust_pure_negative": true,
+                      "boost": 1.0
                     }
                   },
-                  "path" : "associatedMultiMediaUris",
-                  "ignore_unmapped" : false,
-                  "score_mode" : "avg",
-                  "boost" : 1.0
+                  "path": "associatedMultiMediaUris",
+                  "ignore_unmapped": false,
+                  "score_mode": "avg",
+                  "boost": 1.0
                 }
               },
               {
-                "bool" : {
-                  "must" : [
+                "bool": {
+                  "must": [
                     {
-                      "term" : {
-                        "recordBasis" : {
-                          "value" : "FossilSpecimen",
-                          "boost" : 1.0
+                      "term": {
+                        "recordBasis": {
+                          "value": "FossilSpecimen",
+                          "boost": 1.0
                         }
                       }
                     },
                     {
-                      "nested" : {
-                        "query" : {
-                          "bool" : {
-                            "must" : [
+                      "nested": {
+                        "query": {
+                          "bool": {
+                            "must": [
                               {
-                                "term" : {
-                                  "associatedMultiMediaUris.variant" : {
-                                    "value" : "MEDIUM_QUALITY",
-                                    "boost" : 1.0
+                                "term": {
+                                  "associatedMultiMediaUris.variant": {
+                                    "value": "MEDIUM_QUALITY",
+                                    "boost": 1.0
                                   }
                                 }
                               }
                             ],
-                            "disable_coord" : false,
-                            "adjust_pure_negative" : true,
-                            "boost" : 1.0
+                            "adjust_pure_negative": true,
+                            "boost": 1.0
                           }
                         },
-                        "path" : "associatedMultiMediaUris",
-                        "ignore_unmapped" : false,
-                        "score_mode" : "avg",
-                        "boost" : 1.0
+                        "path": "associatedMultiMediaUris",
+                        "ignore_unmapped": false,
+                        "score_mode": "avg",
+                        "boost": 1.0
                       }
                     }
                   ],
-                  "disable_coord" : false,
-                  "adjust_pure_negative" : true,
-                  "boost" : 1.0
+                  "adjust_pure_negative": true,
+                  "boost": 1.0
                 }
               }
             ],
-            "disable_coord" : false,
-            "adjust_pure_negative" : true,
-            "boost" : 1.0
+            "adjust_pure_negative": true,
+            "boost": 1.0
           }
         },
         {
-          "term" : {
-            "licenseType" : {
-              "value" : "Copyright",
-              "boost" : 1.0
+          "term": {
+            "licenseType": {
+              "value": "Copyright",
+              "boost": 1.0
             }
           }
         },
         {
-          "bool" : {
-            "must" : [
+          "bool": {
+            "must": [
               {
-                "nested" : {
-                  "query" : {
-                    "bool" : {
-                      "must" : [
+                "nested": {
+                  "query": {
+                    "bool": {
+                      "must": [
                         {
-                          "bool" : {
-                            "must_not" : [
+                          "bool": {
+                            "must_not": [
                               {
-                                "term" : {
-                                  "identifications.scientificName.specificEpithet" : {
-                                    "value" : "test",
-                                    "boost" : 1.0
+                                "term": {
+                                  "identifications.scientificName.specificEpithet": {
+                                    "value": "test",
+                                    "boost": 1.0
                                   }
                                 }
                               }
                             ],
-                            "disable_coord" : false,
-                            "adjust_pure_negative" : true,
-                            "boost" : 1.0
+                            "adjust_pure_negative": true,
+                            "boost": 1.0
                           }
                         },
                         {
-                          "bool" : {
-                            "must_not" : [
+                          "bool": {
+                            "must_not": [
                               {
-                                "term" : {
-                                  "identifications.scientificName.infraspecificEpithet" : {
-                                    "value" : "test",
-                                    "boost" : 1.0
+                                "term": {
+                                  "identifications.scientificName.infraspecificEpithet": {
+                                    "value": "test",
+                                    "boost": 1.0
                                   }
                                 }
                               }
                             ],
-                            "disable_coord" : false,
-                            "adjust_pure_negative" : true,
-                            "boost" : 1.0
+                            "adjust_pure_negative": true,
+                            "boost": 1.0
                           }
                         }
                       ],
-                      "disable_coord" : false,
-                      "adjust_pure_negative" : true,
-                      "boost" : 1.0
+                      "adjust_pure_negative": true,
+                      "boost": 1.0
                     }
                   },
-                  "path" : "identifications",
-                  "ignore_unmapped" : false,
-                  "score_mode" : "avg",
-                  "boost" : 1.0
+                  "path": "identifications",
+                  "ignore_unmapped": false,
+                  "score_mode": "avg",
+                  "boost": 1.0
                 }
               }
             ],
-            "disable_coord" : false,
-            "adjust_pure_negative" : true,
-            "boost" : 1.0
+            "adjust_pure_negative": true,
+            "boost": 1.0
           }
         },
         {
-          "bool" : {
-            "should" : [
+          "bool": {
+            "should": [
               {
-                "term" : {
-                  "collectionType" : {
-                    "value" : "Mollusca",
-                    "boost" : 1.0
+                "term": {
+                  "collectionType": {
+                    "value": "Mollusca",
+                    "boost": 1.0
                   }
                 }
               },
               {
-                "term" : {
-                  "collectionType" : {
-                    "value" : "Lepidoptera",
-                    "boost" : 1.0
+                "term": {
+                  "collectionType": {
+                    "value": "Lepidoptera",
+                    "boost": 1.0
                   }
                 }
               }
             ],
-            "disable_coord" : false,
-            "adjust_pure_negative" : true,
-            "boost" : 1.0
+            "adjust_pure_negative": true,
+            "boost": 1.0
           }
         },
         {
-          "bool" : {
-            "must" : [
+          "bool": {
+            "must": [
               {
-                "term" : {
-                  "owner" : {
-                    "value" : "Naturalis Biodiversity Center",
-                    "boost" : 1.0
+                "term": {
+                  "owner": {
+                    "value": "Naturalis Biodiversity Center",
+                    "boost": 1.0
                   }
                 }
               },
               {
-                "bool" : {
-                  "must" : [
+                "bool": {
+                  "must": [
                     {
-                      "nested" : {
-                        "query" : {
-                          "bool" : {
-                            "must" : [
+                      "nested": {
+                        "query": {
+                          "bool": {
+                            "must": [
                               {
-                                "term" : {
-                                  "associatedMultiMediaUris.format" : {
-                                    "value" : "image/jpeg",
-                                    "boost" : 1.0
+                                "term": {
+                                  "associatedMultiMediaUris.format": {
+                                    "value": "image/jpeg",
+                                    "boost": 1.0
                                   }
                                 }
                               }
                             ],
-                            "disable_coord" : false,
-                            "adjust_pure_negative" : true,
-                            "boost" : 1.0
+                            "adjust_pure_negative": true,
+                            "boost": 1.0
                           }
                         },
-                        "path" : "associatedMultiMediaUris",
-                        "ignore_unmapped" : false,
-                        "score_mode" : "avg",
-                        "boost" : 1.0
+                        "path": "associatedMultiMediaUris",
+                        "ignore_unmapped": false,
+                        "score_mode": "avg",
+                        "boost": 1.0
                       }
                     },
                     {
-                      "bool" : {
-                        "must" : [
+                      "bool": {
+                        "must": [
                           {
-                            "term" : {
-                              "recordBasis" : {
-                                "value" : "FossilSpecimen",
-                                "boost" : 1.0
+                            "term": {
+                              "recordBasis": {
+                                "value": "FossilSpecimen",
+                                "boost": 1.0
                               }
                             }
                           },
                           {
-                            "nested" : {
-                              "query" : {
-                                "bool" : {
-                                  "must" : [
+                            "nested": {
+                              "query": {
+                                "bool": {
+                                  "must": [
                                     {
-                                      "term" : {
-                                        "associatedMultiMediaUris.variant" : {
-                                          "value" : "MEDIUM_QUALITY",
-                                          "boost" : 1.0
+                                      "term": {
+                                        "associatedMultiMediaUris.variant": {
+                                          "value": "MEDIUM_QUALITY",
+                                          "boost": 1.0
                                         }
                                       }
                                     }
                                   ],
-                                  "disable_coord" : false,
-                                  "adjust_pure_negative" : true,
-                                  "boost" : 1.0
+                                  "adjust_pure_negative": true,
+                                  "boost": 1.0
                                 }
                               },
-                              "path" : "associatedMultiMediaUris",
-                              "ignore_unmapped" : false,
-                              "score_mode" : "avg",
-                              "boost" : 1.0
+                              "path": "associatedMultiMediaUris",
+                              "ignore_unmapped": false,
+                              "score_mode": "avg",
+                              "boost": 1.0
                             }
                           }
                         ],
-                        "disable_coord" : false,
-                        "adjust_pure_negative" : true,
-                        "boost" : 1.0
+                        "adjust_pure_negative": true,
+                        "boost": 1.0
                       }
                     }
                   ],
-                  "disable_coord" : false,
-                  "adjust_pure_negative" : true,
-                  "boost" : 1.0
+                  "adjust_pure_negative": true,
+                  "boost": 1.0
                 }
               }
             ],
-            "disable_coord" : false,
-            "adjust_pure_negative" : true,
-            "boost" : 1.0
+            "adjust_pure_negative": true,
+            "boost": 1.0
           }
         },
         {
-          "bool" : {
-            "must" : [
+          "bool": {
+            "must": [
               {
-                "term" : {
-                  "recordBasis" : {
-                    "value" : "PreservedSpecimen",
-                    "boost" : 1.0
+                "term": {
+                  "recordBasis": {
+                    "value": "PreservedSpecimen",
+                    "boost": 1.0
                   }
                 }
               },
               {
-                "nested" : {
-                  "query" : {
-                    "bool" : {
-                      "must" : [
+                "nested": {
+                  "query": {
+                    "bool": {
+                      "must": [
                         {
-                          "bool" : {
-                            "must_not" : [
+                          "bool": {
+                            "must_not": [
                               {
-                                "term" : {
-                                  "identifications.scientificName.genusOrMonomial" : {
-                                    "value" : "test",
-                                    "boost" : 1.0
+                                "term": {
+                                  "identifications.scientificName.genusOrMonomial": {
+                                    "value": "test",
+                                    "boost": 1.0
                                   }
                                 }
                               }
                             ],
-                            "disable_coord" : false,
-                            "adjust_pure_negative" : true,
-                            "boost" : 1.0
+                            "adjust_pure_negative": true,
+                            "boost": 1.0
                           }
                         }
                       ],
-                      "disable_coord" : false,
-                      "adjust_pure_negative" : true,
-                      "boost" : 1.0
+                      "adjust_pure_negative": true,
+                      "boost": 1.0
                     }
                   },
-                  "path" : "identifications",
-                  "ignore_unmapped" : false,
-                  "score_mode" : "avg",
-                  "boost" : 1.0
+                  "path": "identifications",
+                  "ignore_unmapped": false,
+                  "score_mode": "avg",
+                  "boost": 1.0
                 }
               }
             ],
-            "disable_coord" : false,
-            "adjust_pure_negative" : true,
-            "boost" : 1.0
+            "adjust_pure_negative": true,
+            "boost": 1.0
           }
         },
         {
-          "nested" : {
-            "query" : {
-              "bool" : {
-                "should" : [
+          "nested": {
+            "query": {
+              "bool": {
+                "should": [
                   {
-                    "bool" : {
-                      "must_not" : [
+                    "bool": {
+                      "must_not": [
                         {
-                          "term" : {
-                            "identifications.scientificName.genusOrMonomial" : {
-                              "value" : "test",
-                              "boost" : 1.0
+                          "term": {
+                            "identifications.scientificName.genusOrMonomial": {
+                              "value": "test",
+                              "boost": 1.0
                             }
                           }
                         }
                       ],
-                      "disable_coord" : false,
-                      "adjust_pure_negative" : true,
-                      "boost" : 1.0
+                      "adjust_pure_negative": true,
+                      "boost": 1.0
                     }
                   }
                 ],
-                "disable_coord" : false,
-                "adjust_pure_negative" : true,
-                "boost" : 1.0
+                "adjust_pure_negative": true,
+                "boost": 1.0
               }
             },
-            "path" : "identifications",
-            "ignore_unmapped" : false,
-            "score_mode" : "avg",
-            "boost" : 1.0
+            "path": "identifications",
+            "ignore_unmapped": false,
+            "score_mode": "avg",
+            "boost": 1.0
           }
         },
         {
-          "nested" : {
-            "query" : {
-              "bool" : {
-                "should" : [
+          "nested": {
+            "query": {
+              "bool": {
+                "should": [
                   {
-                    "term" : {
-                      "associatedMultiMediaUris.variant" : {
-                        "value" : "MEDIUM_QUALITY",
-                        "boost" : 1.0
+                    "term": {
+                      "associatedMultiMediaUris.variant": {
+                        "value": "MEDIUM_QUALITY",
+                        "boost": 1.0
                       }
                     }
                   }
                 ],
-                "disable_coord" : false,
-                "adjust_pure_negative" : true,
-                "boost" : 1.0
+                "adjust_pure_negative": true,
+                "boost": 1.0
               }
             },
-            "path" : "associatedMultiMediaUris",
-            "ignore_unmapped" : false,
-            "score_mode" : "avg",
-            "boost" : 1.0
+            "path": "associatedMultiMediaUris",
+            "ignore_unmapped": false,
+            "score_mode": "avg",
+            "boost": 1.0
           }
         }
       ],
-      "disable_coord" : false,
-      "adjust_pure_negative" : true,
-      "boost" : 1.0
+      "adjust_pure_negative": true,
+      "boost": 1.0
     }
   }
 }

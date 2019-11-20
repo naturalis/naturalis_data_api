@@ -130,6 +130,11 @@ public class ESUtil {
   
   // ES7
   public static SearchResponse executeSearchRequest(SearchRequest request) {
+
+    if (logger.isDebugEnabled()) {
+       logger.debug("Executing search request:\n{}", request.source());
+     }
+
     SearchResponse response = null;
     try {
       response = esClient().search(request, RequestOptions.DEFAULT);
@@ -695,13 +700,16 @@ public class ESUtil {
    */
   public static <T extends IDocumentObject> void truncate(DocumentType<T> dt) {
     logger.info("Deleting all {} documents", dt.getName());
+
     QuerySpec qs = new QuerySpec();
     qs.setConstantScore(true);
     qs.setFields(Collections.emptyList());
     qs.setSize(1000);
+    
     DirtyDocumentIterator<T> extractor = new DirtyDocumentIterator<>(dt, qs);
     String index = dt.getIndexInfo().getName();
     String type = dt.getName();
+    
     // ES5
     // Client client = ESClientManager.getInstance().getClient();
     // Collection<T> batch = extractor.nextBatch();
@@ -753,14 +761,19 @@ public class ESUtil {
    */
   public static <T extends IDocumentObject> void truncate(DocumentType<T> dt, SourceSystem ss) {
     logger.info("Deleting all {} {} documents", ss.getCode(), dt.getName());
+    
     QuerySpec qs = new QuerySpec();
     qs.setConstantScore(true);
     qs.setFields(Collections.emptyList());
     qs.setSize(1000);
     qs.addCondition(new QueryCondition("sourceSystem.code", "=", ss.getCode()));
+    
+    logger.info(">>>>>>>>>>>>>>>>\n{}", JsonUtil.toPrettyJson(qs));
+    
     DirtyDocumentIterator<T> extractor = new DirtyDocumentIterator<>(dt, qs);
     String index = dt.getIndexInfo().getName();
     String type = dt.getName();
+    
     RestHighLevelClient client = ESClientManager.getInstance().getClient();
     Collection<T> batch = extractor.nextBatch();
 

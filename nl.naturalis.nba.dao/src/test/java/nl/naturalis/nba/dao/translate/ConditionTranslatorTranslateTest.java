@@ -5,11 +5,9 @@ import static nl.naturalis.nba.api.ComparisonOperator.NOT_EQUALS;
 import static nl.naturalis.nba.api.LogicalOperator.OR;
 import static nl.naturalis.nba.api.UnaryBooleanOperator.NOT;
 import static nl.naturalis.nba.dao.DaoTestUtil.jsonEquals;
-import static nl.naturalis.nba.dao.DaoUtil.getLogger;
+
 import static org.junit.Assert.assertTrue;
-import org.apache.logging.log4j.Logger;
-//import org.apache.logging.log4j.Logger;
-import org.junit.Test;
+
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.api.QueryCondition;
@@ -18,6 +16,7 @@ import nl.naturalis.nba.api.SortOrder;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.dao.DocumentType;
 
+import org.junit.Test;
 
 /*
  * Unit test for testing the translation of mulitple query conditions, nested or not, in need of 
@@ -25,8 +24,6 @@ import nl.naturalis.nba.dao.DocumentType;
  */
 public class ConditionTranslatorTranslateTest {
   
-  private static final Logger logger = getLogger(ConditionTranslatorTranslateTest.class);
-
   @Test
   public void test_01() throws InvalidQueryException {
 
@@ -270,7 +267,7 @@ public class ConditionTranslatorTranslateTest {
     QuerySpecTranslator translator = new QuerySpecTranslator(query, dt);
 
     String jsonFile = "NestedConditionsTest__testQuery_10.json";
-    String jsonString = translator.translate().toString();
+    String jsonString = translator.translate().source().toString();
     assertTrue("01", jsonEquals(this.getClass(), jsonString, jsonFile));
   }
 
@@ -290,7 +287,7 @@ public class ConditionTranslatorTranslateTest {
     QuerySpecTranslator translator = new QuerySpecTranslator(query, dt);
     
     String jsonFile = "NestedConditionsTest__testQuery_11.json";
-    String jsonString = translator.translate().toString();
+    String jsonString = translator.translate().source().toString();
     assertTrue("01", jsonEquals(this.getClass(), jsonString, jsonFile));
   }
 
@@ -310,7 +307,7 @@ public class ConditionTranslatorTranslateTest {
     QuerySpecTranslator translator = new QuerySpecTranslator(query, dt);
     
     String jsonFile = "NestedConditionsTest__testQuery_12.json";
-    String jsonString = translator.translate().toString();
+    String jsonString = translator.translate().source().toString();
     assertTrue("01", jsonEquals(this.getClass(), jsonString, jsonFile));
   }
 
@@ -330,7 +327,7 @@ public class ConditionTranslatorTranslateTest {
     QuerySpecTranslator translator = new QuerySpecTranslator(query, dt);
     
     String jsonFile = "NestedConditionsTest__testQuery_13_01.json";
-    String jsonString = translator.translate().toString();
+    String jsonString = translator.translate().source().toString();
     assertTrue("01", jsonEquals(this.getClass(), jsonString, jsonFile));
     
     query = new QuerySpec();
@@ -339,7 +336,7 @@ public class ConditionTranslatorTranslateTest {
     translator = new QuerySpecTranslator(query, dt);
 
     jsonFile = "NestedConditionsTest__testQuery_13_02.json";
-    jsonString = translator.translate().toString();
+    jsonString = translator.translate().source().toString();
     assertTrue("02", jsonEquals(this.getClass(), jsonString, jsonFile));
   }
 
@@ -363,7 +360,7 @@ public class ConditionTranslatorTranslateTest {
     QuerySpecTranslator translator = new QuerySpecTranslator(query, dt);
     
     String jsonFile = "NestedConditionsTest__testQuery_14.json";
-    String jsonString = translator.translate().toString();
+    String jsonString = translator.translate().source().toString();
     assertTrue("01", jsonEquals(this.getClass(), jsonString, jsonFile));
   }
   

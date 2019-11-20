@@ -3,6 +3,7 @@ package nl.naturalis.nba.dao.translate;
 import static nl.naturalis.nba.api.ComparisonOperator.IN;
 import static nl.naturalis.nba.dao.DaoTestUtil.queryEquals;
 import static nl.naturalis.nba.dao.translate.ConditionTranslatorFactory.getTranslator;
+
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ import java.util.List;
 
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -42,7 +44,6 @@ public class InConditionTranslatorTest {
 		QueryCondition condition = new QueryCondition("firstName", IN, null);	
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		ct.translate();
-		// System.out.println(query);
 	}
 
 	/*
@@ -54,7 +55,6 @@ public class InConditionTranslatorTest {
 		QueryCondition condition = new QueryCondition("firstName", IN, new Integer[] { null, null, null });		
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
-		//System.out.println(query);
 		assertTrue("01", query instanceof BoolQueryBuilder);
 		String file = "translate/search/InConditionTranslatorTest__testTranslate_01.json";
 		assertTrue("02", queryEquals(query, file));
@@ -69,7 +69,6 @@ public class InConditionTranslatorTest {
 		QueryCondition condition = new QueryCondition("pets.name", IN, new String[] { "Napoleon", "Max" });		
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.singleCondition().translate();
-		//System.out.println(query);
 		String file = "translate/search/InConditionTranslatorTest__testTranslate_02.json";
 		assertTrue("01", queryEquals(query, file));
 	}
@@ -88,7 +87,6 @@ public class InConditionTranslatorTest {
 		QueryCondition condition = new QueryCondition("pets.name", IN, values);	
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.singleCondition().translate();
-		// System.out.println(query);
 		String file = "translate/search/InConditionTranslatorTest__testTranslate_03.json";
 		assertTrue("01", queryEquals(query, file));
 	}

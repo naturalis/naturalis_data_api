@@ -24,6 +24,7 @@ import nl.naturalis.nba.api.SortField;
 import nl.naturalis.nba.common.es.map.ESField;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.common.es.map.SimpleField;
+import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.DocumentType;
 
 class SortFieldsTranslator {
@@ -46,12 +47,19 @@ class SortFieldsTranslator {
   }
 
   SortBuilder<?>[] translate() throws InvalidQueryException {
+    
+    logger.info("SortFieldsBuilder: \n{}", JsonUtil.toPrettyJson(querySpec));
+    
     MappingInfo<?> mappingInfo = new MappingInfo<>(dt.getMapping());
     List<SortField> sortFields = querySpec.getSortFields();    
     SortBuilder<?>[] result = new SortBuilder[sortFields.size()];
     int i = 0;
     for (SortField sf : sortFields) {
+      
+      logger.info(">>> {}", JsonUtil.toPrettyJson(sf));
+      
       Path path = sf.getPath();
+      logger.info("path: \n{}", JsonUtil.toPrettyJson(path));
       nl.naturalis.nba.api.SortOrder order = sf.getSortOrder();
       if (path.equals(SORT_FIELD_SCORE)) {
         ScoreSortBuilder ssb = SortBuilders.scoreSort();
@@ -60,6 +68,7 @@ class SortFieldsTranslator {
         result[i++] = ssb;
       } else if (path.toString().equals("id")) {
         FieldSortBuilder fsb = SortBuilders.fieldSort("_uid");
+//        FieldSortBuilder fsb = SortBuilders.fieldSort("_id");
         fsb.order(order == NBA_DESC ? ES_DESC : ES_ASC);
         result[i++] = fsb;
       } else {
@@ -102,6 +111,7 @@ class SortFieldsTranslator {
         result[i++] = fsb;
       }
     }
+    logger.info("result: \n{}", JsonUtil.toPrettyJson(result));
     return result;
   }
 

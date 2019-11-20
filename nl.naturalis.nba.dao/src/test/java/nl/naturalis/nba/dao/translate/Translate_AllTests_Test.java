@@ -11,6 +11,13 @@ import org.junit.runners.Suite.SuiteClasses;
   ConditionCollectorTest.class,
   ConditionPreprocessorTest.class,
   ConditionTranslatorFactoryTest.class,
-  ConditionTranslatorTranslateTest.class
+  ConditionTranslatorTranslateTest.class,
+  EqualsConditionTranslatorTest.class,
+  EqualsIgnoreCaseConditionTranslatorTest.class,
+  ExploderTest.class,
+  InConditionTranslatorTest.class,
+  LikeConditionTranslatorTest.class,
+  MatchesConditionTranslatorTest.class,
+  ShapeInShapeConditionTranslatorTest.class
 })
 public class Translate_AllTests_Test {}

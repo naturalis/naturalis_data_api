@@ -1,102 +1,97 @@
 {
-  "from" : 0,
-  "size" : 10,
-  "query" : {
-    "bool" : {
-      "should" : [
+  "from": 0,
+  "size": 10,
+  "query": {
+    "bool": {
+      "should": [
         {
-          "match_none" : {
-            "boost" : 1.0
+          "match_none": {
+            "boost": 1.0
           }
         },
         {
-          "bool" : {
-            "must" : [
+          "bool": {
+            "must": [
               {
-                "nested" : {
-                  "query" : {
-                    "bool" : {
-                      "must" : [
+                "nested": {
+                  "query": {
+                    "bool": {
+                      "must": [
                         {
-                          "term" : {
-                            "identifications.defaultClassification.genus" : {
-                              "value" : "Alethe",
-                              "boost" : 1.0
+                          "term": {
+                            "identifications.defaultClassification.genus": {
+                              "value": "Alethe",
+                              "boost": 1.0
                             }
                           }
                         },
                         {
-                          "term" : {
-                            "identifications.defaultClassification.specificEpithet" : {
-                              "value" : "castanea",
-                              "boost" : 1.0
+                          "term": {
+                            "identifications.defaultClassification.specificEpithet": {
+                              "value": "castanea",
+                              "boost": 1.0
                             }
                           }
                         }
                       ],
-                      "disable_coord" : false,
-                      "adjust_pure_negative" : true,
-                      "boost" : 1.0
+                      "adjust_pure_negative": true,
+                      "boost": 1.0
                     }
                   },
-                  "path" : "identifications",
-                  "ignore_unmapped" : false,
-                  "score_mode" : "avg",
-                  "boost" : 1.0
+                  "path": "identifications",
+                  "ignore_unmapped": false,
+                  "score_mode": "avg",
+                  "boost": 1.0
                 }
               }
             ],
-            "disable_coord" : false,
-            "adjust_pure_negative" : true,
-            "boost" : 1.0
+            "adjust_pure_negative": true,
+            "boost": 1.0
           }
         },
         {
-          "bool" : {
-            "must" : [
+          "bool": {
+            "must": [
               {
-                "nested" : {
-                  "query" : {
-                    "bool" : {
-                      "must" : [
+                "nested": {
+                  "query": {
+                    "bool": {
+                      "must": [
                         {
-                          "term" : {
-                            "identifications.scientificName.genusOrMonomial" : {
-                              "value" : "Alethe",
-                              "boost" : 1.0
+                          "term": {
+                            "identifications.scientificName.genusOrMonomial": {
+                              "value": "Alethe",
+                              "boost": 1.0
                             }
                           }
                         },
                         {
-                          "term" : {
-                            "identifications.scientificName.specificEpithet" : {
-                              "value" : "castanea",
-                              "boost" : 1.0
+                          "term": {
+                            "identifications.scientificName.specificEpithet": {
+                              "value": "castanea",
+                              "boost": 1.0
                             }
                           }
                         }
                       ],
-                      "disable_coord" : false,
-                      "adjust_pure_negative" : true,
-                      "boost" : 1.0
+                      "adjust_pure_negative": true,
+                      "boost": 1.0
                     }
                   },
-                  "path" : "identifications",
-                  "ignore_unmapped" : false,
-                  "score_mode" : "avg",
-                  "boost" : 1.0
+                  "path": "identifications",
+                  "ignore_unmapped": false,
+                  "score_mode": "avg",
+                  "boost": 1.0
                 }
               }
             ],
-            "disable_coord" : false,
-            "adjust_pure_negative" : true,
-            "boost" : 1.0
+            "adjust_pure_negative": true,
+            "boost": 1.0
           }
         }
       ],
-      "disable_coord" : false,
-      "adjust_pure_negative" : true,
-      "boost" : 1.0
+      "adjust_pure_negative": true,
+      "boost": 1.0
     }
   }
 }

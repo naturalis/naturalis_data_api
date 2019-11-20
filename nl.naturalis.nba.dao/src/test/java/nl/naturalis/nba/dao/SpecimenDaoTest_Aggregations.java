@@ -34,6 +34,7 @@ import nl.naturalis.nba.api.SortField;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.mock.AggregationSpecimensMock;
+import nl.naturalis.nba.dao.util.es.ESUtil;
 
 /**
  * Class containing unit tests for the aggregation methods:
@@ -61,7 +62,7 @@ public class SpecimenDaoTest_Aggregations {
 
   @BeforeClass
   public static void before() {
-    logger.info("Starting tests");
+    logger.info("Starting tests");    
     deleteIndex(DocumentType.SPECIMEN);
     createIndex(DocumentType.SPECIMEN);
     /*
@@ -97,8 +98,11 @@ public class SpecimenDaoTest_Aggregations {
 
   @AfterClass
   public static void after() {
-    //logger.info("Test finished. Removing test specimens");
-    //deleteIndex(DocumentType.SPECIMEN);
+//    logger.info("Test finished. Removing test specimens");
+//    deleteIndex(DocumentType.SPECIMEN);
+    
+    ESUtil.truncate(DocumentType.SPECIMEN);
+    
   }
 
   /*

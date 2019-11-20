@@ -3,12 +3,14 @@ package nl.naturalis.nba.dao.translate;
 import static nl.naturalis.nba.api.ComparisonOperator.MATCHES;
 import static nl.naturalis.nba.dao.DaoTestUtil.queryEquals;
 import static nl.naturalis.nba.dao.translate.ConditionTranslatorFactory.getTranslator;
+
 import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
 
 import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -37,7 +39,6 @@ public class MatchesConditionTranslatorTest {
 		QueryCondition condition = new QueryCondition("firstName", MATCHES, "John");
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
-		//System.out.println(query);
 		assertTrue("01", query instanceof MatchQueryBuilder);
 		String file = "translate/search/MatchesConditionTranslatorTest__testTranslate_01.json";
 		assertTrue("02", queryEquals(query, file));
@@ -49,7 +50,6 @@ public class MatchesConditionTranslatorTest {
 		QueryCondition condition = new QueryCondition("firstName", MATCHES, null);
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
-		//System.out.println(query);
 		assertTrue("01", query instanceof MatchQueryBuilder);
 		String file = "translate/search/MatchesConditionTranslatorTest__testTranslate_01.json";
 		assertTrue("02", queryEquals(query, file));
@@ -61,7 +61,6 @@ public class MatchesConditionTranslatorTest {
 		QueryCondition condition = new QueryCondition("firstName", MATCHES, 7);
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
-		//System.out.println(query);
 		assertTrue("01", query instanceof MatchQueryBuilder);
 		String file = "translate/search/MatchesConditionTranslatorTest__testTranslate_03.json";
 		assertTrue("02", queryEquals(query, file));
@@ -73,7 +72,6 @@ public class MatchesConditionTranslatorTest {
 		QueryCondition condition = new QueryCondition("firstName", MATCHES, new Date());
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
-		//System.out.println(query);
 		assertTrue("01", query instanceof MatchQueryBuilder);
 		String file = "translate/search/MatchesConditionTranslatorTest__testTranslate_01.json";
 		assertTrue("02", queryEquals(query, file));

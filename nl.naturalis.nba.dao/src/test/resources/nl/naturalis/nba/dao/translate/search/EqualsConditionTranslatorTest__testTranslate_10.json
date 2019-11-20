@@ -51,13 +51,11 @@
                           }
                         }
                       ],
-                      "disable_coord" : false,
                       "adjust_pure_negative" : true,
                       "boost" : 1.0
                     }
                   }
                 ],
-                "disable_coord" : false,
                 "adjust_pure_negative" : true,
                 "boost" : 1.0
               }
@@ -93,25 +91,21 @@
                           }
                         }
                       ],
-                      "disable_coord" : false,
                       "adjust_pure_negative" : true,
                       "boost" : 1.0
                     }
                   }
                 ],
-                "disable_coord" : false,
                 "adjust_pure_negative" : true,
                 "boost" : 1.0
               }
             }
           ],
-          "disable_coord" : false,
           "adjust_pure_negative" : true,
           "boost" : 1.0
         }
       }
     ],
-    "disable_coord" : false,
     "adjust_pure_negative" : true,
     "boost" : 1.0
   }

@@ -5,6 +5,7 @@ import static nl.naturalis.nba.api.ComparisonOperator.NOT_EQUALS;
 import static nl.naturalis.nba.api.UnaryBooleanOperator.NOT;
 import static nl.naturalis.nba.dao.DaoTestUtil.queryEquals;
 import static nl.naturalis.nba.dao.translate.ConditionTranslatorFactory.getTranslator;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -12,6 +13,7 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.ExistsQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.TermQueryBuilder;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -44,7 +46,6 @@ public class EqualsConditionTranslatorTest {
 		QueryCondition condition = new QueryCondition("firstName", EQUALS, null);
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
-		//System.out.println(query);
 		assertTrue("01", query instanceof BoolQueryBuilder);
 		String file = "translate/search/EqualsConditionTranslatorTest__testTranslate_01.json";
 		assertTrue("02", queryEquals(query, file));
@@ -61,7 +62,6 @@ public class EqualsConditionTranslatorTest {
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		assertEquals("01", ct.getClass(), IsNotNullConditionTranslator.class);
 		QueryBuilder query = ct.translate();
-		//System.out.println(query);
 		assertEquals("02", query.getClass(), ExistsQueryBuilder.class);
 		String file = "translate/search/EqualsConditionTranslatorTest__testTranslate_02.json";
 		assertTrue("03", queryEquals(query, file));
@@ -77,7 +77,6 @@ public class EqualsConditionTranslatorTest {
 		QueryCondition condition = new QueryCondition(NOT, "firstName", EQUALS, null);
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
-		//System.out.println(query);
 		assertTrue("01", query instanceof BoolQueryBuilder);
 		String file = "translate/search/EqualsConditionTranslatorTest__testTranslate_03.json";
 		assertTrue("02", queryEquals(query, file));
@@ -94,7 +93,6 @@ public class EqualsConditionTranslatorTest {
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		assertEquals("01", ct.getClass(), IsNotNullConditionTranslator.class);
 		QueryBuilder query = ct.translate();
-		//System.out.println(query);
 		assertTrue("02", query instanceof BoolQueryBuilder);
 		String file = "translate/search/EqualsConditionTranslatorTest__testTranslate_04.json";
 		assertTrue("03", queryEquals(query, file));
@@ -110,7 +108,6 @@ public class EqualsConditionTranslatorTest {
 		QueryCondition condition = new QueryCondition("firstName", EQUALS, "Smith");
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
-		//System.out.println(query);
 		assertTrue("01", query instanceof TermQueryBuilder);
 		String file = "translate/search/EqualsConditionTranslatorTest__testTranslate_05.json";
 		assertTrue("02", queryEquals(query, file));
@@ -126,7 +123,6 @@ public class EqualsConditionTranslatorTest {
 		condition.and("lastName", EQUALS, "Smith");
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
-		//System.out.println(query);
 		assertTrue("01", query instanceof BoolQueryBuilder);
 		String file = "translate/search/EqualsConditionTranslatorTest__testTranslate_06.json";
 		assertTrue("02", queryEquals(query, file));
@@ -141,7 +137,6 @@ public class EqualsConditionTranslatorTest {
 		QueryCondition condition = new QueryCondition("firstName", NOT_EQUALS, "John");
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
-		//System.out.println(query);
 		assertTrue("01", query instanceof BoolQueryBuilder);
 		String file = "translate/search/EqualsConditionTranslatorTest__testTranslate_07.json";
 		assertTrue("02", queryEquals(query, file));
@@ -159,7 +154,6 @@ public class EqualsConditionTranslatorTest {
 		condition.and("favouritePet", NOT_EQUALS, "dog");
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
-		//System.out.println(query);
 		assertTrue("01", query instanceof BoolQueryBuilder);
 		String file = "translate/search/EqualsConditionTranslatorTest__testTranslate_08.json";
 		assertTrue("02", queryEquals(query, file));
@@ -177,7 +171,6 @@ public class EqualsConditionTranslatorTest {
 		condition.and("age", EQUALS, 40);
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
-		//System.out.println(query);
 		assertTrue("01", query instanceof BoolQueryBuilder);
 		String file = "translate/search/EqualsConditionTranslatorTest__testTranslate_09.json";
 		assertTrue("02", queryEquals(query, file));
@@ -193,8 +186,7 @@ public class EqualsConditionTranslatorTest {
 		isJohnSmith.and("lastName", EQUALS, "Smith");
 
 		QueryCondition inNetherlands = new QueryCondition("country", EQUALS, "Netherlands");
-		inNetherlands
-				.and(new QueryCondition("city", EQUALS, "Amsterdam").or("city", EQUALS, "Rotterdam"));
+		inNetherlands.and(new QueryCondition("city", EQUALS, "Amsterdam").or("city", EQUALS, "Rotterdam"));
 
 		QueryCondition inGermany = new QueryCondition("country", EQUALS, "Germany");
 		inGermany.and(new QueryCondition("city", EQUALS, "Berlin").or("city", EQUALS, "Hanover"));
@@ -203,7 +195,6 @@ public class EqualsConditionTranslatorTest {
 
 		ConditionTranslator ct = getTranslator(isJohnSmith, mappingInfo);
 		QueryBuilder query = ct.translate();
-		//System.out.println(query);
 		assertTrue("01", query instanceof BoolQueryBuilder);
 		String file = "translate/search/EqualsConditionTranslatorTest__testTranslate_10.json";
 		assertTrue("02", queryEquals(query, file));
@@ -219,7 +210,6 @@ public class EqualsConditionTranslatorTest {
 		condition.or("firstName", EQUALS, "Peter").or("firstName", EQUALS, "Mark");
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
-		//System.out.println(query);
 		assertTrue("01", query instanceof BoolQueryBuilder);
 		String file = "translate/search/EqualsConditionTranslatorTest__testTranslate_11.json";
 		assertTrue("02", queryEquals(query, file));
@@ -233,11 +223,9 @@ public class EqualsConditionTranslatorTest {
 	{
 		QueryCondition condition = new QueryCondition("firstName", EQUALS, "John");
 		condition.and("lastName", EQUALS, "Smith").and("favouriteFood", EQUALS, "Chinese");
-		condition.or("city", EQUALS, "Amsterdam").or("city", EQUALS, "Rotterdam").or("city", EQUALS,
-				"Leiden");
+		condition.or("city", EQUALS, "Amsterdam").or("city", EQUALS, "Rotterdam").or("city", EQUALS, "Leiden");
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
-		//System.out.println(query);
 		assertTrue("01", query instanceof BoolQueryBuilder);
 		String file = "translate/search/EqualsConditionTranslatorTest__testTranslate_12.json";
 		assertTrue("02", queryEquals(query, file));

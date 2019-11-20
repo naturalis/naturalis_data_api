@@ -1,63 +1,65 @@
 {
-  "from" : 0,
-  "size" : 10,
-  "query" : {
-    "bool" : {
-      "must" : [
+  "from": 0,
+  "size": 10,
+  "query": {
+    "bool": {
+      "must": [
         {
-          "nested" : {
-            "query" : {
-              "bool" : {
-                "must" : [
+          "nested": {
+            "query": {
+              "bool": {
+                "must": [
                   {
-                    "exists" : {
-                      "field" : "identifications.scientificName.genusOrMonomial",
-                      "boost" : 1.0
+                    "exists": {
+                      "field": "identifications.scientificName.genusOrMonomial",
+                      "boost": 1.0
                     }
                   },
                   {
-                    "exists" : {
-                      "field" : "identifications.scientificName.specificEpithet",
-                      "boost" : 1.0
+                    "exists": {
+                      "field": "identifications.scientificName.specificEpithet",
+                      "boost": 1.0
                     }
                   }
                 ],
-                "disable_coord" : false,
-                "adjust_pure_negative" : true,
-                "boost" : 1.0
+                "adjust_pure_negative": true,
+                "boost": 1.0
               }
             },
-            "path" : "identifications",
-            "ignore_unmapped" : false,
-            "score_mode" : "avg",
-            "boost" : 1.0
+            "path": "identifications",
+            "ignore_unmapped": false,
+            "score_mode": "avg",
+            "boost": 1.0
           }
         }
       ],
-      "disable_coord" : false,
-      "adjust_pure_negative" : true,
-      "boost" : 1.0
+      "adjust_pure_negative": true,
+      "boost": 1.0
     }
   },
-  "sort" : [
+  "sort": [
     {
-      "identifications.scientificName.genusOrMonomial" : {
-        "order" : "asc",
-        "mode" : "min",
-        "nested_filter" : {
-          "exists" : {
-            "field" : "identifications.scientificName.genusOrMonomial",
-            "boost" : 1.0
+      "identifications.scientificName.genusOrMonomial": {
+        "order": "asc",
+        "mode": "min",
+        "nested": {
+          "path": "identifications",
+          "filter": {
+            "exists": {
+              "field": "identifications.scientificName.genusOrMonomial",
+              "boost": 1.0
+            }
           }
-        },
-        "nested_path" : "identifications"
+        }
       }
     },
     {
-      "identifications.scientificName.specificEpithet" : {
-        "order" : "asc",
-        "mode" : "min",
-        "nested_path" : "identifications"
+      "identifications.scientificName.specificEpithet": {
+        "order": "asc",
+        "mode": "min",
+        "nested": {
+          "path": "identifications"
+        }
       }
     }
   ]

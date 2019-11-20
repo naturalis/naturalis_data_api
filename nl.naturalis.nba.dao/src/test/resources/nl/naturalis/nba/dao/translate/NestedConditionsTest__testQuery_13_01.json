@@ -1,93 +1,89 @@
 {
-  "from" : 0,
-  "size" : 10,
-  "query" : {
-    "bool" : {
-      "must" : [
+  "from": 0,
+  "size": 10,
+  "query": {
+    "bool": {
+      "must": [
         {
-          "match_all" : {
-            "boost" : 1.0
+          "match_all": {
+            "boost": 1.0
           }
         },
         {
-          "bool" : {
-            "should" : [
+          "bool": {
+            "should": [
               {
-                "nested" : {
-                  "query" : {
-                    "term" : {
-                      "identifications.defaultClassification.genus" : {
-                        "value" : "Alethe",
-                        "boost" : 1.0
+                "nested": {
+                  "query": {
+                    "term": {
+                      "identifications.defaultClassification.genus": {
+                        "value": "Alethe",
+                        "boost": 1.0
                       }
                     }
                   },
-                  "path" : "identifications",
-                  "ignore_unmapped" : false,
-                  "score_mode" : "avg",
-                  "boost" : 1.0
+                  "path": "identifications",
+                  "ignore_unmapped": false,
+                  "score_mode": "avg",
+                  "boost": 1.0
                 }
               },
               {
-                "nested" : {
-                  "query" : {
-                    "bool" : {
-                      "should" : [
+                "nested": {
+                  "query": {
+                    "bool": {
+                      "should": [
                         {
-                          "term" : {
-                            "identifications.scientificName.genusOrMonomial" : {
-                              "value" : "Alethe",
-                              "boost" : 1.0
+                          "term": {
+                            "identifications.scientificName.genusOrMonomial": {
+                              "value": "Alethe",
+                              "boost": 1.0
                             }
                           }
                         }
                       ],
-                      "disable_coord" : false,
-                      "adjust_pure_negative" : true,
-                      "boost" : 1.0
+                      "adjust_pure_negative": true,
+                      "boost": 1.0
                     }
                   },
-                  "path" : "identifications",
-                  "ignore_unmapped" : false,
-                  "score_mode" : "avg",
-                  "boost" : 1.0
+                  "path": "identifications",
+                  "ignore_unmapped": false,
+                  "score_mode": "avg",
+                  "boost": 1.0
                 }
               }
             ],
-            "disable_coord" : false,
-            "adjust_pure_negative" : true,
-            "boost" : 1.0
+            "adjust_pure_negative": true,
+            "boost": 1.0
           }
         },
         {
-          "nested" : {
-            "query" : {
-              "bool" : {
-                "must" : [
+          "nested": {
+            "query": {
+              "bool": {
+                "must": [
                   {
-                    "term" : {
-                      "identifications.defaultClassification.specificEpithet" : {
-                        "value" : "castanea",
-                        "boost" : 1.0
+                    "term": {
+                      "identifications.defaultClassification.specificEpithet": {
+                        "value": "castanea",
+                        "boost": 1.0
                       }
                     }
                   }
                 ],
-                "disable_coord" : false,
-                "adjust_pure_negative" : true,
-                "boost" : 1.0
+                "adjust_pure_negative": true,
+                "boost": 1.0
               }
             },
-            "path" : "identifications",
-            "ignore_unmapped" : false,
-            "score_mode" : "avg",
-            "boost" : 1.0
+            "path": "identifications",
+            "ignore_unmapped": false,
+            "score_mode": "avg",
+            "boost": 1.0
           }
         }
       ],
-      "disable_coord" : false,
-      "adjust_pure_negative" : true,
-      "boost" : 1.0
+      "adjust_pure_negative": true,
+      "boost": 1.0
     }
   }
 }

@@ -103,7 +103,8 @@ public class BulkIndexer<T extends IDocumentObject> {
 		
 		// ES7
 		BulkRequest bulkRequest = new BulkRequest();
-		bulkRequest.timeout(REQUEST_TIMEOUT);
+		//bulkRequest.timeout(REQUEST_TIMEOUT);
+		bulkRequest.timeout("6m");
 		
 		for (int i = 0; i < documents.size(); ++i) {
 		  IndexRequest indexRequest = new IndexRequest(index);

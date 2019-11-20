@@ -1,52 +1,50 @@
 {
-  "from" : 0,
-  "size" : 10,
-  "query" : {
-    "bool" : {
-      "must" : [
+  "from": 0,
+  "size": 10,
+  "query": {
+    "bool": {
+      "must": [
         {
-          "nested" : {
-            "query" : {
-              "bool" : {
-                "must" : [
+          "nested": {
+            "query": {
+              "bool": {
+                "must": [
                   {
-                    "range" : {
-                      "gatheringEvent.siteCoordinates.latitudeDecimal" : {
-                        "from" : 0,
-                        "to" : null,
-                        "include_lower" : false,
-                        "include_upper" : true,
-                        "boost" : 1.0
+                    "range": {
+                      "gatheringEvent.siteCoordinates.latitudeDecimal": {
+                        "from": 0,
+                        "to": null,
+                        "include_lower": false,
+                        "include_upper": true,
+                        "boost": 1.0
                       }
                     }
                   },
                   {
-                    "range" : {
-                      "gatheringEvent.siteCoordinates.longitudeDecimal" : {
-                        "from" : 100,
-                        "to" : null,
-                        "include_lower" : false,
-                        "include_upper" : true,
-                        "boost" : 1.0
+                    "range": {
+                      "gatheringEvent.siteCoordinates.longitudeDecimal": {
+                        "from": 100,
+                        "to": null,
+                        "include_lower": false,
+                        "include_upper": true,
+                        "boost": 1.0
                       }
                     }
                   }
                 ],
-                "disable_coord" : false,
-                "adjust_pure_negative" : true,
-                "boost" : 1.0
+                "adjust_pure_negative": true,
+                "boost": 1.0
               }
             },
-            "path" : "gatheringEvent.siteCoordinates",
-            "ignore_unmapped" : false,
-            "score_mode" : "avg",
-            "boost" : 1.0
+            "path": "gatheringEvent.siteCoordinates",
+            "ignore_unmapped": false,
+            "score_mode": "avg",
+            "boost": 1.0
           }
         }
       ],
-      "disable_coord" : false,
-      "adjust_pure_negative" : true,
-      "boost" : 1.0
+      "adjust_pure_negative": true,
+      "boost": 1.0
     }
   }
 }

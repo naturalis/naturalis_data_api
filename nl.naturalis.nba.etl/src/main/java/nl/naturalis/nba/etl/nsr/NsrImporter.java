@@ -59,7 +59,7 @@ public class NsrImporter {
 			}
 		}
 		catch (Throwable t) {
-			logger.error("CrsImportAll terminated unexpectedly!", t);
+			logger.error("NsrImport terminated unexpectedly!", t);
 			System.exit(1);
 		}
 		finally {

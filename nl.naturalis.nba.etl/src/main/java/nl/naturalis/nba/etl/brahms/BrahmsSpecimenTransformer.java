@@ -11,7 +11,6 @@ import static nl.naturalis.nba.etl.ETLConstants.SOURCE_INSTITUTION_ID;
 import static nl.naturalis.nba.etl.ETLUtil.getSpecimenPurl;
 import static nl.naturalis.nba.etl.MimeTypeCache.MEDIALIB_HTTP_URL;
 import static nl.naturalis.nba.etl.MimeTypeCache.MEDIALIB_HTTPS_URL;
-import static nl.naturalis.nba.etl.MimeTypeCache.MEDIALIB_URL_START;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.ACCESSION;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.CATEGORY;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.COLLECTOR;

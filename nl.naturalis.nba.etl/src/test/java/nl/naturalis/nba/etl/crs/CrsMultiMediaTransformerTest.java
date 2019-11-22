@@ -11,6 +11,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.lang.reflect.Field;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +26,7 @@ import nl.naturalis.nba.api.model.GatheringEvent;
 import nl.naturalis.nba.api.model.MultiMediaContentIdentification;
 import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.api.model.ScientificName;
+import nl.naturalis.nba.api.model.ServiceAccessPoint;
 import nl.naturalis.nba.api.model.SpecimenTypeStatus;
 import nl.naturalis.nba.api.model.VernacularName;
 
@@ -90,32 +92,61 @@ public class CrsMultiMediaTransformerTest {
       CommonReflectionUtil.setField(AbstractTransformer.class, crsMultiMediaTransformer, "input", extracted);
       Object returned = CommonReflectionUtil.callMethod(null, null, crsMultiMediaTransformer, "doTransform");
       transformed = (List<MultiMediaObject>) returned;
-      MultiMediaObject sp = transformed.get(0);
 
+      MultiMediaObject sp = transformed.get(0); // Just test the first one
+      String id = "RMNH.INS.867435_1";
+      
+      int expectedNumberOfMmObjects = 2;
+      assertEquals("01", expectedNumberOfMmObjects, transformed.size());
+      
+      // Test the 1st Mm object
       MultiMediaObject expectedMmo = new MultiMediaObject();
-      expectedMmo.setId("RMNH.INS.867435@CRS");
+      expectedMmo.setId(id.concat("@CRS"));
       expectedMmo.setSourceInstitutionID("Naturalis Biodiversity Center");
       expectedMmo.setSourceID("CRS");
       expectedMmo.setOwner("Naturalis Biodiversity Center");
-      expectedMmo.setUnitID("RMNH.INS.867435");
+      expectedMmo.setUnitID(id);
       expectedMmo.setLicense(CC0_10);
       expectedMmo.setCollectionType("Diptera");
-      expectedMmo.setTitle("RMNH.INS.867435");
+      expectedMmo.setTitle(id);
       expectedMmo.setAssociatedSpecimenReference("RMNH.INS.867435@CRS");
       expectedMmo.setMultiMediaPublic(true);
+      
+      List<ServiceAccessPoint> serviceAccessPoints = new ArrayList<>();
+      URI expectedUri = URI.create("https://medialib.naturalis.nl/file/id/RMNH.INS.867435_1/format/large");
+      String expectedFormat = "image/jpeg";
+      String expectedVariant = "ac:GoodQuality";
+      serviceAccessPoints.add(new ServiceAccessPoint(expectedUri, expectedFormat, expectedVariant));
+      expectedMmo.setServiceAccessPoints(serviceAccessPoints);
 
-      assertNotNull("01", sp);
-      assertEquals("02", expectedMmo.getId(), sp.getId());
-      assertEquals("03", expectedMmo.getSourceInstitutionID(), sp.getSourceInstitutionID());
-      assertEquals("04", expectedMmo.getSourceID(), sp.getSourceID());
-      assertEquals("05", expectedMmo.getOwner(), sp.getOwner());
-      assertEquals("06", expectedMmo.getUnitID(), sp.getUnitID());
-      assertEquals("07", expectedMmo.getLicense(), sp.getLicense());
-      assertEquals("08", expectedMmo.getCollectionType(), sp.getCollectionType());
-      assertEquals("09", expectedMmo.getTitle(), sp.getTitle());
-      assertEquals("10", expectedMmo.getAssociatedSpecimenReference(), sp.getAssociatedSpecimenReference());
-      assertEquals("11", expectedMmo.isMultiMediaPublic(), sp.isMultiMediaPublic());
+      assertNotNull("02", sp);
+      assertEquals("03", expectedMmo.getId(), sp.getId());
+      assertEquals("04", expectedMmo.getSourceInstitutionID(), sp.getSourceInstitutionID());
+      assertEquals("05", expectedMmo.getSourceID(), sp.getSourceID());
+      assertEquals("06", expectedMmo.getOwner(), sp.getOwner());
+      assertEquals("07", expectedMmo.getUnitID(), sp.getUnitID());
+      assertEquals("08", expectedMmo.getLicense(), sp.getLicense());
+      assertEquals("09", expectedMmo.getCollectionType(), sp.getCollectionType());
+      assertEquals("10", expectedMmo.getTitle(), sp.getTitle());
+      assertEquals("11", expectedMmo.getAssociatedSpecimenReference(), sp.getAssociatedSpecimenReference());
+      assertEquals("12", expectedMmo.isMultiMediaPublic(), sp.isMultiMediaPublic());
+      assertEquals("13", expectedMmo.getServiceAccessPoints().get(0).getAccessUri(), sp.getServiceAccessPoints().get(0).getAccessUri());
+      assertEquals("14", expectedMmo.getServiceAccessPoints().get(0).getFormat(), sp.getServiceAccessPoints().get(0).getFormat());
+      assertEquals("15", expectedMmo.getServiceAccessPoints().get(0).getVariant(), sp.getServiceAccessPoints().get(0).getVariant());
+      
+      // Test the ServiceAccessPoint of the 2nd Mm object
+      expectedMmo = new MultiMediaObject();
+      serviceAccessPoints.clear();
+      expectedUri = URI.create("https://medialib.naturalis.nl/file/id/RMNH.INS.867435_2/format/large");
+      expectedFormat = "image/jpeg";
+      expectedVariant = "ac:GoodQuality";
+      serviceAccessPoints.add(new ServiceAccessPoint(expectedUri, expectedFormat, expectedVariant));
+      expectedMmo.setServiceAccessPoints(serviceAccessPoints);
 
+      sp = transformed.get(1);
+      assertEquals("16", expectedMmo.getServiceAccessPoints().get(0).getAccessUri(), sp.getServiceAccessPoints().get(0).getAccessUri());
+      assertEquals("17", expectedMmo.getServiceAccessPoints().get(0).getFormat(), sp.getServiceAccessPoints().get(0).getFormat());
+      assertEquals("18", expectedMmo.getServiceAccessPoints().get(0).getVariant(), sp.getServiceAccessPoints().get(0).getVariant());
     }
   }
 

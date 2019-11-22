@@ -9,6 +9,7 @@ import static nl.naturalis.nba.etl.ETLConstants.SOURCE_INSTITUTION_ID;
 import static nl.naturalis.nba.etl.ETLUtil.getTestGenera;
 import static nl.naturalis.nba.etl.TransformUtil.sortIdentificationsPreferredFirst;
 import static nl.naturalis.nba.etl.MimeTypeCache.MEDIALIB_URL_START;
+import static nl.naturalis.nba.etl.MimeTypeCache.MEDIALIB_HTTP_URL;
 import static nl.naturalis.nba.etl.MimeTypeCache.MEDIALIB_HTTPS_URL;
 import static nl.naturalis.nba.utils.StringUtil.rpad;
 import static nl.naturalis.nba.etl.enrich.EnrichmentUtil.createEnrichments;
@@ -316,15 +317,26 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
       int n = 0;
       for (Element e : fileUriElems) {
         if (n >= multimediaPublic.size() && multimediaPublic.get(n++).getTextContent().trim().equals("0")) continue;
+        
+        // Retrieve uri 
         String uri = e.getTextContent().trim();
+        if (uri == null || uri.length() == 0) continue;
         
         // Change http urls to https urls, but leave the rest as they are 
-        if (uri.startsWith(MEDIALIB_URL_START) && !uri.startsWith(MEDIALIB_HTTPS_URL)) {
-          uri = MEDIALIB_HTTPS_URL.concat(uri.substring(MEDIALIB_URL_START.length()));
-        }        
+        if (uri.startsWith(MEDIALIB_HTTP_URL) && !uri.startsWith(MEDIALIB_HTTPS_URL)) {
+          uri = uri.replace(MEDIALIB_HTTP_URL, MEDIALIB_HTTPS_URL);
+        }
         
-        String mimeType = mimetypeCache.getMimeType(objectID);
-        if (uri != null && uri.length() > 0 && mimeType != null) {
+        // Extract medialib ID
+        String medialibId = uri.substring(MEDIALIB_URL_START.length());
+        int x = medialibId.indexOf('/');
+        if (x != -1) {
+          medialibId = medialibId.substring(0, x);
+        }
+        
+        // Retrieve mime type
+        String mimeType = mimetypeCache.getMimeType(medialibId);
+        if (mimeType != null) {
           serviceAccessPoints.add( new ServiceAccessPoint(uri, mimeType, DEFAULT_IMAGE_QUALITY) );         
         } else if (uri.length() > 0 && mimeType == null) {
           logger.error("Multimedia URI from object {} has no mime type! URI has been skipped: {}", objectID, uri);

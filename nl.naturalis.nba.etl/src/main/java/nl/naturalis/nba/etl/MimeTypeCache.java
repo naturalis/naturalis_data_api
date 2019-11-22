@@ -17,8 +17,14 @@ public interface MimeTypeCache extends Closeable {
 	 * Defines the endpoint for medialib resource up to the ID part of the URL:
 	 * {@code "http://medialib.naturalis.nl/file/id/"}.
 	 */
-	String MEDIALIB_URL_START = "http://medialib.naturalis.nl/file/id/";
+	String MEDIALIB_URL_START = "https://medialib.naturalis.nl/file/id/";
 
+  /**
+   * Defines the legacy endpoint for medialib resource up to the ID part of the URL:
+   * {@code "http://medialib.naturalis.nl/file/id/"}.
+   */
+  String MEDIALIB_HTTP_URL = "http://medialib.naturalis.nl/file/id/";
+	
 	 /**
    * Defines the endpoint for medialib resource up to the ID part of the URL:
    * {@code "https://medialib.naturalis.nl/file/id/"}.

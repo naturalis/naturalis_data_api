@@ -8,6 +8,7 @@ import static nl.naturalis.nba.etl.ETLConstants.LICENCE_TYPE;
 import static nl.naturalis.nba.etl.ETLConstants.SOURCE_INSTITUTION_ID;
 import static nl.naturalis.nba.etl.ETLUtil.getTestGenera;
 import static nl.naturalis.nba.etl.MimeTypeCache.MEDIALIB_URL_START;
+import static nl.naturalis.nba.etl.MimeTypeCache.MEDIALIB_HTTP_URL;
 import static nl.naturalis.nba.etl.MimeTypeCache.MEDIALIB_HTTPS_URL;
 import static nl.naturalis.nba.etl.TransformUtil.getSystemClassification;
 import static nl.naturalis.nba.etl.normalize.Normalizer.NOT_MAPPED;
@@ -513,14 +514,13 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 			return null;
 		}
 		MultiMediaInfo info = new MultiMediaInfo();
+		
+		// Change http urls to https urls for legacy reasons 
+		if (url.startsWith(MEDIALIB_HTTP_URL) &! url.startsWith(MEDIALIB_HTTPS_URL)) {
+		  url = url.replace(MEDIALIB_HTTP_URL, MEDIALIB_HTTPS_URL);
+		}
 		if (url.startsWith(MEDIALIB_URL_START)) {
-			/*
-			 * HACK: attempt to repair bad medialib URLs where
-			 * MEDIALIB_URL_START occurs twice at the beginning
-			 */
-			if (url.substring(MEDIALIB_URL_START.length()).startsWith(MEDIALIB_URL_START)) {
-				url = url.substring(MEDIALIB_URL_START.length());
-			}
+		  
 			// Extract medialib ID
 			String medialibId = url.substring(MEDIALIB_URL_START.length());
 			int x = medialibId.indexOf('/');

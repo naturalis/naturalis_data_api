@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.logging.log4j.Logger;
+import org.apache.lucene.search.TotalHits;
 import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
@@ -38,7 +39,7 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.rest.RestStatus;
 import org.elasticsearch.search.SearchHit;
-
+import org.elasticsearch.search.SearchHits;
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.IDocumentObject;
@@ -139,13 +140,20 @@ public class ESUtil {
     try {
       response = esClient().search(request, RequestOptions.DEFAULT);
       if (logger.isDebugEnabled()) {
-        // logger.debug("Documents found: {}", response.getHits().getTotalHits());
-        logger.debug("Documents found: {}", response.getHits().getHits().length);
+        SearchHits hits = response.getHits();
+        TotalHits totalHits = hits.getTotalHits();
+        long numHits = totalHits.value;
+        logger.debug("numHits: {}", numHits);
+        
+        TotalHits.Relation relation = totalHits.relation;
+        logger.debug("relation: \n{}", JsonUtil.toPrettyJson(relation));
+        
+        logger.debug("Documents found: {}", response.getHits().getTotalHits().value);
       }
     } catch (IOException e) {
       // TODO Auto-generated catch block
       logger.error("Error while execuring the search request:\n" + JsonUtil.toPrettyJson(request.source()));
-      e.printStackTrace();
+      //e.printStackTrace();
       throw new DaoException("Failed to execute the search request: " + e.getMessage()) ;
     }
     return response;
@@ -727,7 +735,9 @@ public class ESUtil {
 
     // ES7
     RestHighLevelClient client = ESClientManager.getInstance().getClient();
+    
     Collection<T> batch = extractor.nextBatch();
+    
     while (batch != null) {
       BulkRequest request = new BulkRequest();
       for (T obj : batch) {
@@ -768,7 +778,7 @@ public class ESUtil {
     qs.setSize(1000);
     qs.addCondition(new QueryCondition("sourceSystem.code", "=", ss.getCode()));
     
-    logger.info(">>>>>>>>>>>>>>>>\n{}", JsonUtil.toPrettyJson(qs));
+    logger.info(">>> truncate: \n{}", JsonUtil.toPrettyJson(qs));
     
     DirtyDocumentIterator<T> extractor = new DirtyDocumentIterator<>(dt, qs);
     String index = dt.getIndexInfo().getName();
@@ -790,24 +800,31 @@ public class ESUtil {
     // batch = extractor.nextBatch();
     // }
 
+    logger.info("Let' start deleting documents ..."); // There's something wrong here. We never get here!!!
+    
     // ES7
     while (batch != null) {
       BulkRequest request = new BulkRequest();
+      logger.info("> batch size: {}", batch.size());
       for (T obj : batch) {
+        // logger.info("> added doc with id: {}", obj.getId());
         request.add(new DeleteRequest(index, obj.getId()));
       }
+      logger.info("> bulk set ready for deletion: {}", request.numberOfActions());
       BulkResponse response;
       try {
         response = client.bulk(request, RequestOptions.DEFAULT);
         if (response.hasFailures()) {
           throw new DaoException("Error while deleting documents from " + type);
         }
+        logger.info("Bulk action deleted {} documents", response.getItems().length);
       } catch (IOException e) {
         // TODO Auto-generated catch block
         // e.printStackTrace();
         throw new DaoException(String.format("Error while deleting documents from index \"%s\": %s",
             index, e.getMessage()));
       }
+      logger.info("Bulk set deleted. Ready for new batch ...");
       batch = extractor.nextBatch();
     }
     refreshIndex(dt);

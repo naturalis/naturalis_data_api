@@ -18,6 +18,6 @@ import org.junit.runners.Suite.SuiteClasses;
   InConditionTranslatorTest.class,
   LikeConditionTranslatorTest.class,
   MatchesConditionTranslatorTest.class,
-  ShapeInShapeConditionTranslatorTest.class
+  //ShapeInShapeConditionTranslatorTest.class
 })
 public class Translate_AllTests_Test {}

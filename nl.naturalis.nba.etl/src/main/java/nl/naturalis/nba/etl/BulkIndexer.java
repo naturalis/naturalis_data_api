@@ -15,7 +15,6 @@ import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.common.xcontent.XContentType;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -37,32 +36,50 @@ public class BulkIndexer<T extends IDocumentObject> {
 		this.dt = dt;
 	}
 
-	public void index(Collection<T> documents) throws BulkIndexException
-	{
-		ArrayList<T> objs;
-		if (documents.getClass() == ArrayList.class) {
-			objs = (ArrayList<T>) documents;
-		}
-		else {
-			objs = new ArrayList<>(documents);
-		}
-		String[] ids = new String[objs.size()];
-		/*
-		 * For some deeply mysterious reason it seems we need two separate
-		 * loops, otherwise objs.get(i).getId() returns null where it really
-		 * really shouldn't:
-		 */
-		for (int i = 0; i < objs.size(); i++) {
-			ids[i] = objs.get(i).getId();
-			objs.get(i).setId(null);
-		}
-		index(objs, Arrays.asList(ids), null);
-		for (int i = 0; i < objs.size(); i++) {
-			objs.get(i).setId(ids[i]);
-		}
-	}
+//	public void index(Collection<T> documents) throws BulkIndexException
+//	{
+//		ArrayList<T> objs;
+//		if (documents.getClass() == ArrayList.class) {
+//			objs = (ArrayList<T>) documents;
+//		}
+//		else {
+//			objs = new ArrayList<>(documents);
+//		}
+//		String[] ids = new String[objs.size()];
+//		/*
+//		 * For some deeply mysterious reason it seems we need two separate
+//		 * loops, otherwise objs.get(i).getId() returns null where it really
+//		 * really shouldn't:
+//		 */
+//		for (int i = 0; i < objs.size(); i++) {
+//			ids[i] = objs.get(i).getId();
+//			objs.get(i).setId(null);
+//		}
+//		index(objs, Arrays.asList(ids));
+//		for (int i = 0; i < objs.size(); i++) {
+//			objs.get(i).setId(ids[i]);
+//		}
+//	}
 
-	public void index(List<T> documents, List<String> ids, List<String> parentIds)
+	 public void index(Collection<T> documents) throws BulkIndexException
+	  {
+	    ArrayList<T> objs;
+	    if (documents.getClass() == ArrayList.class) {
+	      objs = (ArrayList<T>) documents;
+	    }
+	    else {
+	      objs = new ArrayList<>(documents);
+	    }
+	    String[] ids = new String[objs.size()];
+	    for (int i = 0; i < objs.size(); i++) {
+	      ids[i] = objs.get(i).getId();
+	      objs.get(i).setId(null);
+	    }
+	    index(objs, Arrays.asList(ids));
+	  }
+
+	
+	public void index(List<T> documents, List<String> ids)
 			throws BulkIndexException
 	{
 		if (documents.size() == 0) {
@@ -103,21 +120,17 @@ public class BulkIndexer<T extends IDocumentObject> {
 		
 		// ES7
 		BulkRequest bulkRequest = new BulkRequest();
-		//bulkRequest.timeout(REQUEST_TIMEOUT);
-		bulkRequest.timeout("6m");
+		bulkRequest.timeout(REQUEST_TIMEOUT);
+		// bulkRequest.timeout(TimeValue.ZERO);
+		// bulkRequest.setRefreshPolicy(WriteRequest.RefreshPolicy.WAIT_UNTIL);
 		
 		for (int i = 0; i < documents.size(); ++i) {
 		  IndexRequest indexRequest = new IndexRequest(index);
 		  try {
-		    
 		    if (ids != null) {
 		      indexRequest.id(ids.get(i));
 		    }		    
-		    // TODO: parentIds ???
-		    
 		    indexRequest.source(om.writeValueAsBytes(documents.get(i)), XContentType.JSON);		    
-        bulkRequest.add(indexRequest);
-        
       } catch (JsonProcessingException e) {
         throw new DaoException(e);
       }
@@ -143,7 +156,7 @@ public class BulkIndexer<T extends IDocumentObject> {
     } catch (IOException e) {
       // TODO Auto-generated catch block
       // e.printStackTrace();
-      throw new ETLRuntimeException("Failed to execute a bulk index: " + e.getMessage());
+      throw new ETLRuntimeException("Failed to execute a bulk index: " + e.getMessage() + " - " + e.getClass().getName());
     }
 	}
 

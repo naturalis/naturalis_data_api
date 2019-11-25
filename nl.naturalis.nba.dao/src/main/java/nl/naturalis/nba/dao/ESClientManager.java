@@ -6,13 +6,16 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import org.apache.http.HttpHost;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.config.RequestConfig.Builder;
 import org.apache.logging.log4j.Logger;
 
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestHighLevelClient;
-
+import org.elasticsearch.common.unit.TimeValue;
 import nl.naturalis.nba.dao.exception.ConnectionFailureException;
 import nl.naturalis.nba.utils.ConfigObject;
 
@@ -76,7 +79,23 @@ public class ESClientManager {
     if (client == null) {
       logger.info("Connecting to Elasticsearch cluster");      
       HttpHost[] hosts = getHosts();
-      client = new RestHighLevelClient(RestClient.builder(hosts));
+//      client = new RestHighLevelClient(RestClient.builder(hosts));
+
+//      or (more elaborate):
+      RestClientBuilder builder = RestClient.builder(hosts);
+      builder.setRequestConfigCallback(
+          new RestClientBuilder.RequestConfigCallback() {
+            @Override
+            public RequestConfig.Builder customizeRequestConfig(
+                RequestConfig.Builder requestConfigBuilder) {
+                  return requestConfigBuilder
+                    .setConnectTimeout(5000)
+                    .setSocketTimeout(0);
+            }
+          }
+      );
+      client = new RestHighLevelClient(builder);
+      
       logger.info("Connected");
     }
     ping();

@@ -3,6 +3,7 @@ package nl.naturalis.nba.dao.util.es;
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static nl.naturalis.nba.dao.util.es.ESUtil.executeSearchRequest;
 import static nl.naturalis.nba.dao.util.es.ESUtil.toDocumentObject;
+
 import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.SortField;
@@ -39,7 +41,7 @@ public class DirtyDocumentIterator<T extends IDocumentObject> implements IDocume
 	private final DocumentType<T> dt;
 	private final QuerySpec qs;
 
-	private String lastUid;    // The "search after" value
+	private Object[] lastId;   // The "search after" value
 	private long size;         // Total number of documents to iterate over
 	private long docCounter;   // Counts documents across batches
 	private SearchHit[] batch; // The batch
@@ -165,7 +167,7 @@ public class DirtyDocumentIterator<T extends IDocumentObject> implements IDocume
 		SearchResponse response = executeSearchRequest(request);
 		batch = response.getHits().getHits();
 		if (batch.length > 0) {
-			lastUid = dt.getName() + '#' + batch[batch.length - 1].getId();
+      lastId = batch[batch.length - 1].getSortValues();
 		}
 		size = response.getHits().getTotalHits().value;
 		qs.setFrom(null); // The from-value can only be used in the first batch
@@ -187,12 +189,13 @@ public class DirtyDocumentIterator<T extends IDocumentObject> implements IDocume
 			throw new DaoException(e);
 		}
 		SearchSourceBuilder searchSourceBuilder = (request.source() == null) ? new SearchSourceBuilder() : request.source();
-		searchSourceBuilder.searchAfter(new String[] { lastUid });
+		searchSourceBuilder.searchAfter(lastId);
 		request.source(searchSourceBuilder);
+		
 		SearchResponse response = executeSearchRequest(request);
 		batch = response.getHits().getHits();
 		if (batch.length > 0) {
-			lastUid = dt.getName() + '#' + batch[batch.length - 1].getId();
+		  lastId = batch[batch.length - 1].getSortValues();
 		}
 		batchIndex = 0;
 	}

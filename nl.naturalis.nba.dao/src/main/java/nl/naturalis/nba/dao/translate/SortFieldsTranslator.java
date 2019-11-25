@@ -2,11 +2,11 @@ package nl.naturalis.nba.dao.translate;
 
 import static nl.naturalis.nba.api.LogicalOperator.OR;
 import static nl.naturalis.nba.api.SortField.SORT_FIELD_SCORE;
-import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static nl.naturalis.nba.dao.translate.ConditionTranslatorFactory.getTranslator;
+
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.logging.log4j.Logger;
+
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.NestedSortBuilder;
@@ -14,6 +14,7 @@ import org.elasticsearch.search.sort.ScoreSortBuilder;
 import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortMode;
+
 import nl.naturalis.nba.api.InvalidConditionException;
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.NoSuchFieldException;
@@ -24,14 +25,10 @@ import nl.naturalis.nba.api.SortField;
 import nl.naturalis.nba.common.es.map.ESField;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.common.es.map.SimpleField;
-import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.DocumentType;
 
 class SortFieldsTranslator {
   
-  @SuppressWarnings("unused")
-  private static final Logger logger = getLogger(SortFieldsTranslator.class);
-
   private static final org.elasticsearch.search.sort.SortOrder ES_ASC = org.elasticsearch.search.sort.SortOrder.ASC;
   private static final org.elasticsearch.search.sort.SortOrder ES_DESC = org.elasticsearch.search.sort.SortOrder.DESC;
 
@@ -47,19 +44,12 @@ class SortFieldsTranslator {
   }
 
   SortBuilder<?>[] translate() throws InvalidQueryException {
-    
-    logger.info("SortFieldsBuilder: \n{}", JsonUtil.toPrettyJson(querySpec));
-    
     MappingInfo<?> mappingInfo = new MappingInfo<>(dt.getMapping());
     List<SortField> sortFields = querySpec.getSortFields();    
     SortBuilder<?>[] result = new SortBuilder[sortFields.size()];
     int i = 0;
     for (SortField sf : sortFields) {
-      
-      logger.info(">>> {}", JsonUtil.toPrettyJson(sf));
-      
       Path path = sf.getPath();
-      logger.info("path: \n{}", JsonUtil.toPrettyJson(path));
       nl.naturalis.nba.api.SortOrder order = sf.getSortOrder();
       if (path.equals(SORT_FIELD_SCORE)) {
         ScoreSortBuilder ssb = SortBuilders.scoreSort();
@@ -67,9 +57,7 @@ class SortFieldsTranslator {
         ssb.order(order == NBA_ASC ? ES_ASC : ES_DESC);
         result[i++] = ssb;
       } else if (path.toString().equals("id")) {
-        FieldSortBuilder fsb = SortBuilders.fieldSort("_uid");
-//        FieldSortBuilder fsb = SortBuilders.fieldSort("_id");
-        fsb.order(order == NBA_DESC ? ES_DESC : ES_ASC);
+        FieldSortBuilder fsb = SortBuilders.fieldSort("_id");
         result[i++] = fsb;
       } else {
         FieldSortBuilder fsb = SortBuilders.fieldSort(path.toString());
@@ -111,7 +99,6 @@ class SortFieldsTranslator {
         result[i++] = fsb;
       }
     }
-    logger.info("result: \n{}", JsonUtil.toPrettyJson(result));
     return result;
   }
 

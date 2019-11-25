@@ -14,6 +14,7 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.geojson.LngLatAlt;
 import org.geojson.Polygon;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import nl.naturalis.nba.api.InvalidConditionException;
@@ -37,6 +38,7 @@ public class ShapeInShapeConditionTranslatorTest {
 		mappingInfo = new MappingInfo<>(m);
 	}
 
+	@Ignore
 	@Test
 	public void testTranslate_01() throws InvalidConditionException
 	{
@@ -61,6 +63,7 @@ public class ShapeInShapeConditionTranslatorTest {
 	/*
 	 * Test with NOT_IN
 	 */
+	@Ignore
 	@Test
 	public void testTranslate_02() throws InvalidConditionException
 	{

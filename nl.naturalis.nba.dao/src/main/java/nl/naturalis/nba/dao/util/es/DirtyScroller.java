@@ -71,7 +71,7 @@ public class DirtyScroller implements IScroller {
 		QuerySpecTranslator qst = new QuerySpecTranslator(querySpec, documentType);
 		request = qst.translate();
 		SearchSourceBuilder searchSourceBuilder = (request.source() == null) ? new SearchSourceBuilder() : request.source();
-		searchSourceBuilder.sort("_uid", SortOrder.DESC);
+		searchSourceBuilder.sort("_id", SortOrder.DESC);
 		request.source(searchSourceBuilder);
 	}
 
@@ -85,7 +85,6 @@ public class DirtyScroller implements IScroller {
 		int size = this.size;
 		int to = from + size;
 		int i = 0;
-		String uidStart = dt.getName() + '#';
 		SCROLL_LOOP: do {
 			SearchResponse response = executeSearchRequest(request);
 			SearchHit[] hits = response.getHits().getHits();
@@ -107,9 +106,9 @@ public class DirtyScroller implements IScroller {
 				i += 1;
 			}
 			
-			String uid = uidStart + hits[hits.length - 1].getId();
+			String lastId = hits[hits.length - 1].getId();
 			SearchSourceBuilder sourceBuilder = (request.source() == null) ? new SearchSourceBuilder() : request.source();
-			sourceBuilder.searchAfter(new Object[] { uid });
+			sourceBuilder.searchAfter(new Object[] { lastId });
 			request.source(sourceBuilder);
 		} while (true);
 	}

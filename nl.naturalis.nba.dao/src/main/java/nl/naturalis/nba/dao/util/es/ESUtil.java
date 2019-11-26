@@ -15,6 +15,7 @@ import java.util.Set;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.lucene.search.TotalHits;
+
 import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
@@ -32,6 +33,8 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.support.master.AcknowledgedResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.client.core.CountRequest;
+import org.elasticsearch.client.core.CountResponse;
 import org.elasticsearch.client.indices.CreateIndexRequest;
 import org.elasticsearch.client.indices.PutMappingRequest;
 import org.elasticsearch.common.bytes.BytesReference;
@@ -40,6 +43,7 @@ import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.rest.RestStatus;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
+
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.IDocumentObject;
@@ -112,6 +116,21 @@ public class ESUtil {
   }
 
   /**
+   * Prepares a new count request for the specified document type.
+   * 
+   * @param dt
+   * @return
+   */
+  public static CountRequest newCountRequest(DocumentType<?> dt) {
+    String index = dt.getIndexInfo().getName();
+    String type = dt.getName();
+    if (logger.isDebugEnabled()) {
+      logger.debug("New count request: {}/{}", index, type);
+    }
+    return new CountRequest(index);
+  }
+  
+  /**
    * Executes the specified search request.
    * 
    * @param request
@@ -157,6 +176,19 @@ public class ESUtil {
       throw new DaoException("Failed to execute the search request: " + e.getMessage()) ;
     }
     return response;
+  }
+  
+  public static CountResponse executeCountRequest(CountRequest request)
+  {
+    CountResponse countResponse = null;
+    try {
+      countResponse = esClient().count(request, RequestOptions.DEFAULT);
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      // e.printStackTrace();
+      throw new DaoException("Failed to execute the count request: " + e.getMessage()) ;
+    }
+    return countResponse;
   }
 
   /**

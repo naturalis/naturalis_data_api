@@ -7,6 +7,8 @@ import static nl.naturalis.nba.dao.aggregation.AggregationType.COUNT_DISTINCT_VA
 import static nl.naturalis.nba.dao.aggregation.AggregationType.COUNT_DISTINCT_VALUES_PER_GROUP;
 import static nl.naturalis.nba.dao.aggregation.AggregationType.GET_DISTINCT_VALUES;
 import static nl.naturalis.nba.dao.aggregation.AggregationType.GET_DISTINCT_VALUES_PER_GROUP;
+
+import static nl.naturalis.nba.dao.util.es.ESUtil.executeCountRequest;
 import static nl.naturalis.nba.dao.util.es.ESUtil.executeSearchRequest;
 import static nl.naturalis.nba.dao.util.es.ESUtil.newSearchRequest;
 import static nl.naturalis.nba.dao.util.es.ESUtil.toDocumentObject;
@@ -22,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.logging.log4j.Logger;
-
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
@@ -33,6 +34,8 @@ import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.core.CountRequest;
+import org.elasticsearch.client.core.CountResponse;
 import org.elasticsearch.common.bytes.BytesReference;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.IdsQueryBuilder;
@@ -195,7 +198,7 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
       logger.debug(printCall("query", querySpec));
     }
     QuerySpecTranslator translator = new QuerySpecTranslator(querySpec, dt);
-    return createSearchResult(translator.translate());
+    return createSearchResult(translator);
   }
 
   @Override
@@ -203,9 +206,16 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
     if (logger.isDebugEnabled()) {
       logger.debug(printCall("count", querySpec));
     }
-    @SuppressWarnings("unchecked")
-    AggregationQuery<T, Long> aggregationQuery = (AggregationQuery<T, Long>) createAggregationQuery(COUNT, dt, null, null, querySpec);
-    return aggregationQuery.getResult().longValue();
+    // ES 5
+//    @SuppressWarnings("unchecked")
+//    AggregationQuery<T, Long> aggregationQuery = (AggregationQuery<T, Long>) createAggregationQuery(COUNT, dt, null, null, querySpec);
+//    return aggregationQuery.getResult().longValue();    
+
+    QuerySpecTranslator translator = new QuerySpecTranslator(querySpec, dt);
+    CountRequest request = translator.translateCountRequest();
+    CountResponse response = executeCountRequest(request);
+    return response.getCount();
+  
   }
 
   @SuppressWarnings("unchecked")
@@ -379,13 +389,18 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
     return items;
   }
 
-  private QueryResult<T> createSearchResult(SearchRequest request) {
+  private QueryResult<T> createSearchResult(QuerySpecTranslator translator) throws InvalidQueryException {
+    SearchRequest request = translator.translate();
     SearchResponse response = executeSearchRequest(request);
     QueryResult<T> result = new QueryResult<>();
+    result.setResultSet(createItems(response));
+
     //result.setTotalSize(response.getHits().getTotalHits());
     // TODO: migrate to ES7
-    result.setTotalSize(response.getHits().getTotalHits().value);
-    result.setResultSet(createItems(response));
+    // result.setTotalSize(response.getHits().getTotalHits().value);
+    CountRequest countRequest = translator.translateCountRequest();
+    CountResponse countResponse = executeCountRequest(countRequest);
+    result.setTotalSize(countResponse.getCount());
     return result;
   }
 

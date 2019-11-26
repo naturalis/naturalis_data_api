@@ -5,14 +5,19 @@ import static nl.naturalis.nba.common.json.JsonUtil.toPrettyJson;
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static nl.naturalis.nba.dao.DaoUtil.prune;
 import static nl.naturalis.nba.dao.translate.ConditionTranslatorFactory.getTranslator;
+import static nl.naturalis.nba.dao.util.es.ESUtil.newCountRequest;
 import static nl.naturalis.nba.dao.util.es.ESUtil.newSearchRequest;
 import static nl.naturalis.nba.utils.ArrayUtil.stringify;
 import static nl.naturalis.nba.utils.CollectionUtil.hasElements;
+
 import static org.elasticsearch.index.query.QueryBuilders.constantScoreQuery;
+
 import java.util.List;
+
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchRequestBuilder;
+import org.elasticsearch.client.core.CountRequest;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortBuilder;
@@ -75,36 +80,23 @@ public class QuerySpecTranslator {
       } else {
         query = translateConditions();
       }
-      // ES5
-      //request.setQuery(query);
-      
-      // ES7
       searchSourceBuilder.query(query);
     }
     
     if (spec.getFields() != null) {
       if (spec.getFields().isEmpty()) {
-        // ES5
-        // request.setFetchSource(false);
         searchSourceBuilder.fetchSource(false);
       } else {
         addFields(searchSourceBuilder);
       }
     }
     
-    // ES5
-    // request.setFrom(spec.getFrom() == null ? 0 : spec.getFrom());
-    // request.setSize(spec.getSize() == null ? DEFAULT_SIZE : spec.getSize());
-    // ES7
     searchSourceBuilder.from(spec.getFrom() == null ? 0 : spec.getFrom());
     searchSourceBuilder.size(spec.getSize() == null ? DEFAULT_SIZE : spec.getSize());
 
     if (spec.getSortFields() != null) {
       SortFieldsTranslator sfTranslator = new SortFieldsTranslator(spec, dt);
       for (SortBuilder<?> sortBuilder : sfTranslator.translate()) {
-        // ES5
-        // request.addSort(sortBuilder);
-        // ES7
         searchSourceBuilder.sort(sortBuilder);
       }
     }
@@ -151,6 +143,27 @@ public class QuerySpecTranslator {
     }
     
     request.source(sourceBuilder);
+    return request;
+  }
+  
+  /**
+   * A CountRequest does not allow "from" and "size". It only use the conditions
+   * of the query.
+   * 
+   * @return CountRequest
+   * @throws InvalidConditionException
+   */
+  public CountRequest translateCountRequest() throws InvalidConditionException {
+    if (logger.isDebugEnabled() && spec != null) {
+      logger.debug("Translating QuerySpec:\n{}", toPrettyJson(prune(spec)));
+    }
+    CountRequest request = newCountRequest(dt);
+    if (spec!= null && spec.getConditions() != null && !spec.getConditions().isEmpty()) {
+      SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+      QueryBuilder query = translateConditions();
+      searchSourceBuilder.query(query);
+      request.source(searchSourceBuilder);
+    }
     return request;
   }
 

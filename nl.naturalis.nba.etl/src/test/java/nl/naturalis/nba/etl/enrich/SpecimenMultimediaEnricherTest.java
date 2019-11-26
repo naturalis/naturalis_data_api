@@ -38,11 +38,11 @@ public class SpecimenMultimediaEnricherTest {
   public void setUp() throws Exception {
 
     CoLTaxonImporter cti = new CoLTaxonImporter();
-    String texa = AllTests.class.getResource("taxa.txt").getPath();
-    cti.importCsv(texa);
+    String taxa = AllTests.class.getResource("taxa.txt").getPath();
+    cti.importCsv(taxa);
     CoLVernacularNameBatchImporter cvbi = new CoLVernacularNameBatchImporter();
-    String vernecular = AllTests.class.getResource("vernacular.txt").getPath();
-    cvbi.importCsv(vernecular);
+    String vernacular = AllTests.class.getResource("vernacular.txt").getPath();
+    cvbi.importCsv(vernacular);
     CoLReferenceBatchImporter crbi = new CoLReferenceBatchImporter();
     String reference = AllTests.class.getResource("reference.txt").getPath();
     crbi.importCsv(reference);
@@ -81,11 +81,11 @@ public class SpecimenMultimediaEnricherTest {
 
     List<Specimen> specimens = new ArrayList<>();
     specimens.add(specimen);
-
-    Object obj = ReflectionUtil.callStatic(SpecimenMultimediaEnricher.class, "enrichSpecimens",
-        new Class[] {List.class}, new Object[] {specimens});
+    Object obj = ReflectionUtil.callStatic(
+        SpecimenMultimediaEnricher.class, "enrichSpecimens", new Class[] {List.class}, new Object[] {specimens}
+        );
+    
     List<Specimen> expectedSpecimens = (List<Specimen>) obj;
-
     Specimen actual = expectedSpecimens.get(0);
 
     String taxanomicStatus = "accepted name";

@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.logging.log4j.Logger;
-import org.apache.lucene.search.TotalHits;
 
 import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
@@ -42,7 +41,6 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.rest.RestStatus;
 import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.SearchHits;
 
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QuerySpec;
@@ -152,27 +150,19 @@ public class ESUtil {
   public static SearchResponse executeSearchRequest(SearchRequest request) {
 
     if (logger.isDebugEnabled()) {
-       logger.debug("Executing search request:\n{}", request.source());
+       logger.debug("Executing search request:\n{}", JsonUtil.toPrettyJson(request.source()));
      }
 
     SearchResponse response = null;
     try {
       response = esClient().search(request, RequestOptions.DEFAULT);
       if (logger.isDebugEnabled()) {
-        SearchHits hits = response.getHits();
-        TotalHits totalHits = hits.getTotalHits();
-        long numHits = totalHits.value;
-        logger.debug("numHits: {}", numHits);
-        
-        TotalHits.Relation relation = totalHits.relation;
-        logger.debug("relation: \n{}", JsonUtil.toPrettyJson(relation));
-        
+        // TODO: totalhits is incorrect!
         logger.debug("Documents found: {}", response.getHits().getTotalHits().value);
       }
     } catch (IOException e) {
       // TODO Auto-generated catch block
       logger.error("Error while execuring the search request:\n" + JsonUtil.toPrettyJson(request.source()));
-      //e.printStackTrace();
       throw new DaoException("Failed to execute the search request: " + e.getMessage()) ;
     }
     return response;
@@ -185,7 +175,6 @@ public class ESUtil {
       countResponse = esClient().count(request, RequestOptions.DEFAULT);
     } catch (IOException e) {
       // TODO Auto-generated catch block
-      // e.printStackTrace();
       throw new DaoException("Failed to execute the count request: " + e.getMessage()) ;
     }
     return countResponse;
@@ -353,6 +342,7 @@ public class ESUtil {
    * 
    * @param indexInfo
    */
+  @SuppressWarnings("unchecked")
   public static void createIndex(IndexInfo indexInfo) {
     String index = indexInfo.getName();
     logger.info("Creating index: {}", index);
@@ -466,7 +456,6 @@ public class ESUtil {
       return getSettingsResponse.getSetting(index, setting);
     } catch (IOException e) {
       // TODO Auto-generated catch block
-      // e.printStackTrace();
       throw new DaoException(
           String.format("Failed to retrieve %s setting from index \"%s\": %s", e.getMessage()));
     }
@@ -522,7 +511,6 @@ public class ESUtil {
 
     } catch (IOException e) {
       // TODO Auto-generated catch block
-      // e.printStackTrace();
       throw new DaoException(String.format(
           "Failed to retrieve index settings from index \"%s\": %s", index, e.getMessage()));
     }
@@ -565,9 +553,7 @@ public class ESUtil {
       }
     } catch (IOException e) {
       // TODO Auto-generated catch block
-      // e.printStackTrace();
-      throw new DaoException(
-          String.format("Failed to refresh index \"%s\":", index, e.getMessage()));
+      throw new DaoException(String.format("Failed to refresh index \"%s\":", index, e.getMessage()));
     }
   }
 
@@ -620,7 +606,6 @@ public class ESUtil {
         return origValue;
     } catch (IOException e) {
       // TODO Auto-generated catch block
-      // e.printStackTrace();
       throw new DaoException(String.format("Failed to disable autorefresh for index \"%s\": %s",
           index, e.getMessage()));
     }
@@ -668,7 +653,6 @@ public class ESUtil {
         throw new DaoException(String.format(msg, index, ""));
     } catch (IOException e) {
       // TODO Auto-generated catch block
-      // e.printStackTrace();
       throw new DaoException(String.format(msg, index, e.getMessage()));
     }
   }
@@ -767,9 +751,7 @@ public class ESUtil {
 
     // ES7
     RestHighLevelClient client = ESClientManager.getInstance().getClient();
-    
     Collection<T> batch = extractor.nextBatch();
-    
     while (batch != null) {
       BulkRequest request = new BulkRequest();
       for (T obj : batch) {
@@ -783,9 +765,7 @@ public class ESUtil {
         }
       } catch (IOException e) {
         // TODO Auto-generated catch block
-        // e.printStackTrace();
-        throw new DaoException(String.format("Error while deleting documents from index %s: %s",
-            index, e.getMessage()));
+        throw new DaoException(String.format("Error while deleting documents from index %s: %s", index, e.getMessage()));
       }
       batch = extractor.nextBatch();
     }
@@ -832,31 +812,24 @@ public class ESUtil {
     // batch = extractor.nextBatch();
     // }
 
-    logger.info("Let' start deleting documents ..."); // There's something wrong here. We never get here!!!
     
     // ES7
     while (batch != null) {
       BulkRequest request = new BulkRequest();
-      logger.info("> batch size: {}", batch.size());
       for (T obj : batch) {
-        // logger.info("> added doc with id: {}", obj.getId());
         request.add(new DeleteRequest(index, obj.getId()));
       }
-      logger.info("> bulk set ready for deletion: {}", request.numberOfActions());
       BulkResponse response;
       try {
         response = client.bulk(request, RequestOptions.DEFAULT);
         if (response.hasFailures()) {
           throw new DaoException("Error while deleting documents from " + type);
         }
-        logger.info("Bulk action deleted {} documents", response.getItems().length);
       } catch (IOException e) {
         // TODO Auto-generated catch block
-        // e.printStackTrace();
         throw new DaoException(String.format("Error while deleting documents from index \"%s\": %s",
             index, e.getMessage()));
       }
-      logger.info("Bulk set deleted. Ready for new batch ...");
       batch = extractor.nextBatch();
     }
     refreshIndex(dt);
@@ -872,20 +845,19 @@ public class ESUtil {
   public static Map<String, Object> getNbaMetadata() {
     RestHighLevelClient client = esClient();
     String index = "meta";
-    String documentType = "importdata";
+    // String documentType = "importdata";
     String _id = "importdata";
     // GetResponse query = client.prepareGet(index, documentType, _id).get();
     // return query.getSourceAsMap();
     GetRequest request = new GetRequest(index, _id);
+
     GetResponse response;
     try {
       response = client.get(request, RequestOptions.DEFAULT);
       return response.getSourceAsMap();
     } catch (IOException e) {
       // TODO Auto-generated catch block
-      e.printStackTrace();
-      throw new DaoException(
-          String.format("Error while retrieving nba metadata: %s", index, e.getMessage()));
+      throw new DaoException(String.format("Error while retrieving nba metadata: %s", index, e.getMessage()));
     }
   }
 

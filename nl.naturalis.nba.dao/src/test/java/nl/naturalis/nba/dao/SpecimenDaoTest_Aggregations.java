@@ -32,7 +32,6 @@ import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.SortField;
 import nl.naturalis.nba.api.model.Specimen;
-import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.mock.AggregationSpecimensMock;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 
@@ -98,10 +97,11 @@ public class SpecimenDaoTest_Aggregations {
 
   @AfterClass
   public static void after() {
-//    logger.info("Test finished. Removing test specimens");
-//    deleteIndex(DocumentType.SPECIMEN);
+
+    logger.info("Test finished. Removing test specimens");
+    deleteIndex(DocumentType.SPECIMEN);
     
-    ESUtil.truncate(DocumentType.SPECIMEN);
+    // ESUtil.truncate(DocumentType.SPECIMEN);
     
   }
 

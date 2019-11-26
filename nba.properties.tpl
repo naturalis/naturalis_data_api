@@ -26,7 +26,7 @@ nba.etl.install.dir=/path/to/nba/import/dir
 # ***************
 elasticsearch.cluster.name=<es-cluster>
 elasticsearch.transportaddress.host=127.0.0.1
-elasticsearch.transportaddress.port=9300
+elasticsearch.transportaddress.port=9200
 elasticsearch.index.default.shards=4
 elasticsearch.index.default.replicas=0
 elasticsearch.index.0.name=specimen

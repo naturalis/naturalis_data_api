@@ -1,5 +1,4 @@
 FROM jboss/wildfly:16.0.0.Final
-#FROM jboss/wildfly:10.1.0.Final
 USER root
 ENV LANG en_US.UTF-8
 RUN mkdir /etc/nba

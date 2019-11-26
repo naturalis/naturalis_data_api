@@ -8,7 +8,7 @@ echo patching nba.properties
 cat > /payload/software/conf/nba.properties  <<EOF
 elasticsearch.cluster.name=nba-cluster
 elasticsearch.transportaddress.host=$ES_DNS
-elasticsearch.transportaddress.port=9300
+elasticsearch.transportaddress.port=9200
 elasticsearch.index.default.shards=$DEFAULT_SHARDS
 elasticsearch.index.default.replicas=$NUM_REPLICAS
 elasticsearch.index.0.name=specimen

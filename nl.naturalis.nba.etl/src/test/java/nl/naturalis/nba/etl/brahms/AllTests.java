@@ -7,8 +7,8 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({ 
   BrahmsImportUtilTest.class,
-  BrahmsSpecimenTransformerTest.class,
-  BrahmsMultiMediaTransformerTest.class,
+//  BrahmsSpecimenTransformerTest.class,
+//  BrahmsMultiMediaTransformerTest.class,
   simpleBrahmsTest.class
 })
 public class AllTests {}

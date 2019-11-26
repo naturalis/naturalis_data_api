@@ -7,6 +7,7 @@ import static nl.naturalis.nba.etl.SummaryObjectUtil.copySummaryVernacularName;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -29,6 +30,7 @@ import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.api.model.TaxonomicEnrichment;
 import nl.naturalis.nba.api.model.VernacularName;
+import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.DaoRegistry;
 import nl.naturalis.nba.dao.MultiMediaObjectDao;
 import nl.naturalis.nba.dao.TaxonDao;
@@ -56,6 +58,7 @@ public class EnrichmentUtil {
 			List<Specimen> specimens)
 	{
 		String[] specimenIds = extractIdsFromSpecimens(specimens);
+		logger.info(">>> specimenIds: {}", Arrays.toString(specimenIds));
 		if (logger.isDebugEnabled()) {
 			String fmt = "{} unique IDs extracted from {} specimens";
 			logger.debug(fmt, specimenIds.length, specimens.size());
@@ -146,8 +149,7 @@ public class EnrichmentUtil {
 		return table;
 	}
 
-	private static Map<String, List<ServiceAccessPoint>> createMultiMediaLookupTable(
-			String[] specimenIds)
+	private static Map<String, List<ServiceAccessPoint>> createMultiMediaLookupTable(String[] specimenIds)
 	{
 		if (logger.isDebugEnabled()) {
 			logger.debug("Creating multimedia lookup table");
@@ -160,7 +162,9 @@ public class EnrichmentUtil {
 			if (logger.isDebugEnabled()) {
 				logger.debug("Loading {} multimedia for insertion into lookup table", chunk.length);
 			}
+			logger.info(">>> chunk: {}", JsonUtil.toPrettyJson(chunk));
 			QueryResult<MultiMediaObject> multimedia = loadMultiMedia(chunk);
+			logger.info(">>> query result:\n{}", JsonUtil.toPrettyJson(multimedia));
 			addMultimediaToLookupTable(multimedia, table);
 		}
 		if (logger.isDebugEnabled()) {

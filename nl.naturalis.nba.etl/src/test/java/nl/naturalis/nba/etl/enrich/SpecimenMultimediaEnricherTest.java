@@ -84,17 +84,15 @@ public class SpecimenMultimediaEnricherTest {
     Object obj = ReflectionUtil.callStatic(
         SpecimenMultimediaEnricher.class, "enrichSpecimens", new Class[] {List.class}, new Object[] {specimens}
         );
+    List<Specimen> enrichedSpecimens = (List<Specimen>) obj;
     
-    List<Specimen> expectedSpecimens = (List<Specimen>) obj;
-    Specimen actual = expectedSpecimens.get(0);
-
+    Specimen actual = enrichedSpecimens.get(0);
     String taxanomicStatus = "accepted name";
     String expectedScientificNameGroup = "bombus affinis";
     String expectedAuthorshipVerbatim = "Cresson, 1863";
     String expectedFullScientificName = "Bombus affinis Cresson, 1863";
     String expectedGenus = "Larus";
     String expectedSpecificEpethet = "affinis";
-
     ScientificName name = actual.getIdentifications().get(0).getScientificName();
 
     assertEquals("01", taxanomicStatus, name.getTaxonomicStatus().toString());
@@ -103,7 +101,6 @@ public class SpecimenMultimediaEnricherTest {
     assertEquals("04", expectedFullScientificName, name.getFullScientificName());
     assertEquals("05", expectedGenus, name.getGenusOrMonomial());
     assertEquals("06", expectedSpecificEpethet, name.getSpecificEpithet());
-
   }
 
 }

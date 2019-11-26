@@ -29,8 +29,8 @@ import nl.naturalis.nba.etl.nsr.NsrTaxonTransformerTest;
 @SuiteClasses({ 
     ETLUtilTest.class,
     BrahmsImportUtilTest.class,
-    BrahmsSpecimenTransformerTest.class,
-    BrahmsMultiMediaTransformerTest.class,
+//    BrahmsSpecimenTransformerTest.class,
+//    BrahmsMultiMediaTransformerTest.class,
     CrsImportUtilTest.class,
     CrsSpecimenTransformerTest.class,
     CrsMultiMediaTransformerTest.class,

@@ -179,6 +179,7 @@ public class SpecimenMultimediaEnricher {
     }
     Map<String, List<ServiceAccessPoint>> multimediaLookupTable;
     multimediaLookupTable = createMultiMediaLookupTableForSpecimens(specimens);
+    logger.info(">>> multimediaLookupTable size: {}", multimediaLookupTable.size());
     if (multimediaLookupTable.isEmpty()) {
       if (logger.isDebugEnabled()) {
         logger.debug("No multimedia found for current batch of specimens");

@@ -7,7 +7,6 @@ import java.util.Arrays;
 
 import org.apache.http.HttpHost;
 import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.config.RequestConfig.Builder;
 import org.apache.logging.log4j.Logger;
 
 import org.elasticsearch.client.Client;
@@ -15,7 +14,6 @@ import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.common.unit.TimeValue;
 import nl.naturalis.nba.dao.exception.ConnectionFailureException;
 import nl.naturalis.nba.utils.ConfigObject;
 

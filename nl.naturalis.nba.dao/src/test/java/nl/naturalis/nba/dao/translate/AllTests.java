@@ -20,4 +20,4 @@ import org.junit.runners.Suite.SuiteClasses;
   MatchesConditionTranslatorTest.class,
   //ShapeInShapeConditionTranslatorTest.class
 })
-public class Translate_AllTests_Test {}
+public class AllTests {}

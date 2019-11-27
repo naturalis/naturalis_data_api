@@ -60,9 +60,7 @@ public class SpecimenDaoTest_Dwca {
   }
 
   @After
-  public void after() {
-    // dropIndex(Specimen.class);
-  }
+  public void after() {}
 
   @Ignore
   @Test

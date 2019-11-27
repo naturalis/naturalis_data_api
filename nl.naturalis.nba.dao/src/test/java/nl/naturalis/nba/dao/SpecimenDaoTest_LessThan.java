@@ -8,6 +8,7 @@ import static nl.naturalis.nba.dao.util.es.ESUtil.deleteIndex;
 import static org.junit.Assert.assertEquals;
 
 import org.apache.logging.log4j.Logger;
+import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -24,8 +25,7 @@ import nl.naturalis.nba.dao.mock.SpecimenMock;
  */
 public class SpecimenDaoTest_LessThan {
 
-	private static final Logger logger = DaoRegistry.getInstance()
-			.getLogger(SpecimenDaoTest_LessThan.class);
+	private static final Logger logger = DaoRegistry.getInstance().getLogger(SpecimenDaoTest_LessThan.class);
 
 	static Specimen pMajor;
 	static Specimen lFuscus1;
@@ -49,6 +49,9 @@ public class SpecimenDaoTest_LessThan {
 		mSylvestris = SpecimenMock.malusSylvestrisSpecimen01();
 		DaoTestUtil.saveSpecimens(pMajor, lFuscus1, lFuscus2, tRex, mSylvestris);
 	}
+
+  @After
+  public void after() {}
 
 	@Test
 	public void test_01a() throws InvalidQueryException

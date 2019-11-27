@@ -10,7 +10,6 @@ import nl.naturalis.nba.common.es.map.MappingInfoTest;
 import nl.naturalis.nba.common.json.JsonUtilTest;
 
 @RunWith(Suite.class)
-//@formatter:off
 @SuiteClasses({
 	JsonUtilTest.class,
 	ESDateInputTest.class,
@@ -19,7 +18,4 @@ import nl.naturalis.nba.common.json.JsonUtilTest;
 	MappingFactoryTest.class,
 	MappingInfoTest.class
 })
-//@formatter:on
-public class AllTests {
-
-}
+public class AllTests {}

@@ -7,6 +7,7 @@ import static nl.naturalis.nba.dao.util.es.ESUtil.deleteIndex;
 import static org.junit.Assert.assertEquals;
 
 import org.apache.logging.log4j.Logger;
+import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -44,6 +45,9 @@ public class SpecimenDaoTest_IsNotNull {
 		mSylvestris = SpecimenMock.malusSylvestrisSpecimen01();
 		DaoTestUtil.saveSpecimens(pMajor, lFuscus1, lFuscus2, tRex, mSylvestris);
 	}
+	
+  @After
+  public void after() {}
 
 	/*
 	 * Test with a condition that tests for NOT NULL on string field.

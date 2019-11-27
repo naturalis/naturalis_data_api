@@ -220,7 +220,8 @@ public class DaoTestUtil {
 //	  return null;
 //	}
 
-	private static RestHighLevelClient client()
+	@SuppressWarnings("unused")
+  private static RestHighLevelClient client()
 	{
 		return ESClientManager.getInstance().getClient();
 	}

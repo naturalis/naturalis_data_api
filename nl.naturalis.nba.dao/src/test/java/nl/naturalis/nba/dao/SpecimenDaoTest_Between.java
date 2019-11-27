@@ -51,10 +51,7 @@ public class SpecimenDaoTest_Between {
 	}
 
 	@After
-	public void after()
-	{
-		// dropIndex(Specimen.class);
-	}
+	public void after() {}
 
 	/*
 	 * Test with dates.

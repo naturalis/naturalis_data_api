@@ -22,4 +22,4 @@ import org.junit.runners.Suite.SuiteClasses;
 	SpecimenDaoTest_Dwca.class
 })
 
-public class SpecimenDaoTest_AllTests_Test {}
+public class AllTests {}

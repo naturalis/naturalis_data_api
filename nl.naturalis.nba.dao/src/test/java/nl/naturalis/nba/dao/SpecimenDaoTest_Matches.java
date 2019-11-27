@@ -28,8 +28,7 @@ import nl.naturalis.nba.dao.mock.SpecimenMock;
  */
 public class SpecimenDaoTest_Matches {
 
-	private static final Logger logger = DaoRegistry.getInstance()
-			.getLogger(SpecimenDaoTest_Matches.class);
+	private static final Logger logger = DaoRegistry.getInstance().getLogger(SpecimenDaoTest_Matches.class);
 
 	static Specimen pMajor;
 	static Specimen lFuscus1;
@@ -54,11 +53,8 @@ public class SpecimenDaoTest_Matches {
 		DaoTestUtil.saveSpecimens(pMajor, lFuscus1, lFuscus2, tRex, mSylvestris);
 	}
 
-	@After
-	public void after()
-	{
-		// dropIndex(Specimen.class);
-	}
+  @After
+  public void after() {}
 
 	/*
 	 * Test with null (should get error).

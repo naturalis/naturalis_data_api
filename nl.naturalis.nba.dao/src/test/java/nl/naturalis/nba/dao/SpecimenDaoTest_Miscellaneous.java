@@ -27,8 +27,7 @@ import nl.naturalis.nba.dao.mock.SpecimenMock;
 
 public class SpecimenDaoTest_Miscellaneous {
 
-	private static final Logger logger = DaoRegistry.getInstance()
-			.getLogger(SpecimenDaoTest_Miscellaneous.class);
+	private static final Logger logger = DaoRegistry.getInstance().getLogger(SpecimenDaoTest_Miscellaneous.class);
 
 	static Specimen pMajor;
 	static Specimen lFuscus1;
@@ -53,10 +52,8 @@ public class SpecimenDaoTest_Miscellaneous {
 		DaoTestUtil.saveSpecimens(pMajor, lFuscus1, lFuscus2, tRex, mSylvestris);
 	}
 
-	@After
-	public void after()
-	{
-	}
+  @After
+  public void after() {}
 
 	/*
 	 * Test lookup using internal Elasticsearch ID.

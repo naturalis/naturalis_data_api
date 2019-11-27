@@ -29,8 +29,7 @@ import nl.naturalis.nba.dao.mock.SpecimenMock;
 
 public class SpecimenDaoTest_SortingSizingPaging {
 
-	private static final Logger logger = DaoRegistry.getInstance()
-			.getLogger(SpecimenDaoTest_SortingSizingPaging.class);
+	private static final Logger logger = DaoRegistry.getInstance().getLogger(SpecimenDaoTest_SortingSizingPaging.class);
 
 	static Specimen pMajor;
 	static Specimen lFuscus1;
@@ -55,10 +54,8 @@ public class SpecimenDaoTest_SortingSizingPaging {
 		DaoTestUtil.saveSpecimens(pMajor, lFuscus1, lFuscus2, tRex, mSylvestris);
 	}
 
-	@After
-	public void after()
-	{
-	}
+  @After
+  public void after() {}
 
 	/*
 	 * Test with sort on non-nested field (ascending)

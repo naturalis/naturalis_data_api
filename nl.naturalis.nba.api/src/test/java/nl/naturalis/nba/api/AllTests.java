@@ -5,7 +5,6 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-//@formatter:off
 @SuiteClasses({
 	PathTest.class,
 	ApiUtilTest.class,

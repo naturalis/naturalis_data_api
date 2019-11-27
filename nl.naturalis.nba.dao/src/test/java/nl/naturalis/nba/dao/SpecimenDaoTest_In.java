@@ -25,8 +25,7 @@ import nl.naturalis.nba.dao.mock.SpecimenMock;
 
 public class SpecimenDaoTest_In {
 
-	private static final Logger logger = DaoRegistry.getInstance()
-			.getLogger(SpecimenDaoTest_In.class);
+	private static final Logger logger = DaoRegistry.getInstance().getLogger(SpecimenDaoTest_In.class);
 
 	static Specimen pMajor;
 	static Specimen lFuscus1;
@@ -52,10 +51,7 @@ public class SpecimenDaoTest_In {
 	}
 
 	@After
-	public void after()
-	{
-		// dropIndex(Specimen.class);
-	}
+	public void after() {}
 
 	/*
 	 * Test where one of the search values matches a document

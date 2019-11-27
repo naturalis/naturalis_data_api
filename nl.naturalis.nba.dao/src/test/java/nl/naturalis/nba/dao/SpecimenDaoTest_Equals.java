@@ -25,8 +25,7 @@ import nl.naturalis.nba.api.model.Specimen;
 
 public class SpecimenDaoTest_Equals {
 
-	private static final Logger logger = DaoRegistry.getInstance()
-			.getLogger(SpecimenDaoTest_Equals.class);
+	private static final Logger logger = DaoRegistry.getInstance().getLogger(SpecimenDaoTest_Equals.class);
 
 	static Specimen pMajor;
 	static Specimen lFuscus1;
@@ -52,10 +51,7 @@ public class SpecimenDaoTest_Equals {
 	}
 
 	@After
-	public void after()
-	{
-		// dropIndex(Specimen.class);
-	}
+	public void after() {}
 
 	/*
 	 * Test with odd characters in search term (comma, period).

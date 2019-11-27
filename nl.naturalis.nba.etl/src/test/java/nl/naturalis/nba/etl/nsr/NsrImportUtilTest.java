@@ -7,6 +7,7 @@ import static org.junit.Assert.assertNotNull;
 import java.io.File;
 import java.net.URL;
 import java.util.List;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Element;
@@ -36,11 +37,8 @@ public class NsrImportUtilTest {
 
   }
 
-  /**
-   * @throws java.lang.Exception
-   */
-  // @After
-  public void tearDown() throws Exception {}
+  @After
+  public void tearDown() {}
 
   /**
    * Test method for

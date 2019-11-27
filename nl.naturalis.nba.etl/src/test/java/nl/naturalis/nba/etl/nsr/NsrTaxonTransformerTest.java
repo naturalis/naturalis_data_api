@@ -47,13 +47,8 @@ public class NsrTaxonTransformerTest {
 
   }
 
-  /**
-   * @throws java.lang.Exception
-   */
   @After
-  public void tearDown() throws Exception {
-
-  }
+  public void tearDown() {}
 
   /**
    * Test method for {@link nl.naturalis.nba.etl.nsr.NsrTaxonTransformer#doTransform()}.

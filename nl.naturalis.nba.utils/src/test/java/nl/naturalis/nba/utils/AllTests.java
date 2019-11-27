@@ -5,7 +5,7 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-//@formatter:off
+
 @SuiteClasses({ 
 	
 	StringUtilTest.class,
@@ -19,7 +19,6 @@ import org.junit.runners.Suite.SuiteClasses;
 	ExceptionUtilTest.class
 	
 })
-//@formatter:on
 public class AllTests {
 
 }

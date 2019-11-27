@@ -22,6 +22,7 @@ import java.util.Set;
 import org.apache.logging.log4j.Logger;
 import org.geojson.LngLatAlt;
 import org.geojson.MultiPolygon;
+import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -37,8 +38,7 @@ import nl.naturalis.nba.dao.mock.SpecimenMock;
 
 public class SpecimenDaoTest_GeoQueries {
 
-	private static final Logger logger = DaoRegistry.getInstance()
-			.getLogger(SpecimenDaoTest_GeoQueries.class);
+	private static final Logger logger = DaoRegistry.getInstance().getLogger(SpecimenDaoTest_GeoQueries.class);
 
 	static Specimen pMajor;
 	static Specimen lFuscus1;
@@ -82,6 +82,9 @@ public class SpecimenDaoTest_GeoQueries {
 
 		saveGeoAreas(aalten, uitgeest, noordHolland, netherlands);
 	}
+	
+	@After
+	public void after() {}
 
 	@Test
 	public void testQuery_01a() throws InvalidQueryException

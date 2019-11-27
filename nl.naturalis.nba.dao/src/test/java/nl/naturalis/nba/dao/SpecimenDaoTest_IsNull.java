@@ -6,6 +6,7 @@ import static nl.naturalis.nba.dao.util.es.ESUtil.createIndex;
 import static nl.naturalis.nba.dao.util.es.ESUtil.deleteIndex;
 import static org.junit.Assert.assertEquals;
 import org.apache.logging.log4j.Logger;
+import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import nl.naturalis.nba.api.InvalidQueryException;
@@ -17,8 +18,7 @@ import nl.naturalis.nba.dao.mock.SpecimenMock;
 
 public class SpecimenDaoTest_IsNull {
 
-	private static final Logger logger = DaoRegistry.getInstance()
-			.getLogger(SpecimenDaoTest_IsNull.class);
+	private static final Logger logger = DaoRegistry.getInstance().getLogger(SpecimenDaoTest_IsNull.class);
 
 	static Specimen pMajor;
 	static Specimen lFuscus1;
@@ -43,14 +43,16 @@ public class SpecimenDaoTest_IsNull {
 		DaoTestUtil.saveSpecimens(pMajor, lFuscus1, lFuscus2, tRex, mSylvestris);
 	}
 
+  @After
+  public void after() {}
+
 	/*
 	 * Test with condition on string field.
 	 */
 	@Test
 	public void test__01() throws InvalidQueryException
 	{
-		// UnitGUID is null in all test specimens, so query should return them
-		// all.
+		// UnitGUID is null in all test specimens, so query should return them all.
 		QueryCondition condition = new QueryCondition("preparationType", EQUALS, null);
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);

@@ -1,5 +1,8 @@
 package nl.naturalis.nba.etl.enrich;
 
+import static nl.naturalis.nba.dao.util.es.ESUtil.createIndex;
+import static nl.naturalis.nba.dao.util.es.ESUtil.deleteIndex;
+
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
@@ -9,14 +12,14 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.api.model.TaxonomicStatus;
-import nl.naturalis.nba.etl.AllTests;
-import nl.naturalis.nba.etl.col.CoLReferenceBatchImporter;
-import nl.naturalis.nba.etl.col.CoLTaxonImporter;
-import nl.naturalis.nba.etl.col.CoLVernacularNameBatchImporter;
+import nl.naturalis.nba.dao.DocumentType;
+import nl.naturalis.nba.etl.utils.DataMockUtil;
+import nl.naturalis.nba.etl.utils.ETLDaoUtil;
 import nl.naturalis.nba.utils.reflect.ReflectionUtil;
 
 /**
@@ -30,22 +33,18 @@ import nl.naturalis.nba.utils.reflect.ReflectionUtil;
  */
 @SuppressWarnings({"unchecked"})
 public class SpecimenMultimediaEnricherTest {
-
+  
   /**
    * @throws java.lang.Exception
    */
   @Before
   public void setUp() throws Exception {
-
-    CoLTaxonImporter cti = new CoLTaxonImporter();
-    String taxa = AllTests.class.getResource("taxa.txt").getPath();
-    cti.importCsv(taxa);
-    CoLVernacularNameBatchImporter cvbi = new CoLVernacularNameBatchImporter();
-    String vernacular = AllTests.class.getResource("vernacular.txt").getPath();
-    cvbi.importCsv(vernacular);
-    CoLReferenceBatchImporter crbi = new CoLReferenceBatchImporter();
-    String reference = AllTests.class.getResource("reference.txt").getPath();
-    crbi.importCsv(reference);
+    
+    // Prepare the multimedia_integration_test index
+    deleteIndex(DocumentType.MULTI_MEDIA_OBJECT);
+    createIndex(DocumentType.MULTI_MEDIA_OBJECT);    
+    MultiMediaObject mockMmo = DataMockUtil.generateMultiMediaMockObj();
+    ETLDaoUtil.saveMultiMediaObject(mockMmo, true);    
   }
 
   /**

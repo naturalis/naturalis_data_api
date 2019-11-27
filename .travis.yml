@@ -13,10 +13,14 @@ before_install:
     docker run \
       --name build-es \
       --detach \
+      -p 9200:9200
       -e ES_JAVA_OPTS="-Xms512m -Xmx512m" docker.elastic.co/elasticsearch/elasticsearch:7.4.0 elasticsearch \
          -Ecluster.name="nba-cluster" \
+         -Ediscovery.type=single-node \
+         -Ebootstrap.memory_lock=true
          -Enetwork.host="_site_" \
-         -Expack.security.enabled=false
+         -Expack.security.enabled=false \
+         -Expack.monitoring.enabled=false
   - mkdir -p {api-output,etl-output}
   - mkdir -p payload/data/{geo,brahms,crs,col,nsr,ndff,medialib}
   - cp docker/resources/bp_areas.csv payload/data/geo/

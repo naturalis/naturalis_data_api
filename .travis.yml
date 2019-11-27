@@ -17,7 +17,7 @@ before_install:
       -e ES_JAVA_OPTS="-Xms512m -Xmx512m" docker.elastic.co/elasticsearch/elasticsearch:7.4.0 elasticsearch \
          -Ecluster.name="nba-cluster" \
          -Ediscovery.type=single-node \
-         -Ebootstrap.memory_lock=true
+         -Ebootstrap.memory_lock=true \
          -Enetwork.host="_site_" \
          -Expack.security.enabled=false \
          -Expack.monitoring.enabled=false

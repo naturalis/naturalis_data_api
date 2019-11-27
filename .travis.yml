@@ -13,7 +13,7 @@ before_install:
     docker run \
       --name build-es \
       --detach \
-      -p 9200:9200
+      -p 9200:9200 \
       -e ES_JAVA_OPTS="-Xms512m -Xmx512m" docker.elastic.co/elasticsearch/elasticsearch:7.4.0 elasticsearch \
          -Ecluster.name="nba-cluster" \
          -Ediscovery.type=single-node \

@@ -790,8 +790,6 @@ public class ESUtil {
     qs.setSize(1000);
     qs.addCondition(new QueryCondition("sourceSystem.code", "=", ss.getCode()));
     
-    logger.info(">>> truncate: \n{}", JsonUtil.toPrettyJson(qs));
-    
     DirtyDocumentIterator<T> extractor = new DirtyDocumentIterator<>(dt, qs);
     String index = dt.getIndexInfo().getName();
     String type = dt.getName();

@@ -75,6 +75,11 @@ nl.naturalis.nba.taxon.groupByScientificName.cacheTreshold=3000
 etl.output=es
 etl.enrich=false
 
+# Optional system property that can be used to set the size of
+# Elasticsearch bulk index requests (the number of documents to be indexed
+# at once). Default: 1000
+# nl.naturalis.nba.etl.queueSize=1000
+
 # Set this property to true when you require the index(es) to be 
 # recreated at the beginning of a new import
 # Default: true

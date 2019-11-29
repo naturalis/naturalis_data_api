@@ -39,11 +39,14 @@ public class JsonImporter {
 
   private boolean dryRun = ConfigObject.isEnabled(SYSPROP_DRY_RUN);
   private DocumentType<? extends IDocumentObject> docType;
-  private int batchSize = 1000;
+  private final int esBulkRequestSize;
   private static final Logger logger = getLogger(JsonImporter.class);
 
   JsonImporter(DocumentType<? extends IDocumentObject> docType) {
     this.docType = docType;
+    String key = ETLConstants.SYSPROP_LOADER_QUEUE_SIZE;
+    String val = System.getProperty(key, "1000");
+    esBulkRequestSize = Integer.parseInt(val);
   }
   
   public static void main(String[] args) {
@@ -76,7 +79,7 @@ public class JsonImporter {
   
   private <T extends IDocumentObject> void importJsonFile(File file, DocumentType<T> docType) throws IOException, BulkIndexException {
     BulkIndexer<T> indexer = new BulkIndexer<>(docType);
-    Collection<T> batch = new ArrayList<>(batchSize);
+    Collection<T> batch = new ArrayList<>(esBulkRequestSize);
     LineNumberReader lnr = null;
     int processed = 0;
     int skipped = 0;
@@ -102,7 +105,7 @@ public class JsonImporter {
           }
           logger.error("Reason: \n" + e.getMessage());
         }
-        if (batch.size() == batchSize) {
+        if (batch.size() == esBulkRequestSize) {
           if (!dryRun) {
             indexer.index(batch);
             logger.info(docType.getName() + " documents imported: {}", processed);

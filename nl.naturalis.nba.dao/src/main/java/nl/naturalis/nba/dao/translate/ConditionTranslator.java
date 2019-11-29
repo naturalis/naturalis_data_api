@@ -133,6 +133,7 @@ abstract class ConditionTranslator {
 		    nestedPath = getNestedPath(condition.getField(), mappingInfo);
 		  }
 		  if (nestedPath != null) {
+		    logger.info(">>> {} - {} - {}", nestedPath, query, ScoreMode.Avg); // query = null
 		    query = nestedQuery(nestedPath, query, ScoreMode.Avg);
 		  }
 		  if (getClass() == IsNullConditionTranslator.class) {

@@ -6,11 +6,13 @@ if [ "$PATCH_PROPERTIES" = "TRUE" ]
 then
 echo patching nba.properties 
 cat > /payload/software/conf/nba.properties  <<EOF
+# ********************** ES ********************** #
 elasticsearch.cluster.name=nba-cluster
 elasticsearch.transportaddress.host=$ES_DNS
 elasticsearch.transportaddress.port=9200
 elasticsearch.index.default.shards=$DEFAULT_SHARDS
 elasticsearch.index.default.replicas=$NUM_REPLICAS
+# ***************** Index Setup ****************** #
 elasticsearch.index.0.name=specimen
 elasticsearch.index.0.types=Specimen
 elasticsearch.index.1.name=taxon
@@ -20,6 +22,13 @@ elasticsearch.index.2.types=MultiMediaObject
 elasticsearch.index.3.name=geoareas
 elasticsearch.index.3.types=GeoArea
 elasticsearch.index.3.shards=1
+# ****************** ETL Module ***************** #
+nba.etl.install.dir=/payload/software
+nl.naturalis.nba.etl.truncate=$TRUNCATE
+nl.naturalis.nba.etl.queueSize=$BULK_QUEUE_SIZE
+etl.output=$OUTPUT
+etl.enrich=$ENRICH
+# ***************** Data Folders ***************** #
 install.dir=/payload/software
 crs.data.dir=/payload/data/crs
 col.data.dir=/payload/data/col
@@ -31,7 +40,7 @@ medialib.data.dir=/payload/data/medialib
 json.data.dir=/payload/data/json-imports
 col.year=$COL_YEAR
 purl.baseurl=$PURL_BASE_URL
-etl.output=es
+
 EOF
 fi
 

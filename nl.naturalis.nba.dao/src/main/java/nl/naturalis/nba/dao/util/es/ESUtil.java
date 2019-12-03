@@ -152,7 +152,6 @@ public class ESUtil {
     if (logger.isDebugEnabled()) {
        logger.debug("Executing search request:\n{}", JsonUtil.toPrettyJson(request.source()));
      }
-
     SearchResponse response = null;
     try {
       response = esClient().search(request, RequestOptions.DEFAULT);

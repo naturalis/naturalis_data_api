@@ -391,7 +391,12 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
 
   private QueryResult<T> createSearchResult(QuerySpecTranslator translator) throws InvalidQueryException {
     SearchRequest request = translator.translate();
+    
+    if (logger.isDebugEnabled()) {
+      logger.debug(">>> source:\n{}", request.source());
+    }
     SearchResponse response = executeSearchRequest(request);
+    
     QueryResult<T> result = new QueryResult<>();
     result.setResultSet(createItems(response));
 

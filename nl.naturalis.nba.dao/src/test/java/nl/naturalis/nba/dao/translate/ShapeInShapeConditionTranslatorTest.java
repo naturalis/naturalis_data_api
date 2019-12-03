@@ -38,7 +38,6 @@ public class ShapeInShapeConditionTranslatorTest {
 		mappingInfo = new MappingInfo<>(m);
 	}
 
-	@Ignore
 	@Test
 	public void testTranslate_01() throws InvalidConditionException
 	{
@@ -53,7 +52,7 @@ public class ShapeInShapeConditionTranslatorTest {
 		QueryCondition condition = new QueryCondition("address.locationAsShape", IN, polygon);
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		assertEquals("01", ShapeInShapeConditionTranslator.class, ct.getClass());
-		System.out.println("> \n" + JsonUtil.toPrettyJson(ct));
+		// System.out.println("> \n" + JsonUtil.toPrettyJson(ct));
 		QueryBuilder query = ct.translate();
 		System.out.println(query);
 		String file = "translate/search/ShapeInShapeConditionTranslatorTest__testTranslate_01.json";

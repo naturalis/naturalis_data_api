@@ -3,7 +3,6 @@
     "address.locationAsShape" : {
       "shape" : {
         "type" : "polygon",
-        "orientation" : "right",
         "coordinates" : [
           [
             [

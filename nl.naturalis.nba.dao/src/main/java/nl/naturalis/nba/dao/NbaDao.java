@@ -112,7 +112,9 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
       try {
         response = ESUtil.esClient().search(request, RequestOptions.DEFAULT);
         T[] docs = processQueryResponse(response);
-        if (docs.length == 1) {
+        if (docs.length == 0)
+          return null;
+        else if (docs.length == 1) {
           return docs[0];
         } else {
           logger.debug("{} with id \"{}\" found in more than one index", dt, id);

@@ -19,10 +19,12 @@ import org.junit.Test;
 
 import nl.naturalis.nba.api.InvalidConditionException;
 import nl.naturalis.nba.api.QueryCondition;
+import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.common.es.map.Mapping;
 import nl.naturalis.nba.common.es.map.MappingFactory;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.common.json.JsonUtil;
+import nl.naturalis.nba.dao.mock.SpecimenMock;
 import nl.naturalis.nba.dao.test.TestPerson;
 import nl.naturalis.nba.dao.translate.ConditionTranslator;
 import nl.naturalis.nba.dao.translate.ShapeInShapeConditionTranslator;
@@ -49,13 +51,20 @@ public class ShapeInShapeConditionTranslatorTest {
 		List<List<LngLatAlt>> coords = Arrays.asList(list);
 		Polygon polygon = new Polygon();
 		polygon.setCoordinates(coords);
+		
+		
 		QueryCondition condition = new QueryCondition("address.locationAsShape", IN, polygon);
+		
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		assertEquals("01", ShapeInShapeConditionTranslator.class, ct.getClass());
 		// System.out.println("> \n" + JsonUtil.toPrettyJson(ct));
+		
 		QueryBuilder query = ct.translate();
-		System.out.println(query);
+		System.out.println("unit test:\n" +query);
+
 		String file = "translate/search/ShapeInShapeConditionTranslatorTest__testTranslate_01.json";
+		
+		
 		assertTrue("02", queryEquals(query, file));
 	}
 

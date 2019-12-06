@@ -133,7 +133,8 @@ class ShapeInShapeConditionTranslator extends ConditionTranslator {
     logger.info(">>> longitudes: {}", Arrays.toString(longitudes));
     logger.info(">>> altitudes: {}", Arrays.toString(altitudes));
     
-    LinearRing linearRing = new LinearRing(latitudes, longitudes);
+    // LinearRing linearRing = new LinearRing(latitudes, longitudes);
+    LinearRing linearRing = new LinearRing(longitudes, latitudes);
     Polygon polygon = new Polygon(linearRing);
     logger.info(">>> Polygon p:\n{}", JsonUtil.toPrettyJson(polygon));
     

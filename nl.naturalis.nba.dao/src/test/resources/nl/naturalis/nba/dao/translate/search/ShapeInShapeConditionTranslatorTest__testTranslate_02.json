@@ -6,7 +6,6 @@
           "address.locationAsShape" : {
             "shape" : {
               "type" : "polygon",
-              "orientation" : "right",
               "coordinates" : [
                 [
                   [
@@ -35,7 +34,6 @@
         }
       }
     ],
-    "disable_coord" : false,
     "adjust_pure_negative" : true,
     "boost" : 1.0
   }

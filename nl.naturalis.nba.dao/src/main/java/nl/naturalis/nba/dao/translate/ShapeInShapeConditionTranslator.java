@@ -1,33 +1,25 @@
 package nl.naturalis.nba.dao.translate;
 
-import org.locationtech.spatial4j.shape.Shape;
-//import static org.elasticsearch.common.geo.builders.ShapeBuilders.newMultiPolygon;
-//import static org.elasticsearch.common.geo.builders.ShapeBuilders.newPolygon;
 import static org.elasticsearch.index.query.QueryBuilders.geoShapeQuery;
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
+
+import com.vividsolutions.jts.geom.Coordinate;
+
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
+
 import org.apache.logging.log4j.Logger;
-import org.elasticsearch.common.geo.builders.LineStringBuilder;
-import org.elasticsearch.common.geo.builders.MultiPolygonBuilder;
-import org.elasticsearch.common.geo.builders.PolygonBuilder;
-import org.elasticsearch.common.geo.builders.ShapeBuilder;
+
 import org.elasticsearch.geometry.Geometry;
 import org.elasticsearch.geometry.LinearRing;
 import org.elasticsearch.geometry.Polygon;
+import org.elasticsearch.geometry.MultiPolygon;
 import org.elasticsearch.geometry.utils.GeographyValidator;
 import org.elasticsearch.index.query.QueryBuilder;
+
 import org.geojson.GeoJsonObject;
 import org.geojson.LngLatAlt;
-import org.geojson.MultiPolygon;
-
-
-import org.elasticsearch.geometry.LinearRing;
-
-import com.vividsolutions.jts.geom.Coordinate;
 
 import nl.naturalis.nba.api.InvalidConditionException;
 import nl.naturalis.nba.api.QueryCondition;
@@ -102,58 +94,61 @@ class ShapeInShapeConditionTranslator extends ConditionTranslator {
     logger.info(">>> cls: {}", cls.getName());
     logger.info(">>> value:\n{}", JsonUtil.toPrettyJson(value));
     
-    // Convert from org.geojson.Polygon to org.elasticsearch.geometry.Polygon
-    
-    org.geojson.Polygon polygon = (org.geojson.Polygon) value;
-    if (cls == org.geojson.Polygon.class) {
-      return createESPolygon(polygon);
+    if (value instanceof org.geojson.Polygon) {
+      logger.info(">>> GeoShape is Polygon");
+      org.geojson.Polygon polygon = (org.geojson.Polygon) value;
+      return createESPolygon(polygon.getCoordinates());
     }
-    return null;
+    else if (value instanceof org.geojson.MultiPolygon) {
+      logger.info(">>> GeoShape is MultiPolygon");
+      org.geojson.MultiPolygon multiPolygon = (org.geojson.MultiPolygon) value;
+      return createESMultiPolygon(multiPolygon);
+    }
+    else {
+      String msg = String.format("Unsupported geo shape: %s", value.getClass().getName());
+      logger.info(msg);
+      throw new InvalidConditionException(msg);
+    }
   }
 	
-
-  
-  
-	private static Geometry createESPolygon(org.geojson.Polygon geoJsonPolygon)
+/**
+ * createESPolygon  
+ * @param coordinates of the Polygon
+ * @return Polygon as Geometry
+ */
+	private static Geometry createESPolygon(List<List<LngLatAlt>> coordinates)
 	{
-    List<List<LngLatAlt>> coordinates = geoJsonPolygon.getCoordinates();
+	  Polygon polygon;
+    int numberOfRings = coordinates.size();
+    if (numberOfRings == 0) return null;
+    
+    // Outer ring
     List<LngLatAlt> outerCoordinates = coordinates.get(0);
-    int size = outerCoordinates.size();
-    double[] latitudes = new double[size];
-    double[] longitudes = new double[size];
-    double[] altitudes = new double[size];
-    int i = 0;
-    for (LngLatAlt coord : outerCoordinates) {
-      latitudes[i] = coord.getLatitude();
-      longitudes[i] = coord.getLongitude();
-      altitudes[i] = ( (coord.getAltitude()) > 0 || coord.getAltitude() < 0 ? coord.getAltitude() : 0);
-      i++;
+    LinearRing linearRing = createLinearRing(outerCoordinates);
+    if (numberOfRings == 1) {
+      polygon = new Polygon(linearRing);
+      GeographyValidator validator = new GeographyValidator(false);
+      validator.validate(polygon);          
+      // logger.info(">>> Polygon p:\n{}", JsonUtil.toPrettyJson(polygon));
+      return polygon;
     }
-    logger.info(">>> latitudes: {}", Arrays.toString(latitudes));
-    logger.info(">>> longitudes: {}", Arrays.toString(longitudes));
-    logger.info(">>> altitudes: {}", Arrays.toString(altitudes));
     
-    // LinearRing linearRing = new LinearRing(latitudes, longitudes);
-    LinearRing linearRing = new LinearRing(longitudes, latitudes);
-    Polygon polygon = new Polygon(linearRing);
-    logger.info(">>> Polygon p:\n{}", JsonUtil.toPrettyJson(polygon));
-    
-    
+    // Inner ring(s)
+    List<LinearRing> innerRings = new ArrayList<>(numberOfRings-1);
+    for (int n = 1; n < numberOfRings; n++) {
+      List<LngLatAlt> coordinatesHole = coordinates.get(n);
+      LinearRing ring = createLinearRing(coordinatesHole);
+      innerRings.add(ring);
+    }
+    polygon = new Polygon(linearRing, innerRings);
     GeographyValidator validator = new GeographyValidator(false);
-    validator.validate(polygon);
-    
+    validator.validate(polygon);          
     return polygon;
-
 	}
-
-//	 private static PolygonBuilder createESPolygon(org.geojson.Polygon geoJsonPolygon)
-//	  {
-//	    return createESPolygon(geoJsonPolygon.getCoordinates());
-//	  }
-
 	
-	private static PolygonBuilder createESPolygon(List<List<LngLatAlt>> coords)
-	{
+	
+//	private static PolygonBuilder createESPolygon(List<List<LngLatAlt>> coords)
+//	{
 //		Iterator<List<LngLatAlt>> rings = coords.iterator();
 //		List<LngLatAlt> exterior = rings.next();
 //		PolygonBuilder esPolygon = newPolygon(convertRing(exterior));
@@ -163,7 +158,40 @@ class ShapeInShapeConditionTranslator extends ConditionTranslator {
 //			esPolygon.hole(new LineStringBuilder(coordinates));
 //		}
 //		return esPolygon;
-	  return null;
+//	  return null;
+//	}
+
+	private static Geometry createESMultiPolygon(org.geojson.MultiPolygon multiPolygonAsGeoJSON) 
+	{
+	  int numberOfPolygons = multiPolygonAsGeoJSON.getCoordinates().size();
+	  List<Polygon> polygons = new ArrayList<>(numberOfPolygons);
+	  
+	  List<List<List<LngLatAlt>>> listOfPolygonCoordinates = multiPolygonAsGeoJSON.getCoordinates();
+	  for (List<List<LngLatAlt>> polygonCoordinates : listOfPolygonCoordinates) {
+	    Geometry g = createESPolygon(polygonCoordinates);
+	    polygons.add((Polygon) g);
+	  }
+	  
+	  MultiPolygon multiPolygon = new MultiPolygon(polygons);
+	  return multiPolygon;
+	}
+	
+	private static LinearRing createLinearRing(List<LngLatAlt> coordinates) {
+	  
+	  int size = coordinates.size();
+	  double[] latitudes = new double[size];
+	  double[] longitudes = new double[size];
+	  double[] altitudes = new double[size];
+	  
+	  int i = 0;
+	  for (LngLatAlt coord : coordinates) {
+	    latitudes[i] = coord.getLatitude();
+	    longitudes[i] = coord.getLongitude();
+	    altitudes[i] = ( (coord.getAltitude()) > 0 || coord.getAltitude() < 0 ? coord.getAltitude() : 0);
+	    i++;
+	  }
+	  
+	  return new LinearRing(longitudes, latitudes);
 	}
 
 	private static List<Coordinate> convertRing(List<LngLatAlt> polyonCoords)

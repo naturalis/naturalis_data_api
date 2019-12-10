@@ -5,6 +5,7 @@ import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static nl.naturalis.nba.dao.DocumentType.GEO_AREA;
 import static nl.naturalis.nba.dao.translate.TranslatorUtil.ensureValueIsNotNull;
 import static nl.naturalis.nba.dao.util.es.ESUtil.executeSearchRequest;
+
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.geoShapeQuery;
 
@@ -113,8 +114,6 @@ class ShapeInLocalityConditionTranslator extends ConditionTranslator {
 		String field = condition.getField().toString();
 		String id = getIdForLocality(locality);
 		String index = GEO_AREA.getIndexInfo().getName();
-		//String type = GEO_AREA.getName();
-		//GeoShapeQueryBuilder query = geoShapeQuery(field, id, type);
 		GeoShapeQueryBuilder query = geoShapeQuery(field, id);
 		query.indexedShapeIndex(index);
 		return query;
@@ -132,13 +131,9 @@ class ShapeInLocalityConditionTranslator extends ConditionTranslator {
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(new QueryCondition("locality", EQUALS, locality));
 		QuerySpecTranslator translator = new QuerySpecTranslator(qs, GEO_AREA);
-		// SearchRequestBuilder request;
 		SearchRequest request;
 		boolean fetchSource = false;
 		try {
-		  // ES5
-		  // request = translator.translate();
-		  // request.setFetchSource(false);
 		  request = translator.translate(fetchSource);
 		}
 		catch (InvalidQueryException e) {

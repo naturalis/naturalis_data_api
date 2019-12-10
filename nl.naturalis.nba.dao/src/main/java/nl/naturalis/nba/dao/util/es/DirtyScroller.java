@@ -39,7 +39,6 @@ public class DirtyScroller implements IScroller {
 
 	private static final Logger logger = getLogger(DirtyScroller.class);
 
-	private DocumentType<?> dt;
 	private SearchRequest request;
 
 	private int batchSize = 10000;
@@ -49,7 +48,6 @@ public class DirtyScroller implements IScroller {
 	public DirtyScroller(QuerySpec querySpec, DocumentType<?> documentType)
 			throws InvalidQueryException
 	{
-		this.dt = documentType;
 		if (querySpec.getFrom() != null) {
 			from = querySpec.getFrom().intValue();
 			if (logger.isDebugEnabled()) {

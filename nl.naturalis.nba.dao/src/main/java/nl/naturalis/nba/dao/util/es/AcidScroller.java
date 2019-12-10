@@ -101,7 +101,6 @@ public class AcidScroller implements IScroller {
     try {
       searchResponse = client.search(request, RequestOptions.DEFAULT);
     } catch (IOException e) {
-      // TODO Auto-generated catch block
       throw new NbaException(e.getMessage());
     } 
 		String scrollId = searchResponse.getScrollId();
@@ -114,7 +113,6 @@ public class AcidScroller implements IScroller {
 		    try {
           searchResponse = client.scroll(scrollRequest, RequestOptions.DEFAULT);
         } catch (IOException e) {
-          // TODO Auto-generated catch block
           throw new NbaException(e.getMessage());
         }
 		    scrollId = searchResponse.getScrollId();
@@ -126,50 +124,14 @@ public class AcidScroller implements IScroller {
 		ClearScrollResponse clearScrollResponse;
     try {
       clearScrollResponse = client.clearScroll(clearScrollRequest, RequestOptions.DEFAULT);
+      @SuppressWarnings("unused")
+      boolean succeeded = clearScrollResponse.isSucceeded();		
     } catch (IOException e) {
-      // TODO Auto-generated catch block
       throw new NbaException(e.getMessage());
     }
-		boolean succeeded = clearScrollResponse.isSucceeded();		
 	}
-
-// ES 5
-//	 @Override
-//	  public void scroll(SearchHitHandler handler) throws NbaException
-//	  {
-//	    TimeValue tv = new TimeValue(timeout);
-//	    request.setScroll(new TimeValue(timeout));
-//	    request.setSize(batchSize);
-//	    SearchResponse response = executeSearchRequest(request);
-//	    int from = this.from;
-//	    int size = this.size;
-//	    int to = from + size;
-//	    int i = 0;
-//	    RestHighLevelClient client = ESClientManager.getInstance().getClient();
-//	    SCROLL_LOOP: do {
-//	      // Ignore everything before the from-th document
-//	      if (i + response.getHits().getHits().length < from) {
-//	        i += response.getHits().getHits().length;
-//	      }
-//	      for (SearchHit hit : response.getHits().getHits()) {
-//	        if (size != 0 && i >= to) {
-//	          break SCROLL_LOOP;
-//	        }
-//	        if (i >= from) {
-//	          if (!handler.handle(hit)) {
-//	            break SCROLL_LOOP;
-//	          }
-//	        }
-//	        i += 1;
-//	      }
-//	      String scrollId = response.getScrollId();
-//	      SearchScrollRequestBuilder ssrb = client.prepareSearchScroll(scrollId);
-//	      response = ssrb.setScroll(tv).get();
-//	    } while (response.getHits().getHits().length != 0);
-//	  }
-
 	
-	
+
 	/**
 	 * Returns the size of the scroll window (the number of documents to fetch
 	 * per scroll request). Defaults to 10000 documents.

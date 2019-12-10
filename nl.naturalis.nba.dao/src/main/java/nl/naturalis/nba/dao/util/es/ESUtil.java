@@ -340,6 +340,10 @@ public class ESUtil {
     } catch (IOException e) {
       throw new DaoException(String.format("Failed to create index: %s, Error: %s", index, e.getMessage()));
     }
+    
+    for (DocumentType<?> dt : indexInfo.getTypes()) {
+      createType(dt);
+    }
   }
 
   /**
@@ -524,11 +528,7 @@ public class ESUtil {
    * Creates a type mapping for the specified {@link DocumentType document type}.
    * 
    * @param dt
-   * 
-   * This method should not be used any longer, because as of elasticsearch 7 the use
-   * of document types should be avoided.
    */
-  @Deprecated
   public static <T extends IDocumentObject> void createType(DocumentType<T> dt) {
 
     // TODO: no unit test yet

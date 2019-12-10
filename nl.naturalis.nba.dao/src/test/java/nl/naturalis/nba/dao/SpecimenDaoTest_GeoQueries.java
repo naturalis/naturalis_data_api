@@ -10,6 +10,7 @@ import static nl.naturalis.nba.dao.mock.GeoAreaMock.Netherlands;
 import static nl.naturalis.nba.dao.mock.GeoAreaMock.NoordHolland;
 import static nl.naturalis.nba.dao.mock.GeoAreaMock.Uitgeest;
 import static nl.naturalis.nba.dao.mock.GeoAreaMock.Vatican;
+import static nl.naturalis.nba.dao.mock.GeoAreaMock.FlatLand;
 import static nl.naturalis.nba.dao.util.es.ESUtil.createIndices;
 import static nl.naturalis.nba.dao.util.es.ESUtil.deleteIndices;
 import static nl.naturalis.nba.dao.util.es.ESUtil.getDistinctIndices;
@@ -36,6 +37,15 @@ import nl.naturalis.nba.api.model.GeoArea;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.dao.mock.SpecimenMock;
 
+/**
+ * The tests in this Unit Test all depend on whether a GeoShape is created during insertion of
+ * a document. By default, this is not the case any longer because of a change in the way
+ * documents are being inserted (not by the ETL, but by the Colander). For the tests to
+ * succeed, the documents need to include a geoShape.<br />
+ *  
+ * See: {@link GatheringSiteCoordinates#getGeoShape()}.
+ *
+ */
 public class SpecimenDaoTest_GeoQueries {
 
 	private static final Logger logger = DaoRegistry.getInstance().getLogger(SpecimenDaoTest_GeoQueries.class);
@@ -51,6 +61,7 @@ public class SpecimenDaoTest_GeoQueries {
 	static GeoArea noordHolland;
 	static GeoArea netherlands;
 	static GeoArea vatican;
+	static GeoArea flatland;
 
 	@BeforeClass
 	public static void before()
@@ -79,7 +90,7 @@ public class SpecimenDaoTest_GeoQueries {
 		noordHolland = NoordHolland();
 		netherlands = Netherlands();
 		vatican = Vatican();
-
+		flatland = FlatLand();
 		saveGeoAreas(aalten, uitgeest, noordHolland, netherlands);
 	}
 	

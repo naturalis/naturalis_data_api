@@ -15,6 +15,17 @@ public class GeoAreaMock {
 	private GeoAreaMock()
 	{
 	}
+	
+	public static GeoArea FlatLand() 
+	{
+	  GeoArea area = new GeoArea();
+    area.setSourceSystem(SourceSystem.GEO);
+    area.setSourceSystemId("42");
+    area.setLocality("Flatland");
+    area.setShape(loadShape("flatland.geojson.txt"));
+    return area;
+	  
+	}
 
 	public static GeoArea Aalten()
 	{

@@ -28,7 +28,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.annotations.Analyzer;
 import nl.naturalis.nba.api.annotations.Analyzers;
-import nl.naturalis.nba.api.annotations.GeoShape;
 import nl.naturalis.nba.api.annotations.NotIndexed;
 import nl.naturalis.nba.api.annotations.NotNested;
 import nl.naturalis.nba.api.model.IDocumentObject;
@@ -159,19 +158,6 @@ public class MappingFactory {
 				break;
 			case GEO_SHAPE:
 				sf = new GeoShapeField();
-// TODO: clean up
-/*
- * geo_shape in ES 7 no longer supports the mapping options:
- * - points_only
- * - precision
- * - strategy
- */
-//				if (fm.getAnnotation(GeoShape.class) != null) {
-//					GeoShape annotation = fm.getAnnotation(GeoShape.class);
-//					GeoShapeField gsf = (GeoShapeField) sf;
-//					gsf.setPrecision(annotation.precision());
-//					gsf.setPoints_only(annotation.pointsOnly());
-//				}
 				break;
 			default:
 				sf = new SimpleField(esType);

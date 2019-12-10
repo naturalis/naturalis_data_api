@@ -55,6 +55,8 @@ public class GatheringSiteCoordinates implements INbaModelObject {
 	@GeoShape//(pointsOnly = true) // Disabled as of ES7 (no longer supports points_only mapping option)
 	public Point getGeoShape()
 	{
+	  // TODO: make this configurable!!!
+	  
 //		if (longitudeDecimal == null || latitudeDecimal == null) {
 //			return null;
 //		}

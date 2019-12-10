@@ -2,7 +2,6 @@ package nl.naturalis.nba.dao;
 
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static nl.naturalis.nba.dao.aggregation.AggregationQueryFactory.createAggregationQuery;
-import static nl.naturalis.nba.dao.aggregation.AggregationType.COUNT;
 import static nl.naturalis.nba.dao.aggregation.AggregationType.COUNT_DISTINCT_VALUES;
 import static nl.naturalis.nba.dao.aggregation.AggregationType.COUNT_DISTINCT_VALUES_PER_GROUP;
 import static nl.naturalis.nba.dao.aggregation.AggregationType.GET_DISTINCT_VALUES;
@@ -80,30 +79,9 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
     request.indices(index);
     SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
     
-    
     // When aliases are being used, searching for an id needs to be done a term query
     if (Boolean.parseBoolean(DaoRegistry.getInstance().getConfiguration().get("elasticsearch.aliases", "false") )) {
       String[] ids = new String[] {id};
-      // ES5
-//      SearchRequestBuilder request = newSearchRequest(dt);
-//      IdsQueryBuilder query = QueryBuilders.idsQuery(type);
-//      query.addIds(ids);
-//      request.setQuery(query);
-//      T[] docs = processSearchRequest(request);
-//      if (docs.length == 0) {
-//        logger.debug("{} with id \"{}\" not found", dt, id);
-//        return null;
-//      }
-//      else if (docs.length == 1) {
-//        return docs[0];
-//      }
-//      else {
-//        logger.debug("{} with id \"{}\" found in more than one index", dt, id);
-//        String msg = String.format("The given id \"%s\"has been found in more that one index, which is not allowed", id);
-//        throw new DaoException(msg);
-//      }
-      
-      // ES7
       IdsQueryBuilder query = QueryBuilders.idsQuery();
       query.addIds(ids);
       searchSourceBuilder.query(query);
@@ -122,31 +100,10 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
           throw new DaoException(msg);        
         }      
       } catch (IOException e) {
-        // TODO Auto-generated catch block
-        // e.printStackTrace();
         throw new DaoException(e.getMessage());
       }
     }
     // If no aliases are used, the document can be accessed directly using the "document path"
-    
-    // ES5
-//    GetRequestBuilder request = ESUtil.esClient().prepareGet();
-//    request.setIndex(index);
-//    request.setType(type);
-//    request.setId(id);
-//    GetResponse response = request.execute().actionGet();
-//    if (!response.isExists()) {
-//      if (logger.isDebugEnabled()) {
-//        logger.debug("{} with id \"{}\" not found", dt, id);
-//      }
-//      return null;
-//    }
-//    byte[] json = BytesReference.toBytes(response.getSourceAsBytesRef());
-//    T obj = JsonUtil.deserialize(dt.getObjectMapper(), json, dt.getJavaType());
-//    obj.setId(id);
-//    return obj;
-    
-    // ES7
     GetRequest getRequest = new GetRequest(index, id);
     T obj = null;
     try {
@@ -155,12 +112,9 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
       obj = JsonUtil.deserialize(dt.getObjectMapper(), json, dt.getJavaType());
       obj.setId(id);
       return obj;
-
     } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      throw new DaoException(e.getMessage());
     }
-    return obj;
   }
 
   @Override
@@ -173,24 +127,13 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
       String msg = String.format(fmt, ids.length);
       throw new DaoException(msg);
     }
-    // String type = dt.getName(); // NOT needed any longer
-    // ES5
-//    SearchRequestBuilder request = newSearchRequest(dt);
-//    IdsQueryBuilder query = QueryBuilders.idsQuery(type);
-//    IdsQueryBuilder query = QueryBuilders.idsQuery();
-//    query.addIds(ids);
-//    request.setQuery(query);
-//    request.setSize(ids.length);
-//    return processSearchRequest(request);
-    // ES7
     SearchRequest request = newSearchRequest(dt);
     IdsQueryBuilder query = QueryBuilders.idsQuery();
     query.addIds(ids);   
     SearchSourceBuilder sourceBuilder = new SearchSourceBuilder(); 
     sourceBuilder.query(query);
     sourceBuilder.size(ids.length);
-    request.source(sourceBuilder);    
-    
+    request.source(sourceBuilder);        
     return processSearchRequest(request);
   }
 
@@ -208,11 +151,6 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
     if (logger.isDebugEnabled()) {
       logger.debug(printCall("count", querySpec));
     }
-    // ES 5
-//    @SuppressWarnings("unchecked")
-//    AggregationQuery<T, Long> aggregationQuery = (AggregationQuery<T, Long>) createAggregationQuery(COUNT, dt, null, null, querySpec);
-//    return aggregationQuery.getResult().longValue();    
-
     QuerySpecTranslator translator = new QuerySpecTranslator(querySpec, dt);
     CountRequest request = translator.translateCountRequest();
     CountResponse response = executeCountRequest(request);
@@ -278,20 +216,6 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
       logger.debug(pattern, index, type, id);
     }
 
-    // ES5
-//    IndexRequestBuilder request = ESUtil.esClient().prepareIndex(index, type, id);
-//    byte[] source = JsonUtil.serialize(apiObject);
-//    request.setSource(source, XContentType.JSON);
-//    IndexResponse response = request.execute().actionGet();
-//    if (immediate) {
-//      IndicesAdminClient iac = ESUtil.esClient().admin().indices();
-//      RefreshRequestBuilder rrb = iac.prepareRefresh(index);
-//      rrb.execute().actionGet();
-//    }    
-//    apiObject.setId(response.getId());
-//    return response.getId();
-    
-    // ES7
     IndexRequest request = new IndexRequest();
     byte[] source = JsonUtil.serialize(apiObject);
     request.source(source, XContentType.JSON);
@@ -305,41 +229,25 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
       apiObject.setId(response.getId());
       return response.getId();
     } catch (IOException e) {
-      // TODO Auto-generated catch block
-      // e.printStackTrace();
       throw new DaoException(String.format("Failed to save object with id %s: %s", id, e.getMessage()));
     }
   }
 
   public boolean delete(String id, boolean immediate) {
     String index = dt.getIndexInfo().getName();
-    // String type = dt.getName(); // NOT needed any longer
     boolean deleted = false;
 
-    // ES5
-//    DeleteRequestBuilder request = ESUtil.esClient().prepareDelete(index, type, id);
-//    DeleteResponse response = request.execute().actionGet();
-//    if (immediate) {
-//      IndicesAdminClient iac = ESUtil.esClient().admin().indices();
-//      RefreshRequestBuilder rrb = iac.prepareRefresh(index);
-//      rrb.execute().actionGet();
-//    }
-//    return response.getResult() == Result.DELETED;
-    
-    // ES7
     DeleteRequest request = new DeleteRequest(index, id);
     try {
       DeleteResponse deleteResponse = ESUtil.esClient().delete(request, RequestOptions.DEFAULT);
       logger.info("Deleted document with id \"{}\" from index \"{}\"", deleteResponse.getId(), deleteResponse.getIndex());
       deleted = true;
     } catch (IOException e) {
-      logger.error("Failed to delete document with id \"{}\" from index \"{}\"", index, id);
-      e.printStackTrace();
+      String msg = String.format("Failed to delete document with id \"%s\" from index \"%s\"", index, id);
+      logger.error(msg);
+      throw new DaoException(msg);
     }
     return deleted;
-    
-    
-    
   }
 
   public void downloadQuery(QuerySpec querySpec, OutputStream out) throws InvalidQueryException, IOException {
@@ -392,22 +300,15 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
   }
 
   private QueryResult<T> createSearchResult(QuerySpecTranslator translator) throws InvalidQueryException {
-    SearchRequest request = translator.translate();
-    
-    if (logger.isDebugEnabled()) {
-      logger.debug(">>> source:\n{}", request.source());
-    }
-    SearchResponse response = executeSearchRequest(request);
-    
+    SearchRequest request = translator.translate();    
+    SearchResponse response = executeSearchRequest(request);    
     QueryResult<T> result = new QueryResult<>();
     result.setResultSet(createItems(response));
-
-    //result.setTotalSize(response.getHits().getTotalHits());
-    // TODO: migrate to ES7
-    // result.setTotalSize(response.getHits().getTotalHits().value);
+    
     CountRequest countRequest = translator.translateCountRequest();
     CountResponse countResponse = executeCountRequest(countRequest);
     result.setTotalSize(countResponse.getCount());
+    
     return result;
   }
 

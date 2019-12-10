@@ -32,9 +32,6 @@ import nl.naturalis.nba.dao.exception.DaoException;
  * 
  * @author Ayco Holleman
  * 
- * 
- * TODO: checkout https://www.elastic.co/guide/en/elasticsearch/client/java-api/current/java-geo-queries.html
- *
  */
 class ShapeInShapeConditionTranslator extends ConditionTranslator {
   
@@ -48,10 +45,7 @@ class ShapeInShapeConditionTranslator extends ConditionTranslator {
 	@Override
 	QueryBuilder translateCondition() throws InvalidConditionException
 	{
-	  logger.warn(">>> Translator is not ready yet!!!");
 		String field = condition.getField().toString();
-		logger.info(">>> field: {}", field);
-		
 		try {
 			return geoShapeQuery(field, getShape());
 		}
@@ -69,12 +63,16 @@ class ShapeInShapeConditionTranslator extends ConditionTranslator {
   {
     Object value = condition.getValue();
     if (value instanceof org.geojson.Polygon) {
-      logger.debug("GeoShape is Polygon");
+      if (logger.isDebugEnabled()) {
+        logger.debug("GeoShape is Polygon");
+      }
       org.geojson.Polygon polygon = (org.geojson.Polygon) value;
       return createESPolygon(polygon.getCoordinates());
     }
     else if (value instanceof org.geojson.MultiPolygon) {
-      logger.debug("GeoShape is MultiPolygon");
+      if (logger.isDebugEnabled()) {
+        logger.debug("GeoShape is MultiPolygon");
+      }
       org.geojson.MultiPolygon multiPolygon = (org.geojson.MultiPolygon) value;
       return createESMultiPolygon(multiPolygon);
     }
@@ -85,11 +83,11 @@ class ShapeInShapeConditionTranslator extends ConditionTranslator {
     }
   }
 	
-/**
- * createESPolygon  
- * @param coordinates of the Polygon
- * @return Polygon as Geometry
- */
+  /**
+   * createESPolygon  
+   * @param coordinates of the Polygon
+   * @return Polygon as Geometry
+   */
 	private static Geometry createESPolygon(List<List<LngLatAlt>> coordinates)
 	{
 	  Polygon polygon = null;
@@ -119,6 +117,11 @@ class ShapeInShapeConditionTranslator extends ConditionTranslator {
     return polygon;
 	}
 	
+	/**
+	 * createESMultiPolygon
+	 * @param multiPolygonAsGeoJSON
+	 * @return MultiPolygon as Geometry
+	 */
 	private static Geometry createESMultiPolygon(org.geojson.MultiPolygon multiPolygonAsGeoJSON) 
 	{
 	  int numberOfPolygons = multiPolygonAsGeoJSON.getCoordinates().size();

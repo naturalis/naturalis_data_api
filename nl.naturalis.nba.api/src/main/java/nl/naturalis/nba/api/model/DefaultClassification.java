@@ -123,6 +123,11 @@ public class DefaultClassification implements INbaModelObject {
 			case SUBSPECIES:
 				infraspecificEpithet = name;
 				break;
+		  // TODO: TaxonomicRank has been extended and contains now more ranks
+			// than Darwin Core does: http://rs.tdwg.org/dwc/terms/#taxon
+			// Should we update this?
+      default:
+        break;
 		}
 	}
 

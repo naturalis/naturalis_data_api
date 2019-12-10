@@ -7,7 +7,7 @@
 
 	<groupId>nl.naturalis.nba</groupId>
 	<artifactId>nba-motherpom</artifactId>
-	<version>2.20.1</version>
+	<version>2.20.2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Naturalis Biodiversity API (NBA)</name>
@@ -51,9 +51,8 @@
 		<apache-http-client.version>4.5.6</apache-http-client.version>
 		<apache-http-core.version>4.4.10</apache-http-core.version>
 		<apache-commons-io.version>2.6</apache-commons-io.version>
-		<apache-commons-lang3.version>3.5</apache-commons-lang3.version>
-		<apache-commons-text.version>1.1</apache-commons-text.version>
-		<apache-commons-compress.version>1.18</apache-commons-compress.version>
+		<apache-commons-text.version>1.8</apache-commons-text.version>
+		<apache-commons-compress.version>1.19</apache-commons-compress.version>
 		<apache-logging.version>2.7</apache-logging.version>
 
 		<elasticsearch.version>5.6.15</elasticsearch.version>
@@ -81,15 +80,10 @@
 		<com.h2database.version>1.4.197</com.h2database.version>
 
 		<junit.version>4.12</junit.version>
+		<mockito-core.version>3.1.0</mockito-core.version>
 		<hamcrest-core.version>1.3</hamcrest-core.version>
 		<hamcrest-all.version>1.3</hamcrest-all.version>
-		<mockito-core.version>2.27.0</mockito-core.version>
-		<mockito-all.version>1.10.19</mockito-all.version>
-		<powermock-module-junit4.version>2.0.0</powermock-module-junit4.version>
-		<powermock-core.version>2.0.0</powermock-core.version>
-		<powermock-reflect.version>2.0.0</powermock-reflect.version>
-		<powermock-api-mockito.version>1.7.4</powermock-api-mockito.version>
-
+		
 
 		<!-- Maven plugin versions -->
 		<!-- *** Check for updates: mvn versions:display-plugin-updates -->
@@ -241,11 +235,6 @@
 				<groupId>org.apache.logging.log4j</groupId>
 				<artifactId>log4j-api</artifactId>
 				<version>${apache-logging.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.commons</groupId>
-				<artifactId>commons-lang3</artifactId>
-				<version>${apache-commons-lang3.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.logging.log4j</groupId>
@@ -425,36 +414,10 @@
 				<version>${hamcrest-all.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.powermock</groupId>
-				<artifactId>powermock-core</artifactId>
-				<version>${powermock-core.version}</version>
-			</dependency>
-			<dependency>
 				<groupId>org.mockito</groupId>
 				<artifactId>mockito-core</artifactId>
 				<version>${mockito-core.version}</version>
 			</dependency>
-			<dependency>
-				<groupId>org.mockito</groupId>
-				<artifactId>mockito-all</artifactId>
-				<version>${mockito-all.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.powermock</groupId>
-				<artifactId>powermock-module-junit4</artifactId>
-				<version>${powermock-module-junit4.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.powermock</groupId>
-				<artifactId>powermock-api-mockito</artifactId>
-				<version>${powermock-api-mockito.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.powermock</groupId>
-				<artifactId>powermock-reflect</artifactId>
-				<version>${powermock-reflect.version}</version>
-			</dependency>
-
 		</dependencies>
 	</dependencyManagement>
 

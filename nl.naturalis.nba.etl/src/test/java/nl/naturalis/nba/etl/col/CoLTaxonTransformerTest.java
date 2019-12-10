@@ -3,21 +3,15 @@ package nl.naturalis.nba.etl.col;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.when;
+
+import static org.mockito.Mockito.*;
 
 import java.util.List;
+import java.lang.reflect.Field;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.mockito.internal.util.reflection.Whitebox;
 
 import nl.naturalis.nba.api.model.DefaultClassification;
 import nl.naturalis.nba.api.model.ScientificName;
@@ -34,9 +28,6 @@ import nl.naturalis.nba.utils.reflect.ReflectionUtil;
 /**
  * Test class for CoLTaxonTransformer.java
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(CSVRecordInfo.class)
-@PowerMockIgnore("javax.management.*")
 @SuppressWarnings({"unchecked"})
 public class CoLTaxonTransformerTest {
 
@@ -61,11 +52,10 @@ public class CoLTaxonTransformerTest {
    * 
    * @throws Exception
    */
-  @Ignore
   @Test
   public void testDoTransform() throws Exception {
 
-    CSVRecordInfo<CoLTaxonCsvField> record = PowerMockito.mock(CSVRecordInfo.class);
+    CSVRecordInfo<CoLTaxonCsvField> record = mock(CSVRecordInfo.class);
     ETLStatistics etlStatistics = new ETLStatistics();
 
     when(record.get(CoLTaxonCsvField.taxonID)).thenReturn("6931872");
@@ -105,7 +95,7 @@ public class CoLTaxonTransformerTest {
     List<Taxon> list = (List<Taxon>) returned;
 
     String expectedId = "6931872@COL";
-    String expectedRecordURI = "http://www.catalogueoflife.org/annual-checklist/null/details/species/id/39ed89a52a61ef3a59eef66b9ce8ad7e";
+    String expectedRecordURI = "http://www.catalogueoflife.org/annual-checklist/details/species/id/39ed89a52a61ef3a59eef66b9ce8ad7e";
     String expectedAuthorshipVerbatim = "Cresson, 1863";
     String expectedScientificNameGroup = "bombus affinis test_infraspecificepithet";
     String expectedFullScientificName = "Bombus affinis Cresson, 1863";
@@ -130,11 +120,10 @@ public class CoLTaxonTransformerTest {
    * 
    * @throws Exception
    */
-  @Ignore
   @Test
   public void testGetClassification() throws Exception {
 
-    CSVRecordInfo<CoLTaxonCsvField> record = PowerMockito.mock(CSVRecordInfo.class);
+    CSVRecordInfo<CoLTaxonCsvField> record = mock(CSVRecordInfo.class);
     ETLStatistics etlStatistics = new ETLStatistics();
 
     when(record.get(CoLTaxonCsvField.taxonID)).thenReturn("6931872");
@@ -203,11 +192,10 @@ public class CoLTaxonTransformerTest {
    * 
    * @throws Exception
    */
-  @Ignore
   @Test
   public void testGetScientificName() throws Exception {
 
-    CSVRecordInfo<CoLTaxonCsvField> record = PowerMockito.mock(CSVRecordInfo.class);
+    CSVRecordInfo<CoLTaxonCsvField> record = mock(CSVRecordInfo.class);
     ETLStatistics etlStatistics = new ETLStatistics();
 
     when(record.get(CoLTaxonCsvField.taxonID)).thenReturn("6931872");
@@ -276,11 +264,10 @@ public class CoLTaxonTransformerTest {
    * 
    * @throws Exception
    */
-  @Ignore
   @Test
   public void testIsTestSetGenus() throws Exception {
 
-    CSVRecordInfo<CoLTaxonCsvField> record = PowerMockito.mock(CSVRecordInfo.class);
+    CSVRecordInfo<CoLTaxonCsvField> record = mock(CSVRecordInfo.class);
     ETLStatistics etlStatistics = new ETLStatistics();
 
     when(record.get(CoLTaxonCsvField.taxonID)).thenReturn("6931872");
@@ -314,8 +301,12 @@ public class CoLTaxonTransformerTest {
 
     CoLTaxonTransformer colTaxonTransformer = new CoLTaxonTransformer(etlStatistics);
     String[] testGenera = new String[] {"malus", "parus", "larus", "bombus", "rhododendron", "felix", "tulipa", "rosa", "canis", "passer", "trientalis"};
-    Whitebox.setInternalState(colTaxonTransformer, "testGenera", testGenera);
 
+    Class<CoLTaxonTransformer> testedClass = CoLTaxonTransformer.class;
+    Field privateField = testedClass.getDeclaredField("testGenera");
+    privateField.setAccessible(true);
+    privateField.set(colTaxonTransformer, testGenera);
+    
     CommonReflectionUtil.setField(AbstractTransformer.class, colTaxonTransformer, "objectID", "6931872");
     CommonReflectionUtil.setField(AbstractTransformer.class, colTaxonTransformer, "input", record);
 

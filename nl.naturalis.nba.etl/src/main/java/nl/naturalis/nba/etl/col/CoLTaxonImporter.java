@@ -73,7 +73,6 @@ public class CoLTaxonImporter extends CoLImporter {
       extractor.setDelimiter('\t');
       extractor.setQuote('\u0000'); // CoL export doesn't use quotes!
       transformer = new CoLTaxonTransformer(stats);
-      transformer.setColYear(colYear);
       transformer.setSuppressErrors(suppressErrors);
       if (toFile) {
         loader = new ColTaxonJsonNDWriter(f.getName(), stats);

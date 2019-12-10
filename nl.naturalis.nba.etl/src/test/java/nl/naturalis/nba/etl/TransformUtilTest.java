@@ -1,22 +1,16 @@
-/**
- * 
- */
 package nl.naturalis.nba.etl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+
 import nl.naturalis.nba.api.model.DefaultClassification;
 import nl.naturalis.nba.api.model.Monomial;
 import nl.naturalis.nba.api.model.MultiMediaContentIdentification;
@@ -30,9 +24,6 @@ import nl.naturalis.nba.api.model.Taxon;
  * Test class for Transformutil.java
  *
  */
-@PrepareForTest(TransformUtil.class)
-@PowerMockIgnore("javax.management.*")
-@RunWith(PowerMockRunner.class)
 public class TransformUtilTest {
 
   /**
@@ -52,10 +43,8 @@ public class TransformUtilTest {
    * Test method for
    * {@link nl.naturalis.nba.etl.TransformUtil#extractClassificiationFromName(nl.naturalis.nba.api.model.ScientificName)}.
    * 
-   * Test to verify extractClassificiationFromName method returns an expected DefaultClassification
-   * object
+   * Test to verify extractClassificiationFromName method returns an expected DefaultClassification object
    */
-  @Ignore
   @Test
   public void testExtractClassificiationFromName() {
 
@@ -81,7 +70,6 @@ public class TransformUtilTest {
    * 
    * Test to verify if getMonomialsInName returns an {@link List<@Monomial>} object
    */
-  @Ignore
   @Test
   public void testGetMonomialsInName() {
 
@@ -111,7 +99,6 @@ public class TransformUtilTest {
    * Test to verify if extractNameFromClassification method returns the expected
    * {@link DefaultClassification} object
    */
-  @Ignore
   @Test
   public void testExtractNameFromClassification() {
 
@@ -135,13 +122,11 @@ public class TransformUtilTest {
    * Test method for
    * {@link nl.naturalis.nba.etl.TransformUtil#equalizeNameComponents(nl.naturalis.nba.api.model.Taxon)}.
    *
-   * Test to verify if the equalizeNameComponents which takes in {@link Taxon} object is invoked or
-   * not
+   * Test to verify if the equalizeNameComponents which takes in {@link Taxon} object is invoked or not
    *
    * @throws NameMismatchException
    * 
    */
-  @Ignore
   @Test
   public void testEqualizeNameComponentsTaxon_01() throws NameMismatchException {
 
@@ -160,10 +145,12 @@ public class TransformUtilTest {
     Taxon taxon = new Taxon();
     taxon.setAcceptedName(name);
     taxon.setDefaultClassification(classification);
-    PowerMockito.mockStatic(TransformUtil.class);
-    TransformUtil.equalizeNameComponents(taxon);
-    PowerMockito.verifyStatic(TransformUtil.class, Mockito.times(1));
-    TransformUtil.equalizeNameComponents(taxon);
+
+    // TODO: unfinished unit test
+//    PowerMockito.mockStatic(TransformUtil.class);
+//    TransformUtil.equalizeNameComponents(taxon);
+//    PowerMockito.verifyStatic(TransformUtil.class, Mockito.times(1));
+//    TransformUtil.equalizeNameComponents(taxon);
 
   }
 
@@ -172,12 +159,12 @@ public class TransformUtilTest {
    * Test method for
    * {@link nl.naturalis.nba.etl.TransformUtil#equalizeNameComponents(nl.naturalis.nba.api.model.Taxon)}.
    *
-   * Test to verify if the equalizeNameComponents which takes in {@link Taxon} object throws a NameMismatchException if the DefaultClassification and ScientificName values are different 
+   * Test to verify if the equalizeNameComponents which takes in {@link Taxon} object throws a NameMismatchException 
+   * if the DefaultClassification and ScientificName values are different 
    *
    * @throws NameMismatchException
    * 
    */
-  @Ignore
   @Test(expected=NameMismatchException.class)
   public void testEqualizeNameComponentsTaxon_02() throws NameMismatchException {
 
@@ -212,7 +199,6 @@ public class TransformUtilTest {
    * @throws NameMismatchException
    * 
    */
-  @Ignore
   @Test(expected=NameMismatchException.class)
   public void testEqualizeNameComponentsTaxon_03() throws NameMismatchException {
 
@@ -248,7 +234,6 @@ public class TransformUtilTest {
    * 
    *
    */
-  @Ignore
   @Test(expected=NullPointerException.class)
   public void testEqualizeNameComponentsSpecimen() throws NameMismatchException {
 
@@ -275,8 +260,7 @@ public class TransformUtilTest {
    * Test method for
    * {@link nl.naturalis.nba.etl.TransformUtil#equalizeNameComponents(nl.naturalis.nba.api.model.MultiMediaObject))}.
    * 
-   * Test to verify if the equalizeNameComponents which takes in {@link MultiMediaObject} object is
-   * invoked or not
+   * Test to verify if the equalizeNameComponents which takes in {@link MultiMediaObject} object is invoked or not
    * 
    * @throws NameMismatchException
    */
@@ -306,11 +290,15 @@ public class TransformUtilTest {
     MultiMediaObject mmo = new MultiMediaObject();
     mmo.setIdentifications(identifications);
 
-    PowerMockito.mockStatic(TransformUtil.class);
-    TransformUtil.equalizeNameComponents(mmo);
-    PowerMockito.verifyStatic(TransformUtil.class, Mockito.times(1));
-    TransformUtil.equalizeNameComponents(mmo);
-
+    // TODO: unfinished unit test
+    
+//    PowerMockito.mockStatic(TransformUtil.class);
+//    TransformUtil.equalizeNameComponents(mmo);
+//    PowerMockito.verifyStatic(TransformUtil.class, Mockito.times(1));
+//    TransformUtil.equalizeNameComponents(mmo);
+    
+    // NOTE: you cannot mock a static method with Mockito
+    
   }
 
   /**
@@ -318,13 +306,11 @@ public class TransformUtilTest {
    * 
    * Test to verify guessMimeType returns the correct MimeType
    */
-  @Ignore
   @Test
   public void testGuessMimeType() {
 
     String expectedMimeType = "image/jpeg";
-    String actual = TransformUtil.guessMimeType(
-        "http://images.naturalis.nl/original/104527_zilvermeeuw-20130210-egmond_aan_zee-001arnold_wijker.jpg");
+    String actual = TransformUtil.guessMimeType("http://images.naturalis.nl/original/104527_zilvermeeuw-20130210-egmond_aan_zee-001arnold_wijker.jpg");
 
     assertNotNull("01",actual);
     assertEquals("02",expectedMimeType, actual);

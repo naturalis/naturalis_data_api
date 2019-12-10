@@ -1,343 +1,502 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<OAI-PMH xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/ http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd" xmlns="http://www.openarchives.org/OAI/2.0/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:atlantis="urn:atlantis" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  <responseDate>2017-10-11T11:58:32Z</responseDate>
-  <request verb="ListRecords" resumptionToken="2014-07-01T00:00:00Z__2015-01-01T00:00:00Z____oai_crs_object__800">https://crs.naturalis.nl/atlantispubliek/oai.axd</request>
-  <ListRecords>
-  <record>
-      <header>
-        <identifier>19507951</identifier>
-        <datestamp>2014-12-02T18:17:49Z</datestamp>
-        <setSpec>Media</setSpec>
-        <setSpec>Object</setSpec>
-      </header>
-      <metadata>
-        <oai_dc:dc xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd" xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:abcd="http://rs.tdwg.org/abcd/2.06/b/">
-          <ncrsSpecimen>
-            <abcd:UnitID>RMNH.ART.354</abcd:UnitID>
-            <abcd:RecordBasis>PreservedSpecimen</abcd:RecordBasis>
-            <abcd:SpecimenMount>PreservedSpecimen</abcd:SpecimenMount>
-            <abcd:SourceInstitutionID>RMNH</abcd:SourceInstitutionID>
-            <abcd:CollectionType>PreservedSpecimen</abcd:CollectionType>
-            <abcd:PreparationType>air dried</abcd:PreparationType>
-            <abcd:KindOfUnit>WholeOrganism</abcd:KindOfUnit>
-          </ncrsSpecimen>
-          <ncrsdatagroup>
-            <abcd:Sex>Male</abcd:Sex>
-            <abcd:PhaseOrStage>embryo</abcd:PhaseOrStage>
-            <abcd:AccessionSpecimenNumbers>1</abcd:AccessionSpecimenNumbers>
-            <abcd:Altitude />
-            <abcd:AltitudeUnit />
-            <abcd:Depth />
-            <abcd:DepthUnit />
-            <abcd:CollectingStartDate />
-            <abcd:CollectingEndDate />
-            <abcd:CollectorsFieldNumber />
-            <abcd:ProjectTitle />
-            <abcd:FromCaptivity />
-          </ncrsdatagroup>
-          <ncrsDetermination>
-            <abcd:PreferredFlag>1</abcd:PreferredFlag>
-            <abcd:FullScientificNameString>Cleyera japonica</abcd:FullScientificNameString>
-            <abcd:GenusOrMonomial>Cleyera</abcd:GenusOrMonomial>
-            <abcd:Subgenus />
-            <abcd:SpeciesEpithet>japonica</abcd:SpeciesEpithet>
-            <abcd:InfrasubspecificRank />
-            <abcd:subspeciesepithet />
-            <abcd:InfrasubspecificName />
-            <abcd:AuthorTeamOriginalAndYear />
-            <abcd:NomenclaturalTypeText>paralectotype</abcd:NomenclaturalTypeText>
-            <abcd:NameAddendum />
-            <abcd:IdentificationQualifier1 />
-            <abcd:IdentificationQualifier2 />
-            <abcd:IdentificationQualifier3 />
-            <abcd:InformalNameString />
-            <abcd:Identifier />
-            <abcd:IdentificationDate>19801122</abcd:IdentificationDate>
-            <abcd:VarietalNameString />
-            <abcd:RockType>Test_Rock</abcd:RockType>
-            <abcd:AssociatedFossilAssemblage>Test_Assemblage</abcd:AssociatedFossilAssemblage>
-            <abcd:RockMineralUsage>Test_Minerals</abcd:RockMineralUsage>
-          </ncrsDetermination>
-          <ncrsDetermination>
-            <abcd:PreferredFlag>1</abcd:PreferredFlag>
-            <abcd:FullScientificNameString>Malus halliana</abcd:FullScientificNameString>
-            <abcd:GenusOrMonomial>Malus</abcd:GenusOrMonomial>
-            <abcd:Subgenus />
-            <abcd:SpeciesEpithet>halliana</abcd:SpeciesEpithet>
-            <abcd:InfrasubspecificRank />
-            <abcd:subspeciesepithet />
-            <abcd:InfrasubspecificName />
-            <abcd:AuthorTeamOriginalAndYear />
-            <abcd:NomenclaturalTypeText />
-            <abcd:NameAddendum />
-            <abcd:IdentificationQualifier1 />
-            <abcd:IdentificationQualifier2 />
-            <abcd:IdentificationQualifier3 />
-            <abcd:InformalNameString />
-            <abcd:Identifier />
-            <abcd:IdentificationDate />
-            <abcd:VarietalNameString />
-            <abcd:RockType />
-            <abcd:AssociatedFossilAssemblage />
-            <abcd:RockMineralUsage />
-          </ncrsDetermination>
-          <ncrsDetermination>
-            <abcd:PreferredFlag>1</abcd:PreferredFlag>
-            <abcd:FullScientificNameString>Camellia japonica</abcd:FullScientificNameString>
-            <abcd:GenusOrMonomial>Camellia</abcd:GenusOrMonomial>
-            <abcd:Subgenus />
-            <abcd:SpeciesEpithet>japonica</abcd:SpeciesEpithet>
-            <abcd:InfrasubspecificRank />
-            <abcd:subspeciesepithet />
-            <abcd:InfrasubspecificName />
-            <abcd:AuthorTeamOriginalAndYear />
-            <abcd:NomenclaturalTypeText />
-            <abcd:NameAddendum />
-            <abcd:IdentificationQualifier1 />
-            <abcd:IdentificationQualifier2 />
-            <abcd:IdentificationQualifier3 />
-            <abcd:InformalNameString />
-            <abcd:Identifier />
-            <abcd:IdentificationDate />
-            <abcd:VarietalNameString />
-            <abcd:RockType />
-            <abcd:AssociatedFossilAssemblage />
-            <abcd:RockMineralUsage />
-          </ncrsDetermination>
-          <ncrsDetermination>
-            <abcd:PreferredFlag>1</abcd:PreferredFlag>
-            <abcd:FullScientificNameString>Celtis sinensis</abcd:FullScientificNameString>
-            <abcd:GenusOrMonomial>Celtis</abcd:GenusOrMonomial>
-            <abcd:Subgenus />
-            <abcd:SpeciesEpithet>sinensis</abcd:SpeciesEpithet>
-            <abcd:InfrasubspecificRank />
-            <abcd:subspeciesepithet />
-            <abcd:InfrasubspecificName />
-            <abcd:AuthorTeamOriginalAndYear />
-            <abcd:NomenclaturalTypeText />
-            <abcd:NameAddendum />
-            <abcd:IdentificationQualifier1 />
-            <abcd:IdentificationQualifier2 />
-            <abcd:IdentificationQualifier3 />
-            <abcd:InformalNameString />
-            <abcd:Identifier />
-            <abcd:IdentificationDate />
-            <abcd:VarietalNameString />
-            <abcd:RockType />
-            <abcd:AssociatedFossilAssemblage />
-            <abcd:RockMineralUsage />
-          </ncrsDetermination>
-          <ncrsDetermination>
-            <abcd:PreferredFlag>1</abcd:PreferredFlag>
-            <abcd:FullScientificNameString>Morus sp.</abcd:FullScientificNameString>
-            <abcd:GenusOrMonomial>Morus</abcd:GenusOrMonomial>
-            <abcd:Subgenus />
-            <abcd:SpeciesEpithet>sp.</abcd:SpeciesEpithet>
-            <abcd:InfrasubspecificRank />
-            <abcd:subspeciesepithet />
-            <abcd:InfrasubspecificName />
-            <abcd:AuthorTeamOriginalAndYear />
-            <abcd:NomenclaturalTypeText />
-            <abcd:NameAddendum />
-            <abcd:IdentificationQualifier1 />
-            <abcd:IdentificationQualifier2 />
-            <abcd:IdentificationQualifier3 />
-            <abcd:InformalNameString />
-            <abcd:Identifier />
-            <abcd:IdentificationDate />
-            <abcd:VarietalNameString />
-            <abcd:RockType />
-            <abcd:AssociatedFossilAssemblage />
-            <abcd:RockMineralUsage />
-          </ncrsDetermination>
-          <ncrsDetermination>
-            <abcd:PreferredFlag>1</abcd:PreferredFlag>
-            <abcd:FullScientificNameString>Castanopsis sieboldii</abcd:FullScientificNameString>
-            <abcd:GenusOrMonomial>Castanopsis</abcd:GenusOrMonomial>
-            <abcd:Subgenus />
-            <abcd:SpeciesEpithet>sieboldii</abcd:SpeciesEpithet>
-            <abcd:InfrasubspecificRank />
-            <abcd:subspeciesepithet />
-            <abcd:InfrasubspecificName />
-            <abcd:AuthorTeamOriginalAndYear />
-            <abcd:NomenclaturalTypeText />
-            <abcd:NameAddendum />
-            <abcd:IdentificationQualifier1 />
-            <abcd:IdentificationQualifier2 />
-            <abcd:IdentificationQualifier3 />
-            <abcd:InformalNameString />
-            <abcd:Identifier>Test Identifier</abcd:Identifier>
-            <abcd:IdentificationDate />
-            <abcd:VarietalNameString />
-            <abcd:RockType />
-            <abcd:AssociatedFossilAssemblage />
-            <abcd:RockMineralUsage />
-          </ncrsDetermination>
-          <ncrsGatheringSites>
-            <abcd:WorldRegion />
-            <abcd:Country>Netherlands</abcd:Country>
-            <abcd:ProvinceState>Noord Holland</abcd:ProvinceState>
-            <abcd:Locality>Amsterdam</abcd:Locality>
-            <abcd:Island />
-            <abcd:LocalityText>Dutch</abcd:LocalityText>
-            <abcd:SiteType />
-            <ncrsNamedAreas>
-              <abcd:AreaClass>county</abcd:AreaClass>
-              <abcd:AreaName>Atewa Range FR</abcd:AreaName>
-            </ncrsNamedAreas>
-            <ncrsNamedAreas>
-              <abcd:AreaClass>ContinenT</abcd:AreaClass>
-              <abcd:AreaName>Africa</abcd:AreaName>
-            </ncrsNamedAreas>
-            <ncrsNamedAreas>
-              <abcd:AreaClass>planet</abcd:AreaClass>
-              <abcd:AreaName>Earth</abcd:AreaName>
-            </ncrsNamedAreas>
-          </ncrsGatheringSites>
-          <ncrsSynecology>
-            <abcd:ResultRole>Associated species</abcd:ResultRole>
-            <abcd:KindOfUnit/>
-            <abcd:PhaseOrStage/>
-            <abcd:ScientificOrInformalName>Achillea millefolium</abcd:ScientificOrInformalName>
-            <abcd:Sex/>
-          </ncrsSynecology>
-          <ncrsSynecology>
-            <abcd:ResultRole>Host</abcd:ResultRole>
-            <abcd:ScientificOrInformalName>Achillea centefolium</abcd:ScientificOrInformalName>
-            <abcd:Sex/>
-          </ncrsSynecology>
-          <ncrsSynecology>
-            <abcd:ResultRole>foo</abcd:ResultRole>
-            <abcd:ScientificOrInformalName>bar</abcd:ScientificOrInformalName>
-          </ncrsSynecology>
-          <ncrsSynecology>
-            <abcd:ResultRole>parasite</abcd:ResultRole>
-            <abcd:ScientificOrInformalName/>
-          </ncrsSynecology>
-          <ncrsChronoStratigraphy>
-            <abcd:YoungRegionalSubstage>Test Regional Sub-Stage</abcd:YoungRegionalSubstage>
-            <abcd:YoungRegionalStage>Test Regional Stage</abcd:YoungRegionalStage>
-            <abcd:YoungRegionalSeries/>
-            <abcd:YoungDatingQualifier/>
-            <abcd:YoungInternSystem/>
-            <abcd:YoungInternSubstage/>
-            <abcd:YoungInternStage/>
-            <abcd:YoungInternSeries/>
-            <abcd:YoungInternErathem/>
-            <abcd:YoungInternEonothem/>
-            <abcd:YoungChronoName>CRETACEOUS</abcd:YoungChronoName>
-            <abcd:YoungCertainty/>
-            <abcd:OldDatingQualifier/>
-            <abcd:ChronoPreferredFlag>1</abcd:ChronoPreferredFlag>
-            <abcd:OldRegionalSubstage/>
-            <abcd:OldRegionalStage/>
-            <abcd:OldRegionalSeries/>
-            <abcd:OldInternSystem/>
-            <abcd:OldInternSubstage/>
-            <abcd:OldInternStage/>
-            <abcd:OldInternSeries/>
-            <abcd:OldInternErathem/>
-            <abcd:OldInternEonothem/>
-            <abcd:OldChronoName>CRETACEOUS</abcd:OldChronoName>
-            <abcd:ChronoIdentifier/>
-            <abcd:OldCertainty/>
-          </ncrsChronoStratigraphy>
-          <ncrsLithoStratigraphy>
-            <abcd:Supergroup2/>
-            <abcd:Supergroup/>
-            <abcd:Qualifier2/>
-            <abcd:Qualifier/>
-            <abcd:PreferredFlag>1</abcd:PreferredFlag>
-            <abcd:Member2/>
-            <abcd:Member/>
-            <abcd:InformalName2/>
-            <abcd:InformalName/>
-            <abcd:ImportedName2/>
-            <abcd:IMPORTEDNAME1>APTIAN U.</abcd:IMPORTEDNAME1>
-            <abcd:LithoIdentifier/>
-            <abcd:Formation2/>
-            <abcd:FormationGroup2/>
-            <abcd:FormationGroup/>
-            <abcd:Formation/>
-            <abcd:Certainty2/>
-            <abcd:Certainty/>
-            <abcd:Bed2/>
-            <abcd:Bed/>
-          </ncrsLithoStratigraphy>
-          <ncrsBioStratigraphy>
-            <abcd:YoungBioDatingQualifier/>
-            <abcd:YoungBioName>Test Bio Name</abcd:YoungBioName>
-            <abcd:YoungFossilZone>Test Young Fossil Zone</abcd:YoungFossilZone>
-            <abcd:YoungFossilSubZone/>
-            <abcd:YoungBioCertainty/>
-            <abcd:YoungStratType/>
-            <abcd:BioDatingQualifier/>
-            <abcd:BioPreferredFlag>0</abcd:BioPreferredFlag>
-            <abcd:RangePosition/>
-            <abcd:OldBioName>Hiatella arctica Acme Zone</abcd:OldBioName>
-            <abcd:BioIdentifier/>
-            <abcd:OldFossilzone/>
-            <abcd:OldFossilSubzone/>
-            <abcd:OldBioCertainty/>
-            <abcd:OldBioStratType/>
-          </ncrsBioStratigraphy>
-          <ncrsBioStratigraphy>
-            <abcd:YoungBioDatingQualifier/>
-            <abcd:YoungBioName/>
-            <abcd:YoungFossilZone/>
-            <abcd:YoungFossilSubZone/>
-            <abcd:YoungBioCertainty/>
-            <abcd:YoungStratType/>
-            <abcd:BioDatingQualifier/>
-            <abcd:BioPreferredFlag>0</abcd:BioPreferredFlag>
-            <abcd:RangePosition/>
-            <abcd:OldBioName>base of Astarte radiata Acme Zone</abcd:OldBioName>
-            <abcd:BioIdentifier/>
-            <abcd:OldFossilzone/>
-            <abcd:OldFossilSubzone/>
-            <abcd:OldBioCertainty/>
-            <abcd:OldBioStratType/>
-          </ncrsBioStratigraphy>
-          <ncrsLithoStratigraphy>
-            <abcd:Supergroup2/>
-            <abcd:Supergroup/>
-            <abcd:Qualifier2/>
-            <abcd:Qualifier>Test Qualifier</abcd:Qualifier>
-            <abcd:PreferredFlag>1</abcd:PreferredFlag>
-            <abcd:Member2/>
-            <abcd:Member/>
-            <abcd:InformalName2/>
-            <abcd:InformalName>Test InfoName</abcd:InformalName>
-            <abcd:ImportedName2/>
-            <abcd:IMPORTEDNAME1>APTIAN U.</abcd:IMPORTEDNAME1>
-            <abcd:LithoIdentifier/>
-            <abcd:Formation2/>
-            <abcd:FormationGroup2/>
-            <abcd:FormationGroup/>
-            <abcd:Formation/>
-            <abcd:Certainty2/>
-            <abcd:Certainty/>
-            <abcd:Bed2/>
-            <abcd:Bed>Test Bed</abcd:Bed>
-          </ncrsLithoStratigraphy>
-                    
-          <abcd:Title>RMNH.ART</abcd:Title>
-          <abcd:Url>
-                    http://crs.naturalis.nl/HttpHandler/icoon.ico?file=71612741</abcd:Url>
-          <abcd:MultiMediaPublic>1</abcd:MultiMediaPublic>
-          <abcd:fileuri />
-          <abcd:Title>RMNH.ART.354</abcd:Title>
-          <abcd:Url>
-                    http://crs.naturalis.nl/HttpHandler/icoon.ico?file=19507948</abcd:Url>
-          <abcd:MultiMediaPublic>1</abcd:MultiMediaPublic>
-          <abcd:fileuri />
-          <ncrsCollectionUnitHistory>
-            <abcd:PreviousSourceName>AAA</abcd:PreviousSourceName>
-            <abcd:PreviousSourceName>OOO</abcd:PreviousSourceName>
-          </ncrsCollectionUnitHistory>
-          <abcd:ObjectPublic>1</abcd:ObjectPublic>
-        </oai_dc:dc>
-      </metadata>
-    </record>
-  </ListRecords>
+<OAI-PMH
+	xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/ http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd"
+	xmlns="http://www.openarchives.org/OAI/2.0/"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:atlantis="urn:atlantis"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<responseDate>2017-10-11T11:58:32Z</responseDate>
+	<request verb="ListRecords"
+		resumptionToken="2014-07-01T00:00:00Z__2015-01-01T00:00:00Z____oai_crs_object__800">https://crs.naturalis.nl/atlantispubliek/oai.axd</request>
+	<ListRecords>
+		<record>
+			<header>
+				<identifier>19507951</identifier>
+				<datestamp>2014-12-02T18:17:49Z</datestamp>
+				<setSpec>Media</setSpec>
+				<setSpec>Object</setSpec>
+			</header>
+			<metadata>
+				<oai_dc:dc
+					xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd"
+					xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/"
+					xmlns:abcd="http://rs.tdwg.org/abcd/2.06/b/">
+					<ncrsSpecimen>
+						<abcd:UnitID>RMNH.ART.354</abcd:UnitID>
+						<abcd:RecordBasis>PreservedSpecimen</abcd:RecordBasis>
+						<abcd:SpecimenMount>PreservedSpecimen</abcd:SpecimenMount>
+						<abcd:SourceInstitutionID>RMNH</abcd:SourceInstitutionID>
+						<abcd:CollectionType>PreservedSpecimen</abcd:CollectionType>
+						<abcd:PreparationType>air dried</abcd:PreparationType>
+						<abcd:KindOfUnit>WholeOrganism</abcd:KindOfUnit>
+					</ncrsSpecimen>
+					<ncrsdatagroup>
+						<abcd:Sex>Male</abcd:Sex>
+						<abcd:PhaseOrStage>embryo</abcd:PhaseOrStage>
+						<abcd:AccessionSpecimenNumbers>1</abcd:AccessionSpecimenNumbers>
+						<abcd:Altitude />
+						<abcd:AltitudeUnit />
+						<abcd:Depth />
+						<abcd:DepthUnit />
+						<abcd:CollectingStartDate />
+						<abcd:CollectingEndDate />
+						<abcd:CollectorsFieldNumber />
+						<abcd:ProjectTitle />
+						<abcd:FromCaptivity />
+					</ncrsdatagroup>
+					<ncrsDetermination>
+						<abcd:PreferredFlag>0</abcd:PreferredFlag>
+						<abcd:FullScientificNameString>Malus halliana
+						</abcd:FullScientificNameString>
+						<abcd:GenusOrMonomial>Malus</abcd:GenusOrMonomial>
+						<abcd:Subgenus />
+						<abcd:SpeciesEpithet>halliana</abcd:SpeciesEpithet>
+						<abcd:InfrasubspecificRank />
+						<abcd:subspeciesepithet />
+						<abcd:InfrasubspecificName />
+						<abcd:AuthorTeamOriginalAndYear />
+						<abcd:NomenclaturalTypeText />
+						<abcd:NameAddendum />
+						<abcd:IdentificationQualifier1 />
+						<abcd:IdentificationQualifier2 />
+						<abcd:IdentificationQualifier3 />
+						<abcd:InformalNameString />
+						<abcd:Identifier />
+						<abcd:IdentificationDate />
+						<abcd:VarietalNameString />
+						<abcd:RockType />
+						<abcd:AssociatedFossilAssemblage />
+						<abcd:RockMineralUsage />
+					</ncrsDetermination>
+					<ncrsDetermination>
+						<abcd:PreferredFlag>1</abcd:PreferredFlag>
+						<abcd:FullScientificNameString>Cleyera japonica</abcd:FullScientificNameString>
+						<abcd:GenusOrMonomial>Cleyera</abcd:GenusOrMonomial>
+						<abcd:Subgenus />
+						<abcd:SpeciesEpithet>japonica</abcd:SpeciesEpithet>
+						<abcd:InfrasubspecificRank />
+						<abcd:subspeciesepithet />
+						<abcd:InfrasubspecificName />
+						<abcd:AuthorTeamOriginalAndYear />
+						<abcd:NomenclaturalTypeText>paralectotype
+						</abcd:NomenclaturalTypeText>
+						<abcd:NameAddendum />
+						<abcd:IdentificationQualifier1 />
+						<abcd:IdentificationQualifier2 />
+						<abcd:IdentificationQualifier3 />
+						<abcd:InformalNameString />
+						<abcd:Identifier>Co de Boswachter</abcd:Identifier>
+						<abcd:IdentificationDate>19801122</abcd:IdentificationDate>
+						<abcd:VarietalNameString />
+						<abcd:RockType>Test_Rock</abcd:RockType>
+						<abcd:AssociatedFossilAssemblage>Test_Assemblage
+						</abcd:AssociatedFossilAssemblage>
+						<abcd:RockMineralUsage>Test_Minerals</abcd:RockMineralUsage>
+					</ncrsDetermination>
+					
+					<ncrsDetermination>
+						<abcd:PreferredFlag>1</abcd:PreferredFlag>
+						<abcd:FullScientificNameString>fullscientificnametest01</abcd:FullScientificNameString>
+						<abcd:GenusOrMonomial>Aaaaa</abcd:GenusOrMonomial>
+						<abcd:Subgenus>bbbbb</abcd:Subgenus>
+						<abcd:SpeciesEpithet>ccccc</abcd:SpeciesEpithet>
+						<abcd:subspeciesepithet>ddddd</abcd:subspeciesepithet>
+						<abcd:InfrasubspecificName>eeeee</abcd:InfrasubspecificName>
+						<abcd:InfrasubspecificRank />
+						<abcd:AuthorTeamOriginalAndYear>Zzz1234</abcd:AuthorTeamOriginalAndYear>
+						<abcd:NomenclaturalTypeText>paralectotype
+						</abcd:NomenclaturalTypeText>
+						<abcd:NameAddendum />
+						<abcd:IdentificationQualifier1 />
+						<abcd:IdentificationQualifier2 />
+						<abcd:IdentificationQualifier3 />
+						<abcd:InformalNameString />
+						<abcd:Identifier>Co de Boswachter</abcd:Identifier>
+						<abcd:IdentificationDate>19801122</abcd:IdentificationDate>
+						<abcd:VarietalNameString />
+						<abcd:RockType>Test_Rock</abcd:RockType>
+						<abcd:AssociatedFossilAssemblage>Test_Assemblage
+						</abcd:AssociatedFossilAssemblage>
+						<abcd:RockMineralUsage>Test_Minerals</abcd:RockMineralUsage>
+					</ncrsDetermination>
+					
+					<ncrsDetermination>
+						<abcd:PreferredFlag>1</abcd:PreferredFlag>
+						<abcd:FullScientificNameString>fullscientificnametest02</abcd:FullScientificNameString>
+						<abcd:GenusOrMonomial>Aaaaa</abcd:GenusOrMonomial>
+						<abcd:Subgenus>bbbbb</abcd:Subgenus>
+						<abcd:SpeciesEpithet>ccccc</abcd:SpeciesEpithet>
+						<abcd:subspeciesepithet />
+						<abcd:InfrasubspecificName>eeeee</abcd:InfrasubspecificName>
+						<abcd:InfrasubspecificRank />
+						<abcd:AuthorTeamOriginalAndYear>Zzz1234</abcd:AuthorTeamOriginalAndYear>
+						<abcd:NomenclaturalTypeText>paralectotype</abcd:NomenclaturalTypeText>
+						<abcd:NameAddendum />
+						<abcd:IdentificationQualifier1 />
+						<abcd:IdentificationQualifier2 />
+						<abcd:IdentificationQualifier3 />
+						<abcd:InformalNameString />
+						<abcd:Identifier>Co de Boswachter</abcd:Identifier>
+						<abcd:IdentificationDate>19801122</abcd:IdentificationDate>
+						<abcd:VarietalNameString />
+						<abcd:RockType>Test_Rock</abcd:RockType>
+						<abcd:AssociatedFossilAssemblage>Test_Assemblage
+						</abcd:AssociatedFossilAssemblage>
+						<abcd:RockMineralUsage>Test_Minerals</abcd:RockMineralUsage>
+					</ncrsDetermination>
+					
+					<ncrsDetermination>
+						<abcd:PreferredFlag>1</abcd:PreferredFlag>
+						<abcd:FullScientificNameString>fullscientificnametest03</abcd:FullScientificNameString>
+						<abcd:GenusOrMonomial />
+						<abcd:Subgenus>bbbbb</abcd:Subgenus>
+						<abcd:SpeciesEpithet>ccccc</abcd:SpeciesEpithet>
+						<abcd:subspeciesepithet />
+						<abcd:InfrasubspecificName>eeeee</abcd:InfrasubspecificName>
+						<abcd:InfrasubspecificRank />
+						<abcd:AuthorTeamOriginalAndYear>Zzz1234
+						</abcd:AuthorTeamOriginalAndYear>
+						<abcd:NomenclaturalTypeText>paralectotype
+						</abcd:NomenclaturalTypeText>
+						<abcd:NameAddendum />
+						<abcd:IdentificationQualifier1 />
+						<abcd:IdentificationQualifier2 />
+						<abcd:IdentificationQualifier3 />
+						<abcd:InformalNameString>TEST</abcd:InformalNameString>
+						<abcd:Identifier>Co de Boswachter</abcd:Identifier>
+						<abcd:IdentificationDate>19801122</abcd:IdentificationDate>
+						<abcd:VarietalNameString />
+						<abcd:RockType>Test_Rock</abcd:RockType>
+						<abcd:AssociatedFossilAssemblage>Test_Assemblage
+						</abcd:AssociatedFossilAssemblage>
+						<abcd:RockMineralUsage>Test_Minerals</abcd:RockMineralUsage>
+						<ncrsHighername>
+							<abcd:taxonCoverage>Mollusca</abcd:taxonCoverage>
+							<abcd:HigherTaxonRank>phylum</abcd:HigherTaxonRank>
+						</ncrsHighername>
+						<ncrsHighername>
+							<abcd:taxonCoverage>Gastropoda</abcd:taxonCoverage>
+							<abcd:HigherTaxonRank>class</abcd:HigherTaxonRank>
+						</ncrsHighername>
+						<ncrsHighername>
+							<abcd:taxonCoverage>Cypraeidae</abcd:taxonCoverage>
+							<abcd:HigherTaxonRank>family</abcd:HigherTaxonRank>
+						</ncrsHighername>
+						<ncrsHighername>
+							<abcd:taxonCoverage>Cypraeovulinae</abcd:taxonCoverage>
+							<abcd:HigherTaxonRank>subfamily</abcd:HigherTaxonRank>
+						</ncrsHighername>
+					</ncrsDetermination>
+					
+                    <ncrsDetermination>
+                        <abcd:PreferredFlag>1</abcd:PreferredFlag>
+                        <abcd:FullScientificNameString />
+                        <abcd:GenusOrMonomial />
+                        <abcd:Subgenus>bbbbb</abcd:Subgenus>
+                        <abcd:SpeciesEpithet>ccccc</abcd:SpeciesEpithet>
+                        <abcd:subspeciesepithet />
+                        <abcd:InfrasubspecificName>eeeee</abcd:InfrasubspecificName>
+                        <abcd:InfrasubspecificRank />
+                        <abcd:AuthorTeamOriginalAndYear>Zzz1234
+                        </abcd:AuthorTeamOriginalAndYear>
+                        <abcd:NomenclaturalTypeText>paralectotype
+                        </abcd:NomenclaturalTypeText>
+                        <abcd:NameAddendum />
+                        <abcd:IdentificationQualifier1 />
+                        <abcd:IdentificationQualifier2 />
+                        <abcd:IdentificationQualifier3 />
+                        <abcd:InformalNameString>fullscientificnametest04</abcd:InformalNameString>
+                        <abcd:Identifier>Co de Boswachter</abcd:Identifier>
+                        <abcd:IdentificationDate>19801122</abcd:IdentificationDate>
+                        <abcd:VarietalNameString />
+                        <abcd:RockType />
+                        <abcd:AssociatedFossilAssemblage />
+                        <abcd:RockMineralUsage />
+                        <ncrsHighername>
+                            <abcd:taxonCoverage>Mollusca</abcd:taxonCoverage>
+                            <abcd:HigherTaxonRank>phylum</abcd:HigherTaxonRank>
+                        </ncrsHighername>
+                        <ncrsHighername>
+                            <abcd:taxonCoverage>Gastropoda</abcd:taxonCoverage>
+                            <abcd:HigherTaxonRank>class</abcd:HigherTaxonRank>
+                        </ncrsHighername>
+                        <ncrsHighername>
+                            <abcd:taxonCoverage>Cypraeidae</abcd:taxonCoverage>
+                            <abcd:HigherTaxonRank>family</abcd:HigherTaxonRank>
+                        </ncrsHighername>
+                        <ncrsHighername>
+                            <abcd:taxonCoverage>Cypraeovulinae</abcd:taxonCoverage>
+                            <abcd:HigherTaxonRank>subfamily</abcd:HigherTaxonRank>
+                        </ncrsHighername>
+                    </ncrsDetermination>
+					<ncrsDetermination>
+						<abcd:PreferredFlag>0</abcd:PreferredFlag>
+						<abcd:FullScientificNameString>Camellia japonica
+						</abcd:FullScientificNameString>
+						<abcd:GenusOrMonomial>Camellia</abcd:GenusOrMonomial>
+						<abcd:Subgenus />
+						<abcd:SpeciesEpithet>japonica</abcd:SpeciesEpithet>
+						<abcd:InfrasubspecificRank />
+						<abcd:subspeciesepithet />
+						<abcd:InfrasubspecificName />
+						<abcd:AuthorTeamOriginalAndYear />
+						<abcd:NomenclaturalTypeText />
+						<abcd:NameAddendum />
+						<abcd:IdentificationQualifier1 />
+						<abcd:IdentificationQualifier2 />
+						<abcd:IdentificationQualifier3 />
+						<abcd:InformalNameString />
+						<abcd:Identifier />
+						<abcd:IdentificationDate />
+						<abcd:VarietalNameString />
+						<abcd:RockType />
+						<abcd:AssociatedFossilAssemblage />
+						<abcd:RockMineralUsage />
+					</ncrsDetermination>
+					<ncrsDetermination>
+						<abcd:PreferredFlag>0</abcd:PreferredFlag>
+						<abcd:FullScientificNameString>Celtis sinensis
+						</abcd:FullScientificNameString>
+						<abcd:GenusOrMonomial>Celtis</abcd:GenusOrMonomial>
+						<abcd:Subgenus />
+						<abcd:SpeciesEpithet>sinensis</abcd:SpeciesEpithet>
+						<abcd:InfrasubspecificRank />
+						<abcd:subspeciesepithet />
+						<abcd:InfrasubspecificName />
+						<abcd:AuthorTeamOriginalAndYear />
+						<abcd:NomenclaturalTypeText />
+						<abcd:NameAddendum />
+						<abcd:IdentificationQualifier1 />
+						<abcd:IdentificationQualifier2 />
+						<abcd:IdentificationQualifier3 />
+						<abcd:InformalNameString />
+						<abcd:Identifier />
+						<abcd:IdentificationDate />
+						<abcd:VarietalNameString />
+						<abcd:RockType />
+						<abcd:AssociatedFossilAssemblage />
+						<abcd:RockMineralUsage />
+					</ncrsDetermination>
+					<ncrsDetermination>
+						<abcd:PreferredFlag>0</abcd:PreferredFlag>
+						<abcd:FullScientificNameString>Morus sp.
+						</abcd:FullScientificNameString>
+						<abcd:GenusOrMonomial>Morus</abcd:GenusOrMonomial>
+						<abcd:Subgenus />
+						<abcd:SpeciesEpithet>sp.</abcd:SpeciesEpithet>
+						<abcd:InfrasubspecificRank />
+						<abcd:subspeciesepithet />
+						<abcd:InfrasubspecificName />
+						<abcd:AuthorTeamOriginalAndYear />
+						<abcd:NomenclaturalTypeText />
+						<abcd:NameAddendum />
+						<abcd:IdentificationQualifier1 />
+						<abcd:IdentificationQualifier2 />
+						<abcd:IdentificationQualifier3 />
+						<abcd:InformalNameString />
+						<abcd:Identifier />
+						<abcd:IdentificationDate />
+						<abcd:VarietalNameString />
+						<abcd:RockType />
+						<abcd:AssociatedFossilAssemblage />
+						<abcd:RockMineralUsage />
+					</ncrsDetermination>
+					<ncrsDetermination>
+						<abcd:PreferredFlag>1</abcd:PreferredFlag>
+						<abcd:FullScientificNameString>Castanopsis sieboldii</abcd:FullScientificNameString>
+						<abcd:GenusOrMonomial>Castanopsis</abcd:GenusOrMonomial>
+						<abcd:Subgenus />
+						<abcd:SpeciesEpithet>sieboldii</abcd:SpeciesEpithet>
+						<abcd:InfrasubspecificRank />
+						<abcd:subspeciesepithet />
+						<abcd:InfrasubspecificName />
+						<abcd:AuthorTeamOriginalAndYear />
+						<abcd:NomenclaturalTypeText />
+						<abcd:NameAddendum />
+						<abcd:IdentificationQualifier1 />
+						<abcd:IdentificationQualifier2 />
+						<abcd:IdentificationQualifier3 />
+						<abcd:InformalNameString />
+						<abcd:Identifier>Test Identifier</abcd:Identifier>
+						<abcd:IdentificationDate />
+						<abcd:VarietalNameString />
+						<abcd:RockType />
+						<abcd:AssociatedFossilAssemblage />
+						<abcd:RockMineralUsage />
+					</ncrsDetermination>
+					<ncrsGatheringSites>
+						<abcd:WorldRegion />
+						<abcd:Country>Netherlands</abcd:Country>
+						<abcd:ProvinceState>Noord Holland</abcd:ProvinceState>
+						<abcd:Locality>Amsterdam</abcd:Locality>
+						<abcd:Island />
+						<abcd:LocalityText>Dutch</abcd:LocalityText>
+						<abcd:SiteType />
+						<ncrsNamedAreas>
+							<abcd:AreaClass>county</abcd:AreaClass>
+							<abcd:AreaName>Atewa Range FR</abcd:AreaName>
+						</ncrsNamedAreas>
+						<ncrsNamedAreas>
+							<abcd:AreaClass>ContinenT</abcd:AreaClass>
+							<abcd:AreaName>Africa</abcd:AreaName>
+						</ncrsNamedAreas>
+						<ncrsNamedAreas>
+							<abcd:AreaClass>planet</abcd:AreaClass>
+							<abcd:AreaName>Earth</abcd:AreaName>
+						</ncrsNamedAreas>
+					</ncrsGatheringSites>
+					<ncrsSynecology>
+						<abcd:ResultRole>Associated species</abcd:ResultRole>
+						<abcd:KindOfUnit />
+						<abcd:PhaseOrStage />
+						<abcd:ScientificOrInformalName>Achillea millefolium
+						</abcd:ScientificOrInformalName>
+						<abcd:Sex />
+					</ncrsSynecology>
+					<ncrsSynecology>
+						<abcd:ResultRole>Host</abcd:ResultRole>
+						<abcd:ScientificOrInformalName>Achillea centefolium
+						</abcd:ScientificOrInformalName>
+						<abcd:Sex />
+					</ncrsSynecology>
+					<ncrsSynecology>
+						<abcd:ResultRole>foo</abcd:ResultRole>
+						<abcd:ScientificOrInformalName>bar</abcd:ScientificOrInformalName>
+					</ncrsSynecology>
+					<ncrsSynecology>
+						<abcd:ResultRole>parasite</abcd:ResultRole>
+						<abcd:ScientificOrInformalName />
+					</ncrsSynecology>
+					<ncrsChronoStratigraphy>
+						<abcd:YoungRegionalSubstage>Test Regional Sub-Stage
+						</abcd:YoungRegionalSubstage>
+						<abcd:YoungRegionalStage>Test Regional Stage
+						</abcd:YoungRegionalStage>
+						<abcd:YoungRegionalSeries />
+						<abcd:YoungDatingQualifier />
+						<abcd:YoungInternSystem />
+						<abcd:YoungInternSubstage />
+						<abcd:YoungInternStage />
+						<abcd:YoungInternSeries />
+						<abcd:YoungInternErathem />
+						<abcd:YoungInternEonothem />
+						<abcd:YoungChronoName>CRETACEOUS</abcd:YoungChronoName>
+						<abcd:YoungCertainty />
+						<abcd:OldDatingQualifier />
+						<abcd:ChronoPreferredFlag>1</abcd:ChronoPreferredFlag>
+						<abcd:OldRegionalSubstage />
+						<abcd:OldRegionalStage />
+						<abcd:OldRegionalSeries />
+						<abcd:OldInternSystem />
+						<abcd:OldInternSubstage />
+						<abcd:OldInternStage />
+						<abcd:OldInternSeries />
+						<abcd:OldInternErathem />
+						<abcd:OldInternEonothem />
+						<abcd:OldChronoName>CRETACEOUS</abcd:OldChronoName>
+						<abcd:ChronoIdentifier />
+						<abcd:OldCertainty />
+					</ncrsChronoStratigraphy>
+					<ncrsLithoStratigraphy>
+						<abcd:Supergroup2 />
+						<abcd:Supergroup />
+						<abcd:Qualifier2 />
+						<abcd:Qualifier />
+						<abcd:PreferredFlag>1</abcd:PreferredFlag>
+						<abcd:Member2 />
+						<abcd:Member />
+						<abcd:InformalName2 />
+						<abcd:InformalName />
+						<abcd:ImportedName2 />
+						<abcd:IMPORTEDNAME1>APTIAN U.</abcd:IMPORTEDNAME1>
+						<abcd:LithoIdentifier />
+						<abcd:Formation2 />
+						<abcd:FormationGroup2 />
+						<abcd:FormationGroup />
+						<abcd:Formation />
+						<abcd:Certainty2 />
+						<abcd:Certainty />
+						<abcd:Bed2 />
+						<abcd:Bed />
+					</ncrsLithoStratigraphy>
+					<ncrsBioStratigraphy>
+						<abcd:YoungBioDatingQualifier />
+						<abcd:YoungBioName>Test Bio Name</abcd:YoungBioName>
+						<abcd:YoungFossilZone>Test Young Fossil Zone
+						</abcd:YoungFossilZone>
+						<abcd:YoungFossilSubZone />
+						<abcd:YoungBioCertainty />
+						<abcd:YoungStratType />
+						<abcd:BioDatingQualifier />
+						<abcd:BioPreferredFlag>0</abcd:BioPreferredFlag>
+						<abcd:RangePosition />
+						<abcd:OldBioName>Hiatella arctica Acme Zone</abcd:OldBioName>
+						<abcd:BioIdentifier />
+						<abcd:OldFossilzone />
+						<abcd:OldFossilSubzone />
+						<abcd:OldBioCertainty />
+						<abcd:OldBioStratType />
+					</ncrsBioStratigraphy>
+					<ncrsBioStratigraphy>
+						<abcd:YoungBioDatingQualifier />
+						<abcd:YoungBioName />
+						<abcd:YoungFossilZone />
+						<abcd:YoungFossilSubZone />
+						<abcd:YoungBioCertainty />
+						<abcd:YoungStratType />
+						<abcd:BioDatingQualifier />
+						<abcd:BioPreferredFlag>0</abcd:BioPreferredFlag>
+						<abcd:RangePosition />
+						<abcd:OldBioName>base of Astarte radiata Acme Zone
+						</abcd:OldBioName>
+						<abcd:BioIdentifier />
+						<abcd:OldFossilzone />
+						<abcd:OldFossilSubzone />
+						<abcd:OldBioCertainty />
+						<abcd:OldBioStratType />
+					</ncrsBioStratigraphy>
+					<ncrsLithoStratigraphy>
+						<abcd:Supergroup2 />
+						<abcd:Supergroup />
+						<abcd:Qualifier2 />
+						<abcd:Qualifier>Test Qualifier</abcd:Qualifier>
+						<abcd:PreferredFlag>1</abcd:PreferredFlag>
+						<abcd:Member2 />
+						<abcd:Member />
+						<abcd:InformalName2 />
+						<abcd:InformalName>Test InfoName</abcd:InformalName>
+						<abcd:ImportedName2 />
+						<abcd:IMPORTEDNAME1>APTIAN U.</abcd:IMPORTEDNAME1>
+						<abcd:LithoIdentifier />
+						<abcd:Formation2 />
+						<abcd:FormationGroup2 />
+						<abcd:FormationGroup />
+						<abcd:Formation />
+						<abcd:Certainty2 />
+						<abcd:Certainty />
+						<abcd:Bed2 />
+						<abcd:Bed>Test Bed</abcd:Bed>
+					</ncrsLithoStratigraphy>
+
+					<abcd:Title>RMNH.ART</abcd:Title>
+					<abcd:Url>
+						http://crs.naturalis.nl/HttpHandler/icoon.ico?file=71612741
+					</abcd:Url>
+					<abcd:MultiMediaPublic>1</abcd:MultiMediaPublic>
+					<abcd:fileuri />
+					<abcd:Title>RMNH.ART.354</abcd:Title>
+					<abcd:Url>
+						http://crs.naturalis.nl/HttpHandler/icoon.ico?file=19507948
+					</abcd:Url>
+					<abcd:MultiMediaPublic>1</abcd:MultiMediaPublic>
+					<abcd:fileuri />
+					<ncrsCollectionUnitHistory>
+						<abcd:PreviousSourceName>AAA</abcd:PreviousSourceName>
+						<abcd:PreviousSourceName>OOO</abcd:PreviousSourceName>
+					</ncrsCollectionUnitHistory>
+					<abcd:ObjectPublic>1</abcd:ObjectPublic>
+				</oai_dc:dc>
+			</metadata>
+		</record>
+	</ListRecords>
 </OAI-PMH>

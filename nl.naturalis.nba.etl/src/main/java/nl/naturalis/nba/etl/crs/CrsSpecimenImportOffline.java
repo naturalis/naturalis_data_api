@@ -87,7 +87,7 @@ public class CrsSpecimenImportOffline {
 
 	/**
 	 * Import specimens from the data directory configured in
-	 * nda-import.properties.
+	 * nba-import.properties.
 	 */
 	public void importSpecimens()
 	{

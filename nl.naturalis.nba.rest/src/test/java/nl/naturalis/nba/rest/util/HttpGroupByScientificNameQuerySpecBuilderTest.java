@@ -4,10 +4,11 @@ import static nl.naturalis.nba.api.ComparisonOperator.EQUALS;
 import static nl.naturalis.nba.api.ComparisonOperator.EQUALS_IC;
 import static nl.naturalis.nba.api.ComparisonOperator.NOT_EQUALS;
 import static nl.naturalis.nba.utils.ConfigObject.isTrueValue;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+
+import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -331,8 +332,7 @@ public class HttpGroupByScientificNameQuerySpecBuilderTest {
 
 		UriInfo uriInfo = mock(UriInfo.class);
 		when(uriInfo.getQueryParameters()).thenReturn(parameterMap);
-		GroupByScientificNameQuerySpec qs = new HttpGroupByScientificNameQuerySpecBuilder(uriInfo)
-				.build();
+		GroupByScientificNameQuerySpec qs = new HttpGroupByScientificNameQuerySpecBuilder(uriInfo).build();
 
 		List<Path> fieldsActual = qs.getFields();
 		assertTrue("Test filter", fieldsExpected.equals(fieldsActual));
@@ -358,8 +358,7 @@ public class HttpGroupByScientificNameQuerySpecBuilderTest {
 
 		UriInfo uriInfo = mock(UriInfo.class);
 		when(uriInfo.getQueryParameters()).thenReturn(parameterMap);
-		GroupByScientificNameQuerySpec qs = new HttpGroupByScientificNameQuerySpecBuilder(uriInfo)
-				.build();
+		GroupByScientificNameQuerySpec qs = new HttpGroupByScientificNameQuerySpecBuilder(uriInfo).build();
 
 		qs = new HttpGroupByScientificNameQuerySpecBuilder(uriInfo).build();
 		assertTrue("Test without defining group sort explicitly (i.e. default group sort: TOP_HIT_SCORE)",

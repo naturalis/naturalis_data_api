@@ -74,7 +74,6 @@ class CoLTaxonFullTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, T
   }
 
   private Connection connection;
-  private String colYear;
   private String[] testGenera;
   private ArrayList<String> taxonIds;
   private HashMap<String, HashMap<CoLEntityType, List<String>>> cache;
@@ -83,10 +82,6 @@ class CoLTaxonFullTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, T
     super(stats);
     this.connection = connection;
     testGenera = getTestGenera();
-  }
-
-  public void setColYear(String colYear) {
-    this.colYear = colYear;
   }
 
   public void createLookupTable(ArrayList<String> taxonIds) throws SQLException {

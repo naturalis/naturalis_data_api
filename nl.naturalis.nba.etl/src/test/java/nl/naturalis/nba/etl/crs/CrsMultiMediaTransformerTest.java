@@ -10,6 +10,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.lang.reflect.Field;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,13 +19,14 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.internal.util.reflection.Whitebox;
+
 import org.w3c.dom.Element;
 
 import nl.naturalis.nba.api.model.GatheringEvent;
 import nl.naturalis.nba.api.model.MultiMediaContentIdentification;
 import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.api.model.ScientificName;
+import nl.naturalis.nba.api.model.ServiceAccessPoint;
 import nl.naturalis.nba.api.model.SpecimenTypeStatus;
 import nl.naturalis.nba.api.model.VernacularName;
 
@@ -33,6 +36,7 @@ import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.XMLRecordInfo;
 import nl.naturalis.nba.etl.utils.CommonReflectionUtil;
 import nl.naturalis.nba.utils.reflect.ReflectionUtil;
+import nl.naturalis.nba.utils.xml.DOMUtil;
 
 /**
  * Test class for CrsSpecimenTransformer.java
@@ -74,7 +78,12 @@ public class CrsMultiMediaTransformerTest {
     List<MultiMediaObject> transformed = null;
     CrsMultiMediaTransformer crsMultiMediaTransformer = new CrsMultiMediaTransformer(etlStatistics);
     String[] testGenera = new String[] {"malus", "parus", "larus", "bombus", "rhododendron", "felix", "tulipa", "rosa", "canis", "passer", "trientalis"};
-    Whitebox.setInternalState(crsMultiMediaTransformer, "testGenera", testGenera);
+    
+    Class<CrsMultiMediaTransformer> testedClass = CrsMultiMediaTransformer.class;
+    Field privateField = testedClass.getDeclaredField("testGenera");
+    privateField.setAccessible(true);
+    privateField.set(crsMultiMediaTransformer, testGenera);
+    
     CrsExtractor extractor = new CrsExtractor(multimediaFile, etlStatistics);
 
     for (XMLRecordInfo extracted : extractor) {
@@ -83,32 +92,61 @@ public class CrsMultiMediaTransformerTest {
       CommonReflectionUtil.setField(AbstractTransformer.class, crsMultiMediaTransformer, "input", extracted);
       Object returned = CommonReflectionUtil.callMethod(null, null, crsMultiMediaTransformer, "doTransform");
       transformed = (List<MultiMediaObject>) returned;
-      MultiMediaObject sp = transformed.get(0);
 
+      MultiMediaObject sp = transformed.get(0); // Just test the first one
+      String id = "RMNH.INS.867435_1";
+      
+      int expectedNumberOfMmObjects = 2;
+      assertEquals("01", expectedNumberOfMmObjects, transformed.size());
+      
+      // Test the 1st Mm object
       MultiMediaObject expectedMmo = new MultiMediaObject();
-      expectedMmo.setId("RMNH.INS.867435@CRS");
+      expectedMmo.setId(id.concat("@CRS"));
       expectedMmo.setSourceInstitutionID("Naturalis Biodiversity Center");
       expectedMmo.setSourceID("CRS");
       expectedMmo.setOwner("Naturalis Biodiversity Center");
-      expectedMmo.setUnitID("RMNH.INS.867435");
+      expectedMmo.setUnitID(id);
       expectedMmo.setLicense(CC0_10);
       expectedMmo.setCollectionType("Diptera");
-      expectedMmo.setTitle("RMNH.INS.867435");
+      expectedMmo.setTitle(id);
       expectedMmo.setAssociatedSpecimenReference("RMNH.INS.867435@CRS");
       expectedMmo.setMultiMediaPublic(true);
+      
+      List<ServiceAccessPoint> serviceAccessPoints = new ArrayList<>();
+      URI expectedUri = URI.create("https://medialib.naturalis.nl/file/id/RMNH.INS.867435_1/format/large");
+      String expectedFormat = "image/jpeg";
+      String expectedVariant = "ac:GoodQuality";
+      serviceAccessPoints.add(new ServiceAccessPoint(expectedUri, expectedFormat, expectedVariant));
+      expectedMmo.setServiceAccessPoints(serviceAccessPoints);
 
-      assertNotNull("01", sp);
-      assertEquals("02", expectedMmo.getId(), sp.getId());
-      assertEquals("03", expectedMmo.getSourceInstitutionID(), sp.getSourceInstitutionID());
-      assertEquals("04", expectedMmo.getSourceID(), sp.getSourceID());
-      assertEquals("05", expectedMmo.getOwner(), sp.getOwner());
-      assertEquals("06", expectedMmo.getUnitID(), sp.getUnitID());
-      assertEquals("07", expectedMmo.getLicense(), sp.getLicense());
-      assertEquals("08", expectedMmo.getCollectionType(), sp.getCollectionType());
-      assertEquals("09", expectedMmo.getTitle(), sp.getTitle());
-      assertEquals("10", expectedMmo.getAssociatedSpecimenReference(), sp.getAssociatedSpecimenReference());
-      assertEquals("11", expectedMmo.isMultiMediaPublic(), sp.isMultiMediaPublic());
+      assertNotNull("02", sp);
+      assertEquals("03", expectedMmo.getId(), sp.getId());
+      assertEquals("04", expectedMmo.getSourceInstitutionID(), sp.getSourceInstitutionID());
+      assertEquals("05", expectedMmo.getSourceID(), sp.getSourceID());
+      assertEquals("06", expectedMmo.getOwner(), sp.getOwner());
+      assertEquals("07", expectedMmo.getUnitID(), sp.getUnitID());
+      assertEquals("08", expectedMmo.getLicense(), sp.getLicense());
+      assertEquals("09", expectedMmo.getCollectionType(), sp.getCollectionType());
+      assertEquals("10", expectedMmo.getTitle(), sp.getTitle());
+      assertEquals("11", expectedMmo.getAssociatedSpecimenReference(), sp.getAssociatedSpecimenReference());
+      assertEquals("12", expectedMmo.isMultiMediaPublic(), sp.isMultiMediaPublic());
+      assertEquals("13", expectedMmo.getServiceAccessPoints().get(0).getAccessUri(), sp.getServiceAccessPoints().get(0).getAccessUri());
+      assertEquals("14", expectedMmo.getServiceAccessPoints().get(0).getFormat(), sp.getServiceAccessPoints().get(0).getFormat());
+      assertEquals("15", expectedMmo.getServiceAccessPoints().get(0).getVariant(), sp.getServiceAccessPoints().get(0).getVariant());
+      
+      // Test the ServiceAccessPoint of the 2nd Mm object
+      expectedMmo = new MultiMediaObject();
+      serviceAccessPoints.clear();
+      expectedUri = URI.create("https://medialib.naturalis.nl/file/id/RMNH.INS.867435_2/format/large");
+      expectedFormat = "image/jpeg";
+      expectedVariant = "ac:GoodQuality";
+      serviceAccessPoints.add(new ServiceAccessPoint(expectedUri, expectedFormat, expectedVariant));
+      expectedMmo.setServiceAccessPoints(serviceAccessPoints);
 
+      sp = transformed.get(1);
+      assertEquals("16", expectedMmo.getServiceAccessPoints().get(0).getAccessUri(), sp.getServiceAccessPoints().get(0).getAccessUri());
+      assertEquals("17", expectedMmo.getServiceAccessPoints().get(0).getFormat(), sp.getServiceAccessPoints().get(0).getFormat());
+      assertEquals("18", expectedMmo.getServiceAccessPoints().get(0).getVariant(), sp.getServiceAccessPoints().get(0).getVariant());
     }
   }
 
@@ -242,10 +280,10 @@ public class CrsMultiMediaTransformerTest {
   public void testGetScientificName() throws Exception {
 
     ETLStatistics etlStatistics = new ETLStatistics();
+    ScientificName sn = null;
     CrsMultiMediaTransformer crsMultiMediaTransformer = new CrsMultiMediaTransformer(etlStatistics);
     CrsExtractor extractor = new CrsExtractor(multimediaFile, etlStatistics);
-    ScientificName sn = null;
-    for (XMLRecordInfo extracted : extractor) {
+    outerloop: for (XMLRecordInfo extracted : extractor) {
 
       CommonReflectionUtil.setField(AbstractTransformer.class, crsMultiMediaTransformer, "objectID", "RMNH.INS.867435");
       CommonReflectionUtil.setField(AbstractTransformer.class, crsMultiMediaTransformer, "input", extracted);
@@ -253,8 +291,11 @@ public class CrsMultiMediaTransformerTest {
       List<Element> ncsrDeterminationElems = getDescendants(oaiDcElem, "ncrsDetermination");
 
       for (Element element : ncsrDeterminationElems) {
+        String fullScientificNameStr = DOMUtil.getDescendantValue(element, "dwc:scientificName");
         Object obj = ReflectionUtil.call(crsMultiMediaTransformer, "getScientificName", new Class[] {Element.class}, new Object[] {element});
         sn = (ScientificName) obj;
+        if (sn != null && fullScientificNameStr.equals("Aedes kabaenensis"))
+          break outerloop;
       }
       ScientificName expectedSn = new ScientificName();
       expectedSn.setFullScientificName("Aedes kabaenensis");
@@ -267,8 +308,65 @@ public class CrsMultiMediaTransformerTest {
       assertEquals("03", expectedSn.getScientificNameGroup(), sn.getScientificNameGroup());
 
     }
-
   }
+  
+  /**
+   * Test method for
+   * {@link nl.naturalis.nba.etl.crs.CrsSpecimenTransformer#getScientificName(Element element, String collectionType)},
+   * but aimed at testing the construction of the full scientific name.
+   * 
+   * @throws Exception
+   * 
+   * Test method to verify the getIdentification method returns an expected ScientificName object
+   * 
+   */
+  @Test
+  public void testGetScientificName_02() throws Exception {
+
+    ETLStatistics etlStatistics = new ETLStatistics();
+    ScientificName scientificName = null;
+    CrsMultiMediaTransformer crsMultiMediaTransformer = new CrsMultiMediaTransformer(etlStatistics);
+    CrsExtractor extractor = new CrsExtractor(multimediaFile, etlStatistics);
+    
+    for (XMLRecordInfo extracted : extractor) {
+      Element rootElement = extracted.getRecord();
+      List<Element> elems = DOMUtil.getDescendants(rootElement, "ncrsDetermination");
+      for (Element element : elems) {
+        
+        String fullScientificNameStr = DOMUtil.getDescendantValue(element, "dwc:scientificName");
+        
+        Object scientificNameObj = ReflectionUtil.call(crsMultiMediaTransformer, "getScientificName",
+            new Class[] {Element.class}, new Object[] {element});
+        scientificName = (ScientificName) scientificNameObj;
+
+        if (scientificName != null && fullScientificNameStr.equals("fullscientificnametest01")) {
+          ScientificName expectedSn = new ScientificName();
+          expectedSn.setFullScientificName("Aaaaa (bbbbb) ccccc ddddd Abc1234");
+          assertEquals("01", expectedSn.getFullScientificName(), scientificName.getFullScientificName());
+        }
+
+        if (scientificName != null && fullScientificNameStr.equals("fullscientificnametest02")) {
+          ScientificName expectedSn = new ScientificName();
+          expectedSn.setFullScientificName("Aaaaa (bbbbb) ccccc eeeee Abc1234");
+          assertEquals("02", expectedSn.getFullScientificName(), scientificName.getFullScientificName());
+        }
+
+        if (scientificName != null && fullScientificNameStr.equals("fullscientificnametest03")) {
+          ScientificName expectedSn = new ScientificName();
+          expectedSn.setFullScientificName("fullscientificnametest03");
+          assertEquals("03", expectedSn.getFullScientificName(), scientificName.getFullScientificName());
+        }
+        
+        String test = DOMUtil.getDescendantValue(element, "abcd:IdentificationQualifier3");
+        if (scientificName != null && test.equals("fullscientificnametest04")) {
+          ScientificName expectedSn = new ScientificName();
+          expectedSn.setFullScientificName("TAXONCOVERAGE");
+          assertEquals("04", expectedSn.getFullScientificName(), scientificName.getFullScientificName());
+        }
+      }
+    }
+  }
+
 
   /**
    * Test method for {@link nl.naturalis.nba.etl.crs.CrsMultiMediaTransformer#getTitle()}.

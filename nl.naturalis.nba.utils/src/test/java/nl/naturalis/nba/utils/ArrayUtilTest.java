@@ -7,14 +7,18 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
+
 import org.junit.Test;
+
 import nl.naturalis.nba.utils.convert.Stringifier;
 import nl.naturalis.nba.utils.convert.Translator;
 

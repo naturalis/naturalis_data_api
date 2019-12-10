@@ -17,8 +17,10 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
 import org.w3c.dom.Element;
 
+import nl.naturalis.nba.api.model.Agent;
 import nl.naturalis.nba.api.model.AreaClass;
 import nl.naturalis.nba.api.model.AssociatedTaxon;
 import nl.naturalis.nba.api.model.BioStratigraphy;
@@ -138,17 +140,18 @@ public class CrsSpecimenTransformerTest {
     CrsSpecimenTransformer crsSpecimenTransformer = new CrsSpecimenTransformer(etlStatistics);
     CrsExtractor extractor = new CrsExtractor(specimenFile, etlStatistics);
     outerloop: for (XMLRecordInfo extracted : extractor) {
-      Element elemet = extracted.getRecord();
-      List<Element> elems = DOMUtil.getDescendants(elemet, "ncrsDetermination");
+      Element rootElement = extracted.getRecord();
+      List<Element> elems = DOMUtil.getDescendants(rootElement, "ncrsDetermination");
       Object obj = CommonReflectionUtil.callMethod(elems, List.class, crsSpecimenTransformer, "hasTestGenus");
       boolean check = (boolean) obj;
       if (check) {
         for (Element element : elems) {
+          String fullScientificNameStr = DOMUtil.getDescendantValue(element, "abcd:FullScientificNameString");
           Object identificationObj =
               ReflectionUtil.call(crsSpecimenTransformer, "getIdentification",
                   new Class[] {Element.class, String.class}, new Object[] {element, "Arts"});
           identification = (SpecimenIdentification) identificationObj;
-          if (identification != null)
+          if (identification != null && fullScientificNameStr.equals("Cleyera japonica"))
             break outerloop;
         }
       }
@@ -157,13 +160,13 @@ public class CrsSpecimenTransformerTest {
     expectedSid.setRockType("Test_Rock");
     expectedSid.setAssociatedFossilAssemblage("Test_Assemblage");
     expectedSid.setRockMineralUsage("Test_Minerals");
-
-    assertTrue(identification.isPreferred());
-
-    assertEquals("01",expectedSid.getRockType(), identification.getRockType());
-    assertEquals("02",expectedSid.getAssociatedFossilAssemblage(),
-        identification.getAssociatedFossilAssemblage());
-    assertEquals("03",expectedSid.getRockMineralUsage(), identification.getRockMineralUsage());
+    expectedSid.addIdentifier(new Agent("Co de Boswachter"));
+    
+    assertTrue("01", identification.isPreferred());
+    assertEquals("02",expectedSid.getRockType(), identification.getRockType());
+    assertEquals("03",expectedSid.getAssociatedFossilAssemblage(), identification.getAssociatedFossilAssemblage());
+    assertEquals("04",expectedSid.getRockMineralUsage(), identification.getRockMineralUsage());
+    assertEquals("05",expectedSid.getIdentifiers().get(0).getAgentText(), identification.getIdentifiers().get(0).getAgentText());
   }
 
   /**
@@ -212,8 +215,7 @@ public class CrsSpecimenTransformerTest {
    * 
    * @throws Exception
    * 
-   *         Test method to verify the getIdentification method returns an expected ScientificName
-   *         object
+   * Test method to verify the getIdentification method returns an expected ScientificName object
    * 
    */
   @Test
@@ -224,13 +226,14 @@ public class CrsSpecimenTransformerTest {
     CrsSpecimenTransformer crsSpecimenTransformer = new CrsSpecimenTransformer(etlStatistics);
     CrsExtractor extractor = new CrsExtractor(specimenFile, etlStatistics);
     outerloop: for (XMLRecordInfo extracted : extractor) {
-      Element elemet = extracted.getRecord();
-      List<Element> elems = DOMUtil.getDescendants(elemet, "ncrsDetermination");
+      Element rootElement = extracted.getRecord();
+      List<Element> elems = DOMUtil.getDescendants(rootElement, "ncrsDetermination");
       for (Element element : elems) {
+        String fullScientificNameStr = DOMUtil.getDescendantValue(element, "abcd:FullScientificNameString");
         Object scientificNameObj = ReflectionUtil.call(crsSpecimenTransformer, "getScientificName",
             new Class[] {Element.class, String.class}, new Object[] {element, "Arts"});
         scientificName = (ScientificName) scientificNameObj;
-        if (scientificName != null)
+        if (scientificName != null && fullScientificNameStr.equals("Cleyera japonica"))
           break outerloop;
       }
     }
@@ -244,7 +247,63 @@ public class CrsSpecimenTransformerTest {
     assertEquals("02",expectedSn.getGenusOrMonomial(), scientificName.getGenusOrMonomial());
     assertEquals("03",expectedSn.getSpecificEpithet(), scientificName.getSpecificEpithet());
     assertEquals("04",expectedSn.getScientificNameGroup(), scientificName.getScientificNameGroup());
+  }
 
+  /**
+   * Test method for
+   * {@link nl.naturalis.nba.etl.crs.CrsSpecimenTransformer#getScientificName(Element element, String collectionType)},
+   * but aimed at testing the construction of the full scientific name.
+   * 
+   * @throws Exception
+   * 
+   * Test method to verify the getIdentification method returns an expected ScientificName object
+   * 
+   */
+  @Test
+  public void testGetScientificName_02() throws Exception {
+
+    ETLStatistics etlStatistics = new ETLStatistics();
+    ScientificName scientificName = null;
+    CrsSpecimenTransformer crsSpecimenTransformer = new CrsSpecimenTransformer(etlStatistics);
+    CrsExtractor extractor = new CrsExtractor(specimenFile, etlStatistics);
+    
+    for (XMLRecordInfo extracted : extractor) {
+      Element rootElement = extracted.getRecord();
+      List<Element> elems = DOMUtil.getDescendants(rootElement, "ncrsDetermination");
+      for (Element element : elems) {
+        
+        String fullScientificNameStr = DOMUtil.getDescendantValue(element, "abcd:FullScientificNameString");
+        
+        Object scientificNameObj = ReflectionUtil.call(crsSpecimenTransformer, "getScientificName",
+            new Class[] {Element.class, String.class}, new Object[] {element, "Botany"});
+        scientificName = (ScientificName) scientificNameObj;
+
+        if (scientificName != null && fullScientificNameStr.equals("fullscientificnametest01")) {
+          ScientificName expectedSn = new ScientificName();
+          expectedSn.setFullScientificName("Aaaaa (bbbbb) ccccc ddddd Zzz1234");
+          assertEquals("01", expectedSn.getFullScientificName(), scientificName.getFullScientificName());
+        }
+
+        if (scientificName != null && fullScientificNameStr.equals("fullscientificnametest02")) {
+          ScientificName expectedSn = new ScientificName();
+          expectedSn.setFullScientificName("Aaaaa (bbbbb) ccccc eeeee Zzz1234");
+          assertEquals("02", expectedSn.getFullScientificName(), scientificName.getFullScientificName());
+        }
+
+        if (scientificName != null && fullScientificNameStr.equals("fullscientificnametest03")) {
+          ScientificName expectedSn = new ScientificName();
+          expectedSn.setFullScientificName("fullscientificnametest03");
+          assertEquals("03", expectedSn.getFullScientificName(), scientificName.getFullScientificName());
+        }
+        
+        String test = DOMUtil.getDescendantValue(element, "abcd:InformalNameString");
+        if (scientificName != null && test.equals("fullscientificnametest04")) {
+          ScientificName expectedSn = new ScientificName();
+          expectedSn.setFullScientificName("Cypraeovulinae");
+          assertEquals("04", expectedSn.getFullScientificName(), scientificName.getFullScientificName());
+        }
+      }
+    }
   }
 
   /**

@@ -58,9 +58,10 @@ public class GatheringSiteCoordinates implements INbaModelObject {
 //		if (longitudeDecimal == null || latitudeDecimal == null) {
 //			return null;
 //		}
-		// edit 01-10-2019
-		// disabled creation of geoShape. This task has (temporarily) been moved to the Infuser (Colander)
-    // return new Point(longitudeDecimal, latitudeDecimal);
+//	  return new Point(longitudeDecimal, latitudeDecimal);
+
+	  // edit 01-10-2019: disabled creation of geoShape. This task has (temporarily?) 
+	  // been moved to the Infuser (Colander)
 		return null;
 	}
 

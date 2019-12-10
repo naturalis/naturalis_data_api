@@ -159,40 +159,12 @@ public class QuerySpecTranslator {
     }
     CountRequest request = newCountRequest(dt);
     if (spec!= null && spec.getConditions() != null && !spec.getConditions().isEmpty()) {
-      SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
       QueryBuilder query = translateConditions();
-      searchSourceBuilder.query(query);
-      request.source(searchSourceBuilder);
+      request.query(query);
     }
     return request;
   }
-
   
-  
-  // ES5
-//  private void addFields(SearchRequestBuilder request) throws InvalidQueryException {
-//    MappingInfo<?> mappingInfo = new MappingInfo<>(dt.getMapping());
-//    List<Path> fields = spec.getFields();
-//    for (Path field : fields) {
-//      if (field.toString().equals("id")) {
-//        /*
-//         * This is a special field that can be used to retrieve the Elasticsearch document ID, which
-//         * is not part of the document itself, but it IS an allowed field, populated through
-//         * SearchHit.getId() rather than through document data.
-//         */
-//        continue;
-//      }
-//      try {
-//        mappingInfo.getField(field);
-//      } catch (NoSuchFieldException e) {
-//        throw new InvalidQueryException(e.getMessage());
-//      }
-//    }
-//    String[] include = stringify(fields);
-//    request.setFetchSource(include, null);
-//  }
-
-  // ES7
   private void addFields(SearchSourceBuilder sourceBuilder) throws InvalidQueryException {
     MappingInfo<?> mappingInfo = new MappingInfo<>(dt.getMapping());
     List<Path> fields = spec.getFields();
@@ -214,7 +186,6 @@ public class QuerySpecTranslator {
     String[] include = stringify(fields);
     sourceBuilder.fetchSource(include, null);
   }
-
   
   private QueryBuilder translateConditions() throws InvalidConditionException {
     List<QueryCondition> conditions = spec.getConditions();

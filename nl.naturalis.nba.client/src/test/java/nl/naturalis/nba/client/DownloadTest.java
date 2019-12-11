@@ -34,7 +34,7 @@ public class DownloadTest {
   @Rule
   public TemporaryFolder testFolder = new TemporaryFolder();
 
-  private String baseUrl = "http://localhost:8080/v2";
+  private String baseUrl = "http://localhost:8080/v3";
   private SpecimenClient client;
 
   @BeforeClass

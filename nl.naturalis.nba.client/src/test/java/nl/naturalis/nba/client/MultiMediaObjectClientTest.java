@@ -17,7 +17,7 @@ import nl.naturalis.nba.common.json.JsonUtil;
  */
 public class MultiMediaObjectClientTest {
 
-  private String baseUrl = "http://localhost:8080/v2";
+  private String baseUrl = "http://localhost:8080/v3";
   private MultiMediaObjectClient client;
 
   @BeforeClass

@@ -21,7 +21,7 @@ import nl.naturalis.nba.utils.debug.DevNullOutputStream;
  */
 public class SpecimenClientTest {
 
-  private String baseUrl = "http://localhost:8080/v2";
+  private String baseUrl = "http://localhost:8080/v3";
   private SpecimenClient client;
 
   @BeforeClass

@@ -23,7 +23,7 @@ import nl.naturalis.nba.utils.debug.DevNullOutputStream;
  */
 public class TaxonClientTest {
 
-  private String baseUrl = "http://localhost:8080/v2";
+  private String baseUrl = "http://localhost:8080/v3";
   private TaxonClient client;
 
   @BeforeClass

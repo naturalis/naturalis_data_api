@@ -27,7 +27,7 @@ public interface IGeoAreaAccess extends INbaAccess<GeoArea> {
 	 * </p>
 	 * <p>
 	 * <code>
-	 * http://api.biodiversitydata.nl/v2/geo/getGeoJsonForLocality/{locality}
+	 * https://api.biodiversitydata.nl/v3/geo/getGeoJsonForLocality/{locality}
 	 * </code>
 	 * </p>
 	 * <p>
@@ -35,7 +35,7 @@ public interface IGeoAreaAccess extends INbaAccess<GeoArea> {
 	 * </p>
 	 * <p>
 	 * <code>
-	 * http://api.biodiversitydata.nl/v2/geo/getGeoJsonForLocality/Netherlands
+	 * https://api.biodiversitydata.nl/v3/geo/getGeoJsonForLocality/Netherlands
 	 * </code>
 	 * </p>
 	 * 

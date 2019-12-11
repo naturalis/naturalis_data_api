@@ -34,7 +34,7 @@ public interface INbaMetaData {
    * </p>
    * <p>
    * <code>
-   * http://api.biodiversitydata.nl/v2/metadata/getSetting/{name}
+   * https://api.biodiversitydata.nl/v3/metadata/getSetting/{name}
    * </code>
    * </p>
    * 
@@ -54,7 +54,7 @@ public interface INbaMetaData {
    * </p>
    * <p>
    * <code>
-   * http://api.biodiversitydata.nl/v2/metadata/getSettings
+   * https://api.biodiversitydata.nl/v3/metadata/getSettings
    * </code>
    * </p>
    * 
@@ -71,7 +71,7 @@ public interface INbaMetaData {
    * </p>
    * <p>
    * <code>
-   * http://api.biodiversitydata.nl/v2/metadata/getSourceSystems
+   * https://api.biodiversitydata.nl/v3/metadata/getSourceSystems
    * </code>
    * </p>
    * 
@@ -88,7 +88,7 @@ public interface INbaMetaData {
    * </p>
    * <p>
    * <code>
-   * http://api.biodiversitydata.nl/v2/metadata/getControlledLists
+   * https://api.biodiversitydata.nl/v3/metadata/getControlledLists
    * </code>
    * </p>
    * 
@@ -105,7 +105,7 @@ public interface INbaMetaData {
    * </p>
    * <p>
    * <code>
-   * http://api.biodiversitydata.nl/v2/metadata/getControlledList/AreaClass
+   * https://api.biodiversitydata.nl/v3/metadata/getControlledList/AreaClass
    * </code>
    * </p>
    * 
@@ -122,7 +122,7 @@ public interface INbaMetaData {
    * </p>
    * <p>
    * <code>
-   * http://api.biodiversitydata.nl/v2/metadata/getControlledList/License
+   * https://api.biodiversitydata.nl/v3/metadata/getControlledList/License
    * </code>
    * </p>
    * 
@@ -139,7 +139,7 @@ public interface INbaMetaData {
    * </p>
    * <p>
    * <code>
-   * http://api.biodiversitydata.nl/v2/metadata/getControlledList/LicenseType
+   * https://api.biodiversitydata.nl/v3/metadata/getControlledList/LicenseType
    * </code>
    * </p>
    * 
@@ -156,7 +156,7 @@ public interface INbaMetaData {
    * </p>
    * <p>
    * <code>
-   * http://api.biodiversitydata.nl/v2/metadata/getControlledList/Sex
+   * https://api.biodiversitydata.nl/v3/metadata/getControlledList/Sex
    * </code>
    * </p>
    * 
@@ -173,7 +173,7 @@ public interface INbaMetaData {
    * </p>
    * <p>
    * <code>
-   * http://api.biodiversitydata.nl/v2/metadata/getControlledList/SpatialDatum
+   * https://api.biodiversitydata.nl/v3/metadata/getControlledList/SpatialDatum
    * </code>
    * </p>
    * 
@@ -190,7 +190,7 @@ public interface INbaMetaData {
    * </p>
    * <p>
    * <code>
-   * http://api.biodiversitydata.nl/v2/metadata/getControlledList/RelationType
+   * https://api.biodiversitydata.nl/v3/metadata/getControlledList/RelationType
    * </code>
    * </p>
    * 
@@ -207,7 +207,7 @@ public interface INbaMetaData {
    * </p>
    * <p>
    * <code>
-   * http://api.biodiversitydata.nl/v2/metadata/getControlledList/SpecimenTypeStatus
+   * https://api.biodiversitydata.nl/v3/metadata/getControlledList/SpecimenTypeStatus
    * </code>
    * </p>
    * 
@@ -224,7 +224,7 @@ public interface INbaMetaData {
    * </p>
    * <p>
    * <code>
-   * http://api.biodiversitydata.nl/v2/metadata/getControlledList/TaxonomicStatus
+   * https://api.biodiversitydata.nl/v3/metadata/getControlledList/TaxonomicStatus
    * </code>
    * </p>
    * 
@@ -243,7 +243,7 @@ public interface INbaMetaData {
    * </p>
    * <p>
    * <code>
-   * http://api.biodiversitydata.nl/v2/metadata/getAllowedDateFormats
+   * https://api.biodiversitydata.nl/v3/metadata/getAllowedDateFormats
    * </code>
    * </p>
    * 

@@ -104,7 +104,7 @@ public interface ETLConstants {
 	 */
 	License LICENCE = License.CC0_10;
 	/**
-	 * http://data.biodiversitydata.nl
+	 * https://data.biodiversitydata.nl
 	 */
 	String PURL_SERVER_BASE_URL = "https://data.biodiversitydata.nl";
 	/**

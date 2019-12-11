@@ -54,7 +54,7 @@ import nl.naturalis.nba.api.model.Taxon;
  * </p>
  * 
  * <pre>
- * http://api.biodiversitydata.nl/v2/specimen/query?_querySpec=%7B%22conditions%22%3A%5B%7B%22field%22%3A%22sourceSystem.code%22%2C%22operator%22%3A%22EQUALS%22%2C%22value%22%3A%22BRAHMS%22%7D%5D%2C%22from%22%3A0%2C%22size%22%3A0%7D
+ * https://api.biodiversitydata.nl/v3/specimen/query?_querySpec=%7B%22conditions%22%3A%5B%7B%22field%22%3A%22sourceSystem.code%22%2C%22operator%22%3A%22EQUALS%22%2C%22value%22%3A%22BRAHMS%22%7D%5D%2C%22from%22%3A0%2C%22size%22%3A0%7D
  * </pre>
  * <p>
  * Since these URLs are hard to read and construct for humans, you can also
@@ -66,7 +66,7 @@ import nl.naturalis.nba.api.model.Taxon;
  * into a {@link QueryCondition query condition}. For example:
  * 
  * <pre>
- * http://api.biodiversitydata.nl/v2/specimen/query?sourceSystem.code=CRS&recordBasis=FossileSpecimen
+ * https://api.biodiversitydata.nl/v3/specimen/query?sourceSystem.code=CRS&recordBasis=FossileSpecimen
  * </pre>
  * 
  * <li>The {@code _fields} parameter can be used to set the fields you want
@@ -82,7 +82,7 @@ import nl.naturalis.nba.api.model.Taxon;
  * direction. See {@link #setSortFields(List) setSortFields}. For example:
  * 
  * <pre>
- * http://api.biodiversitydata.nl/v2/specimen/query?sourceSystem.code=CRS&_sortFields=recordBasis:ASC,unitID:DESC
+ * https://api.biodiversitydata.nl/v3/specimen/query?sourceSystem.code=CRS&_sortFields=recordBasis:ASC,unitID:DESC
  * </pre>
  * 
  * <li>The {@code _logicalOperator} parameter can be used to specify the logical

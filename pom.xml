@@ -796,8 +796,8 @@
 							<executable>rm</executable>
 							<arguments>
 								<argument>-rf</argument>
-								<argument>${project.basedir}/../nba-gh-pages/javadoc/v2/client</argument>
-								<argument>${project.basedir}/../nba-gh-pages/javadoc/v2/all</argument>
+								<argument>${project.basedir}/../nba-gh-pages/javadoc/v3/client</argument>
+								<argument>${project.basedir}/../nba-gh-pages/javadoc/v3/all</argument>
 							</arguments>
 						</configuration>
 					</execution>
@@ -813,7 +813,7 @@
 							<arguments>
 								<argument>-r</argument>
 								<argument>${project.build.directory}/site/apidocs/client</argument>
-								<argument>${main.basedir}/../nba-gh-pages/javadoc/v2/client</argument>
+								<argument>${main.basedir}/../nba-gh-pages/javadoc/v3/client</argument>
 							</arguments>
 						</configuration>
 					</execution>
@@ -829,7 +829,7 @@
 							<arguments>
 								<argument>-r</argument>
 								<argument>${project.build.directory}/site/apidocs/all</argument>
-								<argument>${main.basedir}/../nba-gh-pages/javadoc/v2/all</argument>
+								<argument>${main.basedir}/../nba-gh-pages/javadoc/v3/all</argument>
 							</arguments>
 						</configuration>
 					</execution>

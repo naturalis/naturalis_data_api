@@ -84,7 +84,7 @@ public class CoLTaxonTransformerTest {
     when(record.get(CoLTaxonCsvField.description)).thenReturn("test_desc");
     when(record.get(CoLTaxonCsvField.taxonConceptID)).thenReturn("test_taxonConceptID");
     when(record.get(CoLTaxonCsvField.scientificNameID)).thenReturn("ITS-714782");
-    when(record.get(CoLTaxonCsvField.references)).thenReturn("http://www.catalogueoflife.org/annual-checklist/details/species/id/39ed89a52a61ef3a59eef66b9ce8ad7e");
+    when(record.get(CoLTaxonCsvField.references)).thenReturn("https://www.catalogueoflife.org/annual-checklist/details/species/id/39ed89a52a61ef3a59eef66b9ce8ad7e");
 
     CoLTaxonTransformer coLTaxonTransformer = new CoLTaxonTransformer(etlStatistics);
 
@@ -95,7 +95,7 @@ public class CoLTaxonTransformerTest {
     List<Taxon> list = (List<Taxon>) returned;
 
     String expectedId = "6931872@COL";
-    String expectedRecordURI = "http://www.catalogueoflife.org/annual-checklist/details/species/id/39ed89a52a61ef3a59eef66b9ce8ad7e";
+    String expectedRecordURI = "https://www.catalogueoflife.org/annual-checklist/details/species/id/39ed89a52a61ef3a59eef66b9ce8ad7e";
     String expectedAuthorshipVerbatim = "Cresson, 1863";
     String expectedScientificNameGroup = "bombus affinis test_infraspecificepithet";
     String expectedFullScientificName = "Bombus affinis Cresson, 1863";
@@ -153,7 +153,7 @@ public class CoLTaxonTransformerTest {
     when(record.get(CoLTaxonCsvField.description)).thenReturn("test_desc");
     when(record.get(CoLTaxonCsvField.taxonConceptID)).thenReturn("test_taxonConceptID");
     when(record.get(CoLTaxonCsvField.scientificNameID)).thenReturn("ITS-714782");
-    when(record.get(CoLTaxonCsvField.references)).thenReturn("http://www.catalogueoflife.org/annual-checklist/details/species/id/39ed89a52a61ef3a59eef66b9ce8ad7e");
+    when(record.get(CoLTaxonCsvField.references)).thenReturn("https://www.catalogueoflife.org/annual-checklist/details/species/id/39ed89a52a61ef3a59eef66b9ce8ad7e");
 
     CoLTaxonTransformer coLTaxonTransformer = new CoLTaxonTransformer(etlStatistics);
 
@@ -225,7 +225,7 @@ public class CoLTaxonTransformerTest {
     when(record.get(CoLTaxonCsvField.description)).thenReturn("test_desc");
     when(record.get(CoLTaxonCsvField.taxonConceptID)).thenReturn("test_taxonConceptID");
     when(record.get(CoLTaxonCsvField.scientificNameID)).thenReturn("ITS-714782");
-    when(record.get(CoLTaxonCsvField.references)).thenReturn("http://www.catalogueoflife.org/annual-checklist/details/species/id/39ed89a52a61ef3a59eef66b9ce8ad7e");
+    when(record.get(CoLTaxonCsvField.references)).thenReturn("https://www.catalogueoflife.org/annual-checklist/details/species/id/39ed89a52a61ef3a59eef66b9ce8ad7e");
 
     CoLTaxonTransformer coLTaxonTransformer = new CoLTaxonTransformer(etlStatistics);
 
@@ -297,7 +297,7 @@ public class CoLTaxonTransformerTest {
     when(record.get(CoLTaxonCsvField.description)).thenReturn("test_desc");
     when(record.get(CoLTaxonCsvField.taxonConceptID)).thenReturn("test_taxonConceptID");
     when(record.get(CoLTaxonCsvField.scientificNameID)).thenReturn("ITS-714782");
-    when(record.get(CoLTaxonCsvField.references)).thenReturn("http://www.catalogueoflife.org/annual-checklist/details/species/id/39ed89a52a61ef3a59eef66b9ce8ad7e");
+    when(record.get(CoLTaxonCsvField.references)).thenReturn("https://www.catalogueoflife.org/annual-checklist/details/species/id/39ed89a52a61ef3a59eef66b9ce8ad7e");
 
     CoLTaxonTransformer colTaxonTransformer = new CoLTaxonTransformer(etlStatistics);
     String[] testGenera = new String[] {"malus", "parus", "larus", "bombus", "rhododendron", "felix", "tulipa", "rosa", "canis", "passer", "trientalis"};

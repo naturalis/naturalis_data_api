@@ -32,7 +32,7 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
    * </p>
    * <p>
    * <code>
-   * http://api.biodiversitydata.nl/v2/&lt;document-type&gt;/find/{id}
+   * https://api.biodiversitydata.nl/v3/&lt;document-type&gt;/find/{id}
    * </code>
    * </p>
    * <p>
@@ -40,7 +40,7 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
    * </p>
    * <p>
    * <code>
-   * http://api.biodiversitydata.nl/v2/specimen/find/ZMA.MAM.123456@CRS
+   * https://api.biodiversitydata.nl/v3/specimen/find/ZMA.MAM.123456@CRS
    * </code>
    * </p>
    * 
@@ -62,7 +62,7 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
    * </p>
    * <p>
    * <code>
-   * http://api.biodiversitydata.nl/v2/&lt;document-type&gt;/findByIds/{id-0},{id-1},{id-2},{id-n}
+   * https://api.biodiversitydata.nl/v3/&lt;document-type&gt;/findByIds/{id-0},{id-1},{id-2},{id-n}
    * </code>
    * </p>
    * <p>
@@ -70,7 +70,7 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
    * </p>
    * <p>
    * <code>
-   * http://api.biodiversitydata.nl/v2/specimen/findByIds/ZMA.MAM.123,ZMA.MAM.456,ZMA.MAM.789
+   * https://api.biodiversitydata.nl/v3/specimen/findByIds/ZMA.MAM.123,ZMA.MAM.456,ZMA.MAM.789
    * </code>
    * </p>
    * 
@@ -90,7 +90,7 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
    * </p>
    * <p>
    * <code>
-   * http://api.biodiversitydata.nl/v2/&lt;document-type&gt;/query
+   * https://api.biodiversitydata.nl/v3/&lt;document-type&gt;/query
    * </code>
    * </p>
    * <p>
@@ -115,7 +115,7 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
    * </p>
    * <p>
    * <code>
-   * http://api.biodiversitydata.nl/v2/&lt;document-type&gt;/download/{querySpec}
+   * https://api.biodiversitydata.nl/v3/&lt;document-type&gt;/download/{querySpec}
    * </code>
    * </p>
    * <p>
@@ -123,7 +123,7 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
    * </p>
    * <p>
    * <code>
-   * http://api.biodiversitydata.nl/v2/specimen/download/?identifications.scientificName.fullScientificName=Limosa%20limosa
+   * https://api.biodiversitydata.nl/v3/specimen/download/?identifications.scientificName.fullScientificName=Limosa%20limosa
    * </code>
    * </p>
    * <p>
@@ -153,7 +153,7 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
    * </p>
    * <p>
    * <code>
-   * http://api.biodiversitydata.nl/v2/&lt;document-type&gt;/count
+   * https://api.biodiversitydata.nl/v3/&lt;document-type&gt;/count
    * </code>
    * </p>
    * <p>
@@ -161,8 +161,8 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
    * </p>
    * <p>
    * <code>
-   * http://api.biodiversitydata.nl/v2/taxon/count<br>
-   * http://api.biodiversitydata.nl/v2/specimen/count/?sourceSystem.code=BRAHMS
+   * https://api.biodiversitydata.nl/v3/taxon/count<br>
+   * https://api.biodiversitydata.nl/v3/specimen/count/?sourceSystem.code=BRAHMS
    * </code>
    * </p>
    * <p>
@@ -191,7 +191,7 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
    * </p>
    * <p>
    * <code>
-   * http://api.biodiversitydata.nl/v2/&lt;document-type&gt;/countDistinctValues/{forField}
+   * https://api.biodiversitydata.nl/v3/&lt;document-type&gt;/countDistinctValues/{forField}
    * </code>
    * </p>
    * <p>
@@ -199,8 +199,8 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
    * </p>
    * <p>
    * <code>
-   * http://api.biodiversitydata.nl/v2/taxon/countDistinctValues/defaultClassification.genus<br>
-   * http://api.biodiversitydata.nl/v2/specimen/countDistinctValues/collectionType/?sourceSystem.code=CRS
+   * https://api.biodiversitydata.nl/v3/taxon/countDistinctValues/defaultClassification.genus<br>
+   * https://api.biodiversitydata.nl/v3/specimen/countDistinctValues/collectionType/?sourceSystem.code=CRS
    * </code>
    * </p>
    * <p>
@@ -284,7 +284,7 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
    * </p>
    * <p>
    * <code>
-   * http://api.biodiversitydata.nl/v2/&lt;document-type&gt;/countDistinctValuesPerGroup/{forGroup}/{forField}
+   * https://api.biodiversitydata.nl/v3/&lt;document-type&gt;/countDistinctValuesPerGroup/{forGroup}/{forField}
    * </code>
    * </p>
    * <p>
@@ -292,8 +292,8 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
    * </p>
    * <p>
    * <code>
-   * http://api.biodiversitydata.nl/v2/taxon/countDistinctValuesPerGroup/[<i>field1</i>]/[<i>field2</i>]<br>
-   * http://api.biodiversitydata.nl/v2/specimen/countDistinctValuesPerGroup/collectionType/sourceSystem.code
+   * https://api.biodiversitydata.nl/v3/taxon/countDistinctValuesPerGroup/[<i>field1</i>]/[<i>field2</i>]<br>
+   * https://api.biodiversitydata.nl/v3/specimen/countDistinctValuesPerGroup/collectionType/sourceSystem.code
    * </code>
    * </p>
    * <p>
@@ -347,7 +347,7 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
    * 
    * <p>
    * <code>
-   * http://api.biodiversitydata.nl/v2/&lt;document-type&gt;/getDistinctValues/{forField}
+   * https://api.biodiversitydata.nl/v3/&lt;document-type&gt;/getDistinctValues/{forField}
    * </code>
    * </p>
    * <p>
@@ -355,7 +355,7 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
    * </p>
    * <p>
    * <code>
-   * http://api.biodiversitydata.nl/v2/specimen/getDistinctValues/recordBasis<br>
+   * https://api.biodiversitydata.nl/v3/specimen/getDistinctValues/recordBasis<br>
    * </code>
    * </p>
    * <p>
@@ -489,7 +489,7 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
    * </p>
    * <p>
    * <code>
-   * http://api.biodiversitydata.nl/v2/&lt;document-type&gt;/getDistinctValuesPerGroup/{forGroup}/{forField}
+   * https://api.biodiversitydata.nl/v3/&lt;document-type&gt;/getDistinctValuesPerGroup/{forGroup}/{forField}
    * </code>
    * </p>
    * <p>
@@ -497,7 +497,7 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
    * </p>
    * <p>
    * <code>
-   * http://api.biodiversitydata.nl/v2/specimen/getDistinctValuesPerGroup/sourceSystem.code/recordBasis<br>
+   * https://api.biodiversitydata.nl/v3/specimen/getDistinctValuesPerGroup/sourceSystem.code/recordBasis<br>
    * </code>
    * </p>
    * <p>

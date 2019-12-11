@@ -31,7 +31,7 @@ public interface INbaDocumentMetaData<DOCUMENT_OBJECT extends IDocumentObject> {
 	 * </p>
 	 * <p>
 	 * <code>
-	 * http://api.biodiversitydata.nl/v2/&lt;document-type&gt;/metadata/getSetting/{name}
+	 * https://api.biodiversitydata.nl/v3/&lt;document-type&gt;/metadata/getSetting/{name}
 	 * </code>
 	 * </p>
 	 * 
@@ -53,7 +53,7 @@ public interface INbaDocumentMetaData<DOCUMENT_OBJECT extends IDocumentObject> {
 	 * </p>
 	 * <p>
 	 * <code>
-	 * http://api.biodiversitydata.nl/v2/&lt;document-type&gt;/metadata/getSettings
+	 * https://api.biodiversitydata.nl/v3/&lt;document-type&gt;/metadata/getSettings
 	 * </code>
 	 * </p>
 	 * <p>
@@ -61,7 +61,7 @@ public interface INbaDocumentMetaData<DOCUMENT_OBJECT extends IDocumentObject> {
 	 * </p>
 	 * <p>
 	 * <code>
-	 * http://api.biodiversitydata.nl/v2/multimedia/metadata/getSettings<br>
+	 * https://api.biodiversitydata.nl/v3/multimedia/metadata/getSettings<br>
 	 * </code>
 	 * </p>
 	 * 
@@ -82,7 +82,7 @@ public interface INbaDocumentMetaData<DOCUMENT_OBJECT extends IDocumentObject> {
 	 * </p>
 	 * <p>
 	 * <code>
-	 * http://api.biodiversitydata.nl/v2/&lt;document-type&gt;/metadata/getPaths
+	 * https://api.biodiversitydata.nl/v3/&lt;document-type&gt;/metadata/getPaths
 	 * </code>
 	 * </p>
 	 * <p>
@@ -90,8 +90,8 @@ public interface INbaDocumentMetaData<DOCUMENT_OBJECT extends IDocumentObject> {
 	 * </p>
 	 * <p>
 	 * <code>
-	 * http://api.biodiversitydata.nl/v2/multimedia/metadata/getPaths<br>
-	 * http://api.biodiversitydata.nl/v2/taxon/metadata/getPaths/?sorted=true
+	 * https://api.biodiversitydata.nl/v3/multimedia/metadata/getPaths<br>
+	 * https://api.biodiversitydata.nl/v3/taxon/metadata/getPaths/?sorted=true
 	 * </code>
 	 * </p>
 	 * 
@@ -115,8 +115,8 @@ public interface INbaDocumentMetaData<DOCUMENT_OBJECT extends IDocumentObject> {
 	 * <p>
 	 * 
 	 * <pre>
-	 * http://api.biodiversitydata.nl/v2/&lt;document-type&gt;/metadata/getFieldInfo
-	 * http://api.biodiversitydata.nl/v2/&lt;document-type&gt;/metadata/getFieldInfo/?fields=field0,field1,field2
+	 * https://api.biodiversitydata.nl/v3/&lt;document-type&gt;/metadata/getFieldInfo
+	 * https://api.biodiversitydata.nl/v3/&lt;document-type&gt;/metadata/getFieldInfo/?fields=field0,field1,field2
 	 * </pre>
 	 * </p>
 	 * <p>
@@ -125,8 +125,8 @@ public interface INbaDocumentMetaData<DOCUMENT_OBJECT extends IDocumentObject> {
 	 * <p>
 	 * 
 	 * <pre>
-	 * http://api.biodiversitydata.nl/v2/taxon/metadata/getFieldInfo
-	 * http://api.biodiversitydata.nl/v2/specimen/metadata/getFieldInfo/?fields=unitID,gatheringEvent.dateTimeBegin
+	 * https://api.biodiversitydata.nl/v3/taxon/metadata/getFieldInfo
+	 * https://api.biodiversitydata.nl/v3/specimen/metadata/getFieldInfo/?fields=unitID,gatheringEvent.dateTimeBegin
 	 * </pre>
 	 * </p>
 	 * 
@@ -147,7 +147,7 @@ public interface INbaDocumentMetaData<DOCUMENT_OBJECT extends IDocumentObject> {
 	 * </p>
 	 * <p>
 	 * <code>
-	 * http://api.biodiversitydata.nl/v2/&lt;document-type&gt;/isOperatorAllowed/{field}/{operator}
+	 * https://api.biodiversitydata.nl/v3/&lt;document-type&gt;/isOperatorAllowed/{field}/{operator}
 	 * </code>
 	 * </p>
 	 * <p>
@@ -155,7 +155,7 @@ public interface INbaDocumentMetaData<DOCUMENT_OBJECT extends IDocumentObject> {
 	 * </p>
 	 * <p>
 	 * <code>
-	 * http://api.biodiversitydata.nl/v2/specimen/isOperatorAllowed/unitID/BETWEEN
+	 * https://api.biodiversitydata.nl/v3/specimen/isOperatorAllowed/unitID/BETWEEN
 	 * </code>
 	 * </p>
 	 * 

@@ -142,6 +142,7 @@ class CoLTaxonTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, Taxon
 		}
 		else {
 			try {
+			  refs = refs.replaceFirst("http:", "https:");
 				taxon.setRecordURI(URI.create(refs));
 			} catch (IllegalArgumentException e) {
 				if (!suppressErrors) warn("RecordURI not set. Invalid URL: \"%s\"", refs);

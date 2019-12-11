@@ -31,14 +31,14 @@ import nl.naturalis.nba.dao.NbaDao;
 import nl.naturalis.nba.utils.ConfigObject;
 import nl.naturalis.nba.utils.IOUtil;
 
-@SwaggerDefinition(info = @Info(title = "Netherlands Biodiversity Api", version = "v2",
+@SwaggerDefinition(info = @Info(title = "Netherlands Biodiversity Api", version = "v3",
     description = "Access to the digitised Natural History collection at the Naturalis Biodiversity Center",
     contact = @Contact(name = "Naturalis Biodiversity Center", url = "https://www.naturalis.nl/nl/",
         email = "support@naturalis.nl"),
     license = @License(name = "GPL",
         url = "https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html")),
-    basePath = "/v2",
-    externalDocs = @ExternalDocs(url = "http://docs.biodiversitydata.nl",
+    basePath = "/v3",
+    externalDocs = @ExternalDocs(url = "https://docs.biodiversitydata.nl",
         value = "Documentation and examples"),
     tags = {@Tag(name = "specimen", description = "Access specimens present in the collection"),
         @Tag(name = "taxon", description = "Access taxon information from taxonimic catalogues"),

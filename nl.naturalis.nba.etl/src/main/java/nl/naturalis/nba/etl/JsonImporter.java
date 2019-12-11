@@ -25,6 +25,7 @@ import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.DaoRegistry;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.ESClientManager;
+import nl.naturalis.nba.dao.exception.DaoException;
 import nl.naturalis.nba.utils.ConfigObject;
 import nl.naturalis.nba.utils.FileUtil;
 import nl.naturalis.nba.utils.IOUtil;
@@ -130,28 +131,23 @@ public class JsonImporter {
   }
   
   private void refresh() {
-    // ES 5
-//    Client client = ESClientManager.getInstance().getClient();
-//    String index = docType.getIndexInfo().getName();
-//    client.admin().indices().prepareRefresh(index).get();
     
-    // ES 7
     RestHighLevelClient client = ESClientManager.getInstance().getClient();
     String index = docType.getIndexInfo().getName();
+    String msg = "Failed to refresh the index \"%s\": %s";
+    
     try {
       RefreshRequest request = new RefreshRequest(index); 
       client.indices().refresh(request, RequestOptions.DEFAULT);
     } catch (ElasticsearchException e) {
       if (e.status() == RestStatus.NOT_FOUND) {
-        logger.error(String.format("Failed to refresh the index \"%s\": %s", index, e.getMessage()));        
+        logger.error(String.format(msg, index + " - Server was not found (404).", e.getMessage()));        
       } else {
-        // TODO Auto-generated catch block
-        logger.error(String.format("Failed to refresh the index \"%s\": %s", index, e.getMessage()));
+        logger.error(String.format(msg, index + " - (" + e.status().ordinal() + ")" , e.getMessage()));
       }
     } catch (IOException e) {
-      // TODO Auto-generated catch block
-      // e.printStackTrace();
-      logger.error(String.format("Failed to refresh the index \"%s\": %s", index, e.getMessage()));
+      logger.error(String.format(msg, index, e.getMessage()));
+      throw new DaoException(String.format(msg, index, e.getMessage()));
     }
   }
   

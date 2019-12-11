@@ -209,13 +209,6 @@ public class AcidDocumentIterator<T extends IDocumentObject> implements IDocumen
 
 	private void scroll()
 	{
-	  // ES 5
-//		SearchScrollRequestBuilder ssrb = client.prepareSearchScroll(scrollId); 
-//		SearchResponse response = ssrb.setScroll(timeout).get();
-//		scrollId = response.getScrollId();
-//		hits = response.getHits().getHits();
-//		hitCounter = 0;
-	  
     SearchScrollRequest scrollRequest = new SearchScrollRequest(scrollId);
     scrollRequest.scroll(timeout);
     SearchResponse response;
@@ -225,9 +218,7 @@ public class AcidDocumentIterator<T extends IDocumentObject> implements IDocumen
       hits = response.getHits().getHits();
       hitCounter = 0;
     } catch (IOException e) {
-      // TODO Auto-generated catch block
-      // e.printStackTrace();
-      throw new DaoException(e.getMessage());
+      throw new DaoException("Failed to retrieve the next batch of records from the entire set: " + e.getMessage());
     }
 
 	  

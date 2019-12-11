@@ -43,6 +43,7 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 
 import nl.naturalis.nba.api.INbaAccess;
+import nl.naturalis.nba.api.InvalidConditionException;
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QueryResultItem;
@@ -152,10 +153,7 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
       logger.debug(printCall("count", querySpec));
     }
     QuerySpecTranslator translator = new QuerySpecTranslator(querySpec, dt);
-    CountRequest request = translator.translateCountRequest();
-    CountResponse response = executeCountRequest(request);
-    return response.getCount();
-  
+    return createCountResult(translator);  
   }
 
   @SuppressWarnings("unchecked")
@@ -310,6 +308,12 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
     result.setTotalSize(countResponse.getCount());
     
     return result;
+  }
+  
+  private long createCountResult(QuerySpecTranslator translator) throws InvalidConditionException {
+    CountRequest request = translator.translateCountRequest();
+    CountResponse response = executeCountRequest(request);
+    return response.getCount();
   }
 
   private T[] processQueryResponse(SearchResponse response) {

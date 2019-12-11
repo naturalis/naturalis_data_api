@@ -55,28 +55,9 @@ public class ETLDaoUtil {
 
   
   public static void saveObject(String id, String parentId, IDocumentObject obj, boolean refreshIndex) {
+
     DocumentType<?> dt = DocumentType.forClass(obj.getClass());
     String index = dt.getIndexInfo().getName();
-    
-
-    // ES5
-//    String type = dt.getName();
-//    IndexRequestBuilder irb = client().prepareIndex(index, type);
-//    if (id != null) {
-//      irb.setId(id);
-//    }
-//    if (parentId != null) {
-//      irb.setParent(parentId);
-//    }
-//    byte[] data = JsonUtil.serialize(obj);
-//    irb.setSource(data, XContentType.JSON);
-//    irb.execute().actionGet();
-//    if (refreshIndex) {
-//      ESUtil.refreshIndex(dt);
-//    }
-    
-
-    // ES7
     IndexRequest request = new IndexRequest(index); 
     if (id != null) {
       request.id(id);       
@@ -84,6 +65,7 @@ public class ETLDaoUtil {
     String jsonString = JsonUtil.toJson(obj);
     request.source(jsonString, XContentType.JSON);
     request.setRefreshPolicy("true");
+    
     try {
       IndexResponse indexResponse = client().index(request, RequestOptions.DEFAULT);
       if (indexResponse.getResult() == DocWriteResponse.Result.CREATED) {

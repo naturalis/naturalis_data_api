@@ -90,13 +90,11 @@ public class DaoTestUtil {
 	{
 		if (specimen.getId() == null) {
 			String id = specimen.getUnitID() + "@" + specimen.getSourceSystem().getCode();
-			// saveObject(id, null, specimen, refreshIndex);
 			saveObject(id, specimen, refreshIndex);
 		}
 		else {
 			String id = specimen.getId();
 			specimen.setId(null);
-			// saveObject(id, null, specimen, refreshIndex);
 			saveObject(id, specimen, refreshIndex);
 			specimen.setId(id);
 		}
@@ -106,13 +104,11 @@ public class DaoTestUtil {
 	  {
 	    if (mmo.getId() == null) {
 	      String id = mmo.getUnitID() + "@" + mmo.getSourceSystem().getCode();
-	      // saveObject(id, null, mmo, refreshIndex);
 	      saveObject(id, mmo, refreshIndex);
 	    }
 	    else {
 	      String id = mmo.getId();
 	      mmo.setId(null);
-	      // saveObject(id, null, mmo, refreshIndex);
 	      saveObject(id, mmo, refreshIndex);
 	      mmo.setId(id);
 	    }
@@ -132,13 +128,11 @@ public class DaoTestUtil {
 	{
 		if (area.getId() == null) {
 			String id = area.getSourceSystemId() + "@" + area.getSourceSystem().getCode();
-			// saveObject(id, null, area, refreshIndex);
 			saveObject(id, area, refreshIndex);
 		}
 		else {
 			String id = area.getId();
 			area.setId(null);
-			// saveObject(id, null, area, refreshIndex);
 			saveObject(id, area, refreshIndex);
 			area.setId(id);
 		}
@@ -146,79 +140,29 @@ public class DaoTestUtil {
 
 	public static void saveObject(IDocumentObject object, boolean refreshIndex)
 	{
-		// saveObject(null, null, object, refreshIndex);
 	  saveObject(null, object, refreshIndex);
 	}
-
-//	public static void saveObject(String id, IDocumentObject object, boolean refreshIndex)
-//	{
-//		// saveObject(id, null, object, refreshIndex);
-//	  saveObject(id, object, refreshIndex);
-//	}
 	
-	 public static void saveObject(String id, IDocumentObject obj, boolean refreshIndex)
-	  {
-	    DocumentType<?> dt = DocumentType.forClass(obj.getClass());
-	    String index = dt.getIndexInfo().getName();
-	    // String type = dt.getName();
-	    IndexRequest request = new IndexRequest();
-	    request.index(index);
-	    if (id != null) {
-	      request.id(id);
-	    }
-	    byte[] source = JsonUtil.serialize(obj);
-	    request.source(source, XContentType.JSON);
-	    try {
-        ESUtil.esClient().index(request, RequestOptions.DEFAULT);
-        if (refreshIndex) {
-          ESUtil.refreshIndex(dt);
-        }   
-      } catch (IOException e) {
-        // TODO Auto-generated catch block
-        // e.printStackTrace();
-        throw new DaoException(String.format("Failed to index document in index \"%s\": %s", index, e.getMessage()));
-      }
-	  }
-
-	
-	
-//  ES5
-	 
-//	  public static void saveObject(String id, IDocumentObject object, boolean refreshIndex)
-//	  {
-//	    saveObject(id, null, object, refreshIndex);
-//	  }
-
-//	public static void saveObject(String id, String parentId, IDocumentObject obj, boolean refreshIndex)
-//	{
-//		DocumentType<?> dt = DocumentType.forClass(obj.getClass());
-//		String index = dt.getIndexInfo().getName();
-//		String type = dt.getName();
-//		IndexRequestBuilder irb = client().prepareIndex(index, type);
-//		if (id != null) {
-//			irb.setId(id);
-//		}
-//		if (parentId != null) {
-//			irb.setParent(parentId);
-//		}
-//		byte[] data = JsonUtil.serialize(obj);
-//		irb.setSource(data, XContentType.JSON);
-//		irb.execute().actionGet();
-//		if (refreshIndex) {
-//			ESUtil.refreshIndex(dt);
-//		}		
-//	}
-
-//	public static IndicesAdminClient indices()
-//	{
-//		return admin().indices();
-//	}
-//
-//	private static AdminClient admin()
-//	{
-//		// return client().admin();
-//	  return null;
-//	}
+	public static void saveObject(String id, IDocumentObject obj, boolean refreshIndex)
+  {
+    DocumentType<?> dt = DocumentType.forClass(obj.getClass());
+    String index = dt.getIndexInfo().getName();
+    IndexRequest request = new IndexRequest();
+    request.index(index);
+    if (id != null) {
+      request.id(id);
+    }
+    byte[] source = JsonUtil.serialize(obj);
+    request.source(source, XContentType.JSON);
+    try {
+      ESUtil.esClient().index(request, RequestOptions.DEFAULT);
+      if (refreshIndex) {
+        ESUtil.refreshIndex(dt);
+      }   
+    } catch (IOException e) {
+      throw new DaoException(String.format("Failed to index document in index \"%s\": %s", index, e.getMessage()));
+    }
+  }
 
 	@SuppressWarnings("unused")
   private static RestHighLevelClient client()

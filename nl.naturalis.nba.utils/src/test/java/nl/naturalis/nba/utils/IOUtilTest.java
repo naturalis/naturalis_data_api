@@ -1,11 +1,11 @@
-/**
- * 
- */
 package nl.naturalis.nba.utils;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+
 import static org.mockito.Mockito.times;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -13,6 +13,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -54,8 +55,7 @@ public class IOUtilTest {
         try {
             is = new FileInputStream(file);
         } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            fail("Failed to retrieve test file: " + file.getAbsolutePath());
         }
         byte[] bytes = IOUtil.readAllBytes(is, 1024);
 

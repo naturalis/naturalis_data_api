@@ -24,9 +24,6 @@ public abstract class AggregationQueryFactory {
     }
     
     switch (type) {
-      case COUNT:
-        return new CountAggregation<>(dt, querySpec);
-
       case COUNT_DISTINCT_VALUES:
         if (pathToNestedField == null) {
           return new CountDistinctValuesFieldAggregation<>(dt, field, querySpec);

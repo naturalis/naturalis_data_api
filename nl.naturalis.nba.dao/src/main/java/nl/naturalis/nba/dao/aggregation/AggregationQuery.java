@@ -4,7 +4,7 @@ import static nl.naturalis.nba.dao.util.es.ESUtil.newSearchRequest;
 
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
-
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.IDocumentObject;
@@ -30,10 +30,8 @@ import nl.naturalis.nba.utils.ConfigObject;
  * </p>
  * 
  * <p>
- * There are 5 {@code AggregationType}'s possible, each having a different return type:
+ * There are 4 {@code AggregationType}'s possible, each having a different return type:
  * <dl>
- * <dt>COUNT</dt>
- * <dd>provides a count of all documents : {@code<U> = Long};</dd>
  * <dt>COUNT_DISTINCT_VALUES</dt>
  * <dd>provides a count of the distinct values for a specific field : {@code<U> = Long};</dd>
  * <dt>COUNT_DISTINCT_VALUES_PER_GROUP</dt>
@@ -104,7 +102,11 @@ public abstract class AggregationQuery<T extends IDocumentObject, U> {
       QuerySpecTranslator translator = new QuerySpecTranslator(querySpec, dt);
       request = translator.translate();  
     }
+    SearchSourceBuilder searchSourceBuilder = request.source();
+    searchSourceBuilder.size(0);
+    request.source(searchSourceBuilder);
     return request;
+    
   }
   
   protected static int getMaxNumGroups()

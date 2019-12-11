@@ -155,7 +155,7 @@ public class QuerySpecTranslator {
    */
   public CountRequest translateCountRequest() throws InvalidConditionException {
     if (logger.isDebugEnabled() && spec != null) {
-      logger.debug("Translating QuerySpec:\n{}", toPrettyJson(prune(spec)));
+      logger.debug("Translating QuerySpec to CountRequest:\n{}", toPrettyJson(prune(spec)));
     }
     CountRequest request = newCountRequest(dt);
     if (spec!= null && spec.getConditions() != null && !spec.getConditions().isEmpty()) {

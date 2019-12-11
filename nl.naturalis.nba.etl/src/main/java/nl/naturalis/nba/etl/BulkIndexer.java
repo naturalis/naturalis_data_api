@@ -36,31 +36,6 @@ public class BulkIndexer<T extends IDocumentObject> {
 		this.dt = dt;
 	}
 
-//	public void index(Collection<T> documents) throws BulkIndexException
-//	{
-//		ArrayList<T> objs;
-//		if (documents.getClass() == ArrayList.class) {
-//			objs = (ArrayList<T>) documents;
-//		}
-//		else {
-//			objs = new ArrayList<>(documents);
-//		}
-//		String[] ids = new String[objs.size()];
-//		/*
-//		 * For some deeply mysterious reason it seems we need two separate
-//		 * loops, otherwise objs.get(i).getId() returns null where it really
-//		 * really shouldn't:
-//		 */
-//		for (int i = 0; i < objs.size(); i++) {
-//			ids[i] = objs.get(i).getId();
-//			objs.get(i).setId(null);
-//		}
-//		index(objs, Arrays.asList(ids));
-//		for (int i = 0; i < objs.size(); i++) {
-//			objs.get(i).setId(ids[i]);
-//		}
-//	}
-
 	 public void index(Collection<T> documents) throws BulkIndexException
 	  {
 	    ArrayList<T> objs;
@@ -93,35 +68,11 @@ public class BulkIndexer<T extends IDocumentObject> {
 
 		ObjectMapper om = dt.getObjectMapper();
 		
-		// ES5
-//		String type = dt.getName();
-//		BulkRequestBuilder brb = client.prepareBulk();
-//		brb.setTimeout(REQUEST_TIMEOUT);
-//		for (int i = 0; i < documents.size(); ++i) {
-//			IndexRequestBuilder irb = client.prepareIndex(index, type);
-//			try {
-//				irb.setSource(om.writeValueAsBytes(documents.get(i)), XContentType.JSON);
-//				if (ids != null) {
-//					irb.setId(ids.get(i));
-//				}
-//				if (parentIds != null) {
-//					irb.setParent(parentIds.get(i));
-//				}
-//			}
-//			catch (JsonProcessingException e) {
-//				throw new DaoException(e);
-//			}
-//			brb.add(irb);
-//		}
-//		BulkResponse response = brb.get();
-//		if (response.hasFailures()) {
-//			throw new BulkIndexException(response, documents);
-//		}
-		
-		// ES7
+		// TODO: find out what works best in order to prevent performance issues
+		// during a bulk transaction
 		BulkRequest bulkRequest = new BulkRequest();
-		bulkRequest.timeout(REQUEST_TIMEOUT);
-		// bulkRequest.timeout(TimeValue.ZERO);
+		// bulkRequest.timeout(REQUEST_TIMEOUT);
+		bulkRequest.timeout(TimeValue.ZERO);
 		// bulkRequest.setRefreshPolicy(WriteRequest.RefreshPolicy.WAIT_UNTIL);
 		
 		for (int i = 0; i < documents.size(); ++i) {
@@ -154,9 +105,7 @@ public class BulkIndexer<T extends IDocumentObject> {
       }
       if (hasFailed) throw new BulkIndexException(bulkResponse, documents);
     } catch (IOException e) {
-      // TODO Auto-generated catch block
-      // e.printStackTrace();
-      throw new ETLRuntimeException("Failed to execute a bulk index: " + e.getMessage() + " - " + e.getClass().getName());
+      throw new DaoException("Failed to execute a bulk index: " + e.getMessage());
     }
 	}
 

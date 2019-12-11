@@ -150,7 +150,7 @@ public class SpecimenDaoTest_Dwca {
   
 
   /*
-   * Just make sure we don't get exceptions. No assertions about contents of zip archive yet (TODO).
+   * TODO: Just make sure we don't get exceptions. No assertions about contents of zip archive yet.
    */
   @Ignore
   @Test

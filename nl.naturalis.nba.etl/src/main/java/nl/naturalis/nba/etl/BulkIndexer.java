@@ -27,7 +27,8 @@ public class BulkIndexer<T extends IDocumentObject> {
   
   private static final Logger logger = ETLRegistry.getInstance().getLogger(BulkIndexer.class);
 
-	private static final TimeValue REQUEST_TIMEOUT = TimeValue.timeValueMinutes(5);
+  // TODO: decide on "request timeout"
+	//private static final TimeValue REQUEST_TIMEOUT = TimeValue.timeValueMinutes(5);
 
 	private DocumentType<T> dt;
 

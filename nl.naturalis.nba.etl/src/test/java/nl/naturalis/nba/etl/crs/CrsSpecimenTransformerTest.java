@@ -8,6 +8,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.net.URI;
 import java.net.URL;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ import nl.naturalis.nba.api.model.LithoStratigraphy;
 import nl.naturalis.nba.api.model.Monomial;
 import nl.naturalis.nba.api.model.NamedArea;
 import nl.naturalis.nba.api.model.ScientificName;
+import nl.naturalis.nba.api.model.ServiceAccessPoint;
 import nl.naturalis.nba.api.model.Sex;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
@@ -913,6 +915,32 @@ public class CrsSpecimenTransformerTest {
     AssociatedTaxon expectedAssociatedTaxon = new AssociatedTaxon( "Achillea millefolium", TaxonRelationType.parse("in relation with") );
     assertEquals( "01", 2, listSize);
     assertTrue("02", associatedTaxa.contains(expectedAssociatedTaxon));
+  }
+  
+  @Test
+  public void testGetAssociatedMultiMediaUris() throws Exception {
+
+    ETLStatistics etlStatistics = new ETLStatistics();
+    List<ServiceAccessPoint> serviceAccessPoints = null;
+    int listSize = 0;
+
+    CrsSpecimenTransformer crsSpecimenTransformer = new CrsSpecimenTransformer(etlStatistics);
+    CrsExtractor extractor = new CrsExtractor(specimenFile, etlStatistics);
+
+    for (XMLRecordInfo extracted : extractor) {
+      CommonReflectionUtil.setField(AbstractTransformer.class, crsSpecimenTransformer, "objectID", "RMNH.ART.354");
+      CommonReflectionUtil.setField(AbstractTransformer.class, crsSpecimenTransformer, "input", extracted);
+
+      Object returned = CommonReflectionUtil.callMethod(null, null, crsSpecimenTransformer, "getAssociatedMultiMediaUris");
+      serviceAccessPoints = (List<ServiceAccessPoint>) returned;
+      listSize = serviceAccessPoints.size();
+    }
+
+    URI expectedUri = URI.create("https://medialib.naturalis.nl/file/id/RMNH.ART.354_1/format/large");
+    assertEquals( "01", 2, listSize);
+    assertTrue("02", serviceAccessPoints.get(0).getAccessUri().equals(expectedUri));
+    expectedUri = URI.create("https://medialib.naturalis.nl/file/id/RMNH.ART.354%20_1/format/large");
+    assertEquals("03", serviceAccessPoints.get(1).getAccessUri(), expectedUri);
   }
   
 }

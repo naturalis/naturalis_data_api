@@ -539,6 +539,8 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 			info.url = url;
 			info.mimeType = TransformUtil.guessMimeType(url);
 		}
+		
+		// Test validity of url
 		try {
 			@SuppressWarnings("unused")
 			URI dummy = new URI(url);

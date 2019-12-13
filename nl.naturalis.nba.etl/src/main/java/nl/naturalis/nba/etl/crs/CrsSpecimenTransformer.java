@@ -15,6 +15,8 @@ import static nl.naturalis.nba.utils.StringUtil.rpad;
 import static nl.naturalis.nba.etl.enrich.EnrichmentUtil.createEnrichments;
 
 import java.lang.reflect.Field;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -24,6 +26,7 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import org.w3c.dom.Element;
+
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QueryResult;
@@ -319,16 +322,28 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
         if (n >= multimediaPublic.size() && multimediaPublic.get(n++).getTextContent().trim().equals("0")) continue;
         
         // Retrieve uri 
-        String uri = e.getTextContent().trim();
-        if (uri == null || uri.length() == 0) continue;
+        String uriStr = e.getTextContent().trim();
+        if (uriStr == null || uriStr.length() == 0) continue;
         
         // Change http urls to https urls, but leave the rest as they are 
-        if (uri.startsWith(MEDIALIB_HTTP_URL) && !uri.startsWith(MEDIALIB_HTTPS_URL)) {
-          uri = uri.replace(MEDIALIB_HTTP_URL, MEDIALIB_HTTPS_URL);
+        if (uriStr.startsWith(MEDIALIB_HTTP_URL) && !uriStr.startsWith(MEDIALIB_HTTPS_URL)) {
+          uriStr = uriStr.replace(MEDIALIB_HTTP_URL, MEDIALIB_HTTPS_URL);
+        }
+        
+        // Test validity and/or encode uri when needed
+        try {
+          @SuppressWarnings("unused")
+          URI uri = new URI(uriStr);
+        } catch (URISyntaxException exc) {
+          stats.objectsRejected++;
+          if (!suppressErrors) {
+            logger.error("Invalid image URL for object {}. URI has been skipped: {}",  objectID, uriStr);
+          }
+          continue;
         }
         
         // Extract medialib ID
-        String medialibId = uri.substring(MEDIALIB_URL_START.length());
+        String medialibId = uriStr.substring(MEDIALIB_URL_START.length());
         int x = medialibId.indexOf('/');
         if (x != -1) {
           medialibId = medialibId.substring(0, x);
@@ -337,9 +352,9 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
         // Retrieve mime type
         String mimeType = mimetypeCache.getMimeType(medialibId);
         if (mimeType != null) {
-          serviceAccessPoints.add( new ServiceAccessPoint(uri, mimeType, DEFAULT_IMAGE_QUALITY) );         
-        } else if (uri.length() > 0 && mimeType == null) {
-          logger.error("Multimedia URI from object {} has no mime type! URI has been skipped: {}", objectID, uri);
+          serviceAccessPoints.add( new ServiceAccessPoint(uriStr, mimeType, DEFAULT_IMAGE_QUALITY) );         
+        } else if (uriStr.length() > 0 && mimeType == null) {
+          logger.error("Multimedia URI from object {} has no mime type! URI has been skipped: {}", objectID, uriStr);
         }
       }
       return (serviceAccessPoints.size() == 0) ? null : serviceAccessPoints;

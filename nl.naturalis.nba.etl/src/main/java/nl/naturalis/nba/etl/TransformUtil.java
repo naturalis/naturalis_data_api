@@ -12,6 +12,7 @@ import java.util.List;
 
 import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Element;
+
 import nl.naturalis.nba.api.model.DefaultClassification;
 import nl.naturalis.nba.api.model.Monomial;
 import nl.naturalis.nba.api.model.MultiMediaContentIdentification;

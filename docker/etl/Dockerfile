@@ -7,17 +7,16 @@ ENV AUTO_IMPORT=FALSE GIT_URL_PREFIX=https://github.com/naturalis/ IMPORT_DATA_D
 ENV REPOS="nba-brondata-nsr:master,nba-brondata-medialib:master,nba-brondata-crs:master,nba-brondata-col:master,nba-brondata-brahms:master,nba-brondata-geo:master"
 ENV FILEBEAT_VERSION=7.5.0 LOG_LEVEL=INFO ENABLE_FILEBEAT=FALSE LANG=en_US.UTF-8 PATCH_PROPERTIES=TRUE
 
-RUN apt-get update \
-    && apt-get install -y git \
-    && mkdir -p /payload/data
+RUN apt-get update && apt-get install -y git
+RUN mkdir -p /payload/data
+RUN mkdir -p /payload/software
 
 WORKDIR /payload
+
 ADD software software
-#RUN mkdir data
-#ADD version /payload/software/sh/version
 ADD log4j2.xml /payload/software/conf/log4j2.xml
+
 WORKDIR /payload/software/sh
 ADD run.sh run.sh
 RUN chmod +x run.sh
-CMD ./run.sh
-
+#CMD ./run.sh

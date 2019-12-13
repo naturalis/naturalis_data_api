@@ -9,6 +9,7 @@ import static nl.naturalis.nba.etl.ETLConstants.SOURCE_INSTITUTION_ID;
 import static nl.naturalis.nba.etl.ETLUtil.getTestGenera;
 import static nl.naturalis.nba.etl.TransformUtil.sortIdentificationsPreferredFirst;
 import static nl.naturalis.nba.etl.MimeTypeCache.MEDIALIB_URL_START;
+import static nl.naturalis.nba.etl.MimeTypeCache.MEDIALIB_HTTP_URL;
 import static nl.naturalis.nba.etl.MimeTypeCache.MEDIALIB_HTTPS_URL;
 import static nl.naturalis.nba.utils.StringUtil.rpad;
 import static nl.naturalis.nba.etl.enrich.EnrichmentUtil.createEnrichments;
@@ -49,6 +50,7 @@ import nl.naturalis.nba.api.model.SpecimenTypeStatus;
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.api.model.TaxonRelationType;
 import nl.naturalis.nba.api.model.TaxonomicEnrichment;
+import nl.naturalis.nba.api.model.TaxonomicRank;
 import nl.naturalis.nba.api.model.VernacularName;
 import nl.naturalis.nba.common.es.ESDateInput;
 import nl.naturalis.nba.dao.TaxonDao;
@@ -315,15 +317,26 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
       int n = 0;
       for (Element e : fileUriElems) {
         if (n >= multimediaPublic.size() && multimediaPublic.get(n++).getTextContent().trim().equals("0")) continue;
+        
+        // Retrieve uri 
         String uri = e.getTextContent().trim();
+        if (uri == null || uri.length() == 0) continue;
         
         // Change http urls to https urls, but leave the rest as they are 
-        if (uri.startsWith(MEDIALIB_URL_START) && !uri.startsWith(MEDIALIB_HTTPS_URL)) {
-          uri = MEDIALIB_HTTPS_URL.concat(uri.substring(MEDIALIB_URL_START.length()));
-        }        
+        if (uri.startsWith(MEDIALIB_HTTP_URL) && !uri.startsWith(MEDIALIB_HTTPS_URL)) {
+          uri = uri.replace(MEDIALIB_HTTP_URL, MEDIALIB_HTTPS_URL);
+        }
         
-        String mimeType = mimetypeCache.getMimeType(objectID);
-        if (uri != null && uri.length() > 0 && mimeType != null) {
+        // Extract medialib ID
+        String medialibId = uri.substring(MEDIALIB_URL_START.length());
+        int x = medialibId.indexOf('/');
+        if (x != -1) {
+          medialibId = medialibId.substring(0, x);
+        }
+        
+        // Retrieve mime type
+        String mimeType = mimetypeCache.getMimeType(medialibId);
+        if (mimeType != null) {
           serviceAccessPoints.add( new ServiceAccessPoint(uri, mimeType, DEFAULT_IMAGE_QUALITY) );         
         } else if (uri.length() > 0 && mimeType == null) {
           logger.error("Multimedia URI from object {} has no mime type! URI has been skipped: {}", objectID, uri);
@@ -389,43 +402,43 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
     }
 
     private ScientificName getScientificName(Element elem, String collectionType) {
+        
         ScientificName sn = new ScientificName();
-        sn.setFullScientificName(val(elem, "abcd:FullScientificNameString"));
+
+        List<Element> elems = DOMUtil.getChildren(elem, "ncrsHighername");
+        
         sn.setGenusOrMonomial(val(elem, "abcd:GenusOrMonomial"));
         sn.setSubgenus(val(elem, "abcd:Subgenus"));
         sn.setSpecificEpithet(val(elem, "abcd:SpeciesEpithet"));
-        String s = val(elem, "abcd:subspeciesepithet");
-        if (s == null) {
-            s = val(elem, "abcd:InfrasubspecificName");
+        String subSpeciesEpithetStr = val(elem, "abcd:subspeciesepithet");
+        if (subSpeciesEpithetStr == null) {
+            subSpeciesEpithetStr = val(elem, "abcd:InfrasubspecificName");
         }
-        sn.setInfraspecificEpithet(s);
+        sn.setInfraspecificEpithet(subSpeciesEpithetStr);
         sn.setNameAddendum(val(elem, "abcd:NameAddendum"));
         sn.setAuthorshipVerbatim(val(elem, "abcd:AuthorTeamOriginalAndYear"));
-        if (sn.getFullScientificName() == null) {
+        
+        // fullScientificName
+        String fullScientificNameStr = val(elem, "abcd:FullScientificNameString");
+
+        // 1. First, try to compile a full scientific name from higher name elements
+        if (sn.getGenusOrMonomial() != null) {
             StringBuilder sb = new StringBuilder();
-            if (sn.getGenusOrMonomial() != null) {
-                sb.append(sn.getGenusOrMonomial()).append(' ');
-            } else {
-                String taxonCoverage = val(elem, "abcd:taxonCoverage");
-                if (taxonCoverage != null) {
-                    sb.append(taxonCoverage).append(' ');
-                }
-            }
+            sb.append(sn.getGenusOrMonomial()).append(' ');
             if (sn.getSubgenus() != null)
-                sb.append(sn.getSubgenus()).append(' ');
+                sb.append("(").append(sn.getSubgenus()).append(") ");
             if (sn.getSpecificEpithet() != null)
                 sb.append(sn.getSpecificEpithet()).append(' ');
             if (sn.getInfraspecificEpithet() != null)
                 sb.append(sn.getInfraspecificEpithet()).append(' ');
-            if (sn.getAuthorshipVerbatim() != null) {
-                if (sn.getAuthorshipVerbatim().charAt(0) != '(')
-                    sb.append('(');
+            if (sn.getAuthorshipVerbatim() != null)
                 sb.append(sn.getAuthorshipVerbatim());
-                if (sn.getAuthorshipVerbatim().charAt(sn.getAuthorshipVerbatim().length() - 1) != ')')
-                    sb.append(')');
-            }
             if (sb.length() != 0)
                 sn.setFullScientificName(sb.toString().trim());
+        } else if (fullScientificNameStr != null) {
+          sn.setFullScientificName(fullScientificNameStr); // 2. Otherwise, use the string from the import file
+        } else {
+          sn.setFullScientificName(getBestTaxonCoverage(elems)); // 3. or, the taxonCoverage if there is nothing else
         }
         if (collectionType.equals("Mineralogy and Petrology") || collectionType.equals("Mineralogy") || collectionType.equals("Petrology")) {
             if (sn.getFullScientificName() != null) {
@@ -435,6 +448,32 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
             TransformUtil.setScientificNameGroup(sn);
         }
         return sn;
+    }
+    
+    /**
+     * getBestTaxonCoverage returns the taxon coverage with the most specific taxonomic rank 
+     * as a String. 
+     * domain : most general rank
+     * ...
+     * subtribe : most specific rank
+     * 
+     * @param elems : The elements of the ncrsHighername element
+     * @return taxonCoverage
+     */
+    private String getBestTaxonCoverage(List<Element> elems) {
+      if (elems == null) return null;
+      
+      String taxonCoverageStr = null;
+      int ordinal = -1;
+      for (Element elem : elems) {
+        String taxonRankStr = val(elem, "abcd:HigherTaxonRank");
+        TaxonomicRank rank = TaxonomicRank.parse(taxonRankStr);
+        if (rank != null && rank.ordinal() > ordinal) {
+          taxonCoverageStr = val(elem, "abcd:taxonCoverage");
+          ordinal = rank.ordinal();
+        }
+      }
+      return taxonCoverageStr;
     }
 
     private static List<Monomial> getSystemClassification(Element elem, ScientificName sn) {

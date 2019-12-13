@@ -1,5 +1,5 @@
 nba.api.install.dir=/api-output/etc-nba
-nba.api.dwca.config.version=v002
+nba.api.dwca.config.version=v004
 nba.etl.install.dir=/etl-output
 elasticsearch.cluster.name=nba-cluster
 elasticsearch.transportaddress.host=build-es

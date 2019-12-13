@@ -8,6 +8,7 @@ import static nl.naturalis.nba.etl.ETLConstants.LICENCE_TYPE;
 import static nl.naturalis.nba.etl.ETLConstants.SOURCE_INSTITUTION_ID;
 import static nl.naturalis.nba.etl.ETLUtil.getTestGenera;
 import static nl.naturalis.nba.etl.MimeTypeCache.MEDIALIB_URL_START;
+import static nl.naturalis.nba.etl.MimeTypeCache.MEDIALIB_HTTP_URL;
 import static nl.naturalis.nba.etl.MimeTypeCache.MEDIALIB_HTTPS_URL;
 import static nl.naturalis.nba.etl.TransformUtil.getSystemClassification;
 import static nl.naturalis.nba.etl.normalize.Normalizer.NOT_MAPPED;
@@ -41,6 +42,7 @@ import nl.naturalis.nba.api.model.ServiceAccessPoint;
 import nl.naturalis.nba.api.model.SpecimenTypeStatus;
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.api.model.TaxonomicEnrichment;
+import nl.naturalis.nba.api.model.TaxonomicRank;
 import nl.naturalis.nba.api.model.VernacularName;
 import nl.naturalis.nba.common.es.ESDateInput;
 import nl.naturalis.nba.dao.TaxonDao;
@@ -392,17 +394,73 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 
 	private ScientificName getScientificName(Element ncrsDeterminationElem)
 	{
+	  
 		ScientificName sn = new ScientificName();
-		sn.setFullScientificName(val(ncrsDeterminationElem, "dwc:scientificName"));
+	
+    List<Element> elems = DOMUtil.getChildren(ncrsDeterminationElem, "ncrsHighername");
+		
 		sn.setGenusOrMonomial(val(ncrsDeterminationElem, "abcd:GenusOrMonomial"));
 		sn.setSubgenus(val(ncrsDeterminationElem, "abcd:Subgenus"));
 		sn.setSpecificEpithet(val(ncrsDeterminationElem, "abcd:SpeciesEpithet"));
-		sn.setInfraspecificEpithet(val(ncrsDeterminationElem, "abcd:subspeciesepithet"));
+    String subSpeciesEpithetStr = val(ncrsDeterminationElem, "abcd:subspeciesepithet");
+    if (subSpeciesEpithetStr == null) {
+        subSpeciesEpithetStr = val(ncrsDeterminationElem, "abcd:InfrasubspecificName");
+    }
+		sn.setInfraspecificEpithet(subSpeciesEpithetStr);
 		sn.setNameAddendum(val(ncrsDeterminationElem, "abcd:NameAddendum"));
 		sn.setAuthorshipVerbatim(val(ncrsDeterminationElem, "dwc:nameAccordingTo"));
+
+		// fullScientificName
+		String fullScientificNameStr = val(ncrsDeterminationElem, "dwc:scientificName");
+		// 1. First. try to compile a full scientific name from specific elements
+		if (sn.getGenusOrMonomial() != null) {
+      StringBuilder sb = new StringBuilder();
+      sb.append(sn.getGenusOrMonomial()).append(' ');
+      if (sn.getSubgenus() != null)
+          sb.append('(').append(sn.getSubgenus()).append(") ");
+      if (sn.getSpecificEpithet() != null)
+          sb.append(sn.getSpecificEpithet()).append(' ');
+      if (sn.getInfraspecificEpithet() != null)
+          sb.append(sn.getInfraspecificEpithet()).append(' ');
+      if (sn.getAuthorshipVerbatim() != null)
+          sb.append(sn.getAuthorshipVerbatim());
+      if (sb.length() != 0)
+          sn.setFullScientificName(sb.toString().trim());
+		} else if (fullScientificNameStr != null) {
+		  sn.setFullScientificName(fullScientificNameStr); // 2. Otherwise, use the string from the import file
+		} else {
+		  sn.setFullScientificName(getBestTaxonCoverage(elems)); // 3. or, the taxonCoverage if there is nothing else
+		}
 		TransformUtil.setScientificNameGroup(sn);
 		return sn;
 	}
+	
+  /**
+   * getBestTaxonCoverage returns the taxon coverage with the most specific taxonomic rank 
+   * as a String. 
+   * domain : most general rank
+   * ...
+   * subtribe : most specific rank
+   * 
+   * @param elems : The elements of the ncrsHighername element
+   * @return taxonCoverage
+   */
+  private String getBestTaxonCoverage(List<Element> elems) {
+    if (elems == null) return null;
+    
+    String taxonCoverageStr = null;
+    int ordinal = -1;
+    for (Element elem : elems) {
+      String taxonRankStr = val(elem, "abcd:HigherTaxonRank");
+      TaxonomicRank rank = TaxonomicRank.parse(taxonRankStr);
+      if (rank != null && rank.ordinal() > ordinal) {
+        taxonCoverageStr = val(elem, "ac:taxonCoverage");
+        ordinal = rank.ordinal();
+      }
+    }
+    return taxonCoverageStr;
+  }
+
 
 	private String getTitle(Element frmDigitalebestandenElem, String unitID)
 	{
@@ -456,14 +514,12 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 			return null;
 		}
 		MultiMediaInfo info = new MultiMediaInfo();
-		if (url.startsWith(MEDIALIB_URL_START)) {
-			/*
-			 * HACK: attempt to repair bad medialib URLs where
-			 * MEDIALIB_URL_START occurs twice at the beginning
-			 */
-			if (url.substring(MEDIALIB_URL_START.length()).startsWith(MEDIALIB_URL_START)) {
-				url = url.substring(MEDIALIB_URL_START.length());
-			}
+		
+		// Change http urls to https urls for legacy reasons 
+		if (url.startsWith(MEDIALIB_HTTP_URL) && !(url.startsWith(MEDIALIB_HTTPS_URL))) {
+		  url = url.replace(MEDIALIB_HTTP_URL, MEDIALIB_HTTPS_URL);
+		}
+		if (url.startsWith(MEDIALIB_URL_START)) {		  
 			// Extract medialib ID
 			String medialibId = url.substring(MEDIALIB_URL_START.length());
 			int x = medialibId.indexOf('/');

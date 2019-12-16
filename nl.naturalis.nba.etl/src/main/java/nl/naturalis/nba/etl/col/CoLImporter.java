@@ -10,6 +10,7 @@ abstract class CoLImporter {
 	final int loaderQueueSize;
 	final boolean suppressErrors;
 	final boolean toFile;
+	final boolean truncate;
 	final String colYear;
 
 	CoLImporter()
@@ -19,6 +20,7 @@ abstract class CoLImporter {
 		loaderQueueSize = Integer.parseInt(val);
 		colYear = DaoRegistry.getInstance().getConfiguration().required("col.year");
 		toFile = DaoRegistry.getInstance().getConfiguration().get("etl.output", "file").equals("file");
+		truncate = DaoRegistry.getInstance().getConfiguration().get("nl.naturalis.nba.etl.truncate", "true").equals("true");
 	}
 	
 }

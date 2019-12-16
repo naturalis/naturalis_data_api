@@ -130,26 +130,7 @@ class CoLSynonymBatchTransformer {
 		for (CSVRecordInfo<CoLTaxonCsvField> record : records) {
 			ids.add(getElasticsearchId(COL, record.get(acceptedNameUsageID)));
 		}
-		DocumentType<Taxon> dt = TAXON;
-		
-		// ES 5
-//		SearchRequestBuilder request = ESUtil.newSearchRequest(dt);
-//		IdsQueryBuilder query = QueryBuilders.idsQuery(dt.getName());
-//		query.addIds(ids.toArray(new String[ids.size()]));
-//		request.setQuery(query);
-//		request.setSize(ids.size());
-//		SearchResponse response = ESUtil.executeSearchRequest(request);
-//		SearchHit[] hits = response.getHits().getHits();
-//		HashMap<String, Taxon> taxa = new HashMap<>(hits.length + 4, 1F);
-//		ObjectMapper om = dt.getObjectMapper();
-//		for (SearchHit hit : hits) {
-//			Taxon taxon = om.convertValue(hit.getSource(), dt.getJavaType());
-//			taxon.setId(hit.getId());
-//			taxa.put(taxon.getSourceSystemId(), taxon);
-//		}
-//		return taxa;
-
-		// ES 7
+		DocumentType<Taxon> dt = TAXON;		
     SearchRequest request = ESUtil.newSearchRequest(dt);
     IdsQueryBuilder query = QueryBuilders.idsQuery();
     query.addIds(ids.toArray(new String[ids.size()]));

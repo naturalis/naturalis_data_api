@@ -1,9 +1,11 @@
 package nl.naturalis.nba.etl.col;
 
 import static nl.naturalis.nba.etl.ETLUtil.logDuration;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+
 import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.dao.DaoRegistry;
@@ -47,6 +49,12 @@ public class CoLImportAll {
 		String prop = System.getProperty("batchSize", "1000");
 		@SuppressWarnings("unused")
     boolean toFile = DaoRegistry.getInstance().getConfiguration().get("etl.output", "file").equals("file");
+		if (toFile) {
+		  logger.info("Started CoL Taxon Import. Writing result to file");		  
+		}
+		else {
+		  logger.info("Started CoL Taxon Import. Writing result to Document Store");
+		}
 		int batchSize = 0;
 		try {
 			batchSize = Integer.parseInt(prop);
@@ -61,12 +69,12 @@ public class CoLImportAll {
 		try {
 			CoLImportAll importer = new CoLImportAll();
 			importer.setBatchSize(batchSize);
-			// Import to File should be the default for the time being ...
-			importer.importAllToFile();
-//			if (toFile) 
-//			  importer.importAllToFile();
-//			else
-//			  importer.importAll();
+			// Import to File should be the default for the time being ... (etl.output)
+			// toFile = true;
+			if (toFile) 
+			  importer.importAllToFile();
+			else
+			  importer.importAll();
 		}
 		catch (Throwable t) {
 			logger.error("CoLImportAll terminated unexpectedly!", t);
@@ -86,18 +94,22 @@ public class CoLImportAll {
 	public void importAll() throws BulkIndexException
 	{
 		long start = System.currentTimeMillis();
-		String dwcaDir = DaoRegistry.getInstance().getConfiguration().required("col.data.dir");
+		String colDataDir = DaoRegistry.getInstance().getConfiguration().required("col.data.dir");
+
 		CoLTaxonImporter cti = new CoLTaxonImporter();
-		cti.importCsv(dwcaDir + "/taxa.txt");
+		cti.importCsv(colDataDir + "/taxa.txt");
+
 		CoLSynonymBatchImporter csbi = new CoLSynonymBatchImporter();
 		csbi.setBatchSize(batchSize);
-		csbi.importCsv(dwcaDir + "/taxa.txt");
+		csbi.importCsv(colDataDir + "/taxa.txt");
+
 		CoLVernacularNameBatchImporter cvbi = new CoLVernacularNameBatchImporter();
 		cvbi.setBatchSize(batchSize);
-		cvbi.importCsv(dwcaDir + "/vernacular.txt");
+		cvbi.importCsv(colDataDir + "/vernacular.txt");
+
 		CoLReferenceBatchImporter crbi = new CoLReferenceBatchImporter();
 		crbi.setBatchSize(batchSize);
-		crbi.importCsv(dwcaDir + "/reference.txt");
+		crbi.importCsv(colDataDir + "/reference.txt");
 		logDuration(logger, getClass(), start);
 	}
 
@@ -109,7 +121,7 @@ public class CoLImportAll {
    */
   public void importAllToFile()
   {
-    logger.info("Transforming CoL dataset and writing to file");
+    logger.info("Transforming CoL dataset and writing the results to file");
     long start = System.currentTimeMillis();
     String colDataDir = DaoRegistry.getInstance().getConfiguration().required("col.data.dir");
     try (Connection connection = getDBConnection()) {

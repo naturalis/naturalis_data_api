@@ -64,6 +64,7 @@ public class GetDistinctValuesNestedFieldAggregation<T extends IDocumentObject>
     if (from > 0) aggSize += from;
     
     SearchSourceBuilder searchSourceBuilder = (request.source() == null) ? new SearchSourceBuilder() : request.source();
+    searchSourceBuilder.trackTotalHits(false);
     
     String nestedPath = getNestedPath(dt, field);
     BucketOrder fieldOrder = getOrdering(field, querySpec);

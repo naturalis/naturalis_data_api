@@ -72,6 +72,9 @@ public class QuerySpecTranslator {
     SearchRequest request = newSearchRequest(dt);
     SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
     
+    // Set to true the search response will always track the number of hits that match the query accurately
+    searchSourceBuilder.trackTotalHits(true);
+    
     if (spec.getConditions() != null && !spec.getConditions().isEmpty()) {
       overrideNonScoringIfNecessary();
       QueryBuilder query;
@@ -110,7 +113,8 @@ public class QuerySpecTranslator {
       logger.debug("Translating QuerySpec:\n{}", toPrettyJson(prune(spec)));
     }
     SearchRequest request = newSearchRequest(dt);
-    SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+    SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+    searchSourceBuilder.trackTotalHits(true);
     
     if (spec.getConditions() != null && !spec.getConditions().isEmpty()) {
       overrideNonScoringIfNecessary();
@@ -120,29 +124,29 @@ public class QuerySpecTranslator {
       } else {
         query = translateConditions();
       }
-      sourceBuilder.query(query);
+      searchSourceBuilder.query(query);
     }
     
     if (spec.getFields() != null) {
       if (spec.getFields().isEmpty()) {
-        sourceBuilder.fetchSource(false);
+        searchSourceBuilder.fetchSource(false);
       } else {
-        addFields(sourceBuilder);
+        addFields(searchSourceBuilder);
       }
     }
     
-    sourceBuilder.from(spec.getFrom() == null ? 0 : spec.getFrom());
-    sourceBuilder.size(spec.getSize() == null ? DEFAULT_SIZE : spec.getSize());
-    sourceBuilder.fetchSource(fetchSource);
+    searchSourceBuilder.from(spec.getFrom() == null ? 0 : spec.getFrom());
+    searchSourceBuilder.size(spec.getSize() == null ? DEFAULT_SIZE : spec.getSize());
+    searchSourceBuilder.fetchSource(fetchSource);
 
     if (spec.getSortFields() != null) {
       SortFieldsTranslator sfTranslator = new SortFieldsTranslator(spec, dt);
       for (SortBuilder<?> sortBuilder : sfTranslator.translate()) {
-        sourceBuilder.sort(sortBuilder);
+        searchSourceBuilder.sort(sortBuilder);
       }
     }
     
-    request.source(sourceBuilder);
+    request.source(searchSourceBuilder);
     return request;
   }
   

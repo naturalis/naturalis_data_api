@@ -97,6 +97,7 @@ public class GroupTaxaByScientificNameHelper {
 		
 		SearchRequest request = translator.translate();
 		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+		searchSourceBuilder.trackTotalHits(false);
 		searchSourceBuilder.aggregation(createAggregation(queryCopy));
 		SearchResponse response = executeSearchRequest(request);
 		

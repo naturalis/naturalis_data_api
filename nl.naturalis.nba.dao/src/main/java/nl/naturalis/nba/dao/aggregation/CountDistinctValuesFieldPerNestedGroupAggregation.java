@@ -73,6 +73,7 @@ public class CountDistinctValuesFieldPerNestedGroupAggregation<T extends IDocume
     }
 
     SearchSourceBuilder searchSourceBuilder = (request.source() == null) ? new SearchSourceBuilder() : request.source();
+    searchSourceBuilder.trackTotalHits(false);
 
     AggregationBuilder fieldAgg = AggregationBuilders.reverseNested("REVERSE_NESTED_FIELD");
     CardinalityAggregationBuilder cardinalityField = AggregationBuilders.cardinality("DISTINCT_VALUES").field(field);

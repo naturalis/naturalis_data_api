@@ -35,6 +35,7 @@ public class CountDistinctValuesFieldAggregation<T extends IDocumentObject>
     }
     SearchRequest request = createSearchRequest(querySpec);
     SearchSourceBuilder searchSourceBuilder = (request.source() == null) ? new SearchSourceBuilder() : request.source();
+    searchSourceBuilder.trackTotalHits(false);
     
     AggregationBuilder agg = AggregationBuilders.cardinality("CARDINALITY").field(field);
     searchSourceBuilder.aggregation(agg);

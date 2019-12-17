@@ -79,6 +79,7 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
     SearchRequest request = new SearchRequest();
     request.indices(index);
     SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+    searchSourceBuilder.trackTotalHitsUpTo(2);
     
     // When aliases are being used, searching for an id needs to be done a term query
     if (Boolean.parseBoolean(DaoRegistry.getInstance().getConfiguration().get("elasticsearch.aliases", "false") )) {
@@ -131,10 +132,11 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
     SearchRequest request = newSearchRequest(dt);
     IdsQueryBuilder query = QueryBuilders.idsQuery();
     query.addIds(ids);   
-    SearchSourceBuilder sourceBuilder = new SearchSourceBuilder(); 
-    sourceBuilder.query(query);
-    sourceBuilder.size(ids.length);
-    request.source(sourceBuilder);        
+    SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+    searchSourceBuilder.trackTotalHitsUpTo(1025);
+    searchSourceBuilder.query(query);
+    searchSourceBuilder.size(ids.length);
+    request.source(searchSourceBuilder);        
     return processSearchRequest(request);
   }
 
@@ -302,11 +304,7 @@ public abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T>
     SearchResponse response = executeSearchRequest(request);    
     QueryResult<T> result = new QueryResult<>();
     result.setResultSet(createItems(response));
-    
-    CountRequest countRequest = translator.translateCountRequest();
-    CountResponse countResponse = executeCountRequest(countRequest);
-    result.setTotalSize(countResponse.getCount());
-    
+    result.setTotalSize(response.getHits().getTotalHits().value);
     return result;
   }
   

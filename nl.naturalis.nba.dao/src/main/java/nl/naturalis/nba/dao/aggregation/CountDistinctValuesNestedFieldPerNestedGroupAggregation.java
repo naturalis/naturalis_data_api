@@ -73,6 +73,7 @@ public class CountDistinctValuesNestedFieldPerNestedGroupAggregation<T extends I
     }
 
     SearchSourceBuilder searchSourceBuilder = request.source();
+    searchSourceBuilder.trackTotalHits(false);
     
     AggregationBuilder fieldAgg = AggregationBuilders.reverseNested("REVERSE_NESTED_FIELD");
     AggregationBuilder fieldNested = AggregationBuilders.nested(field, pathToNestedField);

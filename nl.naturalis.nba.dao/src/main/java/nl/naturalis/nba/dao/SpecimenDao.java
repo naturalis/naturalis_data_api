@@ -55,10 +55,11 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 		SearchRequest request = newSearchRequest(SPECIMEN);
 		TermQueryBuilder tqb = termQuery("unitID", unitID);
 		ConstantScoreQueryBuilder csq = constantScoreQuery(tqb);
-		SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
-		sourceBuilder.query(csq);
-		sourceBuilder.size(0);
-		request.source(sourceBuilder);
+		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+		searchSourceBuilder.trackTotalHits(false);
+		searchSourceBuilder.query(csq);
+		searchSourceBuilder.size(0);
+		request.source(searchSourceBuilder);
 		SearchResponse response = executeSearchRequest(request);
 		return response.getHits().getTotalHits().value != 0;
 	}
@@ -72,9 +73,10 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 		SearchRequest request = newSearchRequest(SPECIMEN);
     TermQueryBuilder tqb = termQuery("unitID", unitID);
     ConstantScoreQueryBuilder csq = constantScoreQuery(tqb);
-    SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
-    sourceBuilder.query(csq);
-    request.source(sourceBuilder);
+    SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+    searchSourceBuilder.trackTotalHits(false);
+    searchSourceBuilder.query(csq);
+    request.source(searchSourceBuilder);
     return processSearchRequest(request);
 	}
 
@@ -108,10 +110,11 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
     TermQueryBuilder tq = termQuery("theme", collectionName);
     ConstantScoreQueryBuilder csq = constantScoreQuery(tq);
     SearchRequest request = newSearchRequest(SPECIMEN);
-    SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
-    sourceBuilder.query(csq);
-    sourceBuilder.fetchSource(false);
-    request.source(sourceBuilder);
+    SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+    searchSourceBuilder.trackTotalHits(false);
+    searchSourceBuilder.query(csq);
+    searchSourceBuilder.fetchSource(false);
+    request.source(searchSourceBuilder);
     SearchResponse response = executeSearchRequest(request);
     SearchHit[] hits = response.getHits().getHits();
     String[] ids = new String[hits.length];

@@ -85,6 +85,7 @@ public abstract class AggregationQuery<T extends IDocumentObject, U> {
       request = translator.translate();  
     }
     SearchSourceBuilder searchSourceBuilder = request.source();
+    searchSourceBuilder.trackTotalHits(false);
     searchSourceBuilder.size(0);
     request.source(searchSourceBuilder);
     return request;

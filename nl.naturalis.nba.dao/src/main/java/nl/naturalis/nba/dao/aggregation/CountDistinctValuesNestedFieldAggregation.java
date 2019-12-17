@@ -38,6 +38,7 @@ public class CountDistinctValuesNestedFieldAggregation<T extends IDocumentObject
     String nestedPath = getNestedPath(dt, field);
     
     SearchSourceBuilder searchSourceBuilder = (request.source() == null) ? new SearchSourceBuilder() : request.source();
+    searchSourceBuilder.trackTotalHits(false);
     
     AggregationBuilder nested = AggregationBuilders.nested("NESTED", nestedPath);
     AggregationBuilder agg = AggregationBuilders.cardinality("CARDINALITY").field(field);

@@ -71,6 +71,7 @@ public class GetDistinctValuesNestedFieldPerNestedGroupAggregation<T extends IDo
     BucketOrder groupOrder = getOrdering(group, querySpec);
 
     SearchSourceBuilder searchSourceBuilder = (request.source() == null) ? new SearchSourceBuilder() : request.source();
+    searchSourceBuilder.trackTotalHits(false);
     
     AggregationBuilder nestedFieldAgg = AggregationBuilders.nested("NESTED_FIELD", pathToNestedField);
     AggregationBuilder fieldAgg = AggregationBuilders.terms("FIELD").field(field).size(aggSize).order(fieldOrder);
@@ -112,31 +113,6 @@ public class GetDistinctValuesNestedFieldPerNestedGroupAggregation<T extends IDo
     for (Bucket bucket : buckets) {
       if (from > 0 && counter++ < from)
         continue;
-      
-//      ParsedReverseNested reverseNestedField = bucket.getAggregations().get("REVERSE_NESTED_FIELD");
-//      Nested nestedField = reverseNestedField.getAggregations().get("NESTED_FIELD");
-//      List<? extends Bucket> innerBuckets;
-//      if (nestedField.getAggregations().get("FIELD") instanceof ParsedStringTerms) {
-//        ParsedStringTerms fieldTerms = nestedField.getAggregations().get("FIELD");
-//        innerBuckets = fieldTerms.getBuckets();
-//      } else if (nestedField.getAggregations().get("FIELD") instanceof ParsedLongTerms) {
-//        ParsedLongTerms fieldTerms = nestedField.getAggregations().get("FIELD");
-//        innerBuckets = fieldTerms.getBuckets();
-//      } else if (nestedField.getAggregations().get("FIELD") instanceof ParsedDoubleTerms) {
-//        ParsedDoubleTerms fieldTerms = nestedField.getAggregations().get("FIELD");
-//        innerBuckets = fieldTerms.getBuckets();
-//      } else {
-//        UnmappedTerms fieldTerms = nestedField.getAggregations().get("FIELD");
-//        innerBuckets = fieldTerms.getBuckets();
-//      }
-//
-//      List<Map<String, Object>> fieldTermsList = new LinkedList<>();
-//      for (Bucket innerBucket : innerBuckets) {
-//        Map<String, Object> aggregate = new LinkedHashMap<>(2);
-//        aggregate.put(field, innerBucket.getKeyAsString());
-//        aggregate.put("count", innerBucket.getDocCount());
-//        fieldTermsList.add(aggregate);
-//      }
       
       ParsedReverseNested reverseNestedField = bucket.getAggregations().get("REVERSE_NESTED_FIELD");
       Nested nestedField = reverseNestedField.getAggregations().get("NESTED_FIELD");

@@ -103,6 +103,7 @@ public class GroupSpecimensByScientificNameHelper {
 		
 		SearchRequest request = translator.translate();
 		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+		searchSourceBuilder.trackTotalHits(false);
 		searchSourceBuilder.aggregation(createAggregation(queryCopy));
 		SearchResponse response = executeSearchRequest(request);
 		
@@ -172,6 +173,7 @@ public class GroupSpecimensByScientificNameHelper {
 			GroupByScientificNameQuerySpec sngQuery) throws InvalidQueryException
 	{
 	    SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+	    searchSourceBuilder.trackScores(false);
 	    TermsAggregationBuilder tab = AggregationBuilders.terms("TERMS").field("identifications.scientificName.scientificNameGroup");
 	    tab.size(getMaxNumBuckets());
 	    searchSourceBuilder.aggregation(tab);

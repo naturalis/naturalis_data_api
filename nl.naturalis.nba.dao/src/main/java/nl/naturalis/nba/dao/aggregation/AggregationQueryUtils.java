@@ -81,23 +81,6 @@ public final class AggregationQueryUtils {
     }
     return order;
   }
-
-//  ES 5  
-//  static Order getOrdering(String fieldName, QuerySpec querySpec) {
-//    Order order = Terms.Order.count(false);
-//    if (querySpec != null && querySpec.getSortFields() != null) {
-//      for (SortField sortField : querySpec.getSortFields()) {
-//        if (sortField.getPath().equals(new SortField(fieldName).getPath())) {
-//          if (sortField.isAscending()) {
-//            order = Terms.Order.term(true);
-//          } else {
-//            order = Terms.Order.term(false);
-//          }
-//        }
-//      }
-//    }
-//    return order;
-//  }
   
   /**
    * A field used to aggregate documents must be a searchable field. This method

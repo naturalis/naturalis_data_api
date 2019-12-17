@@ -186,7 +186,8 @@ public class DirtyDocumentIterator<T extends IDocumentObject> implements IDocume
 			request = new QuerySpecTranslator(qs, dt).translate();
 		}
 		catch (InvalidQueryException e) {
-			throw new DaoException(e);
+		  assert(false);
+		  return;
 		}
 		SearchSourceBuilder searchSourceBuilder = (request.source() == null) ? new SearchSourceBuilder() : request.source();
 		searchSourceBuilder.searchAfter(lastId);

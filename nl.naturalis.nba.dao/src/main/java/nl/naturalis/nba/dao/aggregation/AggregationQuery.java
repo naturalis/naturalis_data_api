@@ -69,24 +69,6 @@ public abstract class AggregationQuery<T extends IDocumentObject, U> {
 
   public abstract U getResult() throws InvalidQueryException;
 
-// ES 5
-//  /**
-//   * Takes a QuerySpec and returns a SearchRequestBuilder that can be used for an aggregation query.
-//   * 
-//   * @param querySpec
-//   * @return
-//   * @throws InvalidQueryException
-//   */
-//  SearchRequestBuilder createSearchRequest(QuerySpec querySpec) throws InvalidQueryException {
-//    SearchRequestBuilder request;
-//    if (querySpec == null) {
-//      request = newSearchRequest(dt);
-//    } else {
-//      QuerySpecTranslator translator = new QuerySpecTranslator(querySpec, dt);
-//      request = translator.translate();
-//    }
-//    request.setSize(0);
-//    return request;
   /**
    * Takes a QuerySpec and returns a SearchRequestBuilder that can be used for an aggregation query.
    * 

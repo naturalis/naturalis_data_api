@@ -52,17 +52,6 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 		if (logger.isDebugEnabled()) {
 			logger.debug(printCall("exists", unitID));
 		}
-		// ES5
-//		SearchRequestBuilder request = newSearchRequest(SPECIMEN);
-//		TermQueryBuilder tqb = termQuery("unitID", unitID);
-//		ConstantScoreQueryBuilder csq = constantScoreQuery(tqb);
-//		request.setQuery(csq);
-//		request.setSize(0);
-//		SearchResponse response = executeSearchRequest(request);
-		//return response.getHits().getTotalHits() != 0;
-//		return response.getHits().getTotalHits().value != 0;
-
-		// ES7
 		SearchRequest request = newSearchRequest(SPECIMEN);
 		TermQueryBuilder tqb = termQuery("unitID", unitID);
 		ConstantScoreQueryBuilder csq = constantScoreQuery(tqb);
@@ -80,13 +69,6 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 		if (logger.isDebugEnabled()) {
 			logger.debug(printCall("findByUnitID", unitID));
 		}
-		// ES5
-//		SearchRequestBuilder request = newSearchRequest(SPECIMEN);
-//		TermQueryBuilder tqb = termQuery("unitID", unitID);
-//		ConstantScoreQueryBuilder csq = constantScoreQuery(tqb);
-//		request.setQuery(csq);
-//		return processSearchRequest(request);
-		// ES7
 		SearchRequest request = newSearchRequest(SPECIMEN);
     TermQueryBuilder tqb = termQuery("unitID", unitID);
     ConstantScoreQueryBuilder csq = constantScoreQuery(tqb);
@@ -123,20 +105,6 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 		if (logger.isDebugEnabled()) {
 			logger.debug(printCall("getIdsInCollection", collectionName));
 		}
-		// ES5
-//		TermQueryBuilder tq = termQuery("theme", collectionName);
-//		ConstantScoreQueryBuilder csq = constantScoreQuery(tq);
-//		SearchRequestBuilder request = newSearchRequest(SPECIMEN);
-//		request.setQuery(csq);
-//		request.setFetchSource(false);
-//		SearchResponse response = executeSearchRequest(request);
-//		SearchHit[] hits = response.getHits().getHits();
-//		String[] ids = new String[hits.length];
-//		for (int i = 0; i < hits.length; ++i) {
-//			ids[i] = hits[i].getId();
-//		}
-//		return ids;
-		// ES7
     TermQueryBuilder tq = termQuery("theme", collectionName);
     ConstantScoreQueryBuilder csq = constantScoreQuery(tq);
     SearchRequest request = newSearchRequest(SPECIMEN);

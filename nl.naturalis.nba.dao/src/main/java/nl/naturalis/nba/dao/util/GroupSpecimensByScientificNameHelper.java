@@ -171,66 +171,26 @@ public class GroupSpecimensByScientificNameHelper {
 	private static NestedAggregationBuilder createAggregation(
 			GroupByScientificNameQuerySpec sngQuery) throws InvalidQueryException
 	{
-	  // ES 5
-//		TermsAggregationBuilder tab = terms("TERMS");
-//		tab.field("identifications.scientificName.scientificNameGroup");
-//		tab.size(getMaxNumBuckets());
-//		if (sngQuery.getGroupSort() == NAME_ASC) {
-//			tab.order(Terms.Order.term(true));
-//		}
-//		else if (sngQuery.getGroupSort() == NAME_DESC) {
-//			tab.order(Terms.Order.term(false));
-//		}
-//		else if (sngQuery.getGroupSort() == COUNT_DESC) {
-//			tab.order(Terms.Order.count(false));
-//		}
-//		else if (sngQuery.getGroupSort() == COUNT_ASC) {
-//			tab.order(Terms.Order.count(true));
-//		}
-//		else { // TOP_HIT_SCORE
-//			TopHitsAggregationBuilder thab = topHits("TOP_HITS");
-//			thab.size(1);
-//			tab.subAggregation(thab);
-//			MaxAggregationBuilder mab = max("MAX");
-//			mab.script(new Script("_score"));
-//			tab.subAggregation(mab);
-//			tab.order(Terms.Order.aggregation("MAX", false));
-//		}
-//		Filter filter = sngQuery.getGroupFilter();
-//		if (filter != null) {
-//			IncludeExclude ie = DaoUtil.translateFilter(filter);
-//			tab.includeExclude(ie);
-//		}
-//		NestedAggregationBuilder nab = nested("NESTED", "identifications");
-//		nab.subAggregation(tab);
-//		return nab;
-	  
-	  // ES 7
 	    SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 	    TermsAggregationBuilder tab = AggregationBuilders.terms("TERMS").field("identifications.scientificName.scientificNameGroup");
 	    tab.size(getMaxNumBuckets());
 	    searchSourceBuilder.aggregation(tab);
 	    
 	    // Ordering the buckets alphabetically by their terms in an ascending manner:
-	    // BucketOrder.key(true);
-	    
+	    // BucketOrder.key(true);	    
 	    if (sngQuery.getGroupSort() == NAME_ASC) {
-	      // tab.order(Terms.Order.term(true));
 	      tab.order(BucketOrder.key(true));
 	    }
 	    else if (sngQuery.getGroupSort() == NAME_DESC) {
-	      // tab.order(Terms.Order.term(false));
 	      tab.order(BucketOrder.key(false));
 	    }
 	    
 	    // Ordering the buckets by their doc_count in an ascending manner:
 	    // BucketOrder.count(true)
 	    else if (sngQuery.getGroupSort() == COUNT_DESC) {
-	      // tab.order(Terms.Order.count(false));
 	      tab.order(BucketOrder.count(false));
 	    }
 	    else if (sngQuery.getGroupSort() == COUNT_ASC) {
-	      // tab.order(Terms.Order.count(true));
 	      tab.order(BucketOrder.count(true));
 	    }
 	    
@@ -241,7 +201,6 @@ public class GroupSpecimensByScientificNameHelper {
 	      MaxAggregationBuilder mab = max("MAX");
 	      mab.script(new Script("_score"));
 	      tab.subAggregation(mab);
-	      // tab.order(Terms.Order.aggregation("MAX", false));
 	      tab.order(BucketOrder.aggregation("MAX", false));
 	    }
 	    Filter filter = sngQuery.getGroupFilter();
@@ -252,7 +211,6 @@ public class GroupSpecimensByScientificNameHelper {
 	    NestedAggregationBuilder nab = nested("NESTED", "identifications");
 	    nab.subAggregation(tab);
 	    return nab;
-
 	}
 
 	private static void addTaxaToGroup(ScientificNameGroup sng) throws InvalidQueryException

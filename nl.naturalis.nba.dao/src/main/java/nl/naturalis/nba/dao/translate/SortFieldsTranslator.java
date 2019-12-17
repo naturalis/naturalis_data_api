@@ -80,14 +80,6 @@ class SortFieldsTranslator {
         }
         if (nestedPath != null) {
           QueryBuilder query = translateConditions(path);
-
-          // ES 5
-//          if (query != null) {
-//            fsb.setNestedFilter(query);
-//          }
-//          fsb.setNestedPath(nestedPath);
-          
-          // ES 7
           NestedSortBuilder nsb = new NestedSortBuilder(nestedPath);
           if (query != null) {
             nsb.setFilter(query);

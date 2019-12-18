@@ -19,8 +19,17 @@ abstract class CoLImporter {
 		String val = System.getProperty(SYSPROP_LOADER_QUEUE_SIZE, "1000");
 		loaderQueueSize = Integer.parseInt(val);
 		colYear = DaoRegistry.getInstance().getConfiguration().required("col.year");
-		toFile = DaoRegistry.getInstance().getConfiguration().get("etl.output", "file").equals("file");
-		truncate = DaoRegistry.getInstance().getConfiguration().get("nl.naturalis.nba.etl.truncate", "true").equals("true");
+		if (DaoRegistry.getInstance().getConfiguration().hasProperty("etl.output")) {
+		  toFile = DaoRegistry.getInstance().getConfiguration().get("etl.output", "file").equals("file");		  
+		} else {
+		  toFile = true;
+		}
+		if (DaoRegistry.getInstance().getConfiguration().hasProperty("nl.naturalis.nba.etl.truncate")) {
+		  truncate = DaoRegistry.getInstance().getConfiguration().get("nl.naturalis.nba.etl.truncate", "true").equals("true");
+		} else {
+		  truncate = true;
+		}
+		System.out.println("truncate: " + truncate);
 	}
 	
 }

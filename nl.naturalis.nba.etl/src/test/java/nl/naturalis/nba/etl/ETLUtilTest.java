@@ -6,14 +6,13 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.time.OffsetDateTime;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.logging.log4j.Logger;
-
-import org.joda.time.DateTime;
 
 import org.junit.After;
 import org.junit.Before;
@@ -116,7 +115,8 @@ public class ETLUtilTest {
   @Test
   public void testGetDuration() {
 
-    String actual = ETLUtil.getDuration(DateTime.now().getMillis());
+    String actual = ETLUtil.getDuration(OffsetDateTime.now().toInstant().toEpochMilli());
+    
     Pattern patternFormat = Pattern.compile("\\d{2}:\\d{2}:\\d{2}");
     Pattern validFormat = Pattern.compile("[0-2]|[0-9]:[0-5]|[0-9]:[0-5]|[0-9]");
     Matcher matcherFormat = patternFormat.matcher(actual);
@@ -134,8 +134,7 @@ public class ETLUtilTest {
   @Test
   public void testGetDurationLong() {
 
-    String actual = ETLUtil.getDuration(System.currentTimeMillis() - TimeUnit.HOURS.toMillis(1),
-        DateTime.now().getMillis());
+    String actual = ETLUtil.getDuration(System.currentTimeMillis() - TimeUnit.HOURS.toMillis(1), OffsetDateTime.now().toInstant().toEpochMilli());
     Pattern patternFormat = Pattern.compile("\\d{2}:\\d{2}:\\d{2}");
     Pattern ifValidFormat = Pattern.compile("[0-2]|[0-9]:[0-5]|[0-9]:[0-5]|[0-9]");
     Matcher matcherFormat = patternFormat.matcher(actual);

@@ -1,10 +1,11 @@
 package nl.naturalis.nba.etl.crs;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.Date;
 
 import org.apache.logging.log4j.Logger;
-import org.joda.time.DateTime;
 
 import nl.naturalis.nba.dao.DaoRegistry;
 import nl.naturalis.nba.etl.ETLRegistry;
@@ -66,9 +67,9 @@ class CrsImportUtil {
 			url = config.required("crs.specimens.url.initial");
 			int maxAge = config.required("crs.max_age", int.class);
 			if (maxAge != 0) {
-				DateTime now = new DateTime();
-				DateTime wayback = now.minusHours(maxAge);
-				url += "&from=" + oaiDateFormatter.format(wayback.toDate());
+				OffsetDateTime now = OffsetDateTime.now();
+				OffsetDateTime wayback = now.minusHours(maxAge);
+				url += "&from=" + oaiDateFormatter.format(LocalDate.from(wayback));
 			}
 		}
 		else {
@@ -112,9 +113,9 @@ class CrsImportUtil {
 			url = config.required("crs.multimedia.url.initial");
 			int maxAge = config.required("crs.max_age", int.class);
 			if (maxAge != 0) {
-				DateTime now = new DateTime();
-				DateTime wayback = now.minusHours(maxAge);
-				url += "&from=" + oaiDateFormatter.format(wayback.toDate());
+				OffsetDateTime now = OffsetDateTime.now();
+				OffsetDateTime wayback = now.minusHours(maxAge);
+				url += "&from=" + oaiDateFormatter.format(LocalDate.from(wayback));
 			}
 		}
 		else {

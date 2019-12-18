@@ -81,6 +81,7 @@ public class AcidScroller implements IScroller {
 		request = qst.translate();
 		if (querySpec.getSortFields() == null || querySpec.getSortFields().size() == 0) {
 		  SearchSourceBuilder searchSourceBuilder = (request.source() == null) ? new SearchSourceBuilder() : request.source();
+		  searchSourceBuilder.trackTotalHits(false);
 		  searchSourceBuilder.sort(FieldSortBuilder.DOC_FIELD_NAME, SortOrder.ASC);
 			request.source(searchSourceBuilder);
 		}
@@ -93,6 +94,7 @@ public class AcidScroller implements IScroller {
 		final Scroll scroll = new Scroll(tv);
 		request.scroll(scroll);
 		SearchSourceBuilder searchSourceBuilder = (request.source() == null) ? new SearchSourceBuilder() : request.source();
+		searchSourceBuilder.trackTotalHits(false);
 		searchSourceBuilder.size(batchSize);
 		request.source(searchSourceBuilder);
 		

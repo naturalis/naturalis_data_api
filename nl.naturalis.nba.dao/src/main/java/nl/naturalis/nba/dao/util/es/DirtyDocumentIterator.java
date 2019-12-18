@@ -190,6 +190,7 @@ public class DirtyDocumentIterator<T extends IDocumentObject> implements IDocume
 		  return;
 		}
 		SearchSourceBuilder searchSourceBuilder = (request.source() == null) ? new SearchSourceBuilder() : request.source();
+		searchSourceBuilder.trackTotalHits(false);
 		searchSourceBuilder.searchAfter(lastId);
 		request.source(searchSourceBuilder);
 		

@@ -184,6 +184,7 @@ public class AcidDocumentIterator<T extends IDocumentObject> implements IDocumen
 			if (qs == null) {
 				request = newSearchRequest(this.dt);
 				SearchSourceBuilder searchSourceBuilder = (request.source() == null) ? new SearchSourceBuilder() : request.source();
+				searchSourceBuilder.trackTotalHits(false);
 				searchSourceBuilder.sort(FieldSortBuilder.DOC_FIELD_NAME, SortOrder.ASC);
 				request.source(searchSourceBuilder);
 			}
@@ -197,6 +198,7 @@ public class AcidDocumentIterator<T extends IDocumentObject> implements IDocumen
 			}
 			request.scroll(timeout);
 			SearchSourceBuilder searchSourceBuilder = (request.source() == null) ? new SearchSourceBuilder() : request.source();
+			searchSourceBuilder.trackTotalHits(false);
 			searchSourceBuilder.size(batchSize);
 			request.source(searchSourceBuilder);
 			SearchResponse response = executeSearchRequest(request);

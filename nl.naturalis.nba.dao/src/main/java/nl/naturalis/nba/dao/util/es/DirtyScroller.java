@@ -69,6 +69,7 @@ public class DirtyScroller implements IScroller {
 		QuerySpecTranslator qst = new QuerySpecTranslator(querySpec, documentType);
 		request = qst.translate();
 		SearchSourceBuilder searchSourceBuilder = (request.source() == null) ? new SearchSourceBuilder() : request.source();
+		searchSourceBuilder.trackTotalHits(false);
 		searchSourceBuilder.sort("_id", SortOrder.DESC);
 		request.source(searchSourceBuilder);
 	}
@@ -77,6 +78,7 @@ public class DirtyScroller implements IScroller {
 	public void scroll(SearchHitHandler handler) throws NbaException
 	{
 	  SearchSourceBuilder searchSourceBuilder = (request.source() == null) ? new SearchSourceBuilder() : request.source();
+	  searchSourceBuilder.trackTotalHits(false);
 	  searchSourceBuilder.size(batchSize);
 	  request = request.source(searchSourceBuilder);
 		int from = this.from;
@@ -106,6 +108,7 @@ public class DirtyScroller implements IScroller {
 			
 			String lastId = hits[hits.length - 1].getId();
 			SearchSourceBuilder sourceBuilder = (request.source() == null) ? new SearchSourceBuilder() : request.source();
+			searchSourceBuilder.trackTotalHits(false);
 			sourceBuilder.searchAfter(new Object[] { lastId });
 			request.source(sourceBuilder);
 		} while (true);

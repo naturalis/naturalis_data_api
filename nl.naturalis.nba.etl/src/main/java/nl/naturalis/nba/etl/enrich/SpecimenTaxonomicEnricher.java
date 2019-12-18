@@ -303,8 +303,9 @@ public class SpecimenTaxonomicEnricher {
     TermQueryBuilder termQuery = QueryBuilders.termQuery("acceptedName.scientificNameGroup", groups);
     ConstantScoreQueryBuilder constantScoreQuery = QueryBuilders.constantScoreQuery(termQuery);
 
-    SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
     int maxDocs = 10000;
+    SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+    searchSourceBuilder.trackTotalHits(false);
     searchSourceBuilder.query(constantScoreQuery); 
     searchSourceBuilder.from(0); 
     searchSourceBuilder.size(maxDocs); 
@@ -352,13 +353,14 @@ public class SpecimenTaxonomicEnricher {
     TermQueryBuilder termQuery = new TermQueryBuilder("acceptedName.scientificNameGroup", nameGroup);
     ConstantScoreQueryBuilder constantScoreQuery = new ConstantScoreQueryBuilder(termQuery);
 
-    SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
     int maxDocs = 10000;
-    sourceBuilder.query(constantScoreQuery);
-    sourceBuilder.from(0); 
-    sourceBuilder.size(maxDocs);
+    SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+    searchSourceBuilder.trackTotalHits(false);
+    searchSourceBuilder.query(constantScoreQuery);
+    searchSourceBuilder.from(0); 
+    searchSourceBuilder.size(maxDocs);
     
-    request.source(sourceBuilder);
+    request.source(searchSourceBuilder);
     SearchResponse response = executeSearchRequest(request);
     SearchHit[] hits = response.getHits().getHits();
     if (hits.length == 0) {

@@ -307,6 +307,7 @@ public class MultimediaTaxonomicEnricher {
     ConstantScoreQueryBuilder constantScoreQuery = QueryBuilders.constantScoreQuery(termQuery); 
 
     SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+    searchSourceBuilder.trackTotalHits(false);
     searchSourceBuilder.query(constantScoreQuery);
     searchSourceBuilder.from(0);
     searchSourceBuilder.size(10000);
@@ -352,13 +353,14 @@ public class MultimediaTaxonomicEnricher {
     TermQueryBuilder termQuery = new TermQueryBuilder("acceptedName.scientificNameGroup", nameGroup);
     ConstantScoreQueryBuilder constantScoreQuery = new ConstantScoreQueryBuilder(termQuery);
 
-    SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
     int maxDocs = 10000;
-    sourceBuilder.from(0); 
-    sourceBuilder.size(maxDocs);    
-    sourceBuilder.query(constantScoreQuery);
+    SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+    searchSourceBuilder.trackTotalHits(false);
+    searchSourceBuilder.from(0); 
+    searchSourceBuilder.size(maxDocs);    
+    searchSourceBuilder.query(constantScoreQuery);
 
-    searchRequest.source(sourceBuilder);
+    searchRequest.source(searchSourceBuilder);
     SearchResponse response = executeSearchRequest(searchRequest);
     SearchHit[] hits = response.getHits().getHits();
     if (hits.length == 0) {

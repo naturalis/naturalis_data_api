@@ -136,6 +136,7 @@ class CoLSynonymBatchTransformer {
     query.addIds(ids.toArray(new String[ids.size()]));
     
     SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+    searchSourceBuilder.trackTotalHits(false);
     searchSourceBuilder.query(query);
     searchSourceBuilder.size(ids.size());
 

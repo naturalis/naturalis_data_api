@@ -1,6 +1,3 @@
-/**
- * 
- */
 package nl.naturalis.nba.etl.enrich;
 
 import static nl.naturalis.nba.dao.util.es.ESUtil.createIndex;

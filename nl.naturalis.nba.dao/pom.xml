@@ -124,11 +124,6 @@
 			<artifactId>univocity-parsers</artifactId>
 		</dependency>
 
-		<dependency>
-			<groupId>joda-time</groupId>
-			<artifactId>joda-time</artifactId>
-		</dependency>
-
 		<!-- TEST SCOPE -->
 
 		<dependency>

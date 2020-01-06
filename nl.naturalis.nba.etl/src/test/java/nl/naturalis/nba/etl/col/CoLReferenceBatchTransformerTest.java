@@ -24,26 +24,20 @@ import nl.naturalis.nba.utils.reflect.ReflectionUtil;
  * Test class for CoLReferenceBatchTransformer.java
  *
  */
-@SuppressWarnings({"unchecked"})
 public class CoLReferenceBatchTransformerTest {
 
-  /**
-   * @throws java.lang.Exception
-   */
   @Before
-  public void setUp() throws Exception {
+  public void setUp() {
 
     // First import a test data row into the ES store .
     CoLTaxonImporter cti = new CoLTaxonImporter();
     String path = AllTests.class.getResource("taxa.txt").getPath();
     cti.importCsv(path);
+
   }
 
-  /**
-   * @throws java.lang.Exception
-   */
   @After
-  public void tearDown() throws Exception {}
+  public void tearDown() {}
 
   /**
    * Test method for
@@ -53,6 +47,7 @@ public class CoLReferenceBatchTransformerTest {
    * method calls the ES so the texa data needs to be present in the ES store (which are loading
    * into the ES in the setUp())
    */
+  @SuppressWarnings({"RedundantArrayCreation", "unchecked"})
   @Test
   public void testTransform() {
 
@@ -71,8 +66,7 @@ public class CoLReferenceBatchTransformerTest {
 
     CoLReferenceBatchTransformer batchTransformer = new CoLReferenceBatchTransformer();
 
-    Object returned = ReflectionUtil.call(batchTransformer, "transform",
-        new Class[] {ArrayList.class}, new Object[] {list});
+    Object returned = ReflectionUtil.call(batchTransformer, "transform", new Class[] {ArrayList.class}, new Object[] {list});
     Collection<Taxon> updates = (Collection<Taxon>) returned;
     Taxon actual = updates.iterator().next();
 
@@ -103,15 +97,14 @@ public class CoLReferenceBatchTransformerTest {
   }
 
   /**
-   * Test method for
-   * {@link nl.naturalis.nba.etl.col.CoLVernacularNameBatchTransformer#createLookupTable(CSVRecordInfo<CoLReferenceCsvField>
-   * csvRecordInfo }.
+   * Test method for: nl.naturalis.nba.etl.col.CoLVernacularNameBatchTransformer#createLookupTable( ArrayList<CSVRecordInfo<CoLVernacularNameCsvField>> )}.
    * 
-   * Test to verify createLookupTable method returns a correct {HashMap<String, @Taxon>} object.
+   * Test to verify createLookupTable method returns a correct {HashMap<String, @Taxon>} object
    * 
    * Since this method calls the ES so the data needs to be present in the ES store (which are
-   * loaded into the ES in the setUp()
+   * loaded into the ES in the setUp)
    */
+  @SuppressWarnings({"unchecked", "RedundantArrayCreation"})
   @Test
   public void testCreateLookupTable() {
 
@@ -150,12 +143,11 @@ public class CoLReferenceBatchTransformerTest {
   }
 
   /**
-   * Test method for
-   * {@link nl.naturalis.nba.etl.col.CoLVernacularNameBatchTransformer#createReference(CSVRecordInfo<CoLReferenceCsvField>
-   * csvRecordInfo }.
+   * Test method for: nl.naturalis.nba.etl.col.CoLVernacularNameBatchTransformer#createReference(CSVRecordInfo<CoLReferenceCsvField>)}.
    * 
-   * Test to verify createSynonym method returns a correct {@Reference} object.
+   * Test to verify createSynonym method returns a correct {CSVRecordInfo<CoLReferenceCsvField>} object.
    */
+  @SuppressWarnings({"unchecked", "RedundantArrayCreation"})
   @Test
   public void testCreateReference() {
 

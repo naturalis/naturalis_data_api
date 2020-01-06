@@ -83,7 +83,6 @@
         <swagger.version>1.5.24</swagger.version>
 
         <org.reflections.version>0.9.11</org.reflections.version>
-        <joda-time.version>2.10.4</joda-time.version>
         <com.h2database.version>1.4.200</com.h2database.version>
 
         <junit.version>4.12</junit.version>
@@ -278,11 +277,6 @@
             </dependency>
 
             <!-- OTHER -->
-            <dependency>
-                <groupId>joda-time</groupId>
-                <artifactId>joda-time</artifactId>
-                <version>${joda-time.version}</version>
-            </dependency>
             <dependency>
                 <groupId>org.jctools</groupId>
                 <artifactId>jctools-core</artifactId>

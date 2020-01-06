@@ -4,3 +4,5 @@
 /nba-test.properties
 /nba.properties
 /pom.xml.versionsBackup
+/.idea
+*.iml

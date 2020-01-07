@@ -9,7 +9,7 @@ package nl.naturalis.nba.client;
  */
 public class ClientConfig {
 
-	static final String PRODUCTION_BASE_URL = "https://api.biodiversitydata.nl/v3";
+	static final String PRODUCTION_BASE_URL = "https://api.biodiversitydata.nl/v2";
 
 	private String baseUrl;
 	private boolean preferGET;
@@ -21,7 +21,7 @@ public class ClientConfig {
 
 	/**
 	 * Returns the base URL of the NBA REST service. Default
-	 * https://api.biodiversitydata.nl/v3.
+	 * https://api.biodiversitydata.nl/v2.
 	 * 
 	 * @return
 	 */
@@ -32,7 +32,7 @@ public class ClientConfig {
 
 	/**
 	 * Returns the base URL of the NBA REST service. Default
-	 * https://api.biodiversitydata.nl/v3.
+	 * https://api.biodiversitydata.nl/v2.
 	 * 
 	 * @param baseUrl
 	 */

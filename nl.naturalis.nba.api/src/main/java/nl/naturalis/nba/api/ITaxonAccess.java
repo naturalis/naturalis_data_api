@@ -24,7 +24,7 @@ public interface ITaxonAccess extends INbaAccess<Taxon> {
 	 * </p>
 	 * <p>
 	 * <code>
-	 * https://api.biodiversitydata.nl/v3/taxon/dwca/query
+	 * https://api.biodiversitydata.nl/v2/taxon/dwca/query
 	 * </code>
 	 * </p>
 	 * <p>
@@ -50,7 +50,7 @@ public interface ITaxonAccess extends INbaAccess<Taxon> {
 	 * </p>
 	 * <p>
 	 * <code>
-	 * https://api.biodiversitydata.nl/v3/taxon/dwca/getDataSet/{name}
+	 * https://api.biodiversitydata.nl/v2/taxon/dwca/getDataSet/{name}
 	 * </code>
 	 * </p>
 	 * <p>
@@ -58,7 +58,7 @@ public interface ITaxonAccess extends INbaAccess<Taxon> {
 	 * </p>
 	 * <p>
 	 * <code>
-	 * https://api.biodiversitydata.nl/v3/taxon/dwca/getDataSet/nsr
+	 * https://api.biodiversitydata.nl/v2/taxon/dwca/getDataSet/nsr
 	 * </code>
 	 * </p>
 	 * 
@@ -81,7 +81,7 @@ public interface ITaxonAccess extends INbaAccess<Taxon> {
 	 * </p>
 	 * <p>
 	 * <code>
-	 * https://api.biodiversitydata.nl/v3/taxon/dwca/getDataSetNames
+	 * https://api.biodiversitydata.nl/v2/taxon/dwca/getDataSetNames
 	 * </code>
 	 * </p>
 	 * 
@@ -103,7 +103,7 @@ public interface ITaxonAccess extends INbaAccess<Taxon> {
 	 * </p>
 	 * <p>
 	 * <code>
-	 * https://api.biodiversitydata.nl/v3/taxon/groupByScientificName
+	 * https://api.biodiversitydata.nl/v2/taxon/groupByScientificName
 	 * </code>
 	 * </p>
 	 * 

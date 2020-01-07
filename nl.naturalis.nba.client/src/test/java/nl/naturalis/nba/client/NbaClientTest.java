@@ -19,7 +19,7 @@ import nl.naturalis.nba.api.model.Specimen;
 
 public class NbaClientTest {
 
-	private String baseUrl = "http://localhost:8080/v3";
+	private String baseUrl = "http://localhost:8080/v2";
 	private SpecimenClient client;
 
 	@BeforeClass

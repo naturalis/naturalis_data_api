@@ -20,7 +20,7 @@ import nl.naturalis.nba.common.json.JsonUtil;
  */
 public class GeoAreaClientTest {
 
-  private String baseUrl = "http://localhost:8080/v3";
+  private String baseUrl = "http://localhost:8080/v2";
   private GeoAreaClient client;
 
   @BeforeClass

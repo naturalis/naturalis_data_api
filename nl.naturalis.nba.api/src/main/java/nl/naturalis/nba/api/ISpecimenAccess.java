@@ -24,7 +24,7 @@ public interface ISpecimenAccess extends INbaAccess<Specimen> {
    * </p>
    * <p>
    * <code>
-   * https://api.biodiversitydata.nl/v3/specimen/findByUnitID/{unitID}
+   * https://api.biodiversitydata.nl/v2/specimen/findByUnitID/{unitID}
    * </code>
    * </p>
    * <p>
@@ -32,7 +32,7 @@ public interface ISpecimenAccess extends INbaAccess<Specimen> {
    * </p>
    * <p>
    * <code>
-   * https://api.biodiversitydata.nl/v3/specimen/findByUnitID/ZMA.MAM.123456
+   * https://api.biodiversitydata.nl/v2/specimen/findByUnitID/ZMA.MAM.123456
    * </code>
    * </p>
    * 
@@ -52,7 +52,7 @@ public interface ISpecimenAccess extends INbaAccess<Specimen> {
    * </p>
    * <p>
    * <code>
-   * https://api.biodiversitydata.nl/v3/specimen/exists/{unitID}
+   * https://api.biodiversitydata.nl/v2/specimen/exists/{unitID}
    * </code>
    * </p>
    * <p>
@@ -60,7 +60,7 @@ public interface ISpecimenAccess extends INbaAccess<Specimen> {
    * </p>
    * <p>
    * <code>
-   * https://api.biodiversitydata.nl/v3/specimen/exists/ZMA.MAM.123456
+   * https://api.biodiversitydata.nl/v2/specimen/exists/ZMA.MAM.123456
    * </code>
    * </p>
    * 
@@ -81,7 +81,7 @@ public interface ISpecimenAccess extends INbaAccess<Specimen> {
    * </p>
    * <p>
    * <code>
-   * https://api.biodiversitydata.nl/v3/specimen/dwca/query
+   * https://api.biodiversitydata.nl/v2/specimen/dwca/query
    * </code>
    * </p>
    * <p>
@@ -106,7 +106,7 @@ public interface ISpecimenAccess extends INbaAccess<Specimen> {
    * </p>
    * <p>
    * <code>
-   * https://api.biodiversitydata.nl/v3/specimen/dwca/getDataSet/{name}
+   * https://api.biodiversitydata.nl/v2/specimen/dwca/getDataSet/{name}
    * </code>
    * </p>
    * <p>
@@ -114,7 +114,7 @@ public interface ISpecimenAccess extends INbaAccess<Specimen> {
    * </p>
    * <p>
    * <code>
-   * https://api.biodiversitydata.nl/v3/specimen/dwca/getDataSet/hymenoptera
+   * https://api.biodiversitydata.nl/v2/specimen/dwca/getDataSet/hymenoptera
    * </code>
    * </p>
    * 
@@ -134,7 +134,7 @@ public interface ISpecimenAccess extends INbaAccess<Specimen> {
    * </p>
    * <p>
    * <code>
-   * https://api.biodiversitydata.nl/v3/specimen/dwca/getDataSetNames
+   * https://api.biodiversitydata.nl/v2/specimen/dwca/getDataSetNames
    * </code>
    * </p>
    * 
@@ -153,7 +153,7 @@ public interface ISpecimenAccess extends INbaAccess<Specimen> {
    * </p>
    * <p>
    * <code>
-   * https://api.biodiversitydata.nl/v3/specimen/getNamedCollections
+   * https://api.biodiversitydata.nl/v2/specimen/getNamedCollections
    * </code>
    * </p>
    * 
@@ -172,7 +172,7 @@ public interface ISpecimenAccess extends INbaAccess<Specimen> {
    * </p>
    * <p>
    * <code>
-   * https://api.biodiversitydata.nl/v3/specimen/getIdsInCollection/{name}
+   * https://api.biodiversitydata.nl/v2/specimen/getIdsInCollection/{name}
    * </code>
    * </p>
    * <p>
@@ -180,7 +180,7 @@ public interface ISpecimenAccess extends INbaAccess<Specimen> {
    * </p>
    * <p>
    * <code>
-   * https://api.biodiversitydata.nl/v3/specimen/getIdsInCollection/siebold
+   * https://api.biodiversitydata.nl/v2/specimen/getIdsInCollection/siebold
    * </code>
    * </p>
    * 
@@ -201,7 +201,7 @@ public interface ISpecimenAccess extends INbaAccess<Specimen> {
    * </p>
    * <p>
    * <code>
-   * https://api.biodiversitydata.nl/v3/specimen/groupByScientificName
+   * https://api.biodiversitydata.nl/v2/specimen/groupByScientificName
    * </code>
    * </p>
    * 

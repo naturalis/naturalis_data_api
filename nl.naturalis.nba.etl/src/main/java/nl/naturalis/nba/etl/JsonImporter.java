@@ -73,7 +73,6 @@ public class JsonImporter {
       } catch (BulkIndexException e) {
         logger.warn("Import file contains errors: " + e.getMessage());
         logger.warn("Not all documents in " + f.getName() + " have been processed!");
-        continue;
       }
     }
   }

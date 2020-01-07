@@ -239,7 +239,7 @@ public class ESUtil {
   /**
    * Deletes the Elasticsearch index hosting the specified {@link DocumentType document type}.
    * 
-   * @param documentType
+   * @param documentType - ...
    */
   public static void deleteIndex(DocumentType<?> documentType) {
     deleteIndex(documentType.getIndexInfo());
@@ -248,7 +248,7 @@ public class ESUtil {
   /**
    * Deletes the specified Elasticsearch indices.
    * 
-   * @param documentType
+   * @param indices - ...
    */
   public static void deleteIndices(Set<IndexInfo> indices) {
     for (IndexInfo index : indices) {
@@ -259,7 +259,7 @@ public class ESUtil {
   /**
    * Deletes the specified Elasticsearch index.
    * 
-   * @param indexInfo
+   * @param indexInfo - ...
    */
   public static void deleteIndex(IndexInfo indexInfo) {
     deleteIndex(indexInfo.getName());
@@ -344,6 +344,15 @@ public class ESUtil {
     for (DocumentType<?> dt : indexInfo.getTypes()) {
       createType(dt);
     }
+  }
+
+  /**
+   * curl -XPOST 'http://localhost:9200/_cache/clear' -H "Content-Type: application/json" -d '{ "fielddata": "true" }'
+   * @param indexInfo - ...
+   */
+  public static void clearCache(IndexInfo indexInfo) {
+    RestHighLevelClient client = ESClientManager.getInstance().getClient();
+    // Todo
   }
 
   /**

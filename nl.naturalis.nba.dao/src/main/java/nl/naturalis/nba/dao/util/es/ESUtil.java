@@ -16,6 +16,8 @@ import java.util.Set;
 import org.apache.logging.log4j.Logger;
 
 import org.elasticsearch.ElasticsearchException;
+import org.elasticsearch.action.admin.indices.cache.clear.ClearIndicesCacheRequest;
+import org.elasticsearch.action.admin.indices.cache.clear.ClearIndicesCacheResponse;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.elasticsearch.action.admin.indices.refresh.RefreshResponse;
@@ -268,7 +270,7 @@ public class ESUtil {
   /**
    * Deletes the specified Elasticsearch index.
    * 
-   * @param indexInfo
+   * @param index - ...
    */
   public static void deleteIndex(String index) {
     logger.info("Deleting index: {}", index);
@@ -288,7 +290,7 @@ public class ESUtil {
   /**
    * Creates an Elasticsearch index for the specified {@link DocumentType document type}.
    * 
-   * @param documentType
+   * @param documentType - ...
    */
   public static void createIndex(DocumentType<?> documentType) {
     createIndex(documentType.getIndexInfo());
@@ -352,7 +354,21 @@ public class ESUtil {
    */
   public static void clearCache(IndexInfo indexInfo) {
     RestHighLevelClient client = ESClientManager.getInstance().getClient();
-    // Todo
+    ClearIndicesCacheRequest request;
+    if (indexInfo == null) {
+      request = new ClearIndicesCacheRequest();
+    }
+    else {
+      String index = indexInfo.getName();
+      request = new ClearIndicesCacheRequest(index);
+    }
+    request.fieldDataCache(true);
+    try {
+      client.indices().clearCache(request, RequestOptions.DEFAULT);
+      logger.debug("Cache cleared");
+    } catch (IOException e) {
+      logger.warn("Failed to clear the cache");
+    }
   }
 
   /**

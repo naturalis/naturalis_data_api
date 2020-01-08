@@ -94,22 +94,24 @@
         <!-- Maven plugin versions -->
         <!-- *** Check for updates: mvn versions:display-plugin-updates -->
         <maven-clean-plugin.version>3.1.0</maven-clean-plugin.version>
-        <maven-compiler-plugin.version>3.8.0</maven-compiler-plugin.version>
+        <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <maven-dependency-plugin.version>3.1.1</maven-dependency-plugin.version>
-        <maven-enforcer-plugin.version>3.0.0-M2</maven-enforcer-plugin.version>
+        <maven-dependency-analyzer.version>1.11.1</maven-dependency-analyzer.version>
+        <maven-deploy-plugin.version>3.0.0-M1</maven-deploy-plugin.version>
+        <maven-enforcer-plugin.version>3.0.0-M3</maven-enforcer-plugin.version>
         <maven-install-plugin.version>3.0.0-M1</maven-install-plugin.version>
-        <maven-jar-plugin.version>3.1.1</maven-jar-plugin.version>
+        <maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
         <maven-release-plugin.version>2.5.3</maven-release-plugin.version>
         <maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
         <maven-shade-plugin.version>3.2.1</maven-shade-plugin.version>
-        <maven-source-plugin.version>3.0.1</maven-source-plugin.version>
+        <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
         <maven-javadoc-plugin.version>3.0.1</maven-javadoc-plugin.version>
-        <maven-site-plugin.version>3.7.1</maven-site-plugin.version>
-        <maven-surefire-plugin.version>3.0.0-M3</maven-surefire-plugin.version>
-        <maven-war-plugin.version>3.2.2</maven-war-plugin.version>
+        <maven-site-plugin.version>3.8.2</maven-site-plugin.version>
+        <maven-surefire-plugin.version>3.0.0-M4</maven-surefire-plugin.version>
+        <maven-war-plugin.version>3.2.3</maven-war-plugin.version>
         <versions-maven-plugin.version>2.7</versions-maven-plugin.version>
         <exec-maven-plugin.version>1.6.0</exec-maven-plugin.version>
-        <git-commit-id-plugin.version>2.2.6</git-commit-id-plugin.version>
+        <git-commit-id-plugin.version>4.0.0</git-commit-id-plugin.version>
         <properties-maven-plugin.version>1.0.0</properties-maven-plugin.version>
 
     </properties>
@@ -275,8 +277,19 @@
                 <artifactId>kafka-clients</artifactId>
                 <version>${kafka-clients.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.apache.maven.shared</groupId>
+                <artifactId>maven-dependency-analyzer</artifactId>
+                <version>${maven-dependency-analyzer.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>${maven-deploy-plugin.version}</version>
+            </dependency>
 
             <!-- OTHER -->
+
             <dependency>
                 <groupId>org.jctools</groupId>
                 <artifactId>jctools-core</artifactId>
@@ -414,7 +427,6 @@
                 <version>3.9.0.Final</version>
             </dependency>
 
-
             <dependency>
                 <groupId>org.reflections</groupId>
                 <artifactId>reflections</artifactId>
@@ -499,13 +511,6 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-dependency-plugin</artifactId>
                     <version>${maven-dependency-plugin.version}</version>
-                    <dependencies>
-                        <dependency>
-                            <groupId>org.apache.maven.shared</groupId>
-                            <artifactId>maven-dependency-analyzer</artifactId>
-                            <version>1.11.1</version>
-                        </dependency>
-                    </dependencies>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>

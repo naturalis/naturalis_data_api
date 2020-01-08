@@ -2,7 +2,7 @@ package nl.naturalis.nba.etl;
 
 import java.io.Closeable;
 import java.util.Collection;
-import java.util.List;
+
 import nl.naturalis.nba.api.model.IDocumentObject;
 
 public interface DocumentObjectWriter<T extends IDocumentObject> extends Closeable {
@@ -15,20 +15,20 @@ public interface DocumentObjectWriter<T extends IDocumentObject> extends Closeab
    * {@code queue} does not necessarily immediately trigger the specified
    * objects to be indexed.
    * 
-   * @param objects
+   * @param objects - ...
    */
   void write(Collection<T> objects);
 
   /**
    * Flushes the contents of the queue to ElasticSearch. While processing your
    * data sources you don't have to call this method explicitly as it is done
-   * implicitly by the {@link #write(List) queue} method once the queue fills
+   * implicitly by the {@link #write(Collection) queue} method once the queue fills
    * up. However, you <b>must</b> call this method yourself (e.g. in a finally
    * block) once all source data has been processed to make sure any remaining
    * objects in the queue are written to Elasticsearch. Alternatively, you can
    * set up a try-with-resources block to achieve the same.
    */
-  default void flush() {};
+  default void flush() {}
   
   /**
    * Determines whether to suppress ERROR and WARN messages while still
@@ -36,8 +36,8 @@ public interface DocumentObjectWriter<T extends IDocumentObject> extends Closeab
    * large amounts of well-known errors and warnings that just clog up your
    * log file.
    * 
-   * @param suppressErrors
+   * @param suppressErrors - ...
    */
-  public void suppressErrors(boolean suppressErrors);
+  void suppressErrors(boolean suppressErrors);
 
 }

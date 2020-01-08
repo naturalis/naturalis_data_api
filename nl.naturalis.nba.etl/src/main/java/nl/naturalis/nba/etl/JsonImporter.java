@@ -12,9 +12,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
+import nl.naturalis.nba.dao.util.es.ESUtil;
 import org.apache.logging.log4j.Logger;
 
 import org.elasticsearch.ElasticsearchException;
+import org.elasticsearch.ElasticsearchStatusException;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
@@ -51,10 +53,14 @@ public class JsonImporter {
   }
   
   public static void main(String[] args) {
-    String documentType = args[0];
-    JsonImporter importer = new JsonImporter( DocumentType.forName(documentType) );
+    DocumentType<?> documentType = DocumentType.forName(args[0].toLowerCase());
+    JsonImporter importer = new JsonImporter( documentType );
     try {
-      File[] files = getJsonFiles(documentType);
+      File[] files = getJsonFiles(documentType.getName());
+      if (files.length == 0) {
+        logger.info("No files, so nothing to do!");
+        System.exit(0);
+      }
       Arrays.sort(files);
       importer.importJsonFiles(files);
     } catch (Throwable t) {
@@ -66,7 +72,6 @@ public class JsonImporter {
 
   public void importJsonFiles(File[] jsonFiles) throws IOException {
     for (File f : jsonFiles) {
-      System.out.println("Processing file: " + f.getName());
       logger.info("Processing file: " + f.getName());
       try {
         importJsonFile(f, docType);        
@@ -107,8 +112,29 @@ public class JsonImporter {
         }
         if (batch.size() == esBulkRequestSize) {
           if (!dryRun) {
-            indexer.index(batch);
-            logger.info(docType.getName() + " documents imported: {}", processed);
+            int n = 1;
+            boolean indexed = false;
+            while (!indexed) {
+              try {
+                indexer.index(batch);
+                logger.info(docType.getName() + " documents imported: {}", processed);
+                ESUtil.clearCache(null);
+                indexed = true;
+              } catch (ElasticsearchStatusException e) {
+                try {
+                  wait(100);
+                  ESUtil.clearCache(null);
+                  logger.debug("Elasticsearch is busy. Retry for attempt #{}", ++n);
+                } catch (InterruptedException ex) {
+                  ESUtil.clearCache(null);
+                  logger.debug("Elasticsearch is busy. Retry for attempt #{}", ++n);
+                }
+                if (n == 1000) {
+                  logger.debug("OK, there is something wrong with elastic. After retrying a 1000 times, we give up ...");
+                  throw new RuntimeException("Bulk update failed: {}", e.getCause());
+                }
+              }
+            }
           }
           batch.clear();
         }
@@ -162,7 +188,7 @@ public class JsonImporter {
       public boolean accept(File dir, String name) {
         return name.toLowerCase().endsWith(".json") || name.toLowerCase().endsWith(".ndjson");
       }
-    });    
+    });
     return files;
   }
 

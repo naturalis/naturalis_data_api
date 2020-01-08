@@ -6,23 +6,18 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+
+import nl.naturalis.nba.dao.util.es.ESUtil;
 import org.apache.logging.log4j.Logger;
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.utils.ConfigObject;
+import org.elasticsearch.ElasticsearchStatusException;
 
 /**
  * <p>
  * Abstract base class for objects responsible for the insertion of data into
- * ElasticSearch (a&#46;k&#46;a&#46; indexing). Subclasses must implement only
- * one method: {@link #getIdGenerator()}, which should generate a document ID
- * for the object to be stored. The assumption is that you do not want to rely
- * on Elasticsearch to generate an ID for you. If you <i>do</i> want
- * Elasticsearch to auto-generate a document ID, your implementation should
- * simply return {@code null}. Subclasses may also override
- * {@link #getParentIdGenerator()} in case they need to establish parent-child
- * relationships, but this is not required (the {@code Loader} class itself
- * provides a default implementation that returns {@code null}).
+ * ElasticSearch (a&#46;k&#46;a&#46; indexing).
  * </p>
  * 
  * @author Ayco Holleman
@@ -53,9 +48,9 @@ public abstract class Loader<T extends IDocumentObject> implements DocumentObjec
 	 * <b>must</b> explicitly call {@link #flush()} yourself in order to avoid
 	 * an {@link OutOfMemoryError}.
 	 * 
-	 * @param dt
-	 * @param queueSize
-	 * @param stats
+	 * @param dt - documentType
+	 * @param queueSize - queue size
+	 * @param stats - ETL stats
 	 */
 	public Loader(DocumentType<T> dt, int queueSize, ETLStatistics stats)
 	{
@@ -83,6 +78,7 @@ public abstract class Loader<T extends IDocumentObject> implements DocumentObjec
 		objs.addAll(objects);
 		if (tresh != 0 && tresh < objs.size()) {
 			flush();
+			ESUtil.clearCache(null);
 		}
 	}
 
@@ -93,8 +89,8 @@ public abstract class Loader<T extends IDocumentObject> implements DocumentObjec
 	 * {@link #enableQueueLookups(boolean) enableQueueLookups}, because they
 	 * require some extra internal administration.
 	 * 
-	 * @param id
-	 * @return
+	 * @param id - ...
+	 * @return - ...
 	 */
 	public T findInQueue(String id)
 	{
@@ -111,22 +107,39 @@ public abstract class Loader<T extends IDocumentObject> implements DocumentObjec
 		flush();
 	}
 
-	
 	/* (non-Javadoc)
    * @see nl.naturalis.nba.etl.DocumentObjectWriter#flush()
    */
 	@Override
-  public void flush()
-	{
+  public void flush() {
 		if (!objs.isEmpty()) {
 			try {
 				if (!dry) {
-					indexer.index(objs);
-					stats.documentsIndexed += objs.size();
-					objs.clear();
+					boolean indexed = false;
+					int n = 1;
+					while (!indexed) {
+						try {
+							indexer.index(objs);
+							indexed = true;
+						} catch (ElasticsearchStatusException e) {
+							try {
+								wait(100);
+								ESUtil.clearCache(null);
+								logger.debug("Elasticsearch is busy. Retry for attempt #{}", ++n);
+							} catch (InterruptedException ex) {
+								ESUtil.clearCache(null);
+								logger.debug("Elasticsearch is busy. Retry for attempt #{}", ++n);
+							}
+							if (n == 1000) {
+								logger.debug("OK, there is something wrong with elastic. After retrying a 1000 times, we give up ...");
+								throw new RuntimeException("Bulk update failed: {}", e.getCause());
+							}
+						}
+					}
 				}
-			}
-			catch (BulkIndexException e) {
+				stats.documentsIndexed += objs.size();
+				objs.clear();
+			} catch (BulkIndexException e) {
 				stats.documentsRejected += e.getFailureCount();
 				stats.documentsIndexed += e.getSuccessCount();
 				if (!suppressErrors) {
@@ -142,7 +155,7 @@ public abstract class Loader<T extends IDocumentObject> implements DocumentObjec
 	 * large amounts of well-known errors and warnings that just clog up your
 	 * log file.
 	 * 
-	 * @param suppressErrors
+	 * @param suppressErrors - ...
 	 */
 	public void suppressErrors(boolean suppressErrors)
 	{

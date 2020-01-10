@@ -123,13 +123,9 @@ public abstract class Loader<T extends IDocumentObject> implements DocumentObjec
 							indexed = true;
 						} catch (ElasticsearchStatusException e) {
 							try {
-								wait(100);
-								ESUtil.clearCache(null);
+								Thread.sleep(1000);
 								logger.debug("Elasticsearch is busy. Retry for attempt #{}", ++n);
-							} catch (InterruptedException ex) {
-								ESUtil.clearCache(null);
-								logger.debug("Elasticsearch is busy. Retry for attempt #{}", ++n);
-							}
+							} catch (InterruptedException ignored) {}
 							if (n == 1000) {
 								logger.debug("OK, there is something wrong with elastic. After retrying a 1000 times, we give up ...");
 								throw new RuntimeException("Bulk update failed: {}", e.getCause());

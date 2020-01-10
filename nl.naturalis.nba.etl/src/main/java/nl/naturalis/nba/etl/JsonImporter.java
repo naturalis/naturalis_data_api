@@ -123,10 +123,10 @@ public class JsonImporter {
               } catch (ElasticsearchStatusException e) {
                 try {
                   Thread.sleep(1000);
-                  logger.debug("Elasticsearch is busy. Retry for attempt #{}", ++n);
+                  logger.warn("Elasticsearch is too busy. Retrying for attempt #{}", ++n);
                 } catch (InterruptedException ignored) {}
                 if (n == 1000) {
-                  logger.debug("OK, there is something wrong with elastic. After retrying a 1000 times, we give up ...");
+                  logger.error("Elasticsearch failure: failed to execute an update of a batch set after retrying for a 1000 times");
                   throw new RuntimeException("Bulk update failed: {}", e.getCause());
                 }
               }

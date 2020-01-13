@@ -122,11 +122,11 @@ public class JsonImporter {
                 indexed = true;
               } catch (ElasticsearchStatusException e) {
                 try {
-                  Thread.sleep(1000);
+                  Thread.sleep(60000); // wait a minute
                   logger.warn("Elasticsearch is too busy. Retrying for attempt #{}", ++n);
                 } catch (InterruptedException ignored) {}
-                if (n == 1000) {
-                  logger.error("Elasticsearch failure: failed to execute an update of a batch set after retrying for a 1000 times");
+                if (n == 60) {
+                  logger.error("Elasticsearch failure: failed to execute an update of a batch set after retrying for a over one hour");
                   throw new RuntimeException("Bulk update failed: {}", e.getCause());
                 }
               }

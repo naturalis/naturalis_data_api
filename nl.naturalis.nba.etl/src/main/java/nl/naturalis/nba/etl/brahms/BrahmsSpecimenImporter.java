@@ -12,19 +12,14 @@ import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getCsvFiles;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getDataDir;
 import java.io.File;
 import java.nio.charset.Charset;
+
+import nl.naturalis.nba.etl.*;
 import org.apache.logging.log4j.Logger;
 import com.univocity.parsers.common.TextParsingException;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.dao.DaoRegistry;
 import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.util.es.ESUtil;
-import nl.naturalis.nba.etl.CSVExtractor;
-import nl.naturalis.nba.etl.CSVRecordInfo;
-import nl.naturalis.nba.etl.DocumentObjectWriter;
-import nl.naturalis.nba.etl.ETLRuntimeException;
-import nl.naturalis.nba.etl.ETLStatistics;
-import nl.naturalis.nba.etl.ETLUtil;
-import nl.naturalis.nba.etl.ThemeCache;
 import nl.naturalis.nba.etl.normalize.SpecimenTypeStatusNormalizer;
 import nl.naturalis.nba.utils.ConfigObject;
 import nl.naturalis.nba.utils.FileUtil;
@@ -95,6 +90,7 @@ public class BrahmsSpecimenImporter {
       logger.info("No CSV files to process");
       return;
     }
+    MedialibIdsCache.getInstance();
     SpecimenTypeStatusNormalizer.getInstance().resetStatistics();
     ThemeCache.getInstance().resetMatchCounters();
     ETLStatistics stats = new ETLStatistics();

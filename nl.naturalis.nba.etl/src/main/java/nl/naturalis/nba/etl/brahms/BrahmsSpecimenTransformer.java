@@ -54,12 +54,7 @@ import nl.naturalis.nba.api.model.TaxonomicEnrichment;
 import nl.naturalis.nba.api.model.VernacularName;
 import nl.naturalis.nba.dao.TaxonDao;
 import nl.naturalis.nba.dao.util.es.ESUtil;
-import nl.naturalis.nba.etl.CSVRecordInfo;
-import nl.naturalis.nba.etl.ETLRuntimeException;
-import nl.naturalis.nba.etl.ETLStatistics;
-import nl.naturalis.nba.etl.MimeTypeCache;
-import nl.naturalis.nba.etl.MimeTypeCacheFactory;
-import nl.naturalis.nba.etl.ThemeCache;
+import nl.naturalis.nba.etl.*;
 
 /**
  * The transformer component in the Brahms ETL cycle for specimens.
@@ -78,6 +73,7 @@ class BrahmsSpecimenTransformer extends BrahmsTransformer<Specimen> {
 
   static {
     themeCache = ThemeCache.getInstance();
+    MedialibIdsCache.getInstance();
   }
 
   BrahmsSpecimenTransformer(ETLStatistics stats) //constructor made public for test.
@@ -296,6 +292,12 @@ class BrahmsSpecimenTransformer extends BrahmsTransformer<Specimen> {
       // Change http urls to https urls, but leave the rest as they are 
       if (url.startsWith(MEDIALIB_HTTP_URL) && !url.startsWith(MEDIALIB_HTTPS_URL)) {
         url = url.replace(MEDIALIB_HTTP_URL, MEDIALIB_HTTPS_URL);
+      }
+      // Check whether this image is actually available in the medialibrary
+      String id = url.substring(MEDIALIB_HTTPS_URL.length());
+      if (!MedialibIdsCache.contains(id)) {
+        warn("URL {} is not an existing medialib url", url);
+        continue;
       }
       // Try to retrieve the mimetype from the mimetype cache
       String mimeType = DEFAULT_MIME_TYPE;

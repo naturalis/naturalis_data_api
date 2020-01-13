@@ -38,11 +38,7 @@ import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.api.model.TaxonomicEnrichment;
 import nl.naturalis.nba.api.model.VernacularName;
 import nl.naturalis.nba.dao.TaxonDao;
-import nl.naturalis.nba.etl.CSVRecordInfo;
-import nl.naturalis.nba.etl.ETLRuntimeException;
-import nl.naturalis.nba.etl.ETLStatistics;
-import nl.naturalis.nba.etl.MimeTypeCache;
-import nl.naturalis.nba.etl.MimeTypeCacheFactory;
+import nl.naturalis.nba.etl.*;
 
 /**
  * The transformer component in the ETL cycle for Brahms multimedia.
@@ -61,6 +57,7 @@ class BrahmsMultiMediaTransformer extends BrahmsTransformer<MultiMediaObject> {/
 	{
 		super(stats);
 		mimetypeCache = MimeTypeCacheFactory.getInstance().getCache();
+		MedialibIdsCache.getInstance();
 	}
   
   void setEnrich(boolean enrich) {
@@ -235,27 +232,31 @@ class BrahmsMultiMediaTransformer extends BrahmsTransformer<MultiMediaObject> {/
 
 	private ServiceAccessPoint newServiceAccessPoint(URI uri)
 	{
-    String mimeType = DEFAULT_MIME_TYPE;
-    Pattern pattern = Pattern.compile("^.*id/(.*)/format/(.*)$");
-    Matcher matcher = pattern.matcher(uri.getRawPath());
-    String mediaObjectId = "";
-    String format = "large";
-    if (matcher.matches()) {
-      mediaObjectId = matcher.group(1);
-      format = matcher.group(2);
-      mimeType = mimetypeCache.getMimeType(mediaObjectId);
-    } else {
-      return null;
-    }
-    URI httpsUri;
-    try {
-      httpsUri = new URI(MEDIALIB_HTTPS_URL + mediaObjectId + "/format/" + format );
-    } catch (URISyntaxException e) {
-      if (logger.isDebugEnabled()) {
-        debug("Incorrect URI for use in ServiceAccessPoint");
-      }
-      return null;
-    }
+		String mimeType = DEFAULT_MIME_TYPE;
+		Pattern pattern = Pattern.compile("^.*id/(.*)/format/(.*)$");
+		Matcher matcher = pattern.matcher(uri.getRawPath());
+		String mediaObjectId = "";
+		String format = "large";
+		if (matcher.matches()) {
+		  mediaObjectId = matcher.group(1);
+		  if (!MedialibIdsCache.contains(mediaObjectId)) {
+		  	warn("URL {} is not an existing medialib url", uri.toString());
+		  	return null;
+		  }
+		  format = matcher.group(2);
+		  mimeType = mimetypeCache.getMimeType(mediaObjectId);
+		} else {
+		  return null;
+		}
+		URI httpsUri;
+		try {
+		  httpsUri = new URI(MEDIALIB_HTTPS_URL + mediaObjectId + "/format/" + format );
+		} catch (URISyntaxException e) {
+		  if (logger.isDebugEnabled()) {
+			debug("Incorrect URI for use in ServiceAccessPoint");
+		  }
+		  return null;
+		}
 		return new ServiceAccessPoint(httpsUri, mimeType, DEFAULT_IMAGE_QUALITY);
 	}
 

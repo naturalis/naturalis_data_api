@@ -102,7 +102,7 @@ public abstract class Loader<T extends IDocumentObject> implements DocumentObjec
 
 	
 	@Override
-	public void close() throws IOException
+	public void close()
 	{
 		flush();
 	}
@@ -123,11 +123,11 @@ public abstract class Loader<T extends IDocumentObject> implements DocumentObjec
 							indexed = true;
 						} catch (ElasticsearchStatusException e) {
 							try {
-								Thread.sleep(1000);
+								Thread.sleep(60000); // wait a minute
 								logger.warn("Elasticsearch is too busy. Retrying for attempt #{}", ++n);
 							} catch (InterruptedException ignored) {}
 							if (n == 1000) {
-								logger.error("Elasticsearch failure: failed to execute an update of a batch set after retrying for a 1000 times");
+								logger.error("Elasticsearch failure: failed to execute an update of a batch set after retrying for over one hour");
 								throw new RuntimeException("Bulk update failed: {}", e.getCause());
 							}
 						}
@@ -162,7 +162,7 @@ public abstract class Loader<T extends IDocumentObject> implements DocumentObjec
 	/**
 	 * Whether or not to enable the {@link #findInQueue(String)} method.
 	 * 
-	 * @param enableQueueLookups
+	 * @param enableQueueLookups - ...
 	 */
 	public void enableQueueLookups(boolean enableQueueLookups)
 	{

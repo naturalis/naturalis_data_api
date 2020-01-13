@@ -138,6 +138,7 @@ public class CoLVernacularNameBatchImporter {
 		extractor = new CSVExtractor<>(f, CoLVernacularNameCsvField.class, stats);
 		extractor.setSkipHeader(true);
 		extractor.setDelimiter('\t');
+		extractor.setQuote('\u0000');
 		return extractor;
 	}
 

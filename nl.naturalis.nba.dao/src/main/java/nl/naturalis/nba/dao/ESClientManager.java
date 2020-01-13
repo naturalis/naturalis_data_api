@@ -48,7 +48,7 @@ public class ESClientManager {
   /**
    * Returns an Elasticsearch {@link RestHighLevelClient} instance.
    * 
-   * @return
+   * @return RestHighLevelClient
    */
   public synchronized RestHighLevelClient getClient() {
     if (client == null) {

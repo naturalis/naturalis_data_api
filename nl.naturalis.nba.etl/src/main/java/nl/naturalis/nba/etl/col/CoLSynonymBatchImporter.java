@@ -87,6 +87,7 @@ public class CoLSynonymBatchImporter {
 		int processed = 0;
 		logger.info("Processing file {}", f.getAbsolutePath());
 		logger.info("Batch size: {}", batchSize);
+
 		for (CSVRecordInfo<CoLTaxonCsvField> rec : extractor) {
 			if (rec == null) {
 				// Garbage
@@ -142,6 +143,7 @@ public class CoLSynonymBatchImporter {
 		extractor = new CSVExtractor<>(f, CoLTaxonCsvField.class, stats);
 		extractor.setSkipHeader(true);
 		extractor.setDelimiter('\t');
+		extractor.setQuote('\u0000');
 		return extractor;
 	}
 

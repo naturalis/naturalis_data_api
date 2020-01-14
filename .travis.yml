@@ -27,6 +27,7 @@ before_install:
   - cp docker/resources/bp_areas.csv payload/data/geo/
   - cp docker/resources/L_6_13-10-2017_at_09-25-11.CSV payload/data/brahms/
   - cp docker/resources/mimetypes.zip payload/data/medialib/
+  - cp docker/resources/medialib_ids_cache.zip payload/data/medialib/
 
 before_script:
   - sleep 10

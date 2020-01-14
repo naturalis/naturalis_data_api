@@ -80,6 +80,9 @@ etl.enrich=false
 # at once). Default: 1000
 # nl.naturalis.nba.etl.queueSize=1000
 
+# Optional property to suppress errors from the log file (default = false).
+#nl.naturalis.nba.etl.suppressErrors
+
 # Set this property to true when you require the index(es) to be 
 # recreated at the beginning of a new import
 # Default: true

@@ -244,7 +244,9 @@ class BrahmsMultiMediaTransformer extends BrahmsTransformer<MultiMediaObject> {/
 		if (matcher.matches()) {
 		  mediaObjectId = matcher.group(1);
 		  if (!MedialibIdsCache.contains(mediaObjectId)) {
-		  	warn("Not an existing medialib URL: %s", uri.toString());
+		  	if (!suppressErrors) {
+				warn("Not an existing medialib URL: %s", uri.toString());
+			}
 		  	return null;
 		  }
 		  format = matcher.group(2);

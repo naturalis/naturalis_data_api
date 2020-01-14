@@ -305,7 +305,9 @@ class BrahmsSpecimenTransformer extends BrahmsTransformer<Specimen> {
       }
       // Check whether this image is actually available in the medialibrary
       if (!MedialibIdsCache.contains(mediaObjectId)) {
-        warn("Not an existing medialib URL: %s", url);
+        if (!suppressErrors) {
+          warn("Not an existing medialib URL: %s", url);
+        }
         continue;
       }
 

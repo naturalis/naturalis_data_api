@@ -103,7 +103,12 @@ class BrahmsMultiMediaTransformer extends BrahmsTransformer<MultiMediaObject> {/
 		try {
 			URI uri = getUri(url);
 			MultiMediaObject mmo = newMultiMediaObject();
+
 			String uriHash = String.valueOf(uri.toString().hashCode()).replace('-', '0');
+			ServiceAccessPoint sap = newServiceAccessPoint(uri);
+			if (sap == null) return null;
+			mmo.addServiceAccessPoint(sap);
+
 			mmo.setUnitID(objectID + '_' + uriHash);
 			mmo.setId(getElasticsearchId(BRAHMS, mmo.getUnitID()));
 			mmo.setSourceSystemId(mmo.getUnitID());
@@ -115,10 +120,9 @@ class BrahmsMultiMediaTransformer extends BrahmsTransformer<MultiMediaObject> {/
 			if (description != null) mmo.setDescription(description.replaceAll("\u00001", ""));
 			mmo.setGatheringEvents(Arrays.asList(getMultiMediaGatheringEvent(input)));
 			mmo.setIdentifications(Arrays.asList(getIdentification()));
-     if (doEnrich()) {
-        enrichIdentification(mmo);
-      }
-			mmo.addServiceAccessPoint(newServiceAccessPoint(uri));
+			if (doEnrich()) {
+				enrichIdentification(mmo);
+			}
 			stats.objectsAccepted++;
 			return mmo;
 		}
@@ -240,7 +244,7 @@ class BrahmsMultiMediaTransformer extends BrahmsTransformer<MultiMediaObject> {/
 		if (matcher.matches()) {
 		  mediaObjectId = matcher.group(1);
 		  if (!MedialibIdsCache.contains(mediaObjectId)) {
-		  	warn("URL {} is not an existing medialib url", uri.toString());
+		  	warn("Not an existing medialib URL: %s", uri.toString());
 		  	return null;
 		  }
 		  format = matcher.group(2);
@@ -252,9 +256,7 @@ class BrahmsMultiMediaTransformer extends BrahmsTransformer<MultiMediaObject> {/
 		try {
 		  httpsUri = new URI(MEDIALIB_HTTPS_URL + mediaObjectId + "/format/" + format );
 		} catch (URISyntaxException e) {
-		  if (logger.isDebugEnabled()) {
-			debug("Incorrect URI for use in ServiceAccessPoint");
-		  }
+		  warn("Incorrect URI for use in ServiceAccessPoint: %s", MEDIALIB_HTTPS_URL + mediaObjectId + "/format/" + format);
 		  return null;
 		}
 		return new ServiceAccessPoint(httpsUri, mimeType, DEFAULT_IMAGE_QUALITY);

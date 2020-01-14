@@ -25,6 +25,15 @@ public class MedialibIdsCache {
 
     private static MedialibIdsCache instance;
 
+    /**
+     * MedialibIdsCache provides an ArrayList containing all the ids available in
+     * the Naturalis Media Library. The {@link #contains(String)} method provides
+     * a simple way to check whether a image with the specified id exists in the
+     * media library.
+     *
+     * NOTE: when the cache cannot be loaded, the {@link #contains(String)} method
+     * will always return true.
+     */
     private MedialibIdsCache() {
         loadIds();
     }
@@ -38,6 +47,7 @@ public class MedialibIdsCache {
     }
 
     public static boolean contains(String id) {
+        if (ids == null) return true;
         return ids.contains(id);
     }
 
@@ -51,9 +61,13 @@ public class MedialibIdsCache {
         logger.info("Initializing MedialibIdsCache");
         try {
             ids = loadCacheFile(cacheFile);
-            logger.info("Finished loading {} ids into cache", ids.size());
+            if (ids != null) {
+                logger.info("Finished loading {} ids into cache", ids.size());
+            } else {
+                logger.info("Medialib ids cache is empty. Medialib ids will NOT be checked!");
+            }
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.info("Unable to load medialib ids cache. Cache file ({}) was not available.", CACHE_FILE_NAME);
         }
     }
 
@@ -61,12 +75,19 @@ public class MedialibIdsCache {
         ArrayList<String> ids = new ArrayList<>();
         ZipInputStream zis = new ZipInputStream(new FileInputStream(cacheFile));
         ZipEntry zipEntry = zis.getNextEntry();
+        int n = 0;
         try (BufferedReader br = new BufferedReader(new InputStreamReader(zis))) {
             while (br.ready()) {
                 ids.add(br.readLine());
+                n++;
             }
+        } catch (OutOfMemoryError e) {
+            logger.error("Cache file is too large. Not using Medialib ids cache!");
+            return null;
         }
-        zis.close();
+        finally {
+            zis.close();
+        }
         return ids;
     }
 }

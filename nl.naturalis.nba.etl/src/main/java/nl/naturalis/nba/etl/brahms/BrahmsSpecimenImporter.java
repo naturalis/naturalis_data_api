@@ -51,7 +51,6 @@ public class BrahmsSpecimenImporter {
   }
 
   private static final Logger logger = getLogger(BrahmsSpecimenImporter.class);
-  
 
   private final int loaderQueueSize;
   private final boolean suppressErrors;
@@ -62,6 +61,7 @@ public class BrahmsSpecimenImporter {
     String val = System.getProperty(SYSPROP_LOADER_QUEUE_SIZE, "1000");
     loaderQueueSize = Integer.parseInt(val);
     shouldUpdateES = DaoRegistry.getInstance().getConfiguration().get(SYSPROP_ETL_OUTPUT, "es").equals("file") ? false : true;
+    MedialibIdsCache.getInstance();
   }
 
   public void importCsvFile(String path) {
@@ -90,7 +90,6 @@ public class BrahmsSpecimenImporter {
       logger.info("No CSV files to process");
       return;
     }
-    MedialibIdsCache.getInstance();
     SpecimenTypeStatusNormalizer.getInstance().resetStatistics();
     ThemeCache.getInstance().resetMatchCounters();
     ETLStatistics stats = new ETLStatistics();

@@ -289,15 +289,10 @@ class BrahmsSpecimenTransformer extends BrahmsTransformer<Specimen> {
     List<ServiceAccessPoint> saps = new ArrayList<>(urls.length);
     for (int i = 0; i < urls.length; ++i) {
       String url = urls[i].trim().replaceAll(" ", "%20");
-      // Change http urls to https urls, but leave the rest as they are 
+      if (url.length() == 0) continue;
+      // Change http urls to https urls, but leave the rest as they are
       if (url.startsWith(MEDIALIB_HTTP_URL) && !url.startsWith(MEDIALIB_HTTPS_URL)) {
         url = url.replace(MEDIALIB_HTTP_URL, MEDIALIB_HTTPS_URL);
-      }
-      // Check whether this image is actually available in the medialibrary
-      String id = url.substring(MEDIALIB_HTTPS_URL.length());
-      if (!MedialibIdsCache.contains(id)) {
-        warn("URL {} is not an existing medialib url", url);
-        continue;
       }
       // Try to retrieve the mimetype from the mimetype cache
       String mimeType = DEFAULT_MIME_TYPE;
@@ -308,14 +303,19 @@ class BrahmsSpecimenTransformer extends BrahmsTransformer<Specimen> {
         mediaObjectId = matcher.group(1);
         mimeType = mimetypeCache.getMimeType(mediaObjectId);
       }
-      
+      // Check whether this image is actually available in the medialibrary
+      if (!MedialibIdsCache.contains(mediaObjectId)) {
+        warn("Not an existing medialib URL: %s", url);
+        continue;
+      }
+
       try {
         URI uri = new URI(url);
         saps.add(new ServiceAccessPoint(uri, mimeType, DEFAULT_IMAGE_QUALITY));
       }
       catch (URISyntaxException e) {
         if (!suppressErrors) {
-          warn("Invalid multimedia URL: " + url);
+          warn("Invalid multimedia URL: %s", url);
         }
       }
     }

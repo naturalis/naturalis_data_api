@@ -243,7 +243,7 @@
 					<forkCount>1</forkCount>
 					<reuseForks>false</reuseForks>
 					<redirectTestOutputToFile>true</redirectTestOutputToFile>
-					<argLine>-Xmx256m
+					<argLine>-Xmx4g
 						-Dnba.conf.file=${main.basedir}/nba.properties
 						-Delasticsearch.index.default.suffix=_integration_test
 						-Dlog4jConfigurationFile=${main.basedir}/log4j2-test.xml

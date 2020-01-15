@@ -7,7 +7,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 /**
@@ -19,10 +18,8 @@ import java.util.zip.ZipInputStream;
 public class MedialibIdsCache {
 
     private static final Logger logger = ETLRegistry.getInstance().getLogger(MedialibIdsCache.class);
-
+    private static final String CACHE_FILE_NAME = "medialib_ids_cache.zip";
     private static ArrayList<String> ids = new ArrayList<>();
-    private static String CACHE_FILE_NAME = "medialib_ids_cache.zip";
-
     private static MedialibIdsCache instance;
 
     /**
@@ -46,6 +43,11 @@ public class MedialibIdsCache {
         return instance;
     }
 
+    /**
+     * contains(String id) provides a way to check if the given id is available from the medialibrary.
+     * @param id The id (String) that needs to be verified
+     * @return true when the id is availalble in the cache; false otherwise
+     */
     public static boolean contains(String id) {
         if (ids == null) return true;
         return ids.contains(id);
@@ -74,12 +76,10 @@ public class MedialibIdsCache {
     private static ArrayList<String> loadCacheFile(File cacheFile) throws IOException {
         ArrayList<String> ids = new ArrayList<>();
         ZipInputStream zis = new ZipInputStream(new FileInputStream(cacheFile));
-        ZipEntry zipEntry = zis.getNextEntry();
-        int n = 0;
+        zis.getNextEntry();
         try (BufferedReader br = new BufferedReader(new InputStreamReader(zis))) {
             while (br.ready()) {
                 ids.add(br.readLine());
-                n++;
             }
         } catch (OutOfMemoryError e) {
             logger.error("Cache file is too large. Not using Medialib ids cache!");

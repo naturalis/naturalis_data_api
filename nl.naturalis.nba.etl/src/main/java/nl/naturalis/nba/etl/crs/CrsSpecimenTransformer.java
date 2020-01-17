@@ -389,7 +389,8 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
         si.setPreferred(s == null || s.equals("1"));
         si.setTypeStatus(getTypeStatus(elem));
         si.setDateIdentified(date(elem, "abcd:IdentificationDate"));
-        si.addIdentifier(new Agent(val(elem, "abcd:Identifier")));
+        String identifier = val(elem, "abcd:Identifier");
+        if (identifier != null) si.addIdentifier(new Agent(identifier));
         si.setAssociatedFossilAssemblage(val(elem, "abcd:AssociatedFossilAssemblage"));
         si.setAssociatedMineralName(val(elem, "abcd:AssociatedMineralName"));
         si.setRockMineralUsage(val(elem, "abcd:RockMineralUsage"));
@@ -419,9 +420,6 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
     private ScientificName getScientificName(Element elem, String collectionType) {
         
         ScientificName sn = new ScientificName();
-
-        List<Element> elems = DOMUtil.getChildren(elem, "ncrsHighername");
-        
         sn.setGenusOrMonomial(val(elem, "abcd:GenusOrMonomial"));
         sn.setSubgenus(val(elem, "abcd:Subgenus"));
         sn.setSpecificEpithet(val(elem, "abcd:SpeciesEpithet"));
@@ -432,7 +430,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
         sn.setInfraspecificEpithet(subSpeciesEpithetStr);
         sn.setNameAddendum(val(elem, "abcd:NameAddendum"));
         sn.setAuthorshipVerbatim(val(elem, "abcd:AuthorTeamOriginalAndYear"));
-        
+
         // fullScientificName
         String fullScientificNameStr = val(elem, "abcd:FullScientificNameString");
 
@@ -440,21 +438,36 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
         if (sn.getGenusOrMonomial() != null) {
             StringBuilder sb = new StringBuilder();
             sb.append(sn.getGenusOrMonomial()).append(' ');
-            if (sn.getSubgenus() != null)
+            if (sn.getSubgenus() != null) {
                 sb.append("(").append(sn.getSubgenus()).append(") ");
-            if (sn.getSpecificEpithet() != null)
+            }
+            if (sn.getSpecificEpithet() != null) {
                 sb.append(sn.getSpecificEpithet()).append(' ');
-            if (sn.getInfraspecificEpithet() != null)
+            }
+            if (sn.getInfraspecificEpithet() != null) {
                 sb.append(sn.getInfraspecificEpithet()).append(' ');
-            if (sn.getAuthorshipVerbatim() != null)
+            }
+            if (sn.getAuthorshipVerbatim() != null) {
                 sb.append(sn.getAuthorshipVerbatim());
-            if (sb.length() != 0)
+            }
+            if (sb.length() != 0) {
                 sn.setFullScientificName(sb.toString().trim());
+            }
         } else if (fullScientificNameStr != null) {
-          sn.setFullScientificName(fullScientificNameStr); // 2. Otherwise, use the string from the import file
+            sn.setFullScientificName(fullScientificNameStr); // 2. Otherwise, use the string from the import file
         } else {
-          sn.setFullScientificName(getBestTaxonCoverage(elems)); // 3. or, the taxonCoverage if there is nothing else
+            // 3. or, when there is nothing else:
+            List<Element> elems = DOMUtil.getChildren(elem, "ncrsHighername");
+            // 3a. use the best taxonCoverage
+            String nextBest = getBestTaxonCoverage(elems);
+            // 3b. or the value of abcd:taxonCoverage of the first element "as is", when there is still no value
+            if (nextBest == null && elems != null) {
+                if (elems.size() > 0) nextBest = val(elems.get(0), "abcd:taxonCoverage");
+            }
+            sn.setFullScientificName(nextBest);
         }
+
+        // Set ScientificNameGroup
         if (collectionType.equals("Mineralogy and Petrology") || collectionType.equals("Mineralogy") || collectionType.equals("Petrology")) {
             if (sn.getFullScientificName() != null) {
                 sn.setScientificNameGroup(sn.getFullScientificName().toLowerCase());

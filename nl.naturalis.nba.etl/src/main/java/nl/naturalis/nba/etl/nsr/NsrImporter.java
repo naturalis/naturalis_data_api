@@ -144,9 +144,10 @@ public class NsrImporter {
                     } catch (IOException e) {
                         logger.warn("Failed to close file. There may have been documents lost.");
                     }
+                } else {
+                    taxonLoader.flush();
+                    mediaLoader.flush();
                 }
-                taxonLoader.flush();
-                mediaLoader.flush();
                 backupXmlFile(f);
             }
             // Summery after entire import has finished
@@ -207,7 +208,15 @@ public class NsrImporter {
                         logger.info("Documents indexed: {}", stats.documentsIndexed);
                     }
                 }
-                loader.flush();
+                if (toFile) {
+                    try {
+                        loader.close();
+                    } catch (IOException e) {
+                        logger.warn("Failed to close file. There may have been documents lost.");
+                    }
+                } else {
+                    loader.flush();
+                }
             }
         } finally {
             IOUtil.close(loader);
@@ -269,7 +278,15 @@ public class NsrImporter {
                         logger.info("Documents indexed: {}", stats.documentsIndexed);
                     }
                 }
-                loader.flush();
+                if (toFile) {
+                    try {
+                        loader.close();
+                    } catch (IOException e) {
+                        logger.warn("Failed to close file. There may have been documents lost.");
+                    }
+                } else {
+                    loader.flush();
+                }
             }
         } finally {
             IOUtil.close(loader);

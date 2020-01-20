@@ -78,7 +78,6 @@ public abstract class Loader<T extends IDocumentObject> implements DocumentObjec
 		objs.addAll(objects);
 		if (tresh != 0 && tresh < objs.size()) {
 			flush();
-			ESUtil.clearCache(null);
 		}
 	}
 

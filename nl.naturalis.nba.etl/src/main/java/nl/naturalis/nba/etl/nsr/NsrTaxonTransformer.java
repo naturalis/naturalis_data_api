@@ -127,8 +127,7 @@ class NsrTaxonTransformer extends AbstractXMLTransformer<Taxon> {
 		}
 		catch (Throwable t) {
 			stats.recordsRejected++;
-			if (!suppressErrors)
-				error("Record rejected! {}", t.getMessage());
+			if (!suppressErrors) error("Record rejected! {}", t.getMessage());
 			return null;
 		}
 	}
@@ -137,16 +136,12 @@ class NsrTaxonTransformer extends AbstractXMLTransformer<Taxon> {
 	{
 		if (rank == null) {
 			stats.recordsRejected++;
-			if (!suppressErrors) {
-				error("Record rejected! Missing taxonomic rank");
-			}
+			if (!suppressErrors) error("Record rejected! Missing taxonomic rank");
 			return true;
 		}
 		if (!allowedTaxonRanks.contains(rank)) {
 			stats.recordsSkipped++;
-			if (!suppressErrors) {
-				error("Record skipped. Ignoring higher taxon: \"%s\"", rank);
-			}
+			error("Record skipped. Ignoring higher taxon: \"%s\"", rank);
 			return true;
 		}
 		return false;
@@ -162,8 +157,7 @@ class NsrTaxonTransformer extends AbstractXMLTransformer<Taxon> {
 			String nametype = val(e, "nametype");
 			if (nametype == null) {
 				stats.recordsRejected++;
-				if (!suppressErrors)
-					error("Record rejected! Missing <nametype> element under <name> element");
+				if (!suppressErrors) error("Record rejected! Missing <nametype> element under <name> element");
 				return false;
 			}
 			if (!isVernacularName(nametype)) {
@@ -174,9 +168,7 @@ class NsrTaxonTransformer extends AbstractXMLTransformer<Taxon> {
 		}
 		if (taxon.getAcceptedName() == null) {
 			stats.recordsRejected++;
-			if (!suppressErrors) {
-				error("Record rejected! Missing accepted name for taxon");
-			}
+			if (!suppressErrors) error("Record rejected! Missing accepted name for taxon");
 			return false;
 		}
 		return true;
@@ -187,17 +179,13 @@ class NsrTaxonTransformer extends AbstractXMLTransformer<Taxon> {
 		Element namesElem = getChild(input.getRecord(), "names");
 		if (namesElem == null) {
 			stats.recordsRejected++;
-			if (!suppressErrors) {
-				error("Record rejected! Missing <names> element under <taxon> element");
-			}
+			if (!suppressErrors) error("Record rejected! Missing <names> element under <taxon> element");
 			return null;
 		}
 		List<Element> nameElems = getChildren(namesElem);
 		if (nameElems == null) {
 			stats.recordsRejected++;
-			if (!suppressErrors) {
-				error("Record rejected! Missing accepted name (zero <name> elements under <names> element)");
-			}
+			if (!suppressErrors) error("Record rejected! Missing accepted name (zero <name> elements under <names> element)");
 			return null;
 		}
 		return nameElems;
@@ -208,9 +196,7 @@ class NsrTaxonTransformer extends AbstractXMLTransformer<Taxon> {
 		 if (sn.getTaxonomicStatus() == ACCEPTED_NAME) {
 			if (taxon.getAcceptedName() != null) {
 				stats.recordsRejected++;
-				if (!suppressErrors) {
-					error("Record rejected! Only one accepted name per taxon allowed");
-				}
+				if (!suppressErrors) error("Record rejected! Only one accepted name per taxon allowed");
 				return false;
 			}
 			taxon.setAcceptedName(sn);
@@ -457,17 +443,13 @@ class NsrTaxonTransformer extends AbstractXMLTransformer<Taxon> {
 		String raw = val(nameElem, "nametype");
 		if (raw == null) {
 			stats.recordsRejected++;
-			if (!suppressErrors) {
-				error("Missing or empty <nametype> for name: " + val(nameElem, "fullname"));
-			}
+			if (!suppressErrors) error("Record rejected! Missing or empty <nametype> for name: " + val(nameElem, "fullname"));
 			return null;
 		}
 		TaxonomicStatus status = translations.get(raw);
 		if (status == null) {
 			stats.recordsRejected++;
-			if (!suppressErrors) {
-				error("Invalid taxonomic status: " + raw);
-			}
+			if (!suppressErrors) error("Record rejected! Invalid taxonomic status: " + raw);
 			return null;
 		}
 		return status;

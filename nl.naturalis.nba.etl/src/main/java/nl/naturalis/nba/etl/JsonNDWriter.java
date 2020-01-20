@@ -45,10 +45,10 @@ public abstract class JsonNDWriter<T extends IDocumentObject> implements Documen
    * Creates a JsonND (newline delimited JSON) writer for the specified document 
    * type. The writer will write all documents to an export file.
    * 
-   * @param documentType
-   * @param sourceSystem
-   * @param sourceFile
-   * @param stats
+   * @param dt : the documentType of the set
+   * @param sourceSystem : the source system
+   * @param sourceFile : the source file
+   * @param stats : the ETLStatistics object
    */
   public JsonNDWriter(DocumentType<T> dt, String sourceSystem, String sourceFile, ETLStatistics stats) {
     this.documentType = dt;
@@ -122,7 +122,7 @@ public abstract class JsonNDWriter<T extends IDocumentObject> implements Documen
    * This is sometimes helpful if you expect large amounts of well-known errors and warnings that just
    * clog up your log file.
    * 
-   * @param suppressErrors
+   * @param suppressErrors :
    */
   public void suppressErrors(boolean suppressErrors) {
     this.suppressErrors = suppressErrors;

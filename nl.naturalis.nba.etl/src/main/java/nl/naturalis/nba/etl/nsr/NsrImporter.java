@@ -14,6 +14,7 @@ import static nl.naturalis.nba.etl.nsr.NsrImportUtil.getXmlFiles;
 import static nl.naturalis.nba.etl.nsr.NsrImportUtil.removeBackupExtension;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import org.apache.logging.log4j.Logger;
@@ -99,10 +100,10 @@ public class NsrImporter {
         ETLStatistics taxonStats = new ETLStatistics();
         ETLStatistics mediaStats = new ETLStatistics();
         mediaStats.setOneToMany(true);
-        NsrTaxonTransformer tTransformer = new NsrTaxonTransformer(taxonStats);
-        tTransformer.setSuppressErrors(suppressErrors);
-        NsrMultiMediaTransformer mTransformer = new NsrMultiMediaTransformer(mediaStats);
-        mTransformer.setSuppressErrors(suppressErrors);
+        NsrTaxonTransformer taxonTransformer = new NsrTaxonTransformer(taxonStats);
+        taxonTransformer.setSuppressErrors(suppressErrors);
+        NsrMultiMediaTransformer multimediaTransformer = new NsrMultiMediaTransformer(mediaStats);
+        multimediaTransformer.setSuppressErrors(suppressErrors);
         DocumentObjectWriter<Taxon> taxonLoader = null;
         DocumentObjectWriter<MultiMediaObject> mediaLoader = null;
         try {
@@ -118,10 +119,10 @@ public class NsrImporter {
                 }
                 logger.info("Processing file {}", f.getAbsolutePath());
                 for (XMLRecordInfo extracted : new NsrExtractor(f, taxonStats)) {
-                    List<Taxon> taxa = tTransformer.transform(extracted);
+                    List<Taxon> taxa = taxonTransformer.transform(extracted);
                     taxonLoader.write(taxa);
-                    mTransformer.setTaxon(taxa == null ? null : taxa.get(0));
-                    List<MultiMediaObject> multimedia = mTransformer.transform(extracted);
+                    multimediaTransformer.setTaxon(taxa == null ? null : taxa.get(0));
+                    List<MultiMediaObject> multimedia = multimediaTransformer.transform(extracted);
                     mediaLoader.write(multimedia);
                     if (taxonStats.recordsProcessed != 0 && taxonStats.recordsProcessed % 5000 == 0) {
                         logger.info("Records processed: {}", taxonStats.recordsProcessed);
@@ -137,11 +138,19 @@ public class NsrImporter {
                 } else {
                     logger.info("No record was processed");
                 }
+                if (toFile) {
+                    try {
+                        taxonLoader.close();
+                        mediaLoader.close();
+                    } catch (IOException e) {
+                        logger.warn("Failed to close file. There may have been documents lost.");
+                    };
+                }
                 taxonLoader.flush();
                 mediaLoader.flush();
                 backupXmlFile(f);
             }
-            // Summer after entire import has finished
+            // Summery after entire import has finished
             if (taxonStats.recordsProcessed != 0) {
                 logger.info("NSR Import complete");
                 logger.info("Records processed: {}", taxonStats.recordsProcessed);

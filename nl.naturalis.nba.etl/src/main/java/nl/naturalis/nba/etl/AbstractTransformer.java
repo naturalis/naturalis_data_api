@@ -82,7 +82,7 @@ public abstract class AbstractTransformer<INPUT, OUTPUT extends IDocumentObject>
 		if (objectID == null) {
 			stats.recordsRejected++;
 			if (!suppressErrors) {
-				error("Missing object ID");
+				error("Record rejected: Missing object ID");
 			}
 			return null;
 		}

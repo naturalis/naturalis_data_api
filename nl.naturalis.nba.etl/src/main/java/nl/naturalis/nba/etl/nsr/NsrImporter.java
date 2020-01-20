@@ -78,7 +78,6 @@ public class NsrImporter {
         String val = System.getProperty(SYSPROP_LOADER_QUEUE_SIZE, "1000");
         loaderQueueSize = Integer.parseInt(val);
         toFile = DaoRegistry.getInstance().getConfiguration().get("etl.output", "file").equals("file");
-
     }
 
     /**
@@ -144,7 +143,7 @@ public class NsrImporter {
                         mediaLoader.close();
                     } catch (IOException e) {
                         logger.warn("Failed to close file. There may have been documents lost.");
-                    };
+                    }
                 }
                 taxonLoader.flush();
                 mediaLoader.flush();

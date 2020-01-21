@@ -158,7 +158,7 @@ public class CrsMultiMediaTransformerTest {
    *         Test to verify if the initialize method returns the expected {@link MultiMediaObject} object
    */
   @Test
-  public void testDoTransfor() throws Exception {
+  public void testDoTransfer() throws Exception {
 
     ETLStatistics etlStatistics = new ETLStatistics();
     CrsMultiMediaTransformer crsMultiMediaTransformer = new CrsMultiMediaTransformer(etlStatistics);
@@ -169,9 +169,11 @@ public class CrsMultiMediaTransformerTest {
       CommonReflectionUtil.setField(AbstractTransformer.class, crsMultiMediaTransformer, "objectID", "RMNH.INS.867435");
       CommonReflectionUtil.setField(AbstractTransformer.class, crsMultiMediaTransformer, "input", extracted);
       Element oaiDcElem = getDescendant(extracted.getRecord(), "oai_dc:dc");
+      String collectionType = DOMUtil.getDescendantValue(oaiDcElem, "abcd:CollectionType");
+
       List<Element> ncsrDeterminationElems = getDescendants(oaiDcElem, "ncrsDetermination");
       ArrayList<MultiMediaContentIdentification> identifications;
-      Object obj = ReflectionUtil.call(crsMultiMediaTransformer, "getIdentifications", new Class[] {List.class}, new Object[] {ncsrDeterminationElems});
+      Object obj = ReflectionUtil.call(crsMultiMediaTransformer, "getIdentifications", new Class[] {List.class, String.class}, new Object[] {ncsrDeterminationElems, collectionType});
       identifications = (ArrayList<MultiMediaContentIdentification>) obj;
       Object mmoObj = ReflectionUtil.call(crsMultiMediaTransformer, "initialize", new Class[] {Element.class, ArrayList.class}, new Object[] {oaiDcElem, identifications});
       mmo = (MultiMediaObject) mmoObj;
@@ -215,8 +217,9 @@ public class CrsMultiMediaTransformerTest {
       CommonReflectionUtil.setField(AbstractTransformer.class, crsMultiMediaTransformer, "objectID", "RMNH.INS.867435");
       CommonReflectionUtil.setField(AbstractTransformer.class, crsMultiMediaTransformer, "input", extracted);
       Element oaiDcElem = getDescendant(extracted.getRecord(), "oai_dc:dc");
+      String collectionType = DOMUtil.getDescendantValue(oaiDcElem, "abcd:CollectionType");
       List<Element> ncsrDeterminationElems = getDescendants(oaiDcElem, "ncrsDetermination");
-      Object obj = ReflectionUtil.call(crsMultiMediaTransformer, "getIdentifications", new Class[] {List.class}, new Object[] {ncsrDeterminationElems});
+      Object obj = ReflectionUtil.call(crsMultiMediaTransformer, "getIdentifications", new Class[] {List.class, String.class}, new Object[] {ncsrDeterminationElems, collectionType});
       ids = (ArrayList<MultiMediaContentIdentification>) obj;
     }
 
@@ -289,10 +292,11 @@ public class CrsMultiMediaTransformerTest {
       CommonReflectionUtil.setField(AbstractTransformer.class, crsMultiMediaTransformer, "input", extracted);
       Element oaiDcElem = getDescendant(extracted.getRecord(), "oai_dc:dc");
       List<Element> ncsrDeterminationElems = getDescendants(oaiDcElem, "ncrsDetermination");
+      String collectionType = DOMUtil.getDescendantValue(oaiDcElem, "abcd:CollectionType");
 
       for (Element element : ncsrDeterminationElems) {
         String fullScientificNameStr = DOMUtil.getDescendantValue(element, "dwc:scientificName");
-        Object obj = ReflectionUtil.call(crsMultiMediaTransformer, "getScientificName", new Class[] {Element.class}, new Object[] {element});
+        Object obj = ReflectionUtil.call(crsMultiMediaTransformer, "getScientificName", new Class[] {Element.class, String.class}, new Object[] {element, collectionType});
         sn = (ScientificName) obj;
         if (sn != null && fullScientificNameStr.equals("Aedes kabaenensis"))
           break outerloop;
@@ -334,9 +338,9 @@ public class CrsMultiMediaTransformerTest {
       for (Element element : elems) {
         
         String fullScientificNameStr = DOMUtil.getDescendantValue(element, "dwc:scientificName");
-        
-        Object scientificNameObj = ReflectionUtil.call(crsMultiMediaTransformer, "getScientificName",
-            new Class[] {Element.class}, new Object[] {element});
+        String collectionType = DOMUtil.getDescendantValue(rootElement, "abcd:CollectionType");
+
+        Object scientificNameObj = ReflectionUtil.call(crsMultiMediaTransformer, "getScientificName", new Class[] {Element.class, String.class}, new Object[] {element, collectionType});
         scientificName = (ScientificName) scientificNameObj;
 
         if (scientificName != null && fullScientificNameStr.equals("fullscientificnametest01")) {

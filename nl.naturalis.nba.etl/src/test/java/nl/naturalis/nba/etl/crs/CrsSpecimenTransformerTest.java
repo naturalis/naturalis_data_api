@@ -150,8 +150,7 @@ public class CrsSpecimenTransformerTest {
         for (Element element : elems) {
           String fullScientificNameStr = DOMUtil.getDescendantValue(element, "abcd:FullScientificNameString");
           Object identificationObj =
-              ReflectionUtil.call(crsSpecimenTransformer, "getIdentification",
-                  new Class[] {Element.class, String.class}, new Object[] {element, "Arts"});
+              ReflectionUtil.call(crsSpecimenTransformer, "getIdentification", new Class[] {Element.class, String.class}, new Object[] {element, "Arts"});
           identification = (SpecimenIdentification) identificationObj;
           if (identification != null && fullScientificNameStr.equals("Cleyera japonica"))
             break outerloop;

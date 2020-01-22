@@ -8,19 +8,13 @@ import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static nl.naturalis.nba.dao.DocumentType.SPECIMEN;
 import static nl.naturalis.nba.dao.util.es.ESUtil.executeSearchRequest;
 
-//import static org.elasticsearch.search.aggregations.AggregationBuilders.max;
-//import static org.elasticsearch.search.aggregations.AggregationBuilders.nested;
-//import static org.elasticsearch.search.aggregations.AggregationBuilders.topHits;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import nl.naturalis.nba.common.json.JsonUtil;
 import org.apache.logging.log4j.Logger;
 
-import org.apache.logging.log4j.core.util.JsonUtils;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.common.unit.TimeValue;
@@ -59,7 +53,6 @@ import nl.naturalis.nba.utils.ConfigObject;
 
 public class GroupSpecimensByScientificNameHelper {
 
-    @SuppressWarnings("unused")
     private static Logger logger = getLogger(GroupSpecimensByScientificNameHelper.class);
 
     private static final QueryCache<GroupByScientificNameQueryResult> queryCache = new QueryCache<>(
@@ -173,7 +166,8 @@ public class GroupSpecimensByScientificNameHelper {
 
     private static NestedAggregationBuilder createAggregation(GroupByScientificNameQuerySpec sngQuery) throws InvalidQueryException {
 
-        TermsAggregationBuilder tab = AggregationBuilders.terms("TERMS").field("identifications.scientificName.scientificNameGroup");
+        TermsAggregationBuilder tab = AggregationBuilders.terms("TERMS");
+        tab.field("identifications.scientificName.scientificNameGroup");
         tab.size(getMaxNumBuckets());
 
         // Ordering the buckets alphabetically by their terms in an ascending manner:

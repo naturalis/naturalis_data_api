@@ -47,7 +47,7 @@ class NsrImportUtil {
 	/**
 	 * Returns the XML source files that have not been processed yet.
 	 * 
-	 * @return
+	 * @return File[] fileNames
 	 */
 	static File[] getXmlFiles()
 	{

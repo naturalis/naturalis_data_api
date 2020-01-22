@@ -15,6 +15,7 @@ import static nl.naturalis.nba.etl.nsr.NsrImportUtil.removeBackupExtension;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.logging.log4j.Logger;
@@ -87,6 +88,7 @@ public class NsrImporter {
     public void importAll() {
         long start = System.currentTimeMillis();
         File[] xmlFiles = getXmlFiles();
+        Arrays.sort(xmlFiles);
         if (xmlFiles.length == 0) {
             logger.info("No XML files to process");
             return;

@@ -8,10 +8,6 @@ import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static nl.naturalis.nba.dao.DocumentType.TAXON;
 import static nl.naturalis.nba.dao.util.es.ESUtil.executeSearchRequest;
 
-import static org.elasticsearch.search.aggregations.AggregationBuilders.max;
-import static org.elasticsearch.search.aggregations.AggregationBuilders.terms;
-import static org.elasticsearch.search.aggregations.AggregationBuilders.topHits;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +17,7 @@ import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.script.Script;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.BucketOrder;
 import org.elasticsearch.search.aggregations.bucket.terms.IncludeExclude;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
@@ -57,8 +54,7 @@ public class GroupTaxaByScientificNameHelper {
 	private static final QueryCache<GroupByScientificNameQueryResult> queryCache = new QueryCache<>(
 			getCacheSize());
 
-	public static GroupByScientificNameQueryResult groupByScientificName(
-			GroupByScientificNameQuerySpec query) throws InvalidQueryException
+	public static GroupByScientificNameQueryResult groupByScientificName(GroupByScientificNameQuerySpec query) throws InvalidQueryException
 	{
 		GroupByScientificNameQueryResult result = queryCache.get(query);
 		if (result != null) {
@@ -99,8 +95,9 @@ public class GroupTaxaByScientificNameHelper {
 		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 		searchSourceBuilder.trackTotalHits(false);
 		searchSourceBuilder.aggregation(createAggregation(queryCopy));
+		request.source(searchSourceBuilder);
+
 		SearchResponse response = executeSearchRequest(request);
-		
 		Terms terms = response.getAggregations().get("TERMS");
 		result.setSumOfOtherDocCounts(terms.getSumOfOtherDocCounts());
 		List<? extends Bucket> buckets = terms.getBuckets();
@@ -150,12 +147,12 @@ public class GroupTaxaByScientificNameHelper {
 		return result;
 	}
 
-	private static TermsAggregationBuilder createAggregation(
-			GroupByScientificNameQuerySpec sngQuery) throws InvalidQueryException
+	private static TermsAggregationBuilder createAggregation(GroupByScientificNameQuerySpec sngQuery) throws InvalidQueryException
 	{
-		TermsAggregationBuilder tab = terms("TERMS");
+		TermsAggregationBuilder tab = AggregationBuilders.terms("TERMS");
 		tab.field("acceptedName.scientificNameGroup");
 		tab.size(getMaxNumBuckets());
+
 		if (sngQuery.getGroupSort() == NAME_ASC) {
 			tab.order(BucketOrder.key(true));
 		}
@@ -169,14 +166,16 @@ public class GroupTaxaByScientificNameHelper {
 			tab.order(BucketOrder.count(true));
 		}
 		else { // TOP_HIT_SCORE
-			TopHitsAggregationBuilder thab = topHits("TOP_HITS");
+			TopHitsAggregationBuilder thab = AggregationBuilders.topHits("TOP_HITS");
 			thab.size(1);
 			tab.subAggregation(thab);
-			MaxAggregationBuilder mab = max("MAX");
+
+			MaxAggregationBuilder mab = AggregationBuilders.max("MAX");
 			mab.script(new Script("_score"));
 			tab.subAggregation(mab);
 			tab.order(BucketOrder.aggregation("MAX", false));
 		}
+
 		Filter filter = sngQuery.getGroupFilter();
 		if (filter != null) {
 			IncludeExclude ie = DaoUtil.translateFilter(filter);

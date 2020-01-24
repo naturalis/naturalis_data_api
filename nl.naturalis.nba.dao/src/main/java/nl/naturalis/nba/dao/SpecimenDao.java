@@ -14,6 +14,7 @@ import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Set;
 
+import nl.naturalis.nba.common.json.JsonUtil;
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
@@ -56,9 +57,9 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 		TermQueryBuilder tqb = termQuery("unitID", unitID);
 		ConstantScoreQueryBuilder csq = constantScoreQuery(tqb);
 		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-		searchSourceBuilder.trackTotalHits(false);
 		searchSourceBuilder.query(csq);
 		searchSourceBuilder.size(0);
+		searchSourceBuilder.trackTotalHitsUpTo(1);
 		request.source(searchSourceBuilder);
 		SearchResponse response = executeSearchRequest(request);
 		return response.getHits().getTotalHits().value != 0;

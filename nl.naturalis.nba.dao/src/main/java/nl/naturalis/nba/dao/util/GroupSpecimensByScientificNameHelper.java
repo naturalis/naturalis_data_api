@@ -55,11 +55,10 @@ public class GroupSpecimensByScientificNameHelper {
 
     private static Logger logger = getLogger(GroupSpecimensByScientificNameHelper.class);
 
-    private static final QueryCache<GroupByScientificNameQueryResult> queryCache = new QueryCache<>(
-            getCacheSize());
+    private static final QueryCache<GroupByScientificNameQueryResult> queryCache = new QueryCache<>(getCacheSize());
 
-    public static GroupByScientificNameQueryResult groupByScientificName(
-            GroupByScientificNameQuerySpec query) throws InvalidQueryException {
+    public static GroupByScientificNameQueryResult groupByScientificName(GroupByScientificNameQuerySpec query) throws InvalidQueryException
+    {
         GroupByScientificNameQueryResult result = queryCache.get(query);
         if (result != null) {
             return result;

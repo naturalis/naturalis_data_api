@@ -19,12 +19,10 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.Map.Entry;
 
+import nl.naturalis.nba.common.json.JsonUtil;
 import org.w3c.dom.Element;
 
 import nl.naturalis.nba.api.InvalidQueryException;
@@ -288,8 +286,34 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
       
     }
 
+    /**
+     * getBestTaxonCoverage returns the taxon coverage with the most specific taxonomic rank
+     * as a String.
+     * domain : most general rank
+     * ...
+     * subtribe : most specific rank
+     *
+     * @param elems : The elements of the ncrsHighername element
+     * @return taxonCoverage
+     */
+    private String getBestTaxonCoverage(List<Element> elems) {
+        if (elems == null) return null;
+
+        String taxonCoverageStr = null;
+        int ordinal = -1;
+        for (Element elem : elems) {
+            String taxonRankStr = val(elem, "abcd:HigherTaxonRank");
+            TaxonomicRank rank = TaxonomicRank.parse(taxonRankStr);
+            if (rank != null && rank.ordinal() > ordinal) {
+                taxonCoverageStr = val(elem, "abcd:taxonCoverage");
+                ordinal = rank.ordinal();
+            }
+        }
+        return taxonCoverageStr;
+    }
+
     private List<ServiceAccessPoint> getAssociatedMultiMediaUris() {
-      
+
       Element record = input.getRecord();
       List<Element> fileUriElems = DOMUtil.getDescendants(record, "abcd:fileuri");
       if (fileUriElems == null) {
@@ -298,38 +322,38 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
         }
         return null;
       }
-      
+
       /*
        * When MultiMediaPublic is set to 0 (<abcd:MultiMediaPublic>0</abcd:MultiMediaPublic>)
-       * this means that no URI's should be added to the document. While that data should not 
-       * be have been provided by the source system in the first place, we do a security check 
+       * this means that no URI's should be added to the document. While that data should not
+       * be have been provided by the source system in the first place, we do a security check
        * anyway.
-       * 
+       *
        * NOTE: When the source record contains more than one multimedia item, the field
        * MultiMediaPublic will be available more than once (one for every multimedia item).
        * Since the field multiMediaPublic in the specimen document can be set only once,
        * we check each value provided.
-       * 
+       *
        */
       List<Element> multimediaPublic = DOMUtil.getDescendants(record, "abcd:MultiMediaPublic");
       if (multimediaPublic == null) {
           return null;
       }
-      
+
       List<ServiceAccessPoint> serviceAccessPoints = new ArrayList<>(fileUriElems.size());
       int n = 0;
       for (Element e : fileUriElems) {
         if (n >= multimediaPublic.size() && multimediaPublic.get(n++).getTextContent().trim().equals("0")) continue;
-        
-        // Retrieve uri 
+
+        // Retrieve uri
         String uriStr = e.getTextContent().trim();
         if (uriStr == null || uriStr.length() == 0) continue;
-        
-        // Change http urls to https urls, but leave the rest as they are 
+
+        // Change http urls to https urls, but leave the rest as they are
         if (uriStr.startsWith(MEDIALIB_HTTP_URL) && !uriStr.startsWith(MEDIALIB_HTTPS_URL)) {
           uriStr = uriStr.replace(MEDIALIB_HTTP_URL, MEDIALIB_HTTPS_URL);
         }
-        
+
         // Test validity and/or encode uri when needed
         try {
           @SuppressWarnings("unused")
@@ -341,25 +365,25 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
           }
           continue;
         }
-        
+
         // Extract medialib ID
         String medialibId = uriStr.substring(MEDIALIB_URL_START.length());
         int x = medialibId.indexOf('/');
         if (x != -1) {
           medialibId = medialibId.substring(0, x);
         }
-        
+
         // Retrieve mime type
         String mimeType = mimetypeCache.getMimeType(medialibId);
         if (mimeType != null) {
-          serviceAccessPoints.add( new ServiceAccessPoint(uriStr, mimeType, DEFAULT_IMAGE_QUALITY) );         
+          serviceAccessPoints.add( new ServiceAccessPoint(uriStr, mimeType, DEFAULT_IMAGE_QUALITY) );
         } else if (uriStr.length() > 0 && mimeType == null) {
           logger.error("Multimedia URI from object {} has no mime type! URI has been skipped: {}", objectID, uriStr);
         }
       }
       return (serviceAccessPoints.size() == 0) ? null : serviceAccessPoints;
     }
-    
+
     private List<String> getPreviousSourceIds() {
       Element record = input.getRecord();
       List<Element> elems = DOMUtil.getDescendants(record, "abcd:PreviousSourceName");
@@ -372,9 +396,9 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
         if (id.length() > 0)
           sourceIds.add(id);
       }
-      return (sourceIds.size() == 0) ? null : sourceIds;      
+      return (sourceIds.size() == 0) ? null : sourceIds;
     }
-    
+
     private SpecimenIdentification getIdentification(Element elem, String collectionType) {
 
         ScientificName sn = getScientificName(elem, collectionType);
@@ -396,29 +420,54 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
         si.setRockMineralUsage(val(elem, "abcd:RockMineralUsage"));
         si.setRockType(val(elem, "abcd:RockType"));
         si.setScientificName(sn);
+
+        // Classification
         List<Monomial> sc = getSystemClassification(elem, si.getScientificName());
         // System classification disabled for specimens and multimedia
         // si.setSystemClassification(sc);
         DefaultClassification dc = DefaultClassification.fromSystemClassification(sc);
         si.setDefaultClassification(dc);
-        String infraspecificRank = val(elem, "abcd:InfrasubspecificRank");
-        if (infraspecificRank != null)
-            si.setTaxonRank(infraspecificRank);
-        else if (si.getScientificName().getInfraspecificEpithet() != null)
+
+        // Taxon rank (NBAX-276)
+        String infrasSubspecificRank = val(elem, "abcd:InfrasubspecificRank");
+        String fullScientificNameStr = val(elem, "abcd:FullScientificNameString");
+        String taxonCoverageStr = val(elem, "abcd:taxonCoverage");
+
+        // 0. infra subspecific rank
+        if (infrasSubspecificRank != null) {
+            si.setTaxonRank(infrasSubspecificRank);
+        }
+        // 1. subspecies
+        else if (si.getScientificName().getInfraspecificEpithet() != null && si.getScientificName().getGenusOrMonomial() != null)
             si.setTaxonRank("subspecies");
-        else if (si.getScientificName().getSpecificEpithet() != null)
+        // 2. species
+        else if (si.getScientificName().getSpecificEpithet() != null && si.getScientificName().getGenusOrMonomial() != null)
             si.setTaxonRank("species");
-        else
+        // 3. subgenus
+        else if (si.getScientificName().getSubgenus() != null && si.getScientificName().getGenusOrMonomial() != null)
+            si.setTaxonRank("subgenus");
+        // 4. genus
+        else if (si.getScientificName().getGenusOrMonomial() != null)
             si.setTaxonRank("genus");
-        s = val(elem, "abcd:InformalNameString");
-        if (s != null) {
-            si.setVernacularNames(Arrays.asList(new VernacularName(s)));
+        // 5. genus
+        else if (fullScientificNameStr != null && fullScientificNameStr.length() > 0)
+            si.setTaxonRank("genus");
+        // 6. "higherName"
+        else if (taxonCoverageStr != null && taxonCoverageStr.length() > 0) {
+            List<Element> higherNames = DOMUtil.getDescendants(elem, "ncrsHighername");
+            si.setTaxonRank(getBestTaxonCoverage(higherNames));
+        }
+
+        // Vernacular name
+        String informalNameStr = val(elem, "abcd:InformalNameString");
+        if (informalNameStr != null) {
+            si.setVernacularNames(Collections.singletonList(new VernacularName(informalNameStr)));
         }
         return si;
     }
 
     private ScientificName getScientificName(Element elem, String collectionType) {
-        
+
         ScientificName sn = new ScientificName();
         sn.setGenusOrMonomial(val(elem, "abcd:GenusOrMonomial"));
         sn.setSubgenus(val(elem, "abcd:Subgenus"));
@@ -476,32 +525,6 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
             TransformUtil.setScientificNameGroup(sn);
         }
         return sn;
-    }
-    
-    /**
-     * getBestTaxonCoverage returns the taxon coverage with the most specific taxonomic rank 
-     * as a String. 
-     * domain : most general rank
-     * ...
-     * subtribe : most specific rank
-     * 
-     * @param elems : The elements of the ncrsHighername element
-     * @return taxonCoverage
-     */
-    private String getBestTaxonCoverage(List<Element> elems) {
-      if (elems == null) return null;
-      
-      String taxonCoverageStr = null;
-      int ordinal = -1;
-      for (Element elem : elems) {
-        String taxonRankStr = val(elem, "abcd:HigherTaxonRank");
-        TaxonomicRank rank = TaxonomicRank.parse(taxonRankStr);
-        if (rank != null && rank.ordinal() > ordinal) {
-          taxonCoverageStr = val(elem, "abcd:taxonCoverage");
-          ordinal = rank.ordinal();
-        }
-      }
-      return taxonCoverageStr;
     }
 
     private static List<Monomial> getSystemClassification(Element elem, ScientificName sn) {
@@ -927,7 +950,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
             }
             return null;
         }
-        return ((s = s.trim()).length() == 0 ? null : s);
+        return ((s = s.strip()).length() == 0 ? null : s);
     }
 
 }

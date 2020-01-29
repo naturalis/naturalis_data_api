@@ -188,8 +188,7 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 	}
 
 	@Override
-	public GroupByScientificNameQueryResult groupByScientificName(
-			GroupByScientificNameQuerySpec sngQuery) throws InvalidQueryException
+	public GroupByScientificNameQueryResult groupByScientificName(GroupByScientificNameQuerySpec sngQuery) throws InvalidQueryException
 	{
 		if (logger.isDebugEnabled()) {
 			logger.debug(printCall("groupByScientificName", sngQuery));

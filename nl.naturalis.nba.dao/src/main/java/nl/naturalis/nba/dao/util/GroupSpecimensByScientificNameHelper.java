@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import nl.naturalis.nba.common.json.JsonUtil;
 import org.apache.logging.log4j.Logger;
 
 import org.elasticsearch.action.search.SearchRequest;
@@ -83,8 +84,7 @@ public class GroupSpecimensByScientificNameHelper {
         int from = queryCopy.getFrom() == null ? 0 : queryCopy.getFrom();
         int size = queryCopy.getSize() == null ? 10 : queryCopy.getSize();
         if ((from + size) > getMaxNumBuckets()) {
-            String fmt = "Too many groups requested. from + size must not exceed "
-                    + "%s (was %s)";
+            String fmt = "Too many groups requested. from + size must not exceed " + "%s (was %s)";
             String msg = String.format(fmt, getMaxNumBuckets(), (from + size));
             throw new InvalidQueryException(msg);
         }
@@ -92,15 +92,18 @@ public class GroupSpecimensByScientificNameHelper {
         queryCopy.setFrom(null);
         queryCopy.setSize(0);
         queryCopy.setSortFields(null);
-        QuerySpecTranslator translator = new QuerySpecTranslator(queryCopy, SPECIMEN);
 
+        QuerySpecTranslator translator = new QuerySpecTranslator(queryCopy, SPECIMEN);
         SearchRequest request = translator.translate();
+
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        searchSourceBuilder.query(request.source().query());
         searchSourceBuilder.trackTotalHits(false);
         searchSourceBuilder.aggregation(createAggregation(queryCopy));
         request.source(searchSourceBuilder);
 
         SearchResponse response = executeSearchRequest(request);
+        logger.info(">>>> response: {}", response.getHits().getTotalHits());
         Nested nested = response.getAggregations().get("NESTED");
         Terms terms = nested.getAggregations().get("TERMS");
         result.setSumOfOtherDocCounts(terms.getSumOfOtherDocCounts());

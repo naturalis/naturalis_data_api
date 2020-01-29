@@ -62,8 +62,7 @@ public class HttpGroupByScientificNameQuerySpecBuilder {
 	//private static final String ERR_BAD_PARAM_COMBI = "Parameter _querySpec cannot be combined with %s";
 	private static final String ERR_BAD_PARAM_COMBI = "Parameter _querySpec cannot be combined with any other parameter.";
 
-	private static final Logger logger = LogManager
-			.getLogger(HttpGroupByScientificNameQuerySpecBuilder.class);
+	private static final Logger logger = LogManager.getLogger(HttpGroupByScientificNameQuerySpecBuilder.class);
 
 	private UriInfo uriInfo;
 	private MultivaluedMap<String, String> params;

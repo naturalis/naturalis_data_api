@@ -1,4 +1,4 @@
-FROM jboss/wildfly:16.0.0.Final
+FROM jboss/wildfly:18.0.1.Final
 USER root
 ENV LANG en_US.UTF-8
 

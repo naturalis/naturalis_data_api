@@ -5,6 +5,8 @@ import java.io.FilenameFilter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import nl.naturalis.nba.etl.nsr.model.NsrTaxon;
 import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Element;
 
@@ -32,32 +34,40 @@ class NsrImportUtil {
 	 * content contains only whitespace, {@code null} is returned as well.
 	 * Otherwise the whitespace trimmed content is returned.
 	 * 
-	 * @param e
+	 * @param jsonNode
 	 * @param childTag
 	 * @return
 	 */
-	static String val(Element e, String childTag)
+	static String val(JsonNode jsonNode, String childTag)
 	{
-		String s = DOMUtil.getValue(e, childTag);
+		String s = jsonNode.get(childTag).asText();
 		if (s == null)
 			return null;
 		return (s = s.trim()).length() == 0 ? null : s;
 	}
 
+	static String val(String str)
+	{
+		if (str == null)
+			return null;
+		return (str = str.trim()).length() == 0 ? null : str;
+	}
+
+
 	/**
-	 * Returns the XML source files that have not been processed yet.
+	 * Returns the JSON source files that have not been processed yet.
 	 * 
 	 * @return File[] fileNames
 	 */
-	static File[] getXmlFiles()
+	static File[] getJsonFiles()
 	{
 		File dir = getDataDir();
-		logger.info("Searching for XML files in " + dir.getAbsolutePath());
+		logger.info("Searching for JSON files in " + dir.getAbsolutePath());
 		return dir.listFiles(new FilenameFilter() {
 			@Override
 			public boolean accept(File dir, String name)
 			{
-				return name.toLowerCase().endsWith(".xml");
+				return name.toLowerCase().endsWith(".jsonl");
 			}
 		});
 	}
@@ -67,12 +77,12 @@ class NsrImportUtil {
 	 * the NSR data directory, indicating that they have been processed and
 	 * should not be processed again.
 	 */
-	static void backupXmlFiles()
+	static void backupJsonFiles()
 	{
-		logger.info("Creating backups of XML files");
-		File[] xmlFiles;
+		logger.info("Creating backups of JSON files");
+		File[] jsonFiles;
 		try {
-			xmlFiles = getXmlFiles();
+			jsonFiles = getJsonFiles();
 		}
 		catch (Exception e) {
 			logger.error("Backup failed");
@@ -80,15 +90,15 @@ class NsrImportUtil {
 		}
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 		String backupExtension = "." + sdf.format(new Date()) + ".imported";
-		for (File xmlFile : xmlFiles) {
-			xmlFile.renameTo(new File(xmlFile.getAbsolutePath() + backupExtension));
+		for (File jsonFile : jsonFiles) {
+			jsonFile.renameTo(new File(jsonFile.getAbsolutePath() + backupExtension));
 		}
 	}
 
 	/**
 	 * Appends a file extension ("&#46;imported") to an NSR source file.
 	 */
-	static void backupXmlFile(File f)
+	static void backupJsonFile(File f)
 	{
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 		String backupExtension = "." + sdf.format(new Date()) + ".imported";
@@ -115,8 +125,8 @@ class NsrImportUtil {
 		}
 		else {
 			for (File file : files) {
-				int pos = file.getName().toLowerCase().indexOf(".xml");
-				String chopped = file.getName().substring(0, pos + 4);
+				int pos = file.getName().toLowerCase().indexOf(".jsonl");
+				String chopped = file.getName().substring(0, pos + 6);
 				logger.info(file.getName() + " ---> " + chopped);
 				chopped = dir.getAbsolutePath() + "/" + chopped;
 				file.renameTo(new File(chopped));

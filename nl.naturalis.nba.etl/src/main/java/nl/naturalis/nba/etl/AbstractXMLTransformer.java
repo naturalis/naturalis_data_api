@@ -11,8 +11,7 @@ import nl.naturalis.nba.api.model.IDocumentObject;
  * @param <OUTPUT>
  *            The type of object that is output from the transformer
  */
-public abstract class AbstractXMLTransformer<OUTPUT extends IDocumentObject>
-		extends AbstractTransformer<XMLRecordInfo, OUTPUT> {
+public abstract class AbstractXMLTransformer<OUTPUT extends IDocumentObject> extends AbstractTransformer<XMLRecordInfo, OUTPUT> {
 
 	public AbstractXMLTransformer(ETLStatistics stats)
 	{

@@ -10,7 +10,7 @@ import nl.naturalis.nba.etl.nsr.NsrTaxonTransformerTest;
 
 
 @RunWith(Suite.class)
-@SuiteClasses({ 
+@SuiteClasses({
     NsrImportUtilTest.class,
     NsrMultiMediaTransformerTest.class,
     NsrTaxonTransformerTest.class,

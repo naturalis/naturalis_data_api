@@ -50,7 +50,7 @@ public abstract class AbstractTransformer<INPUT, OUTPUT extends IDocumentObject>
 	 * Creates a transformer that will update the counters of the specified
 	 * statistics object.
 	 * 
-	 * @param stats
+	 * @param stats ETLStatistics stats
 	 */
 	public AbstractTransformer(ETLStatistics stats)
 	{
@@ -96,7 +96,7 @@ public abstract class AbstractTransformer<INPUT, OUTPUT extends IDocumentObject>
 	 * Subclasses can inspect the protected {@link #input} field to determine if
 	 * the record should be skipped.
 	 * 
-	 * @return
+	 * @return Boolean
 	 */
 	protected boolean skipRecord()
 	{
@@ -108,7 +108,7 @@ public abstract class AbstractTransformer<INPUT, OUTPUT extends IDocumentObject>
 	 * protected {@link #input} field, holding the currently processed record,
 	 * to retrieve the ID.
 	 * 
-	 * @return
+	 * @return String
 	 * 
 	 * @see #messagePrefix()
 	 */
@@ -118,7 +118,7 @@ public abstract class AbstractTransformer<INPUT, OUTPUT extends IDocumentObject>
 	 * Does the heavy-lifting of the transformation phase. Left to subclasses to
 	 * implement.
 	 * 
-	 * @return
+	 * @return List
 	 */
 	protected abstract List<OUTPUT> doTransform();
 
@@ -135,7 +135,7 @@ public abstract class AbstractTransformer<INPUT, OUTPUT extends IDocumentObject>
 	/**
 	 * Whether or not error suppression is on.
 	 * 
-	 * @return
+	 * @return Boolean
 	 */
 	public boolean isSuppressErrors()
 	{
@@ -153,7 +153,7 @@ public abstract class AbstractTransformer<INPUT, OUTPUT extends IDocumentObject>
 	 * caught in a catch-all block, the error is always logged, even with error
 	 * suppression enabled.
 	 * 
-	 * @param suppressErrors
+	 * @param suppressErrors as Boolean
 	 * 
 	 * @see #handleError(Throwable)
 	 */
@@ -300,7 +300,7 @@ public abstract class AbstractTransformer<INPUT, OUTPUT extends IDocumentObject>
 	 * By default the message prefix is a right-padded column containing the
 	 * object ID of the validated object.
 	 * 
-	 * @return
+	 * @return String
 	 * 
 	 * @see #error(String, Object...)
 	 * @see #warn(String, Object...)

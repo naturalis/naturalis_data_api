@@ -6,13 +6,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import nl.naturalis.nba.etl.nsr.model.NsrTaxon;
 import org.apache.logging.log4j.Logger;
-import org.w3c.dom.Element;
 
 import nl.naturalis.nba.dao.DaoRegistry;
 import nl.naturalis.nba.etl.ETLRegistry;
-import nl.naturalis.nba.utils.xml.DOMUtil;
 
 /**
  * Class providing common functionality for NSR imports.
@@ -34,9 +31,9 @@ class NsrImportUtil {
 	 * content contains only whitespace, {@code null} is returned as well.
 	 * Otherwise the whitespace trimmed content is returned.
 	 * 
-	 * @param jsonNode
-	 * @param childTag
-	 * @return
+	 * @param jsonNode json string
+	 * @param childTag child tag as String
+	 * @return the String value of the child element
 	 */
 	static String val(JsonNode jsonNode, String childTag)
 	{

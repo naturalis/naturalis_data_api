@@ -11,7 +11,6 @@ import java.util.List;
 
 public class TaxonDescription implements INbaModelObject {
 
-
 	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String description;
 	private String category;

@@ -34,7 +34,7 @@ public class NsrMultiMediaTransformerTest {
   File nsrFile;
 
   /**
-   * @throws java.lang.Exception
+   * @throws java.lang.Exception Exception
    */
   @Before
   public void setUp() throws Exception {
@@ -116,11 +116,11 @@ public class NsrMultiMediaTransformerTest {
 
   /**
    * Test method for
-   * {@link nl.naturalis.nba.etl.nsr.NsrMultiMediaTransformer#transformOne(Element element)}.
+   * {@link nl.naturalis.nba.etl.nsr.NsrMultiMediaTransformer#transformOne(String nsrTaxon)}.
    * 
-   * Test to verify if the transformOne method returns an expected {@MultiMediaObject} object
+   * Test to verify if the transformOne method returns an expected {@link MultiMediaObject} object
    * 
-   * @throws Exception
+   * @throws Exception Exception
    */
   @SuppressWarnings("unchecked")
   @Test

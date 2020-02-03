@@ -41,8 +41,8 @@ public final class ETLUtil {
    * Get root cause of the specified {@code Throwable}. Returns the {@code Throwable} itself if it
    * doesn't have a cause.
    * 
-   * @param t
-   * @return
+   * @param t Throwable cause
+   * @return Root cause
    */
   public static Throwable getRootCause(Throwable t) {
     while (t.getCause() != null) {
@@ -65,8 +65,8 @@ public final class ETLUtil {
   /**
    * Get the duration between {@code start} and now, formatted as HH:mm:ss.
    * 
-   * @param start
-   * @return
+   * @param start Begin time
+   * @return Duration as String
    */
   public static String getDuration(long start) {
     return getDuration(start, System.currentTimeMillis());
@@ -75,9 +75,9 @@ public final class ETLUtil {
   /**
    * Get the duration between {@code start} and {@code end}, formatted as HH:mm:ss.
    * 
-   * @param start
-   * @param end
-   * @return
+   * @param start Begin
+   * @param end End
+   * @return Duration as String
    */
   public static String getDuration(long start, long end) {
     int millis = (int) (end - start);

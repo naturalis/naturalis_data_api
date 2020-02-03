@@ -7,8 +7,7 @@ import static nl.naturalis.nba.etl.ETLUtil.getTestGenera;
 import static nl.naturalis.nba.etl.TransformUtil.equalizeNameComponents;
 import static nl.naturalis.nba.etl.TransformUtil.guessMimeType;
 import static nl.naturalis.nba.etl.nsr.NsrImportUtil.val;
-import static nl.naturalis.nba.utils.xml.DOMUtil.getDescendants;
-import static nl.naturalis.nba.utils.xml.DOMUtil.getValue;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.OffsetDateTime;
@@ -19,10 +18,10 @@ import java.util.List;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import nl.naturalis.nba.etl.AbstractJSONTransformer;
 import nl.naturalis.nba.etl.nsr.model.Image;
 import nl.naturalis.nba.etl.nsr.model.NsrTaxon;
-import org.w3c.dom.Element;
 import nl.naturalis.nba.api.model.License;
 import nl.naturalis.nba.api.model.LicenseType;
 import nl.naturalis.nba.api.model.MultiMediaContentIdentification;
@@ -122,58 +121,57 @@ class NsrMultiMediaTransformer extends AbstractJSONTransformer<MultiMediaObject>
 
 	private MultiMediaObject transformOne(Image image)
 	{
-//		stats.objectsProcessed++;
-//		try {
-//			URI uri = getUri(e);
-//			if (uri == null)
-//				return null;
-//			MultiMediaObject mmo = newMediaObject();
-//			String uriHash = String.valueOf(uri.hashCode()).replace('-', '0');
-//			mmo.setSourceSystemId(objectID + '_' + uriHash);
-//			mmo.setUnitID(mmo.getSourceSystemId());
-//			mmo.setId(getElasticsearchId(NSR, mmo.getUnitID()));
-//			String format = getValue(e, "mime_type");
-//			if (format == null || format.length() == 0) {
-//				if (!suppressErrors) {
-//					String fmt = "Missing mime type for image \"%s\" (taxon \"%s\").";
-//					warn(fmt, uri, taxon.getAcceptedName().getFullScientificName());
-//				}
-//				format = guessMimeType(uri.toString());
-//			}
-//			mmo.addServiceAccessPoint(new ServiceAccessPoint(uri, format, DEFAULT_IMAGE_QUALITY));
-//			mmo.setCreator(val(e, "photographer_name"));
-//			mmo.setCopyrightText(val(e, "copyright"));
-//			mmo.setLicenseType(LicenseType.parse( val(e, "licence_type") ));
-//			mmo.setLicense(License.parse( val(e, "licence") ));
-//			mmo.setDescription(val(e, "short_description"));
-//			mmo.setCaption(mmo.getDescription());
-//			String date = val(e, "date_taken");
-//			if (date != null && date.equalsIgnoreCase("in prep")) {
-//				date = null;
-//				if (logger.isDebugEnabled()) {
-//					logger.debug("Invalid date: \"{}\"", date);
-//				}
-//			}
-//			String locality = val(e, "geography");
-//			if (locality != null || date != null) {
-//				MultiMediaGatheringEvent ge = new MultiMediaGatheringEvent();
-//				mmo.setGatheringEvents(Arrays.asList(ge));
-//				if (locality != null) {
-//					ge.setLocalityText(locality);
-//				}
-//				if (date != null) {
-//					ge.setDateTimeBegin(parseDateTaken(date));
-//					ge.setDateTimeEnd(ge.getDateTimeBegin());
-//				}
-//			}
-//			stats.objectsAccepted++;
-//			return mmo;
-//		}
-//		catch (Throwable t) {
-//			handleError(t);
-//			return null;
-//		}
-		return null;
+		stats.objectsProcessed++;
+		try {
+			URI uri = getUri(nsrTaxon);
+			if (uri == null)
+				return null;
+			MultiMediaObject mmo = newMediaObject();
+			String uriHash = String.valueOf(uri.hashCode()).replace('-', '0');
+			mmo.setSourceSystemId(objectID + '_' + uriHash);
+			mmo.setUnitID(mmo.getSourceSystemId());
+			mmo.setId(getElasticsearchId(NSR, mmo.getUnitID()));
+			String format = val(image.getMime_type());
+			if (format == null || format.length() == 0) {
+				if (!suppressErrors) {
+					String fmt = "Missing mime type for image \"%s\" (taxon \"%s\").";
+					warn(fmt, uri, taxon.getAcceptedName().getFullScientificName());
+				}
+				format = guessMimeType(uri.toString());
+			}
+			mmo.addServiceAccessPoint(new ServiceAccessPoint(uri, format, DEFAULT_IMAGE_QUALITY));
+			mmo.setCreator(val(image.getPhotographer_name()));
+			mmo.setCopyrightText(val(image.getCopyright()));
+			mmo.setLicenseType(LicenseType.parse(val(image.getLicence_type())));
+			mmo.setLicense(License.parse(val(image.getLicence())));
+			mmo.setDescription(val(image.getShort_description()));
+			mmo.setCaption(mmo.getDescription());
+			String date = val(image.getDate_taken());
+			if (date != null && date.equalsIgnoreCase("in prep")) {
+				date = null;
+				if (logger.isDebugEnabled()) {
+					logger.debug("Invalid date: \"{}\"", date);
+				}
+			}
+			String locality = val(image.getGeography());
+			if (locality != null || date != null) {
+				MultiMediaGatheringEvent ge = new MultiMediaGatheringEvent();
+				mmo.setGatheringEvents(Arrays.asList(ge));
+				if (locality != null) {
+					ge.setLocalityText(locality);
+				}
+				if (date != null) {
+					ge.setDateTimeBegin(parseDateTaken(date));
+					ge.setDateTimeEnd(ge.getDateTimeBegin());
+				}
+			}
+			stats.objectsAccepted++;
+			return mmo;
+		}
+		catch (Throwable t) {
+			handleError(t);
+			return null;
+		}
 	}
 
 	private static final DateTimeFormatter formatter0 = DateTimeFormatter.ofPattern("dd MMMM yyyy");
@@ -221,27 +219,26 @@ class NsrMultiMediaTransformer extends AbstractJSONTransformer<MultiMediaObject>
 		return mmci;
 	}
 
-	private URI getUri(Element elem)
+	private URI getUri(NsrTaxon nsrTaxon)
 	{
-//		String url = val(elem, "url");
-//		if (url == null) {
-//			stats.objectsRejected++;
-//			if (!suppressErrors) {
-//				String sn = taxon.getAcceptedName().getFullScientificName();
-//				error("Empty <url> element for \"%s\"", sn);
-//			}
-//			return null;
-//		}
-//		try {
-//			return new URI(url.trim());
-//		}
-//		catch (URISyntaxException e) {
-//			stats.objectsRejected++;
-//			if (!suppressErrors)
-//				error("Invalid image URL: \"%s\"", url);
-//			return null;
-//		}
-		return null;
+		String url = val(nsrTaxon.getUrl());
+		if (url == null) {
+			stats.objectsRejected++;
+			if (!suppressErrors) {
+				String sn = taxon.getAcceptedName().getFullScientificName();
+				error("Empty <url> element for \"%s\"", sn);
+			}
+			return null;
+		}
+		try {
+			return new URI(url.trim());
+		}
+		catch (URISyntaxException e) {
+			stats.objectsRejected++;
+			if (!suppressErrors)
+				error("Invalid image URL: \"%s\"", url);
+			return null;
+		}
 	}
 
 }

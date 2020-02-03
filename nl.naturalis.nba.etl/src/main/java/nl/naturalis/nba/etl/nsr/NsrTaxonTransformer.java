@@ -72,7 +72,7 @@ class NsrTaxonTransformer extends AbstractJSONTransformer<Taxon> {
     private static ObjectMapper objectMapper = new ObjectMapper();
     private NsrTaxon nsrTaxon;
 
-    NsrTaxonTransformer(ETLStatistics stats) throws JsonProcessingException {
+    NsrTaxonTransformer(ETLStatistics stats) {
         super(stats);
         testGenera = getTestGenera();
     }
@@ -218,6 +218,7 @@ class NsrTaxonTransformer extends AbstractJSONTransformer<Taxon> {
     }
 
     private static boolean isVernacularName(String nameType) {
+        if (nameType == null) return false;
         return (nameType.equals("isPreferredNameOf") || nameType.equals("isAlternativeNameOf"));
     }
 
@@ -245,6 +246,7 @@ class NsrTaxonTransformer extends AbstractJSONTransformer<Taxon> {
 			descr.setCategory(val(description.getTitle()));
 			descr.setDescription(val(description.getText()));
 			descr.setLanguage(val(description.getLanguage()));
+			descr.setLicense(License.CCBYSA);
 			taxon.addDescription(descr);
 		}
     }

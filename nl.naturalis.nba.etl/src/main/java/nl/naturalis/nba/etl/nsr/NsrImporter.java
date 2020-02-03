@@ -13,12 +13,14 @@ import static nl.naturalis.nba.etl.nsr.NsrImportUtil.backupJsonFiles;
 import static nl.naturalis.nba.etl.nsr.NsrImportUtil.getJsonFiles;
 import static nl.naturalis.nba.etl.nsr.NsrImportUtil.removeBackupExtension;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.LineNumberReader;
 import java.util.Arrays;
 import java.util.List;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import nl.naturalis.nba.etl.nsr.model.NsrTaxon;
 import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.api.model.MultiMediaObject;
@@ -29,7 +31,6 @@ import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.DocumentObjectWriter;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.ETLUtil;
-import nl.naturalis.nba.etl.XMLRecordInfo;
 import nl.naturalis.nba.utils.ConfigObject;
 import nl.naturalis.nba.utils.IOUtil;
 
@@ -108,7 +109,6 @@ public class NsrImporter {
         multimediaTransformer.setSuppressErrors(suppressErrors);
         DocumentObjectWriter<Taxon> taxonLoader = null;
         DocumentObjectWriter<MultiMediaObject> mediaLoader = null;
-        ObjectMapper objectMapper = new ObjectMapper();
         try {
             for (File f : files) {
                 if (toFile) {
@@ -122,16 +122,12 @@ public class NsrImporter {
                 }
                 logger.info("Processing file {}", f.getAbsolutePath());
 
-                // Json import
-                LineNumberReader lnr = null;
+                LineNumberReader lnr;
                 try {
                     FileReader fr = new FileReader(f);
                     lnr = new LineNumberReader(fr, 4096);
                     String json ;
-                    int lineNumber = 0;
                     while ((json = lnr.readLine()) != null) {
-                        lineNumber++;
-
                         List<Taxon> taxa = taxonTransformer.transform(json);
                         taxonLoader.write(taxa);
                         multimediaTransformer.setTaxon(taxa == null ? null : taxa.get(0));
@@ -140,23 +136,8 @@ public class NsrImporter {
                     }
                 }
                 catch (FileNotFoundException e) {
-                    //
+                    logger.error("Missing file {}. File has been skipped from importing.", f.getAbsolutePath());
                 }
-
-                // End Json import
-
-//                for (XMLRecordInfo extracted : new NsrExtractor(f, taxonStats)) {
-//                    List<Taxon> taxa = taxonTransformer.transform(extracted);
-//                    taxonLoader.write(taxa);
-//                    multimediaTransformer.setTaxon(taxa == null ? null : taxa.get(0));
-//                    List<MultiMediaObject> multimedia = multimediaTransformer.transform(extracted);
-//                    mediaLoader.write(multimedia);
-//                    if (taxonStats.recordsProcessed != 0 && taxonStats.recordsProcessed % 5000 == 0) {
-//                        logger.info("Records processed: {}", taxonStats.recordsProcessed);
-//                        logger.info("Taxon documents indexed: {}", taxonStats.documentsIndexed);
-//                        logger.info("Multimedia documents indexed: {}", mediaStats.documentsIndexed);
-//                    }
-//                }
 
                 // Summary after file has finished
                 if (taxonStats.recordsProcessed != 0) {
@@ -201,127 +182,139 @@ public class NsrImporter {
      * Extracts and imports just the taxa from the source files. Does not make
      * backups.
      */
-    public void importTaxa() {
-//        long start = System.currentTimeMillis();
-//        File[] xmlFiles = getJsonFiles();
-//        if (xmlFiles.length == 0) {
-//            logger.info("No XML files to process");
-//            return;
-//        }
-//        if (shouldUpdateES) {
-//            ETLUtil.truncate(TAXON, NSR);
-//        }
-//        ETLStatistics stats = new ETLStatistics();
-//        NsrTaxonTransformer transformer = new NsrTaxonTransformer(stats);
-//        transformer.setSuppressErrors(suppressErrors);
-//        DocumentObjectWriter<Taxon> loader = null;
-//        if (toFile) {
-//            logger.info("ETL Output: Writing the documents to the file system");
-//        } else {
-//            logger.info("ETL Output: loading documents into the document store");
-//        }
-//        try {
-//            for (File f : xmlFiles) {
-//                logger.info("Processing file {}", f.getAbsolutePath());
-//                if (toFile) {
-//                    loader = new NsrTaxonJsonNDWriter(f.getName(), stats);
-//                } else {
-//                    loader = new NsrTaxonLoader(loaderQueueSize, stats);
-//                }
-//                int i = 0;
-//                for (XMLRecordInfo extracted : new NsrExtractor(f, stats)) {
-//                    List<Taxon> transformed = transformer.transform(extracted);
-//                    loader.write(transformed);
-//                    if (++i % 5000 == 0) {
-//                        logger.info("Records processed: {}", i);
-//                        logger.info("Documents indexed: {}", stats.documentsIndexed);
-//                    }
-//                }
-//                if (toFile) {
-//                    try {
-//                        loader.close();
-//                    } catch (IOException e) {
-//                        logger.warn("Failed to close file. There may have been documents lost.");
-//                    }
-//                } else {
-//                    loader.flush();
-//                }
-//            }
-//        } finally {
-//            IOUtil.close(loader);
-//        }
-//        stats.logStatistics(logger, "Taxa");
-//        ETLUtil.logDuration(logger, getClass(), start);
+    public void importTaxa() throws IOException {
+        long start = System.currentTimeMillis();
+        File[] files = getJsonFiles();
+        Arrays.sort(files);
+        if (files.length == 0) {
+            logger.info("No source files to process");
+            return;
+        }
+        if (shouldUpdateES) {
+            ETLUtil.truncate(TAXON, NSR);
+        }
+        ETLStatistics stats = new ETLStatistics();
+        NsrTaxonTransformer transformer = new NsrTaxonTransformer(stats);
+        transformer.setSuppressErrors(suppressErrors);
+        DocumentObjectWriter<Taxon> loader = null;
+        if (toFile) {
+            logger.info("ETL Output: Writing the documents to the file system");
+        } else {
+            logger.info("ETL Output: loading documents into the document store");
+        }
+        try {
+            for (File f : files) {
+                logger.info("Processing file {}", f.getAbsolutePath());
+                if (toFile) {
+                    loader = new NsrTaxonJsonNDWriter(f.getName(), stats);
+                } else {
+                    loader = new NsrTaxonLoader(loaderQueueSize, stats);
+                }
+                LineNumberReader lnr;
+                try {
+                    FileReader fr = new FileReader(f);
+                    lnr = new LineNumberReader(fr, 4096);
+                    String json ;
+                    while ((json = lnr.readLine()) != null) {
+                        List<Taxon> taxa = transformer.transform(json);
+                        loader.write(taxa);
+                    }
+                }
+                catch (FileNotFoundException e) {
+                    logger.error("Missing file {}. File has been skipped from importing.", f.getAbsolutePath());
+                }
+                if (toFile) {
+                    try {
+                        loader.close();
+                    } catch (IOException e) {
+                        logger.warn("Failed to close file. There may have been documents lost.");
+                    }
+                } else {
+                    loader.flush();
+                }
+            }
+        } finally {
+            IOUtil.close(loader);
+        }
+        stats.logStatistics(logger, "Taxa");
+        ETLUtil.logDuration(logger, getClass(), start);
     }
 
     /**
      * Extracts and imports just the multimedia from the source files. Does not
      * make backups.
      */
-    public void importMultiMedia() {
-//        long start = System.currentTimeMillis();
-//        File[] xmlFiles = getJsonFiles();
-//        if (xmlFiles.length == 0) {
-//            logger.info("No XML files to process");
-//            return;
-//        }
-//        if (shouldUpdateES) {
-//            ETLUtil.truncate(MULTI_MEDIA_OBJECT, NSR);
-//        }
-//        ETLStatistics stats = new ETLStatistics();
-//        stats.setOneToMany(true);
-//        NsrMultiMediaTransformer transformer = new NsrMultiMediaTransformer(stats);
-//        transformer.setSuppressErrors(suppressErrors);
-//        /*
-//         * For multimedia we will re-use our taxon transformer class to extract
-//         * taxon-related data from the XML records, so we don't have to
-//         * duplicate that functionality in the multimedia transformer. However,
-//         * we are not interested in the statistics maintained by the taxon
-//         * transformer (only whether it was able to produce an Taxon object or
-//         * not). Therefore we instantiate the taxon transformer with a trash
-//         * statistics object.
-//         */
-//        NsrTaxonTransformer ntt = new NsrTaxonTransformer(new ETLStatistics());
-//        ntt.setSuppressErrors(suppressErrors);
-//        DocumentObjectWriter<MultiMediaObject> loader = null;
-//        if (toFile) {
-//            logger.info("ETL Output: Writing the documents to the file system");
-//        } else {
-//            logger.info("ETL Output: loading documents into the document store");
-//        }
-//        try {
-//            for (File f : xmlFiles) {
-//                if (toFile) {
-//                    loader = new NsrMultiMediaJsonNDWriter(f.getName(), stats);
-//                } else {
-//                    loader = new NsrMultiMediaLoader(loaderQueueSize, stats);
-//                }
-//                logger.info("Processing file {}", f.getAbsolutePath());
-//                for (XMLRecordInfo extracted : new NsrExtractor(f, stats)) {
-//                    List<Taxon> taxa = ntt.transform(extracted);
-//                    transformer.setTaxon(taxa == null ? null : taxa.get(0));
-//                    List<MultiMediaObject> multimedia = transformer.transform(extracted);
-//                    loader.write(multimedia);
-//                    if (stats.recordsProcessed % 5000 == 0) {
-//                        logger.info("Records processed: {}", stats.recordsProcessed);
-//                        logger.info("Documents indexed: {}", stats.documentsIndexed);
-//                    }
-//                }
-//                if (toFile) {
-//                    try {
-//                        loader.close();
-//                    } catch (IOException e) {
-//                        logger.warn("Failed to close file. There may have been documents lost.");
-//                    }
-//                } else {
-//                    loader.flush();
-//                }
-//            }
-//        } finally {
-//            IOUtil.close(loader);
-//        }
-//        stats.logStatistics(logger, "Multimedia");
-//        logDuration(logger, getClass(), start);
+    public void importMultiMedia() throws IOException {
+        long start = System.currentTimeMillis();
+        File[] files = getJsonFiles();
+        if (files.length == 0) {
+            logger.info("No source files to process");
+            return;
+        }
+        if (shouldUpdateES) {
+            ETLUtil.truncate(MULTI_MEDIA_OBJECT, NSR);
+        }
+        ETLStatistics stats = new ETLStatistics();
+        stats.setOneToMany(true);
+        NsrMultiMediaTransformer transformer = new NsrMultiMediaTransformer(stats);
+        transformer.setSuppressErrors(suppressErrors);
+        /*
+         * For multimedia we will re-use our taxon transformer class to extract
+         * taxon-related data from the XML records, so we don't have to
+         * duplicate that functionality in the multimedia transformer. However,
+         * we are not interested in the statistics maintained by the taxon
+         * transformer (only whether it was able to produce an Taxon object or
+         * not). Therefore we instantiate the taxon transformer with a trash
+         * statistics object.
+         */
+        NsrTaxonTransformer ntt = new NsrTaxonTransformer(new ETLStatistics());
+        ntt.setSuppressErrors(suppressErrors);
+        DocumentObjectWriter<MultiMediaObject> loader = null;
+        if (toFile) {
+            logger.info("ETL Output: Writing the documents to the file system");
+        } else {
+            logger.info("ETL Output: loading documents into the document store");
+        }
+        try {
+            for (File f : files) {
+                if (toFile) {
+                    loader = new NsrMultiMediaJsonNDWriter(f.getName(), stats);
+                } else {
+                    loader = new NsrMultiMediaLoader(loaderQueueSize, stats);
+                }
+                logger.info("Processing file {}", f.getAbsolutePath());
+
+                LineNumberReader lnr;
+                try {
+                    FileReader fr = new FileReader(f);
+                    lnr = new LineNumberReader(fr, 4096);
+                    String json ;
+                    while ((json = lnr.readLine()) != null) {
+                        List<Taxon> taxa = ntt.transform(json);
+                        transformer.setTaxon(taxa == null ? null : taxa.get(0));
+                        List<MultiMediaObject> multimedia = transformer.transform(json);
+                        loader.write(multimedia);
+                    }
+                }
+                catch (FileNotFoundException e) {
+                    logger.error("Missing file {}. File has been skipped from importing.", f.getAbsolutePath());
+                }
+
+                if (toFile) {
+                    try {
+                        loader.close();
+                    } catch (IOException e) {
+                        logger.warn("Failed to close file. There may have been documents lost.");
+                    }
+                } else {
+                    loader.flush();
+                }
+            }
+        } finally {
+            IOUtil.close(loader);
+        }
+        stats.logStatistics(logger, "Multimedia");
+        logDuration(logger, getClass(), start);
     }
 
     /**

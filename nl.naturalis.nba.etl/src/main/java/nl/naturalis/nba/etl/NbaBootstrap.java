@@ -42,7 +42,7 @@ public class NbaBootstrap {
 	 * cause all indices the be created. If any index already existed, it will
 	 * be deleted first.
 	 * 
-	 * @param documentTypes
+	 * @param documentTypes The document types
 	 */
 	public void bootstrap(String... documentTypes)
 	{

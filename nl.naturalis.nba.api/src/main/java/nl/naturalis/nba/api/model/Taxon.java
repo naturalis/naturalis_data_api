@@ -71,7 +71,7 @@ public class Taxon extends NbaTraceableObject implements IDocumentObject {
 	 * This property expresses DwC term
 	 * <a href= "http://rs.tdwg.org/dwc/terms/taxonRemarks">taxonRemarks</a>
 	 * 
-	 * @return
+	 * @return Taxon remarks as String
 	 */
 	public String getTaxonRemarks()
 	{
@@ -87,7 +87,7 @@ public class Taxon extends NbaTraceableObject implements IDocumentObject {
 	 * This property expresses DwC term <a href=
 	 * "http://rs.tdwg.org/dwc/terms/occurrenceRemarks">occurrenceRemarks</a>
 	 * 
-	 * @return
+	 * @return Occurrence status as String
 	 */
 	public String getOccurrenceStatusVerbatim()
 	{
@@ -104,7 +104,7 @@ public class Taxon extends NbaTraceableObject implements IDocumentObject {
 	 * {@link #getValidName()}. You can choose either method, according to
 	 * taste.
 	 * 
-	 * @return
+	 * @return accepted name (ScientificName)
 	 */
 	public ScientificName getAcceptedName()
 	{
@@ -116,7 +116,7 @@ public class Taxon extends NbaTraceableObject implements IDocumentObject {
 	 * {@link #getAcceptedName()}. You can choose either method, according to
 	 * taste.
 	 * 
-	 * @return
+	 * @return accepted name (Scientific Name)
 	 */
 	public ScientificName getValidName()
 	{

@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 /**
  * Enum representing the Creative Commons Licenses.
  * 
- * More information: {@linkplain https://creativecommons.org/}
+ * More information: {@see <a href="https://creativecommons.org/">https://creativecommons.org/</a>}
  *
  */
 public enum License implements INbaModelObject {

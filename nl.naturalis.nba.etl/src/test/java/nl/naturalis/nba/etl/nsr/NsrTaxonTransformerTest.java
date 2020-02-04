@@ -10,6 +10,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.*;
 import java.net.URL;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,6 +18,7 @@ import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.etl.nsr.model.Name;
 
 import nl.naturalis.nba.etl.nsr.model.NsrTaxon;
+import nl.naturalis.nba.etl.nsr.model.Status;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -36,14 +38,13 @@ import nl.naturalis.nba.etl.utils.CommonReflectionUtil;
 import nl.naturalis.nba.utils.reflect.ReflectionUtil;
 
 /**
- * Test Class for NsrTaxonTransformer.java
+ * Test Class for {@link NsrTaxonTransformer}
  */
-@SuppressWarnings("unchecked")
-@Ignore
 public class NsrTaxonTransformerTest {
 
     URL nsrFileURL;
     File nsrFile;
+    ArrayList<NsrTaxon> nsrTaxa;
 
     /**
      * @throws java.lang.Exception exception
@@ -53,6 +54,7 @@ public class NsrTaxonTransformerTest {
         System.setProperty("nl.naturalis.nba.etl.testGenera", "malus,parus,larus,bombus,rhododendron,felix,tulipa,rosa,canis,passer,trientalis");
         nsrFileURL = AllTests.class.getResource("nsr-export--2020-01-30_1359--05.jsonl");
         nsrFile = new File(nsrFileURL.getFile());
+        nsrTaxa = getNsrTaxa(nsrFile);
     }
 
     @After
@@ -104,15 +106,17 @@ public class NsrTaxonTransformerTest {
     }
 
     /**
-     * Test method for {@link nl.naturalis.nba.etl.nsr.NsrTaxonTransformer#invalidRank(String rank)}.
-     * <p>
+     * Test method for nl.naturalis.nba.etl.nsr.NsrTaxonTransformer#invalidRank(String rank)
+     *
      * Test to verify if the invalidRank method returns an expected boolean value
      */
     @Test
     public void testInvalidRank() {
+
         ETLStatistics etlStatistics = new ETLStatistics();
-        Boolean rank = null;
         NsrTaxonTransformer nsrTaxonTransformer = new NsrTaxonTransformer(etlStatistics);
+
+        Boolean rank = null;
         Object obj = ReflectionUtil.call(nsrTaxonTransformer, "invalidRank", new Class[]{String.class}, new Object[]{"superfamilia"});
         rank = (boolean) obj;
         assertTrue("01", rank);
@@ -129,19 +133,17 @@ public class NsrTaxonTransformerTest {
     }
 
     /**
-     * Test method for {@link nl.naturalis.nba.etl.nsr.NsrTaxonTransformer#isVernacularName(String nameType)}.
-     * <p>
-     * Test to verify if the isVernacularName method returns an expected boolean value
+     * Test method for nl.naturalis.nba.etl.nsr.NsrTaxonTransformer#isVernacularName(String nameType)
      *
-     * @throws Exception
+     * Test to verify if the isVernacularName method returns an expected boolean value
      */
     @Test
     public void testIsVernacularName() {
 
         ETLStatistics etlStatistics = new ETLStatistics();
         NsrTaxonTransformer nsrTaxonTransformer = new NsrTaxonTransformer(etlStatistics);
-        Boolean isVernacularName = null;
 
+        Boolean isVernacularName = null;
         Object obj = ReflectionUtil.callStatic(NsrTaxonTransformer.class, "isVernacularName", new Class[]{String.class}, new Object[]{"isPreferredNameOf"});
         isVernacularName = (boolean) obj;
         assertTrue("01", isVernacularName);
@@ -204,44 +206,23 @@ public class NsrTaxonTransformerTest {
     @Test
     public void testAddScientificNames() throws Exception {
 
+        // Todo: add test method
         // ..
 
     }
 
     /**
-     * Test method for {@link nl.naturalis.nba.etl.nsr.NsrTaxonTransformer#add(Taxon taxon, ScientificName scientificName)}.
-     * <p>
-     * Test to verify if the add method returns an expected boolean value
+     * Test method for nl.naturalis.nba.etl.nsr.NsrTaxonTransformer#add(Taxon taxon, ScientificName scientificName)
      *
-     * @throws Exception
+     * Test to verify if the add method returns an expected boolean value
      */
     @Test
-    public void testAdd_01() throws Exception {
-
-        Boolean addScientificName = null;
+    public void testAdd_01() {
 
         ETLStatistics etlStatistics = new ETLStatistics();
         NsrTaxonTransformer nsrTaxonTransformer = new NsrTaxonTransformer(etlStatistics);
 
-        LineNumberReader lnr;
-        FileReader fr = new FileReader(nsrFile);
-        lnr = new LineNumberReader(fr, 4096);
-        String line;
-        String extracted = "{}";
-        NsrTaxon nsrTaxon = null;
-        while ((line = lnr.readLine()) != null) {
-            extracted = line;
-            ObjectMapper objectMapper = new ObjectMapper();
-            nsrTaxon = objectMapper.readValue(extracted, NsrTaxon.class);
-        }
-
-        CommonReflectionUtil.setField(AbstractTransformer.class, nsrTaxonTransformer, "objectID", "D3KF0JNQ0UA");
-        CommonReflectionUtil.setField(AbstractTransformer.class, nsrTaxonTransformer, "suppressErrors", false);
-        //CommonReflectionUtil.setField(AbstractTransformer.class, nsrTaxonTransformer, "input", extracted);
-        CommonReflectionUtil.setField(NsrTaxonTransformer.class, nsrTaxonTransformer, "nsrTaxon", nsrTaxon);
-
-
-        TaxonomicStatus status = TaxonomicStatus.ACCEPTED_NAME;
+        Boolean addScientificName = null;
 
         ScientificName name = new ScientificName();
         name.setFullScientificName("Larus argentatus argentatus Pontoppidan, 1763");
@@ -250,7 +231,7 @@ public class NsrTaxonTransformerTest {
         name.setAuthor("Pontoppidan");
         name.setSpecificEpithet("argentatus");
         name.setInfraspecificEpithet("argentatus");
-        name.setTaxonomicStatus(status);
+        name.setTaxonomicStatus(TaxonomicStatus.ACCEPTED_NAME);
 
         Taxon taxon = new Taxon();
         taxon.setAcceptedName(name);
@@ -261,37 +242,24 @@ public class NsrTaxonTransformerTest {
         Object returned = ReflectionUtil.call(nsrTaxonTransformer, "add", new Class[]{Taxon.class, ScientificName.class}, new Object[]{taxon, name});
         addScientificName = (boolean) returned;
         assertFalse(addScientificName);
+
+        // TODO: revisit this test and/or the method it tests. Not sure if it is fully functional
+
+        // System.out.println(JsonUtil.toPrettyJson(taxon));
     }
 
     /**
-     * Test method for {@link nl.naturalis.nba.etl.nsr.NsrTaxonTransformer#add(Taxon taxon, ScientificName scientificName)}.
-     * <p>
-     * Test to verify if the add method returns an expected boolean value
+     * Test method for nl.naturalis.nba.etl.nsr.NsrTaxonTransformer#add(Taxon taxon, ScientificName scientificName)
      *
-     * @throws Exception
+     * Test to verify if the add method returns an expected boolean value
      */
     @Test
-    public void testAdd_02() throws Exception {
+    public void testAdd_02() {
+
+        boolean addScientificName = false;
 
         ETLStatistics etlStatistics = new ETLStatistics();
-        boolean addScientificName = false;
-        LineNumberReader lnr;
-        FileReader fr = new FileReader(nsrFile);
-        lnr = new LineNumberReader(fr, 4096);
-        String line;
-        String extracted = "{}";
-        NsrTaxon nsrTaxon = null;
-        while ((line = lnr.readLine()) != null) {
-            extracted = line;
-            ObjectMapper objectMapper = new ObjectMapper();
-            nsrTaxon = objectMapper.readValue(extracted, NsrTaxon.class);
-        }
-
         NsrTaxonTransformer nsrTaxonTransformer = new NsrTaxonTransformer(etlStatistics);
-        CommonReflectionUtil.setField(AbstractTransformer.class, nsrTaxonTransformer, "objectID", "D3KF0JNQ0UA");
-        CommonReflectionUtil.setField(NsrTaxonTransformer.class, nsrTaxonTransformer, "nsrTaxon", nsrTaxon);
-
-        TaxonomicStatus status = TaxonomicStatus.ACCEPTED_NAME;
 
         ScientificName name = new ScientificName();
         name.setFullScientificName("Larus argentatus argentatus Pontoppidan, 1763");
@@ -300,7 +268,7 @@ public class NsrTaxonTransformerTest {
         name.setAuthor("Pontoppidan");
         name.setSpecificEpithet("argentatus");
         name.setInfraspecificEpithet("argentatus");
-        name.setTaxonomicStatus(status);
+        name.setTaxonomicStatus(TaxonomicStatus.ACCEPTED_NAME);
 
         Taxon taxon = new Taxon();
         taxon.setAcceptedName(null);
@@ -310,160 +278,120 @@ public class NsrTaxonTransformerTest {
         Object returned = ReflectionUtil.call(nsrTaxonTransformer, "add", new Class[]{Taxon.class, ScientificName.class}, new Object[]{taxon, name});
 
         addScientificName = (boolean) returned;
-
         assertTrue(addScientificName);
-
     }
 
     /**
-     * Test method for {@link nl.naturalis.nba.etl.nsr.NsrTaxonTransformer#hasTestGenus(Taxon taxon)}.
-     * <p>
+     * Test method for <a href="nl.naturalis.nba.etl.nsr.NsrTaxonTransformer#hasTestGenus(Taxon taxon)">nl.naturalis.nba.etl.nsr.NsrTaxonTransformer#hasTestGenus(Taxon taxon)</a>.
+     *
      * Test to verify if the hasTestGenus method returns an expected boolean value
      *
-     * @throws Exception
      */
     @Test
-    public void testHasTestGenus_01() throws Exception {
+    public void testHasTestGenus_01() {
+
+        boolean hastTestGenus = false;
 
         System.setProperty("nl.naturalis.nba.etl.testGenera", "larus");
         ETLStatistics etlStatistics = new ETLStatistics();
-        boolean hastTestGenus = false;
         NsrTaxonTransformer nsrTaxonTransformer = new NsrTaxonTransformer(etlStatistics);
 
-        NsrExtractor extractor = new NsrExtractor(nsrFile, etlStatistics);
+        ScientificName name = new ScientificName();
+        name.setFullScientificName("Larus argentatus argentatus Pontoppidan, 1763");
+        name.setScientificNameGroup("larus argentatus argentatus");
+        name.setGenusOrMonomial("Larus");
+        name.setAuthor("Pontoppidan");
+        name.setSpecificEpithet("argentatus");
+        name.setInfraspecificEpithet("argentatus");
 
-        for (XMLRecordInfo extracted : extractor) {
+        Taxon taxon = new Taxon();
+        taxon.setAcceptedName(name);
+        taxon.setSourceSystemId("D3KF0JNQ0UA");
+        taxon.setId("D3KF0JNQ0UA@NSR");
+        taxon.setValidName(name);
 
-            CommonReflectionUtil.setField(AbstractTransformer.class, nsrTaxonTransformer, "objectID", "D3KF0JNQ0UA");
-            CommonReflectionUtil.setField(AbstractTransformer.class, nsrTaxonTransformer, "input", extracted);
-
-            ScientificName name = new ScientificName();
-            name.setFullScientificName("Larus argentatus argentatus Pontoppidan, 1763");
-            name.setScientificNameGroup("larus argentatus argentatus");
-            name.setGenusOrMonomial("Larus");
-            name.setAuthor("Pontoppidan");
-            name.setSpecificEpithet("argentatus");
-            name.setInfraspecificEpithet("argentatus");
-
-            Taxon taxon = new Taxon();
-            taxon.setAcceptedName(name);
-            taxon.setSourceSystemId("D3KF0JNQ0UA");
-            taxon.setId("D3KF0JNQ0UA@NSR");
-            taxon.setValidName(name);
-
-            Object returned = ReflectionUtil.call(nsrTaxonTransformer, "hasTestGenus", new Class[]{Taxon.class}, new Object[]{taxon});
-            hastTestGenus = (boolean) returned;
-
-        }
+        Object returned = ReflectionUtil.call(nsrTaxonTransformer, "hasTestGenus", new Class[]{Taxon.class}, new Object[]{taxon});
+        hastTestGenus = (boolean) returned;
 
         assertTrue(hastTestGenus);
     }
 
     /**
-     * Test method for {@link nl.naturalis.nba.etl.nsr.NsrTaxonTransformer#hasTestGenus(Taxon taxon)}.
-     * <p>
+     * Test method for <a href="nl.naturalis.nba.etl.nsr.NsrTaxonTransformer#hasTestGenus(Taxon taxon)">nl.naturalis.nba.etl.nsr.NsrTaxonTransformer#hasTestGenus(Taxon taxon)</a>.
+     *
      * Test to verify if the hasTestGenus method returns an expected boolean value
      *
-     * @throws Exception
      */
     @Test
-    public void testHasTestGenus_02() throws Exception {
+    public void testHasTestGenus_02() {
+
+        boolean hastTestGenus = true;
 
         System.setProperty("nl.naturalis.nba.etl.testGenera", "quatsch");
         ETLStatistics etlStatistics = new ETLStatistics();
-        boolean hastTestGenus = true;
         NsrTaxonTransformer nsrTaxonTransformer = new NsrTaxonTransformer(etlStatistics);
-        NsrExtractor extractor = new NsrExtractor(nsrFile, etlStatistics);
 
-        for (XMLRecordInfo extracted : extractor) {
-            CommonReflectionUtil.setField(AbstractTransformer.class, nsrTaxonTransformer, "objectID", "D3KF0JNQ0UA");
-            CommonReflectionUtil.setField(AbstractTransformer.class, nsrTaxonTransformer, "input", extracted);
+        ScientificName name = new ScientificName();
+        name.setFullScientificName("Larus argentatus argentatus Pontoppidan, 1763");
+        name.setScientificNameGroup("larus argentatus argentatus");
+        name.setGenusOrMonomial("Larus");
+        name.setAuthor("Pontoppidan");
+        name.setSpecificEpithet("argentatus");
+        name.setInfraspecificEpithet("argentatus");
 
-            ScientificName name = new ScientificName();
-            name.setFullScientificName("Larus argentatus argentatus Pontoppidan, 1763");
-            name.setScientificNameGroup("larus argentatus argentatus");
-            name.setGenusOrMonomial("Larus");
-            name.setAuthor("Pontoppidan");
-            name.setSpecificEpithet("argentatus");
-            name.setInfraspecificEpithet("argentatus");
+        Taxon taxon = new Taxon();
+        taxon.setAcceptedName(name);
+        taxon.setSourceSystemId("D3KF0JNQ0UA");
+        taxon.setId("D3KF0JNQ0UA@NSR");
+        taxon.setValidName(name);
 
-            Taxon taxon = new Taxon();
-            taxon.setAcceptedName(name);
-            taxon.setSourceSystemId("D3KF0JNQ0UA");
-            taxon.setId("D3KF0JNQ0UA@NSR");
-            taxon.setValidName(name);
-
-            Object returned = ReflectionUtil.call(nsrTaxonTransformer, "hasTestGenus", new Class[]{Taxon.class}, new Object[]{taxon});
-
-            hastTestGenus = (boolean) returned;
-        }
+        Object returned = ReflectionUtil.call(nsrTaxonTransformer, "hasTestGenus", new Class[]{Taxon.class}, new Object[]{taxon});
+        hastTestGenus = (boolean) returned;
 
         assertFalse(hastTestGenus);
     }
 
     /**
-     * Test method for {@link nl.naturalis.nba.etl.nsr.NsrTaxonTransformer#getOccurrenceStatusVerbatim(Element element)}.
-     * <p>
-     * Test to verify if the getOccurrenceStatusVerbatim method returns an expected String object
+     * Test method for <a href="nl.naturalis.nba.etl.nsr.NsrTaxonTransformer#getOccurrenceStatusVerbatim(Element element)">nl.naturalis.nba.etl.nsr.NsrTaxonTransformer#getOccurrenceStatusVerbatim(Element element)</a>.
      *
-     * @throws Exception
+     * Test to verify if the getOccurrenceStatusVerbatim method returns an expected String object
      */
     @Test
-    public void testGetOccurrenceStatusVerbatim() throws Exception {
+    public void testGetOccurrenceStatusVerbatim() {
+
+        String occurrenceStatusVerbatim = null;
 
         ETLStatistics etlStatistics = new ETLStatistics();
-        String occurrenceStatusVerbatim = null;
         NsrTaxonTransformer nsrTaxonTransformer = new NsrTaxonTransformer(etlStatistics);
+        NsrTaxon nsrTaxon = nsrTaxa.get(0);
 
-        NsrExtractor extractor = new NsrExtractor(nsrFile, etlStatistics);
+        Object returned = ReflectionUtil.callStatic(NsrTaxonTransformer.class, "getOccurrenceStatusVerbatim", new Class[]{Status.class}, new Object[]{nsrTaxon.getStatus()});
+        occurrenceStatusVerbatim = (String) returned;
 
-        for (XMLRecordInfo extracted : extractor) {
-
-            CommonReflectionUtil.setField(AbstractTransformer.class, nsrTaxonTransformer, "objectID", "D3KF0JNQ0UA");
-            CommonReflectionUtil.setField(AbstractTransformer.class, nsrTaxonTransformer, "input", extracted);
-
-            Element elemet = extracted.getRecord();
-
-            Object returned = ReflectionUtil.callStatic(NsrTaxonTransformer.class, "getOccurrenceStatusVerbatim", new Class[]{Element.class}, new Object[]{elemet});
-
-            occurrenceStatusVerbatim = (String) returned;
-
-        }
         String expected = "1b Incidenteel/Periodiek. Minder dan 10 jaar achtereen voortplanting en toevallige gasten.";
-        assertNotNull(occurrenceStatusVerbatim);
-        assertEquals(expected, occurrenceStatusVerbatim);
+        assertNotNull("01", occurrenceStatusVerbatim);
+        assertEquals("02", expected, occurrenceStatusVerbatim);
     }
 
     /**
-     * Test method for {@link nl.naturalis.nba.etl.nsr.NsrTaxonTransformer#getScientificName(Element element)}.
-     * <p>
-     * Test to verify if the getScientificName method returns an expected {@link ScientificName} object
+     * Test method for nl.naturalis.nba.etl.nsr.NsrTaxonTransformer#getScientificName(Name name).
      *
-     * @throws Exception
+     * Test to verify if the getScientificName method returns an expected {@link ScientificName} object
      */
     @Test
-    public void testGetScientificName() throws Exception {
+    public void testGetScientificName() {
 
-        ETLStatistics etlStatistics = new ETLStatistics();
         ScientificName actual = null;
         Object returned = null;
+
+        ETLStatistics etlStatistics = new ETLStatistics();
         NsrTaxonTransformer nsrTaxonTransformer = new NsrTaxonTransformer(etlStatistics);
 
-        NsrExtractor extractor = new NsrExtractor(nsrFile, etlStatistics);
+        NsrTaxon nsrTaxon = nsrTaxa.get(0);
+        Name name = nsrTaxon.getNames()[0];
+        returned = ReflectionUtil.call(nsrTaxonTransformer, "getScientificName", new Class[]{Name.class}, name);
+        actual = (ScientificName) returned;
 
-        for (XMLRecordInfo extracted : extractor) {
-
-            CommonReflectionUtil.setField(AbstractTransformer.class, nsrTaxonTransformer, "objectID", "D3KF0JNQ0UA");
-            CommonReflectionUtil.setField(AbstractTransformer.class, nsrTaxonTransformer, "input", extracted);
-
-            Element namesElem = getChild(extracted.getRecord(), "names");
-
-            List<Element> nameElems = getChildren(namesElem);
-
-            returned = ReflectionUtil.call(nsrTaxonTransformer, "getScientificName", new Class[]{Element.class}, new Object[]{nameElems.get(1)});
-            actual = (ScientificName) returned;
-
-        }
         String expectedAuthorName = "Pontoppidan";
         String expectedFullScintificName = "Larus argentatus argentatus Pontoppidan, 1763";
         String expectedGenusOrMonomial = "Larus";
@@ -482,39 +410,32 @@ public class NsrTaxonTransformerTest {
         assertEquals("07", expectedInfraspecificEpithet, actual.getInfraspecificEpithet());
         assertEquals("08", expectedAuthorshipVerbatim, actual.getAuthorshipVerbatim());
         assertEquals("09", expectedYear, actual.getYear());
-
     }
 
     /**
-     * Test method for {@link nl.naturalis.nba.etl.nsr.NsrTaxonTransformer#getVernacularName(Element element)}.
-     * <p>
-     * Test to verify if the getVernacularName method returns an expected {@link VernacularName} object
+     * Test method for nl.naturalis.nba.etl.nsr.NsrTaxonTransformer#getVernacularName(Element element)
      *
-     * @throws Exception
+     * Test to verify if the getVernacularName method returns an expected {@link VernacularName} object
      */
     @Test
-    public void testGetVernacularName() throws Exception {
+    public void testGetVernacularName() {
 
-        ETLStatistics etlStatistics = new ETLStatistics();
         VernacularName actual = null;
         Object returned = null;
+
+        ETLStatistics etlStatistics = new ETLStatistics();
         NsrTaxonTransformer nsrTaxonTransformer = new NsrTaxonTransformer(etlStatistics);
+        NsrTaxon nsrTaxon = nsrTaxa.get(0);
 
-        NsrExtractor extractor = new NsrExtractor(nsrFile, etlStatistics);
-
-        for (XMLRecordInfo extracted : extractor) {
-
-            CommonReflectionUtil.setField(AbstractTransformer.class, nsrTaxonTransformer, "objectID", "D3KF0JNQ0UA");
-            CommonReflectionUtil.setField(AbstractTransformer.class, nsrTaxonTransformer, "input", extracted);
-
-            Element namesElem = getChild(extracted.getRecord(), "names");
-
-            List<Element> nameElems = getChildren(namesElem);
-
-            returned = ReflectionUtil.call(nsrTaxonTransformer, "getVernacularName", new Class[]{Element.class}, new Object[]{nameElems.get(0)});
-            actual = (VernacularName) returned;
-
+        Name vernacularName = null;
+        for (Name name : nsrTaxon.getNames()) {
+            if (name.getNametype().equals("isPreferredNameOf"))
+                vernacularName = name;
         }
+
+        returned = ReflectionUtil.call(nsrTaxonTransformer, "getVernacularName", new Class[]{Name.class}, vernacularName);
+        actual = (VernacularName) returned;
+
         String expectedName = "Scandinavische zilvermeeuw";
         boolean isPreffered = true;
         String expectedLanguage = "Dutch";
@@ -523,80 +444,70 @@ public class NsrTaxonTransformerTest {
         assertEquals("02", expectedName, actual.getName());
         assertEquals("03", isPreffered, actual.getPreferred());
         assertEquals("04", expectedLanguage, actual.getLanguage());
-
     }
 
     /**
-     * Test method for {@link nl.naturalis.nba.etl.nsr.NsrTaxonTransformer#getReferenceDate(Element element)}.
-     * <p>
-     * Test to verify if the getReferenceDate method returns an expected {@link OffsetDateTime} object
+     * Test method for nl.naturalis.nba.etl.nsr.NsrTaxonTransformer#getReferenceDate(Name name)
      *
-     * @throws Exception
+     * Test to verify if the getReferenceDate method returns an expected {@link OffsetDateTime} object
      */
-
     @Test
-    public void testGetReferenceDate() throws Exception {
+    public void testGetReferenceDate() {
 
-        ETLStatistics etlStatistics = new ETLStatistics();
         OffsetDateTime actual = null;
         Object returned = null;
+
+        ETLStatistics etlStatistics = new ETLStatistics();
         NsrTaxonTransformer nsrTaxonTransformer = new NsrTaxonTransformer(etlStatistics);
 
-        NsrExtractor extractor = new NsrExtractor(nsrFile, etlStatistics);
+        NsrTaxon nsrTaxon = nsrTaxa.get(0);
+        Name name = nsrTaxon.getNames()[1];
+        returned = ReflectionUtil.call(nsrTaxonTransformer, "getReferenceDate", new Class[]{Name.class}, new Object[]{name});
+        actual = (OffsetDateTime) returned;
 
-        for (XMLRecordInfo extracted : extractor) {
-
-            CommonReflectionUtil.setField(AbstractTransformer.class, nsrTaxonTransformer, "objectID", "D3KF0JNQ0UA");
-            CommonReflectionUtil.setField(AbstractTransformer.class, nsrTaxonTransformer, "input", extracted);
-
-            Element namesElem = getChild(extracted.getRecord(), "names");
-
-            List<Element> nameElems = getChildren(namesElem);
-
-            returned = ReflectionUtil.call(nsrTaxonTransformer, "getReferenceDate", new Class[]{Element.class}, new Object[]{nameElems.get(0)});
-            actual = (OffsetDateTime) returned;
-
-        }
-        String expectedDateString = "2015-01-01T00:00Z";
+        String expectedDateString = "2020-01-01T00:00Z";
         assertNotNull("01", actual);
         assertEquals("02", expectedDateString, actual.toString());
-
     }
 
     /**
-     * Test method for {@link nl.naturalis.nba.etl.nsr.NsrTaxonTransformer#getTaxonomicStatus(Element element)}.
+     * Test method for nl.naturalis.nba.etl.nsr.NsrTaxonTransformer#getTaxonomicStatus(Name name).
      * <p>
      * Test to verify if the getTaxonomicStatus method returns an expected {@link TaxonomicStatus} object
-     *
-     * @throws Exception
      */
     @Test
-    public void testGetTaxonomicStatus() throws Exception {
+    public void testGetTaxonomicStatus() {
 
-        ETLStatistics etlStatistics = new ETLStatistics();
         TaxonomicStatus actual = null;
         Object returned = null;
+
+        ETLStatistics etlStatistics = new ETLStatistics();
         NsrTaxonTransformer nsrTaxonTransformer = new NsrTaxonTransformer(etlStatistics);
 
-        NsrExtractor extractor = new NsrExtractor(nsrFile, etlStatistics);
+        Name name = nsrTaxa.get(0).getNames()[0];
+        returned = ReflectionUtil.call(nsrTaxonTransformer, "getTaxonomicStatus", new Class[]{Name.class}, new Object[]{name});
+        actual = (TaxonomicStatus) returned;
 
-        for (XMLRecordInfo extracted : extractor) {
-
-            CommonReflectionUtil.setField(AbstractTransformer.class, nsrTaxonTransformer, "objectID", "D3KF0JNQ0UA");
-            CommonReflectionUtil.setField(AbstractTransformer.class, nsrTaxonTransformer, "input", extracted);
-
-            Element namesElem = getChild(extracted.getRecord(), "names");
-
-            List<Element> nameElems = getChildren(namesElem);
-
-            returned = ReflectionUtil.call(nsrTaxonTransformer, "getTaxonomicStatus", new Class[]{Element.class}, new Object[]{nameElems.get(1)});
-            actual = (TaxonomicStatus) returned;
-
-        }
         String expectedDateString = "accepted name";
         assertNotNull("01", actual);
         assertEquals("02", expectedDateString, actual.toString());
+    }
 
+    private static ArrayList<NsrTaxon> getNsrTaxa(File nsrFile) throws IOException {
+
+        ArrayList<NsrTaxon> nsrTaxa = new ArrayList<>();
+        ETLStatistics etlStatistics = new ETLStatistics();
+        NsrTaxonTransformer nsrTaxonTransformer = new NsrTaxonTransformer(etlStatistics);
+        LineNumberReader lnr;
+        FileReader fr = new FileReader(nsrFile);
+        lnr = new LineNumberReader(fr, 4096);
+        String jsonLine;
+        NsrTaxon nsrTaxon = null;
+        ObjectMapper objectMapper = new ObjectMapper();
+        while ((jsonLine = lnr.readLine()) != null) {
+            nsrTaxa.add(objectMapper.readValue(jsonLine, NsrTaxon.class));
+        }
+        return nsrTaxa;
     }
 
 }

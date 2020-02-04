@@ -123,9 +123,8 @@ class NsrMultiMediaTransformer extends AbstractJSONTransformer<MultiMediaObject>
 	{
 		stats.objectsProcessed++;
 		try {
-			URI uri = getUri(nsrTaxon);
-			if (uri == null)
-				return null;
+			URI uri = getUri(image);
+			if (uri == null) return null;
 			MultiMediaObject mmo = newMediaObject();
 			String uriHash = String.valueOf(uri.hashCode()).replace('-', '0');
 			mmo.setSourceSystemId(objectID + '_' + uriHash);
@@ -219,9 +218,9 @@ class NsrMultiMediaTransformer extends AbstractJSONTransformer<MultiMediaObject>
 		return mmci;
 	}
 
-	private URI getUri(NsrTaxon nsrTaxon)
+	private URI getUri(Image image)
 	{
-		String url = val(nsrTaxon.getUrl());
+		String url = val(image.getUrl());
 		if (url == null) {
 			stats.objectsRejected++;
 			if (!suppressErrors) {

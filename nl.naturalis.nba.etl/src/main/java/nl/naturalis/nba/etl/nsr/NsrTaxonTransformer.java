@@ -308,7 +308,6 @@ class NsrTaxonTransformer extends AbstractJSONTransformer<Taxon> {
      */
     private static void addDefaultClassification(Taxon taxon) {
         DefaultClassification dc = new DefaultClassification();
-        taxon.setDefaultClassification(dc);
         List<Monomial> monomials = taxon.getSystemClassification();
         if (monomials != null) {
             for (Monomial m : monomials) {
@@ -340,6 +339,7 @@ class NsrTaxonTransformer extends AbstractJSONTransformer<Taxon> {
                 }
             }
         }
+        taxon.setDefaultClassification(dc);
     }
 
     private ScientificName getScientificName(Name name) {

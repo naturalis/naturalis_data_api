@@ -149,9 +149,7 @@ public class Name {
         this.reference_author = reference_author;
     }
 
-    public String getReference_date() {
-        return reference_date;
-    }
+    public String getReference_date() { return reference_date; }
 
     public void setReference_date(String reference_date) {
         this.reference_date = reference_date;

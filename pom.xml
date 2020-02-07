@@ -200,12 +200,14 @@
                 <groupId>org.locationtech.jts</groupId>
                 <artifactId>jts-core</artifactId>
                 <version>${jts.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>xerces</groupId>
-                        <artifactId>xercesImpl</artifactId>
-                    </exclusion>
-                </exclusions>
+<!--                TODO: is this still needed??? -->
+<!--                <exclusions>-->
+<!--                    <exclusion>-->
+<!--                        <groupId>xerces</groupId>-->
+<!--                        <artifactId>xercesImpl</artifactId>-->
+<!--                    </exclusion>-->
+<!--                </exclusions>-->
+
             </dependency>
 
             <!-- ELASTICSEARCH / LUCENE -->

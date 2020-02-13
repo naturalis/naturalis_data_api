@@ -53,12 +53,12 @@ nl.naturalis.nba.aggregations.maxNumGroups=10000
 # Elasticsearch must collect for the groupByScientificName service.
 # Elasticsearch will stop aggregating over the result set the moment
 # it has found this many buckets.
-nl.naturalis.nba.specimen.groupByScientificName.maxNumBuckets=10000
+nl.naturalis.nba.specimen.groupByScientificName.maxNumBuckets=5000
 # The size of the query cache, which maps queries to their results.
 nl.naturalis.nba.specimen.groupByScientificName.queryCacheSize=1000
 # The number of milliseconds a query must at least take to be cached.
 nl.naturalis.nba.specimen.groupByScientificName.cacheTreshold=3000
-nl.naturalis.nba.taxon.groupByScientificName.maxNumBuckets=10000
+nl.naturalis.nba.taxon.groupByScientificName.maxNumBuckets=5000
 nl.naturalis.nba.taxon.groupByScientificName.queryCacheSize=1000
 nl.naturalis.nba.taxon.groupByScientificName.cacheTreshold=3000
 
@@ -78,7 +78,7 @@ etl.enrich=false
 # Optional system property that can be used to set the size of
 # Elasticsearch bulk index requests (the number of documents to be indexed
 # at once). Default: 1000
-# nl.naturalis.nba.etl.queueSize=1000
+# nl.naturalis.nba.etl.queueSize=500
 
 # Optional property to suppress errors from the log file (default = true).
 #nl.naturalis.nba.etl.suppressErrors

@@ -103,7 +103,6 @@ public class GroupSpecimensByScientificNameHelper {
         request.source(searchSourceBuilder);
 
         SearchResponse response = executeSearchRequest(request);
-        logger.info(">>>> response: {}", response.getHits().getTotalHits());
         Nested nested = response.getAggregations().get("NESTED");
         Terms terms = nested.getAggregations().get("TERMS");
         result.setSumOfOtherDocCounts(terms.getSumOfOtherDocCounts());

@@ -60,13 +60,13 @@ public class GroupTaxaByScientificNameHelper {
 		if (result != null) {
 			return result;
 		}
-		result = new GroupByScientificNameQueryResult();
 		/*
 		 * We are going to manipulate the original query quite heavily further
 		 * down, but we still want to cache only the original query, so we make
 		 * a copy of the incoming query and work on the copy from now on:
 		 */
 		GroupByScientificNameQuerySpec queryCopy = new GroupByScientificNameQuerySpec(query);
+		result = new GroupByScientificNameQueryResult();
 		/*
 		 * First, ONLY retrieve the unique scientific names (the buckets), given
 		 * the query conditions. We don't want any documents to come back so in
@@ -80,8 +80,7 @@ public class GroupTaxaByScientificNameHelper {
 		int from = queryCopy.getFrom() == null ? 0 : queryCopy.getFrom();
 		int size = queryCopy.getSize() == null ? 10 : queryCopy.getSize();
 		if ((from + size) > getMaxNumBuckets()) {
-			String fmt = "Too many groups requested. from + size must not exceed "
-					+ "%s (was %s)";
+			String fmt = "Too many groups requested. from + size must not exceed " + "%s (was %s)";
 			String msg = String.format(fmt, getMaxNumBuckets(), (from + size));
 			throw new InvalidQueryException(msg);
 		}
@@ -89,10 +88,12 @@ public class GroupTaxaByScientificNameHelper {
 		queryCopy.setFrom(null);
 		queryCopy.setSize(0);
 		queryCopy.setSortFields(null);
+
 		QuerySpecTranslator translator = new QuerySpecTranslator(queryCopy, TAXON);
-		
 		SearchRequest request = translator.translate();
+
 		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+		searchSourceBuilder.query(request.source().query());
 		searchSourceBuilder.trackTotalHits(false);
 		searchSourceBuilder.aggregation(createAggregation(queryCopy));
 		request.source(searchSourceBuilder);

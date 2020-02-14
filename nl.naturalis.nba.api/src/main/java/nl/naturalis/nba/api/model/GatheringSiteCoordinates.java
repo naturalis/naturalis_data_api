@@ -28,11 +28,6 @@ public class GatheringSiteCoordinates implements INbaModelObject {
     private Integer coordinateErrorDistanceInMeters;
     private SpatialDatum spatialDatum;
 
-    // TODO: make this configurable?
-    @JsonIgnore
-    private final boolean createGeoShape = false;
-
-
     public GatheringSiteCoordinates() {}
 
     public GatheringSiteCoordinates(Double latitude, Double longitude) {
@@ -59,6 +54,8 @@ public class GatheringSiteCoordinates implements INbaModelObject {
     public Point getGeoShape() {
         // edit 01-10-2019: disabled creation of geoShape. This task has (temporarily?)
         // been moved to the Infuser (Colander)
+        // TODO: make this configurable?
+        boolean createGeoShape = false;
         if (!createGeoShape) return null;
 
         if (longitudeDecimal == null || latitudeDecimal == null) {

@@ -1,6 +1,7 @@
 package nl.naturalis.nba.api.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.geojson.GeoJsonObject;
 import org.geojson.Point;
 
@@ -28,10 +29,12 @@ public class GatheringSiteCoordinates implements INbaModelObject {
     private Integer coordinateErrorDistanceInMeters;
     private SpatialDatum spatialDatum;
 
+    // TODO: make this configurable?
+    @JsonIgnore
     private final boolean createGeoShape = false;
 
-    public GatheringSiteCoordinates() {
-    }
+
+    public GatheringSiteCoordinates() {}
 
     public GatheringSiteCoordinates(Double latitude, Double longitude) {
         this.longitudeDecimal = longitude;
@@ -55,11 +58,10 @@ public class GatheringSiteCoordinates implements INbaModelObject {
     @JsonProperty
     @GeoShape//(pointsOnly = true) // Disabled as of ES7 (no longer supports points_only mapping option)
     public Point getGeoShape() {
-        // TODO: make this configurable?
-        if (!createGeoShape) return null;
-
         // edit 01-10-2019: disabled creation of geoShape. This task has (temporarily?)
         // been moved to the Infuser (Colander)
+        if (!createGeoShape) return null;
+
         if (longitudeDecimal == null || latitudeDecimal == null) {
             return null;
         }

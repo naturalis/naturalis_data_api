@@ -1,10 +1,9 @@
 package nl.naturalis.nba.api.model;
 
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.geojson.GeoJsonObject;
 import org.geojson.Point;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 

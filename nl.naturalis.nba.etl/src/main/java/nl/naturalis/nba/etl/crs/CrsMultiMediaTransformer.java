@@ -537,7 +537,7 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
             info.medialibId = medialibId;
             // Discard original URL and reconstruct from scratch
             // url = MEDIALIB_HTTPS_URL + medialibId + "/format/large";
-            // info.url = url;
+            info.url = url;
             info.mimeType = mimetypeCache.getMimeType(medialibId);
         } else {
             if (!suppressErrors) {

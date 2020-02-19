@@ -193,11 +193,14 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
                 sap = new ServiceAccessPoint(info.url, info.mimeType, DEFAULT_IMAGE_QUALITY);
                 mmo.addServiceAccessPoint(sap);
                 String unitID;
-                if (info.medialibId == null) {
-                    unitID = objectID + '_' + i;
-                } else {
-                    unitID = info.medialibId;
-                }
+//                if (info.medialibId == null) {
+//                    unitID = objectID + '_' + i;
+//                } else {
+//                    unitID = info.medialibId;
+//                }
+                // Temporary adjustment of the unitId so that it is never the samen as the specimen unit id
+                unitID = objectID + '_' + i;
+
                 mmo.setUnitID(unitID);
                 mmo.setId(getElasticsearchId(CRS, unitID));
                 mmo.setSourceSystemId(unitID);

@@ -525,7 +525,7 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 
         // Change http urls to https urls for legacy reasons
         if (url.startsWith(MEDIALIB_HTTP_URL) && !(url.startsWith(MEDIALIB_HTTPS_URL))) {
-            url = url.replace(MEDIALIB_HTTP_URL, MEDIALIB_HTTPS_URL);
+            url = url.replaceFirst(MEDIALIB_HTTP_URL, MEDIALIB_HTTPS_URL);
         }
         if (url.startsWith(MEDIALIB_URL_START)) {
             // Extract medialib ID
@@ -536,8 +536,8 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
             }
             info.medialibId = medialibId;
             // Discard original URL and reconstruct from scratch
-            url = MEDIALIB_HTTPS_URL + medialibId + "/format/large";
-            info.url = url;
+            // url = MEDIALIB_HTTPS_URL + medialibId + "/format/large";
+            // info.url = url;
             info.mimeType = mimetypeCache.getMimeType(medialibId);
         } else {
             if (!suppressErrors) {

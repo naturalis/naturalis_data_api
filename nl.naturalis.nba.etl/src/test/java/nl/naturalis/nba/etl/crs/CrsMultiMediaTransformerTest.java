@@ -94,7 +94,9 @@ public class CrsMultiMediaTransformerTest {
       transformed = (List<MultiMediaObject>) returned;
 
       MultiMediaObject sp = transformed.get(0); // Just test the first one
-      String id = "RMNH.INS.867435_1";
+      // String id = "RMNH.INS.867435_1";
+      String id = "RMNH.INS.867435_0";
+      // TODO: undo temporary adjustment of the id
       
       int expectedNumberOfMmObjects = 2;
       assertEquals("01", expectedNumberOfMmObjects, transformed.size());

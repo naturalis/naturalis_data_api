@@ -26,8 +26,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import nl.naturalis.nba.common.json.JsonUtil;
-import org.elasticsearch.client.ml.PostDataRequest;
 import org.w3c.dom.Element;
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.QueryCondition;
@@ -195,11 +193,8 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
                 sap = new ServiceAccessPoint(info.url, info.mimeType, DEFAULT_IMAGE_QUALITY);
                 mmo.addServiceAccessPoint(sap);
                 String unitID;
-                if (info.medialibId == null) {
-                    unitID = objectID + '_' + i;
-                } else {
-                    unitID = info.medialibId;
-                }
+                // unitId is never the same as the unitId of the specimen
+                unitID = objectID + '_' + i;
                 mmo.setUnitID(unitID);
                 mmo.setId(getElasticsearchId(CRS, unitID));
                 mmo.setSourceSystemId(unitID);
@@ -517,6 +512,7 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
             }
             return null;
         }
+        MultiMediaInfo info = new MultiMediaInfo();
 
         // Change http urls to https urls for legacy reasons
         if (url.startsWith(MEDIALIB_HTTP_URL) && !(url.startsWith(MEDIALIB_HTTPS_URL))) {

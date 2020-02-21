@@ -35,163 +35,151 @@ import nl.naturalis.nba.utils.IOUtil;
  * Class that manages the import of CRS multimedia, sourced from files on the
  * local file system. These files have most likely been put there by means of
  * the {@link CrsHarvester}.
- * 
- * @author Ayco Holleman
  *
+ * @author Ayco Holleman
  */
 public class CrsMultiMediaImportOffline {
 
-	public static void main(String[] args)
-	{
-		try {
-			CrsMultiMediaImportOffline importer = new CrsMultiMediaImportOffline();
-			importer.importMultimedia();
-		}
-		catch (Throwable t) {
-			logger.error("CrsImportAll terminated unexpectedly!", t);
-			System.exit(1);
-		}
-		finally {
-		  if (shouldUpdateES) {
-		    ESUtil.refreshIndex(MULTI_MEDIA_OBJECT);
-		  }
-			ESClientManager.getInstance().closeClient();
-		}
-	}
-
-	private static final Logger logger;
-	private static final boolean shouldUpdateES;
-	private static final boolean doEnrich;
-
-	static {
-		logger = ETLRegistry.getInstance().getLogger(CrsMultiMediaImportOffline.class);
-		shouldUpdateES = DaoRegistry.getInstance().getConfiguration().get(SYSPROP_ETL_OUTPUT, "es").equals("file") ? false : true;
-		doEnrich = DaoRegistry.getInstance().getConfiguration().get(SYSPROP_ETL_ENRICH, "false").equals("true");
-	}
-
-	private final boolean suppressErrors;
-	private final int esBulkRequestSize;
-
-	private ETLStatistics stats;
-	private CrsMultiMediaTransformer transformer;
-	private DocumentObjectWriter<MultiMediaObject> loader;
-
-	public CrsMultiMediaImportOffline()
-	{
-		suppressErrors = ConfigObject.isEnabled("suppressErrors");
-		String key = ETLConstants.SYSPROP_LOADER_QUEUE_SIZE;
-		String val = System.getProperty(key, "1000");
-		esBulkRequestSize = Integer.parseInt(val);
-		logger.info("shouldUpdateES: {}", shouldUpdateES);
-	}
-
-	/**
-	 * Import multimedia from the data directory configured in
-	 * nda-import.properties.
-	 */
-	public void importMultimedia()
-	{
-		long start = System.currentTimeMillis();
-		File[] xmlFiles = getXmlFiles();
-		if (xmlFiles.length == 0) {
-			logger.error("No multimedia oai.xml files found. Check nda-import.propties");
-			return;
-		}
-		if (shouldUpdateES) {
-		  ETLUtil.truncate(MULTI_MEDIA_OBJECT, CRS);
-		}
-		int cacheFailuresBegin = MimeTypeCacheFactory.getInstance().getCache().getMisses();
-		stats = new ETLStatistics();
-		stats.setOneToMany(true);
-		transformer = new CrsMultiMediaTransformer(stats);
-		transformer.setSuppressErrors(suppressErrors);
-		
-    if (doEnrich) {
-      transformer.setEnrich(true);
-      logger.info("Taxonomic enrichment of Specimen documents: true");
-    }
-		SexNormalizer.getInstance().resetStatistics();
-		SpecimenTypeStatusNormalizer.getInstance().resetStatistics();
-		PhaseOrStageNormalizer.getInstance().resetStatistics();
-		ThemeCache.getInstance().resetMatchCounters();
-		
-		try {
-			for (File f : xmlFiles)
-				importFile(f);
-		}
-		finally {
-		  logger.info("Finished importing {} files", xmlFiles.length);
-		}
-		SexNormalizer.getInstance().logStatistics();
-		SpecimenTypeStatusNormalizer.getInstance().logStatistics();
-		PhaseOrStageNormalizer.getInstance().logStatistics();
-		ThemeCache.getInstance().logMatchInfo();
-		stats.logStatistics(logger);
-		ETLUtil.logDuration(logger, getClass(), start);
-		int cacheFailuresEnd = MimeTypeCacheFactory.getInstance().getCache().getMisses();
-		if (cacheFailuresBegin != cacheFailuresEnd) {
-			int misses = cacheFailuresEnd - cacheFailuresBegin;
-			String fmt = "%s mime type cache lookup failures for CRS multimedia";
-			logger.warn(String.format(fmt, String.valueOf(misses)));
-			logger.warn("THE MIME TYPE CACHE IS OUT-OF-DATE!");
-		}
-	}
-
-	private void importFile(File f)
-	{
-		logger.info("Processing file {}", f.getName());
-		if (DaoRegistry.getInstance().getConfiguration().get("etl.output", "file").equals("file")) {
-      logger.info("ETL Output: Writing the multimedia documents to the file system");
-      loader = new CrsMultiMediaJsonNDWriter(f.getName(), stats);
-    }
-    else {
-      logger.info("ETL Output: loading the multimedia documents into the document store");
-      loader = new CrsMultiMediaLoader(esBulkRequestSize, stats);
+    public static void main(String[] args) {
+        try {
+            CrsMultiMediaImportOffline importer = new CrsMultiMediaImportOffline();
+            importer.importMultimedia();
+        } catch (Throwable t) {
+            logger.error("CrsImportAll terminated unexpectedly!", t);
+            System.exit(1);
+        } finally {
+            if (shouldUpdateES) {
+                ESUtil.refreshIndex(MULTI_MEDIA_OBJECT);
+            }
+            ESClientManager.getInstance().closeClient();
+        }
     }
 
-		CrsExtractor extractor;
-		try {
-			extractor = new CrsExtractor(f, stats);
-		}
-		catch (SAXException e) {
-			logger.error("Processing failed!");
-			logger.error(e.getMessage());
-			return;
-		}
-		for (XMLRecordInfo extracted : extractor) {
-			List<MultiMediaObject> transformed = transformer.transform(extracted);
-			loader.write(transformed);
-			if (stats.recordsProcessed != 0 && stats.recordsProcessed % 50000 == 0) {
-				logger.info("Records processed: {}", stats.recordsProcessed);
-				logger.info("Documents indexed: {}", stats.documentsIndexed);
-			}
-		}
-		if (shouldUpdateES) {
-		  loader.flush();
-		}
-		IOUtil.close(loader);
-	}
+    private static final Logger logger;
+    private static final boolean shouldUpdateES;
+    private static final boolean doEnrich;
 
-	private static File[] getXmlFiles()
-	{
-		ConfigObject config = DaoRegistry.getInstance().getConfiguration();
-		String path = config.required("crs.data.dir");
-		logger.info("Data directory for CRS multimedia import: " + path);
-		File[] files = new File(path).listFiles(new FilenameFilter() {
+    static {
+        logger = ETLRegistry.getInstance().getLogger(CrsMultiMediaImportOffline.class);
+        shouldUpdateES = DaoRegistry.getInstance().getConfiguration().get(SYSPROP_ETL_OUTPUT, "es").equals("file") ? false : true;
+        doEnrich = DaoRegistry.getInstance().getConfiguration().get(SYSPROP_ETL_ENRICH, "false").equals("true");
+    }
 
-			public boolean accept(File dir, String name)
-			{
-				if (!name.startsWith("multimedia.")) {
-					return false;
-				}
-				if (!name.endsWith(".oai.xml")) {
-					return false;
-				}
-				return true;
-			}
-		});
-		logger.debug("Sorting file list");
-		Arrays.sort(files);
-		return files;
-	}
+    private final boolean suppressErrors;
+    private final int esBulkRequestSize;
+
+    private ETLStatistics stats;
+    private CrsMultiMediaTransformer transformer;
+    private DocumentObjectWriter<MultiMediaObject> loader;
+
+    public CrsMultiMediaImportOffline() {
+        suppressErrors = ConfigObject.isEnabled("suppressErrors");
+        String key = ETLConstants.SYSPROP_LOADER_QUEUE_SIZE;
+        String val = System.getProperty(key, "1000");
+        esBulkRequestSize = Integer.parseInt(val);
+        logger.info("shouldUpdateES: {}", shouldUpdateES);
+    }
+
+    /**
+     * Import multimedia from the data directory configured in
+     * nda-import.properties.
+     */
+    public void importMultimedia() {
+        long start = System.currentTimeMillis();
+        File[] xmlFiles = getXmlFiles();
+        if (xmlFiles.length == 0) {
+            logger.error("No multimedia oai.xml files found. Check nda-import.propties");
+            return;
+        }
+        if (shouldUpdateES) {
+            ETLUtil.truncate(MULTI_MEDIA_OBJECT, CRS);
+        }
+        int cacheFailuresBegin = MimeTypeCacheFactory.getInstance().getCache().getMisses();
+        stats = new ETLStatistics();
+        stats.setOneToMany(true);
+        transformer = new CrsMultiMediaTransformer(stats);
+        transformer.setSuppressErrors(suppressErrors);
+
+        if (doEnrich) {
+            transformer.setEnrich(true);
+            logger.info("Taxonomic enrichment of Specimen documents: true");
+        }
+        SexNormalizer.getInstance().resetStatistics();
+        SpecimenTypeStatusNormalizer.getInstance().resetStatistics();
+        PhaseOrStageNormalizer.getInstance().resetStatistics();
+        ThemeCache.getInstance().resetMatchCounters();
+
+        try {
+            for (File f : xmlFiles)
+                importFile(f);
+        } finally {
+            logger.info("Finished importing {} files", xmlFiles.length);
+        }
+        SexNormalizer.getInstance().logStatistics();
+        SpecimenTypeStatusNormalizer.getInstance().logStatistics();
+        PhaseOrStageNormalizer.getInstance().logStatistics();
+        ThemeCache.getInstance().logMatchInfo();
+        stats.logStatistics(logger);
+        ETLUtil.logDuration(logger, getClass(), start);
+        int cacheFailuresEnd = MimeTypeCacheFactory.getInstance().getCache().getMisses();
+        if (cacheFailuresBegin != cacheFailuresEnd) {
+            int misses = cacheFailuresEnd - cacheFailuresBegin;
+            String fmt = "%s mime type cache lookup failures for CRS multimedia";
+            logger.warn(String.format(fmt, String.valueOf(misses)));
+            logger.warn("THE MIME TYPE CACHE IS OUT-OF-DATE!");
+        }
+    }
+
+    private void importFile(File f) {
+        logger.info("Processing file {}", f.getName());
+        if (DaoRegistry.getInstance().getConfiguration().get("etl.output", "file").equals("file")) {
+            logger.info("ETL Output: Writing the multimedia documents to the file system");
+            loader = new CrsMultiMediaJsonNDWriter(f.getName(), stats);
+        } else {
+            logger.info("ETL Output: loading the multimedia documents into the document store");
+            loader = new CrsMultiMediaLoader(esBulkRequestSize, stats);
+        }
+
+        CrsExtractor extractor;
+        try {
+            extractor = new CrsExtractor(f, stats);
+        } catch (SAXException e) {
+            logger.error("Processing failed!");
+            logger.error(e.getMessage());
+            return;
+        }
+        for (XMLRecordInfo extracted : extractor) {
+            List<MultiMediaObject> transformed = transformer.transform(extracted);
+            loader.write(transformed);
+            if (stats.recordsProcessed != 0 && stats.recordsProcessed % 50000 == 0) {
+                logger.info("Records processed: {}", stats.recordsProcessed);
+                logger.info("Documents indexed: {}", stats.documentsIndexed);
+            }
+        }
+        if (shouldUpdateES) {
+            loader.flush();
+        }
+        IOUtil.close(loader);
+    }
+
+    private static File[] getXmlFiles() {
+        ConfigObject config = DaoRegistry.getInstance().getConfiguration();
+        String path = config.required("crs.data.dir");
+        logger.info("Data directory for CRS multimedia import: " + path);
+        File[] files = new File(path).listFiles(new FilenameFilter() {
+
+            public boolean accept(File dir, String name) {
+                if (!name.startsWith("multimedia.")) {
+                    return false;
+                }
+                if (!name.endsWith(".oai.xml")) {
+                    return false;
+                }
+                return true;
+            }
+        });
+        logger.debug("Sorting file list");
+        Arrays.sort(files);
+        return files;
+    }
 }

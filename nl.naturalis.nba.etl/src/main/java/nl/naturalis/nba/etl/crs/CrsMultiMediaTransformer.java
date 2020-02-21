@@ -26,6 +26,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import nl.naturalis.nba.common.json.JsonUtil;
+import org.elasticsearch.client.ml.PostDataRequest;
 import org.w3c.dom.Element;
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.QueryCondition;
@@ -289,11 +291,8 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
             if (enrichment != null) {
                 identification.setTaxonomicEnrichments(enrichment);
             }
-
         }
-
     }
-
 
     /*
      * Create a new multimedia object, initialized with the values from the
@@ -323,11 +322,8 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
         for (Element ncrsDeterminationElem : ncsrDeterminationElems) {
             ScientificName sn = getScientificName(ncrsDeterminationElem, collectionType);
             if (sn.getFullScientificName() == null) {
-                concatEpithets(sn, val(ncrsDeterminationElem, "ac:taxonCoverage"));
-            }
-            if (sn.getFullScientificName() == null) {
                 if (logger.isDebugEnabled()) {
-                    debug("Missing scientific name");
+                    debug("Identification is missing full scientific name");
                 }
                 continue;
             }
@@ -426,8 +422,9 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
             String nextBest = getBestTaxonCoverage(elems);
             // 3b. or the value of abcd:taxonCoverage of the first element "as is", when there is still no value
             if (nextBest == null && elems != null) {
-                if (elems.size() > 0)
-                    nextBest = val(elems.get(0), "abcd:taxonCoverage");
+                if (elems.size() > 0) {
+                    nextBest = val(elems.get(0), "ac:taxonCoverage");
+                }
             }
             sn.setFullScientificName(nextBest);
         }
@@ -436,6 +433,8 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
         if (collectionType.equals("Mineralogy and Petrology") || collectionType.equals("Mineralogy") || collectionType.equals("Petrology")) {
             if (sn.getFullScientificName() != null) {
                 sn.setScientificNameGroup(sn.getFullScientificName().toLowerCase());
+            } else {
+                sn.setScientificNameGroup("? ?");
             }
         } else {
             TransformUtil.setScientificNameGroup(sn);
@@ -518,12 +517,13 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
             }
             return null;
         }
-        MultiMediaInfo info = new MultiMediaInfo();
 
         // Change http urls to https urls for legacy reasons
         if (url.startsWith(MEDIALIB_HTTP_URL) && !(url.startsWith(MEDIALIB_HTTPS_URL))) {
             url = url.replace(MEDIALIB_HTTP_URL, MEDIALIB_HTTPS_URL);
         }
+
+        MultiMediaInfo info = new MultiMediaInfo();
         if (url.startsWith(MEDIALIB_URL_START)) {
             // Extract medialib ID
             String medialibId = url.substring(MEDIALIB_URL_START.length());
@@ -531,9 +531,12 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
             if (x != -1) {
                 medialibId = medialibId.substring(0, x);
             }
-            info.medialibId = medialibId;
+            info.medialibId = medialibId; // NOTE: this may be garbage
+            // E.g. consider url: https://medialib.naturalis.nl/file/id/https://medialib.naturalis.nl/file/id/ZMA.MOLL.318568/format/large/format/large
+
             // Discard original URL and reconstruct from scratch
-            url = MEDIALIB_HTTPS_URL + medialibId + "/format/large";
+            // TODO: temporarily disabled because of backward compatibility "data testing"
+            // url = MEDIALIB_HTTPS_URL + medialibId + "/format/large";
             info.url = url;
             info.mimeType = mimetypeCache.getMimeType(medialibId);
         } else {
@@ -558,6 +561,7 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
         return info;
     }
 
+    @Deprecated
     private static void concatEpithets(ScientificName sn, String taxonCoverage) {
         StringBuilder sb = new StringBuilder(64);
         if (sn.getGenusOrMonomial() != null)

@@ -512,7 +512,6 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
             }
             return null;
         }
-        MultiMediaInfo info = new MultiMediaInfo();
 
         // Change http urls to https urls for legacy reasons
         if (url.startsWith(MEDIALIB_HTTP_URL) && !(url.startsWith(MEDIALIB_HTTPS_URL))) {

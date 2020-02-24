@@ -2,11 +2,18 @@ package nl.naturalis.nba.etl;
 
 import nl.naturalis.nba.dao.DaoRegistry;
 import nl.naturalis.nba.utils.FileUtil;
-
 import org.apache.logging.log4j.Logger;
 
-import java.io.*;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.zip.ZipInputStream;
 
 /**
@@ -19,7 +26,7 @@ public class MedialibIdsCache {
 
     private static final Logger logger = ETLRegistry.getInstance().getLogger(MedialibIdsCache.class);
     private static final String CACHE_FILE_NAME = "medialib_ids_cache.zip";
-    private static ArrayList<String> ids = new ArrayList<>();
+    private static Set<String> ids;
     private static MedialibIdsCache instance;
 
     /**
@@ -73,20 +80,17 @@ public class MedialibIdsCache {
         }
     }
 
-    private static ArrayList<String> loadCacheFile(File cacheFile) throws IOException {
-        ArrayList<String> ids = new ArrayList<>();
+    private static Set<String> loadCacheFile(File cacheFile) throws IOException {
+        Set<String> ids = new TreeSet<>();
         ZipInputStream zis = new ZipInputStream(new FileInputStream(cacheFile));
-        zis.getNextEntry();
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(zis))) {
+        try (zis; BufferedReader br = new BufferedReader(new InputStreamReader(zis))) {
+            zis.getNextEntry();
             while (br.ready()) {
                 ids.add(br.readLine());
             }
         } catch (OutOfMemoryError e) {
             logger.error("Cache file is too large. Not using Medialib ids cache!");
             return null;
-        }
-        finally {
-            zis.close();
         }
         return ids;
     }

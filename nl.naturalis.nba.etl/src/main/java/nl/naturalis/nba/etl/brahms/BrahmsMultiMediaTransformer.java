@@ -16,6 +16,7 @@ import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.YEARIDENT;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getDefaultClassification;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getScientificName;
 import static nl.naturalis.nba.etl.enrich.EnrichmentUtil.createEnrichments;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QueryResult;
@@ -50,14 +52,16 @@ class BrahmsMultiMediaTransformer extends BrahmsTransformer<MultiMediaObject> {/
 
   private static final String DEFAULT_IMAGE_QUALITY = "ac:GoodQuality";
   private static final String DEFAULT_MIME_TYPE = "image/jpeg";
+
   private final MimeTypeCache mimetypeCache;
+  private final MedialibIdsCache medialibIdsCache;
   private boolean enrich = false;
 
   BrahmsMultiMediaTransformer(ETLStatistics stats)
 	{
 		super(stats);
 		mimetypeCache = MimeTypeCacheFactory.getInstance().getCache();
-		MedialibIdsCache.getInstance();
+		medialibIdsCache = MedialibIdsCache.getInstance();
 	}
   
   void setEnrich(boolean enrich) {
@@ -180,7 +184,7 @@ class BrahmsMultiMediaTransformer extends BrahmsTransformer<MultiMediaObject> {/
       List<TaxonomicEnrichment> enrichment = null;
       enrichment = createEnrichments(taxa);
       
-      if (enrichment != null) {
+      if (enrichment.size() > 0) {
         identification.setTaxonomicEnrichments(enrichment);
       }
     }
@@ -243,7 +247,7 @@ class BrahmsMultiMediaTransformer extends BrahmsTransformer<MultiMediaObject> {/
 		String format = "large";
 		if (matcher.matches()) {
 		  mediaObjectId = matcher.group(1);
-		  if (!MedialibIdsCache.contains(mediaObjectId)) {
+		  if (!medialibIdsCache.contains(mediaObjectId)) {
 		  	if (!suppressErrors) {
 				warn("Not an existing medialib URL: %s", uri.toString());
 			}

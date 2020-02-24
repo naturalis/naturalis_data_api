@@ -68,18 +68,21 @@ class BrahmsSpecimenTransformer extends BrahmsTransformer<Specimen> {
   private static final ThemeCache themeCache;
   private static final String DEFAULT_IMAGE_QUALITY = "ac:GoodQuality";
   private static final String DEFAULT_MIME_TYPE = "image/jpeg";
+
   private final MimeTypeCache mimetypeCache;
+  private final MedialibIdsCache medialibIdsCache;
   private boolean enrich = false;
 
   static {
     themeCache = ThemeCache.getInstance();
-    MedialibIdsCache.getInstance();
+
   }
 
   BrahmsSpecimenTransformer(ETLStatistics stats) //constructor made public for test.
   {
     super(stats);
     mimetypeCache = MimeTypeCacheFactory.getInstance().getCache();
+    medialibIdsCache = MedialibIdsCache.getInstance();
   }
   
   void setEnrich(boolean enrich) {
@@ -304,7 +307,7 @@ class BrahmsSpecimenTransformer extends BrahmsTransformer<Specimen> {
         mimeType = mimetypeCache.getMimeType(mediaObjectId);
       }
       // Check whether this image is actually available in the medialibrary
-      if (!MedialibIdsCache.contains(mediaObjectId)) {
+      if (!medialibIdsCache.contains(mediaObjectId)) {
         if (!suppressErrors) {
           warn("Not an existing medialib URL: %s", url);
         }

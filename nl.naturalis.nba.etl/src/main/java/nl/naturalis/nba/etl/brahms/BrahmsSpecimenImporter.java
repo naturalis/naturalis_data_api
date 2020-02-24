@@ -61,7 +61,6 @@ public class BrahmsSpecimenImporter {
     String val = System.getProperty(SYSPROP_LOADER_QUEUE_SIZE, "1000");
     loaderQueueSize = Integer.parseInt(val);
     shouldUpdateES = DaoRegistry.getInstance().getConfiguration().get(SYSPROP_ETL_OUTPUT, "es").equals("file") ? false : true;
-    MedialibIdsCache.getInstance();
   }
 
   public void importCsvFile(String path) {

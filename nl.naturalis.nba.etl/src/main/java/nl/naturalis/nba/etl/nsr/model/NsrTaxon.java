@@ -18,7 +18,7 @@ public class NsrTaxon {
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = name.strip();
     }
 
     public String getRank() {
@@ -26,7 +26,8 @@ public class NsrTaxon {
     }
 
     public void setRank(String rank) {
-        this.rank = rank;
+
+        this.rank = rank.strip();
     }
 
     public String getNsr_id() {
@@ -34,7 +35,8 @@ public class NsrTaxon {
     }
 
     public void setNsr_id(String nsr_id) {
-        this.nsr_id = nsr_id;
+
+        this.nsr_id = nsr_id.strip();
     }
 
     public String getNsr_id_parent() {
@@ -42,7 +44,8 @@ public class NsrTaxon {
     }
 
     public void setNsr_id_parent(String nsr_id_parent) {
-        this.nsr_id_parent = nsr_id_parent;
+
+        this.nsr_id_parent = nsr_id_parent.strip();
     }
 
     public String getUrl() {
@@ -50,7 +53,8 @@ public class NsrTaxon {
     }
 
     public void setUrl(String url) {
-        this.url = url;
+
+        this.url = url.strip();
     }
 
     public Classification[] getClassification() {
@@ -58,6 +62,7 @@ public class NsrTaxon {
     }
 
     public void setClassification(Classification[] classification) {
+
         this.classification = classification;
     }
 
@@ -66,6 +71,7 @@ public class NsrTaxon {
     }
 
     public void setDescription(Description[] description) {
+
         this.description = description;
     }
 
@@ -74,6 +80,7 @@ public class NsrTaxon {
     }
 
     public void setNames(Name[] names) {
+
         this.names = names;
     }
 
@@ -82,6 +89,7 @@ public class NsrTaxon {
     }
 
     public void setImages(Image[] images) {
+
         this.images = images;
     }
 
@@ -90,6 +98,7 @@ public class NsrTaxon {
     }
 
     public void setStatus(Status status) {
+
         this.status = status;
     }
 }

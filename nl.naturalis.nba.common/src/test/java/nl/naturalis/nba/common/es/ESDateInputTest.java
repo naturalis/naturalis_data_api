@@ -159,4 +159,16 @@ public class ESDateInputTest {
 		OffsetDateTime odt = new ESDateInput(date).parse();
 		assertEquals("01", "2017-01-01T00:00Z", odt.toString());
 	}
+
+	/*
+	 * Test with yyyy-MM-dd
+	 */
+	@Test
+	public void test_parse10()
+	{
+		String date = "2017-04-01";
+		OffsetDateTime odt = new ESDateInput(date).parse();
+		assertEquals("01", "2017-04-01T00:00Z", odt.toString());
+	}
+
 }

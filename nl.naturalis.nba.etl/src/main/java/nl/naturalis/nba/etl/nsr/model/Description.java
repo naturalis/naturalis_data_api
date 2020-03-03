@@ -1,12 +1,19 @@
 package nl.naturalis.nba.etl.nsr.model;
 
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+
+@SuppressWarnings("unused")
 public class Description {
 
     private String taxon_id;
     private String title;
     private String text;
     private String language;
-    private String last_change;
+    private OffsetDateTime last_change;
     private Author[] authors;
 
     public String getTaxon_id() {
@@ -14,7 +21,7 @@ public class Description {
     }
 
     public void setTaxon_id(String taxon_id) {
-        this.taxon_id = taxon_id;
+        this.taxon_id = taxon_id.trim();
     }
 
     public String getTitle() {
@@ -22,7 +29,7 @@ public class Description {
     }
 
     public void setTitle(String title) {
-        this.title = title;
+        this.title = title.trim();
     }
 
     public String getText() {
@@ -30,7 +37,7 @@ public class Description {
     }
 
     public void setText(String text) {
-        this.text = text;
+        this.text = text.trim();
     }
 
     public String getLanguage() {
@@ -38,15 +45,18 @@ public class Description {
     }
 
     public void setLanguage(String language) {
-        this.language = language;
+        this.language = language.trim();
     }
 
-    public String getLast_change() {
+    public OffsetDateTime getLast_change() {
         return last_change;
     }
 
     public void setLast_change(String last_change) {
-        this.last_change = last_change;
+        try {
+            LocalDateTime dateTime = LocalDateTime.parse(last_change.trim(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            this.last_change = OffsetDateTime.of(dateTime, ZoneOffset.ofHours(1));
+        } catch (DateTimeParseException ignored) {}
     }
 
     public Author[] getAuthors() {

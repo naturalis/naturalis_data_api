@@ -1,6 +1,7 @@
 package nl.naturalis.nba.etl.nsr.model;
 
-class Author {
+@SuppressWarnings("unused")
+public class Author {
 
     private String subject_id;
     private String name;
@@ -10,7 +11,7 @@ class Author {
     }
 
     public void setSubject_id(String subject_id) {
-        this.subject_id = subject_id;
+        this.subject_id = subject_id.trim();
     }
 
     public String getName() {
@@ -18,6 +19,6 @@ class Author {
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = name.trim();
     }
 }

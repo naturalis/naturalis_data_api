@@ -6,9 +6,11 @@ import static nl.naturalis.nba.api.annotations.Analyzer.LIKE;
 
 import nl.naturalis.nba.api.annotations.Analyzers;
 
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.List;
 
+@SuppressWarnings("unused")
 public class TaxonDescription implements INbaModelObject {
 
 	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
@@ -59,7 +61,9 @@ public class TaxonDescription implements INbaModelObject {
 
 	public OffsetDateTime getPublicationDate() { return publicationDate; }
 
-	public void setPublicationDate(OffsetDateTime publicationDate) { this.publicationDate = publicationDate; }
+	public void setPublicationDate(OffsetDateTime publicationDate) {
+		this.publicationDate = publicationDate;
+	}
 
 	@Override
 	public String toString() {

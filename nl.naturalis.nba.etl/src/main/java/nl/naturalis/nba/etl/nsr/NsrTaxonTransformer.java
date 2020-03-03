@@ -242,12 +242,21 @@ class NsrTaxonTransformer extends AbstractJSONTransformer<Taxon> {
 		Description[] descriptions = nsrTaxon.getDescription();
 		if (descriptions == null || descriptions.length == 0) return;
 		for (Description description : descriptions) {
-			TaxonDescription descr = new TaxonDescription();
-			descr.setCategory(val(description.getTitle()));
-			descr.setDescription(val(description.getText()));
-			descr.setLanguage(val(description.getLanguage()));
-			descr.setLicense(License.CCBYSA);
-			taxon.addDescription(descr);
+			TaxonDescription taxonDescription = new TaxonDescription();
+			Author[] authors = description.getAuthors();
+			if (authors != null && authors.length > 0) {
+                List<String> authorStr = new ArrayList<>(authors.length);
+                for (Author author : authors) {
+                    authorStr.add(author.getName());
+                }
+                taxonDescription.setAuthor(authorStr);
+            }
+			taxonDescription.setPublicationDate(description.getLast_change());
+			taxonDescription.setCategory(val(description.getTitle()));
+			taxonDescription.setDescription(val(description.getText()));
+			taxonDescription.setLanguage(val(description.getLanguage()));
+			taxonDescription.setLicense(License.CCBYSA);
+			taxon.addDescription(taxonDescription);
 		}
     }
 

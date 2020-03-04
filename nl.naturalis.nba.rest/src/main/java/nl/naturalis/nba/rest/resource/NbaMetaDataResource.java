@@ -22,6 +22,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -284,7 +285,7 @@ public class NbaMetaDataResource {
 	    response = RestService[].class, 
 	    notes = "Lists end point name, http method, response type, and URL")
 	@Produces(JSON_CONTENT_TYPE)
-	public RestService[] getRestServices(@Context UriInfo uriInfo)
+	public RestService[] getRestServices(@Context UriInfo uriInfo, @Context SecurityContext secContext)
 	{
 		try {
 			if (restServices == null) {
@@ -293,6 +294,8 @@ public class NbaMetaDataResource {
 				httpMethodAnnotations = Arrays.asList(DELETE.class, GET.class, POST.class, PUT.class);
 
 				String baseUrl = StringUtil.rtrim(uriInfo.getBaseUri().toString(), '/');
+				if (secContext.isSecure() && baseUrl != null && baseUrl.length() > 0)
+					baseUrl = baseUrl.replaceFirst("http://", "https://");
 
 				ConfigurationBuilder config = new ConfigurationBuilder();
 				config.setUrls(ClasspathHelper.forPackage(getClass().getPackage().getName()));

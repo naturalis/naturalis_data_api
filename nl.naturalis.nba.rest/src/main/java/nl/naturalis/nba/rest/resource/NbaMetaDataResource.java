@@ -2,6 +2,7 @@ package nl.naturalis.nba.rest.resource;
 
 import static nl.naturalis.nba.rest.util.ResourceUtil.JSON_CONTENT_TYPE;
 import static nl.naturalis.nba.rest.util.ResourceUtil.handleError;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -22,17 +24,20 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
+
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.reflections.Reflections;
 import org.reflections.scanners.MethodAnnotationsScanner;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+
 import nl.naturalis.nba.api.model.AreaClass;
 import nl.naturalis.nba.api.model.License;
 import nl.naturalis.nba.api.model.LicenseType;
@@ -44,6 +49,7 @@ import nl.naturalis.nba.api.model.TaxonRelationType;
 import nl.naturalis.nba.api.model.TaxonomicStatus;
 import nl.naturalis.nba.api.model.metadata.NbaSetting;
 import nl.naturalis.nba.api.model.metadata.RestService;
+import nl.naturalis.nba.dao.DaoRegistry;
 import nl.naturalis.nba.dao.NbaMetaDataDao;
 import nl.naturalis.nba.utils.StringUtil;
 
@@ -56,6 +62,7 @@ public class NbaMetaDataResource {
 
 	@SuppressWarnings("unused")
 	private static final Logger logger = LogManager.getLogger(NbaMetaDataResource.class);
+	private static final String SYSPROP_CONF_FILE = "nba.conf.file";
 
 	@EJB
 	Registry registry;
@@ -272,7 +279,7 @@ public class NbaMetaDataResource {
 		try {
 			return new NbaMetaDataDao().getAllowedDateFormats();
 		} catch (Throwable t) {
-			throw handleError(uriInfo, t);
+				throw handleError(uriInfo, t);
 		}
 	}
 
@@ -285,17 +292,20 @@ public class NbaMetaDataResource {
 	    response = RestService[].class, 
 	    notes = "Lists end point name, http method, response type, and URL")
 	@Produces(JSON_CONTENT_TYPE)
-	public RestService[] getRestServices(@Context UriInfo uriInfo, @Context SecurityContext secContext)
+	public RestService[] getRestServices(@Context UriInfo uriInfo)
 	{
 		try {
 			if (restServices == null) {
 
+				DaoRegistry registry = DaoRegistry.getInstance();
+				String baseUrl = registry.getConfiguration().get("nba.baseurl", true);
+				if (baseUrl == null) {
+					baseUrl = uriInfo.getBaseUri().toString();
+				}
+				baseUrl = StringUtil.rtrim(baseUrl, '/');
+
 				List<Class<? extends Annotation>> httpMethodAnnotations;
 				httpMethodAnnotations = Arrays.asList(DELETE.class, GET.class, POST.class, PUT.class);
-
-				String baseUrl = StringUtil.rtrim(uriInfo.getBaseUri().toString(), '/');
-				if (secContext.isSecure() && baseUrl != null && baseUrl.length() > 0)
-					baseUrl = baseUrl.replaceFirst("http://", "https://");
 
 				ConfigurationBuilder config = new ConfigurationBuilder();
 				config.setUrls(ClasspathHelper.forPackage(getClass().getPackage().getName()));

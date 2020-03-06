@@ -73,15 +73,9 @@ public class CoLTaxonImporter extends CoLImporter {
       extractor.setQuote('\u0000'); // CoL export doesn't use quotes!
       transformer = new CoLTaxonTransformer(stats);
       transformer.setSuppressErrors(suppressErrors);
-      if (toFile) {
-        loader = new ColTaxonJsonNDWriter(f.getName(), stats);
-        logger.info("ETL Output: Writing the documents to the file system");
-      }
-      else {
-        loader = new CoLTaxonLoader(stats, loaderQueueSize);
-        logger.info("ETL Output: loading documents into the document store");
-      }
+      loader = new CoLTaxonLoader(stats, loaderQueueSize);
       loader.suppressErrors(suppressErrors);
+      logger.info("ETL Output: loading documents into the document store");
       logger.info("Processing file {}", f.getAbsolutePath());
       for (CSVRecordInfo<CoLTaxonCsvField> rec : extractor) {
         if (rec == null)
@@ -94,7 +88,7 @@ public class CoLTaxonImporter extends CoLImporter {
         }
       }
     } finally {
-      loader.flush();
+      if (loader != null) loader.flush();
       IOUtil.close(loader);
       if (!toFile) {
         ESUtil.refreshIndex(TAXON);        

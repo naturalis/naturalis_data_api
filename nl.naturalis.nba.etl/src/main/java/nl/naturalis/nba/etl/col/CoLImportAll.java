@@ -70,7 +70,7 @@ public class CoLImportAll {
 			CoLImportAll importer = new CoLImportAll();
 			importer.setBatchSize(batchSize);
 			// Import to File should be the default for the time being ... (etl.output)
-			// toFile = true;
+			toFile = true;
 			if (toFile) 
 			  importer.importAllToFile();
 			else

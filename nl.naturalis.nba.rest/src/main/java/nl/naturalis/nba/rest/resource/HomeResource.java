@@ -90,10 +90,10 @@ public class HomeResource {
         values = new ConfigObject(in);
         in.close();
       }
-      template = template.replace("%git.branch%", StringUtil.rtrim(values.get("git.branch"), ' '));
-      template = template.replace("%git.closest.tag.name%", StringUtil.rtrim(values.get("git.closest.tag.name"), ' '));
-      template = template.replace("%git.commit.id%", StringUtil.rtrim(values.get("git.commit.id"), ' '));
-      template = template.replace("%git.build.time%", StringUtil.rtrim(values.get("git.build.time"), ' '));
+      template = template.replace("%git.branch%", StringUtil.emptyIfNull(values.get("git.branch")));
+      template = template.replace("%git.closest.tag.name%", StringUtil.emptyIfNull(values.get("git.closest.tag.name")));
+      template = template.replace("%git.commit.id%", StringUtil.emptyIfNull(values.get("git.commit.id")));
+      template = template.replace("%git.build.time%", StringUtil.emptyIfNull(values.get("git.build.time")));
       return template;
     } catch (IOException t) {
       throw handleError(uriInfo, t);

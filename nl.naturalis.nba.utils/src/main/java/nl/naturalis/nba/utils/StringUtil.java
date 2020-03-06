@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 public class StringUtil {
@@ -14,7 +15,7 @@ public class StringUtil {
 	 */
 	public static final String EMPTY = "";
 
-	private static final Charset CHARSET_UTF8 = Charset.forName("UTF-8");
+	private static final Charset CHARSET_UTF8 = StandardCharsets.UTF_8;
 
 	/**
 	 * Extract a slice from {@code string}. If {@code from} is negative, count
@@ -93,7 +94,7 @@ public class StringUtil {
 	 *            The delimiter to insert between the padding and the string.
 	 *            Useful if you want to print string like 13:02:08 (the colon
 	 *            being the separator)
-	 * @return
+	 * @return the zero padded string
 	 */
 	public static String zpad(Object obj, int width, String separator)
 	{
@@ -111,7 +112,7 @@ public class StringUtil {
 	 *            The total length of the padded string. If the string itself is
 	 *            wider than the specified width, the string is printed without
 	 *            padding.
-	 * @return
+	 * @return the zero padded string
 	 */
 	public static String zpad(Object obj, int width)
 	{
@@ -281,9 +282,9 @@ public class StringUtil {
 	 * Chop {@code word} from the left of {@code string} and repeat until
 	 * {@code string} does not start with {@code word}.
 	 * 
-	 * @param string
-	 * @param word
-	 * @return
+	 * @param string ...
+	 * @param word ...
+	 * @return ...
 	 */
 	public static String lchop(String string, String word)
 	{
@@ -303,9 +304,9 @@ public class StringUtil {
 	 * Chop {@code word} from the right of {@code string} and repeat until
 	 * {@code string} does not end with {@code word}.
 	 * 
-	 * @param string
-	 * @param word
-	 * @return
+	 * @param string ...
+	 * @param word ...
+	 * @return ...
 	 */
 	public static String rchop(String string, String word)
 	{
@@ -447,12 +448,12 @@ public class StringUtil {
 	/**
 	 * Equivalent to {@code isTrueValue(value, true)}. In other words
 	 * {@code null} and empty {@code String}s are considered to be true!
-	 * 
-	 * @param value
-	 *            The {@code String} to convert to a boolean
-	 * @return
-	 * 
-	 * @see #isTrueValue(String, boolean)
+	 *
+	 * @see {@code isTrue(String, boolean)}
+	 *
+	 * @param s The {@code String} to convert to a boolean
+	 *
+	 * @return boolean value
 	 */
 	public static boolean isTrue(String s)
 	{
@@ -467,10 +468,8 @@ public class StringUtil {
 	 * {@code false}. The string is trimmed before being compared to these
 	 * values.
 	 * 
-	 * @param value
-	 *            The {@code String} to convert to a boolean
-	 * @param dfault
-	 *            The value to return if {@code value} is null or empty
+	 * @param s The {@code String} to convert to a boolean
+	 * @param dfault The value to return if {@code value} is null or empty
 	 * @return
 	 */
 	public static boolean isTrue(String s, boolean dfault)
@@ -559,6 +558,11 @@ public class StringUtil {
 	public static int toInt(String s)
 	{
 		return s == null || s.equals(EMPTY) ? 0 : Integer.parseInt(s);
+	}
+
+	public static String emptyIfNull(String str) {
+		if (str == null) return EMPTY;
+		return str;
 	}
 
 }

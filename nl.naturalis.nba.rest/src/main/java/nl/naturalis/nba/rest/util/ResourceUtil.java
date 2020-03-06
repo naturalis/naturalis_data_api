@@ -48,9 +48,10 @@ public class ResourceUtil {
 	 * produce} application/json return a string, Wildfly/RESTeasy does not
 	 * automatically JSONify the string. Hence this method.
 	 * 
-	 * @param s
-	 * @return
+	 * @param s - ...
+	 * @return String
 	 */
+	@SuppressWarnings("unused")
 	public static String stringAsJson(String s)
 	{
 		return "\"" + StringEscapeUtils.escapeJson(s) + "\"";

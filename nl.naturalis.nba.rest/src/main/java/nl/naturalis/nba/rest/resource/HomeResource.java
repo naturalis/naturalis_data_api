@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -17,7 +18,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
+
 import org.reflections.Reflections;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.Contact;
 import io.swagger.annotations.ExternalDocs;
@@ -27,6 +30,8 @@ import io.swagger.annotations.SwaggerDefinition;
 import io.swagger.annotations.Tag;
 import io.swagger.jaxrs.Reader;
 import io.swagger.models.Swagger;
+
+import nl.naturalis.nba.utils.StringUtil;
 import nl.naturalis.nba.dao.NbaDao;
 import nl.naturalis.nba.utils.ConfigObject;
 import nl.naturalis.nba.utils.IOUtil;
@@ -85,10 +90,10 @@ public class HomeResource {
         values = new ConfigObject(in);
         in.close();
       }
-      template = template.replace("%git.branch%", values.get("git.branch"));
-      template = template.replace("%git.closest.tag.name%", values.get("git.closest.tag.name"));
-      template = template.replace("%git.commit.id%", values.get("git.commit.id"));
-      template = template.replace("%git.build.time%", values.get("git.build.time"));
+      template = template.replace("%git.branch%", StringUtil.rtrim(values.get("git.branch"), ' '));
+      template = template.replace("%git.closest.tag.name%", StringUtil.rtrim(values.get("git.closest.tag.name"), ' '));
+      template = template.replace("%git.commit.id%", StringUtil.rtrim(values.get("git.commit.id"), ' '));
+      template = template.replace("%git.build.time%", StringUtil.rtrim(values.get("git.build.time"), ' '));
       return template;
     } catch (IOException t) {
       throw handleError(uriInfo, t);
@@ -139,8 +144,7 @@ public class HomeResource {
       Set<Class<?>> classes = reflections.getTypesAnnotatedWith(Api.class);
 
       // return swagger JSON
-      Swagger swagger = new Reader(new Swagger()).read(classes);
-      return swagger;
+      return new Reader(new Swagger()).read(classes);
     } catch (Throwable t) {
       throw handleError(uriInfo, t);
     }

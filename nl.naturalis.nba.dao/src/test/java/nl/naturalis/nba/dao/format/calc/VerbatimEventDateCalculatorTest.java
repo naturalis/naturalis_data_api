@@ -1,6 +1,6 @@
 package nl.naturalis.nba.dao.format.calc;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 import java.time.OffsetDateTime;
 
@@ -15,7 +15,7 @@ public class VerbatimEventDateCalculatorTest {
 
   private static Specimen specimen;
   
-  {
+  static {
     specimen = new Specimen();
     specimen.setSourceSystem(SourceSystem.CRS);
     specimen.setSourceSystemId("RMNH.AVES.56322");
@@ -29,7 +29,7 @@ public class VerbatimEventDateCalculatorTest {
     VerbatimEventDateCalculator calculator = new VerbatimEventDateCalculator();
     
     String date = calculator.calculateValue(entity);
-    assertTrue("01", date.equals(""));    
+    assertEquals("01", "", date);
   }
   
   @Test 
@@ -44,7 +44,7 @@ public class VerbatimEventDateCalculatorTest {
     specimen.setGatheringEvent(event);
     
     String date = calculator.calculateValue(entity);
-    assertTrue("02", date.equals(""));
+    assertEquals("02", "", date);
   }
 
   @Test 
@@ -59,7 +59,7 @@ public class VerbatimEventDateCalculatorTest {
     specimen.setGatheringEvent(event);
     
     String date = calculator.calculateValue(entity);
-    assertTrue("03", date.equals("1956-02-23"));
+    assertEquals("03", "1956-02-23", date);
   }
 
   @Test 
@@ -76,7 +76,7 @@ public class VerbatimEventDateCalculatorTest {
     specimen.setGatheringEvent(event);
     
     String date = calculator.calculateValue(entity);
-    assertTrue("04", date.equals("1956-02-23"));    
+    assertEquals("04", "1956-02-23", date);
   }
   
   @Test 
@@ -93,7 +93,7 @@ public class VerbatimEventDateCalculatorTest {
     specimen.setGatheringEvent(event);
     
     String date = calculator.calculateValue(entity);
-    assertTrue("05", date.equals("1956-02-23 / 1956-02-24"));
+    assertEquals("05", "1956-02-23/1956-02-24", date);
   }
 
   @Test 
@@ -109,8 +109,8 @@ public class VerbatimEventDateCalculatorTest {
     event.setDateTimeEnd(end);
     specimen.setGatheringEvent(event);
     
-    String date = calculator.calculateValue(entity);    
-    assertTrue("06", date.equals("1956-02-23"));
+    String date = calculator.calculateValue(entity);
+    assertEquals("06", "1956-02-23", date);
   }
 
   @Test 
@@ -127,7 +127,7 @@ public class VerbatimEventDateCalculatorTest {
     specimen.setGatheringEvent(event);
     
     String date = calculator.calculateValue(entity);
-    assertTrue("07", date.equals("1956-02-23 / 1956-02-24"));
+    assertEquals("07", "1956-02-23/1956-02-24", date);
   }
   
   

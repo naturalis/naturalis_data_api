@@ -13,8 +13,7 @@ RUN yum clean all && yum install -y git
 RUN git clone https://github.com/naturalis/DWCAConfig.git
 RUN mv DWCAConfig /etc/nba/dwca
 ADD pull_updates.sh /usr/local/bin/pull_updates.sh
-CMD chmod 755 /usr/local/bin/pull_updates.sh
-
+RUN chmod 755 /usr/local/bin/pull_updates.sh
 RUN git clone https://github.com/naturalis/nba-fieldinfo-metadata --branch 2
 RUN mv nba-fieldinfo-metadata /etc/nba/metadata
 

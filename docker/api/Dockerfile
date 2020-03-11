@@ -8,6 +8,7 @@ RUN mkdir /etc/nba
 #ADD log4j2.xml /etc/nba/log4j2.xml
 ADD standalone.xml /opt/jboss/wildfly/standalone/configuration/standalone.xml
 ADD pull_updates.sh /usr/local/bin/pull_updates.sh
+CMD chmod 755 /usr/local/bin/pull_updates.sh
 RUN yum clean all && yum install -y git
 
 RUN git clone https://github.com/naturalis/DWCAConfig.git --branch master

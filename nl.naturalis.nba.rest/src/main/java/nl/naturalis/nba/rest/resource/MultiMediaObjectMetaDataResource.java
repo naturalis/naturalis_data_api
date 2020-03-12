@@ -47,7 +47,7 @@ public class MultiMediaObjectMetaDataResource extends NbaDocumentMetaDataResourc
 	    response = Object.class, 
 	    notes = "All settings can be queried with /metadata/getSettings")
 	@Produces(JSON_CONTENT_TYPE)
-	public Object getSettings(
+	public Object getSetting(
 			@ApiParam(
 			    value = "name of setting", 
 			    required = true, 

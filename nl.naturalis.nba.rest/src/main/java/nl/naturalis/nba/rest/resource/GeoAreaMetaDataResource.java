@@ -42,7 +42,7 @@ public class GeoAreaMetaDataResource extends NbaDocumentMetaDataResource<GeoArea
 	@Path("/getSetting/{name}")
 	@ApiOperation(value = "Get the value of an NBA setting", response = Object.class, notes = "All settings can be queried with /metadata/getSettings")
 	@Produces(JSON_CONTENT_TYPE)
-	public Object getSettings(
+	public Object getSetting(
 			@ApiParam(value = "name of setting", required = true, defaultValue = "index.max_result_window") @PathParam("name") String name,
 			@Context UriInfo uriInfo)
 	{

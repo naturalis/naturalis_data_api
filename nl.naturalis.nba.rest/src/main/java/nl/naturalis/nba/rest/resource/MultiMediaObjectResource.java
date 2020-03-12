@@ -54,13 +54,13 @@ public class MultiMediaObjectResource extends NbaResource<MultiMediaObject, Mult
       response = Response.class,
       notes = "Query with query parameters or querySpec JSON. ...")
   @Produces(NDJSON_CONTENT_TYPE)
-  @ApiImplicitParams({@ApiImplicitParam(
-      name = "collectionType", 
-      value = "Example query param",
-      dataType = "string", 
-      paramType = "query", 
-      defaultValue = "Crustacea", 
-      required = false)})
+  @ApiImplicitParams({
+	@ApiImplicitParam(      
+	      name="querySpec", 
+	      paramType="query",		      
+	      dataType = "QuerySpec",
+	      dataTypeClass = QuerySpec.class,
+	      value="Object of type QuerySpec or its JSON representation")})  
   public Response downloadQueryHttpGet(@Context UriInfo uriInfo) {
     return super.downloadQueryHttpGet(uriInfo);
   }
@@ -74,13 +74,13 @@ public class MultiMediaObjectResource extends NbaResource<MultiMediaObject, Mult
       notes = "Query with query parameters or querySpec JSON. ...")
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
   @Produces(NDJSON_CONTENT_TYPE)
-  @ApiImplicitParams({@ApiImplicitParam(
-      name = "collectionType", 
-      value = "Example query param",
-      dataType = "string", 
-      paramType = "query", 
-      defaultValue = "Crustacea", 
-      required = false)})
+  @ApiImplicitParams({
+	@ApiImplicitParam(      
+	      name="querySpec", 
+	      paramType="query",		      
+	      dataType = "QuerySpec",
+	      dataTypeClass = QuerySpec.class,
+	      value="Object of type QuerySpec or its JSON representation")})  
   public Response downloadQueryHttpPostForm(
     @ApiParam(value = "POST payload", required = false) MultivaluedMap<String, String> form,
     @Context UriInfo uriInfo) {
@@ -96,13 +96,13 @@ public class MultiMediaObjectResource extends NbaResource<MultiMediaObject, Mult
       notes = "Query with query parameters or querySpec JSON. ...")
   @Consumes(JSON_CONTENT_TYPE)
   @Produces(NDJSON_CONTENT_TYPE)
-  @ApiImplicitParams({@ApiImplicitParam(
-      name = "collectionType", 
-      value = "Example query param",
-      dataType = "string", 
-      paramType = "query", 
-      defaultValue = "Crustacea", 
-      required = false)})
+  @ApiImplicitParams({
+	@ApiImplicitParam(      
+	      name="querySpec", 
+	      paramType="query",		      
+	      dataType = "QuerySpec",
+	      dataTypeClass = QuerySpec.class,
+	      value="Object of type QuerySpec or its JSON representation")})  
   public Response downloadQueryHttpPostJson(
       @ApiParam(value = "querySpec", required = false) QuerySpec qs, 
       @Context UriInfo uriInfo) {
@@ -152,12 +152,12 @@ public class MultiMediaObjectResource extends NbaResource<MultiMediaObject, Mult
       notes = "Search for multimedia documents with query parameters or QuerySpec JSON string")
   @Produces(JSON_CONTENT_TYPE)
   @ApiImplicitParams({
-    @ApiImplicitParam(
-        name = "license", 
-        value = "Example query param",
-        dataType = "string",
-        paramType = "query", 
-        defaultValue = "CC0", required = false)})
+	@ApiImplicitParam(      
+	      name="querySpec", 
+	      paramType="query",		      
+	      dataType = "QuerySpec",
+	      dataTypeClass = QuerySpec.class,
+	      value="Object of type QuerySpec or its JSON representation")})  
   public QueryResult<MultiMediaObject> queryHttpGet(@Context UriInfo uriInfo) {
     return super.queryHttpGet(uriInfo);
   }
@@ -198,13 +198,12 @@ public class MultiMediaObjectResource extends NbaResource<MultiMediaObject, Mult
       notes = "Conditions given as query parameters or QuerySpec JSON")
   @Produces(JSON_CONTENT_TYPE)
   @ApiImplicitParams({
-    @ApiImplicitParam(
-        name = "sourceSystem.code", 
-        value = "Example query param",
-        dataType = "string", 
-        paramType = "query", 
-        defaultValue = "BRAHMS", 
-        required = false)})
+	@ApiImplicitParam(      
+	      name="querySpec", 
+	      paramType="query",		      
+	      dataType = "QuerySpec",
+	      dataTypeClass = QuerySpec.class,
+	      value="Object of type QuerySpec or its JSON representation")})  
   public long countHttpGet(@Context UriInfo uriInfo) {
     return super.countHttpGet(uriInfo);
   }
@@ -245,6 +244,13 @@ public class MultiMediaObjectResource extends NbaResource<MultiMediaObject, Mult
       response = long.class, 
       notes = "")
   @Produces(TEXT_CONTENT_TYPE)
+  @ApiImplicitParams({
+	@ApiImplicitParam(      
+	      name="querySpec", 
+	      paramType="query",		      
+	      dataType = "QuerySpec",
+	      dataTypeClass = QuerySpec.class,
+	      value="Object of type QuerySpec or its JSON representation")})  
   public long countDistinctValuesHttpGet(
       @ApiParam(value = "Name of field in taxon object", required = true, defaultValue = "defaultClassification.family") 
       @PathParam("field") String field,

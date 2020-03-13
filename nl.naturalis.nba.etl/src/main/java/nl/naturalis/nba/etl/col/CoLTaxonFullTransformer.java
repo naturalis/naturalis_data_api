@@ -10,7 +10,7 @@ import static nl.naturalis.nba.api.model.TaxonomicRank.PHYLUM;
 import static nl.naturalis.nba.api.model.TaxonomicRank.SPECIES;
 import static nl.naturalis.nba.api.model.TaxonomicRank.SUBGENUS;
 import static nl.naturalis.nba.api.model.TaxonomicRank.SUBSPECIES;
-import static nl.naturalis.nba.api.model.TaxonomicRank.SUPER_FAMILY;
+import static nl.naturalis.nba.api.model.TaxonomicRank.SUPERFAMILY;
 import static nl.naturalis.nba.dao.util.es.ESUtil.getElasticsearchId;
 import static nl.naturalis.nba.etl.ETLUtil.getTestGenera;
 import static nl.naturalis.nba.etl.col.CoLEntityType.REFERENCE_DATA;
@@ -294,7 +294,7 @@ class CoLTaxonFullTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, T
       taxon.addMonomial(m);
     }
     if (dc.getSuperFamily() != null) {
-      m = new Monomial(SUPER_FAMILY, dc.getSuperFamily());
+      m = new Monomial(SUPERFAMILY, dc.getSuperFamily());
       taxon.addMonomial(m);
     }
     if (dc.getFamily() != null) {

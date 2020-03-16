@@ -53,6 +53,9 @@ public enum TaxonomicRank implements INbaModelObject {
             return null;
         }
         name = name.toLowerCase();
+        if (name.equals(DOMAIN.englishName) || name.equals(DOMAIN.latinName)) {
+            return DOMAIN;
+        }
         if (name.equals(KINGDOM.englishName) || name.equals(KINGDOM.latinName)) {
             return KINGDOM;
         }

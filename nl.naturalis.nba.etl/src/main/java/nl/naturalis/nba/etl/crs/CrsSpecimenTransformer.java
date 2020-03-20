@@ -19,10 +19,14 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+
+import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map.Entry;
 
-import nl.naturalis.nba.common.json.JsonUtil;
 import org.w3c.dom.Element;
 
 import nl.naturalis.nba.api.InvalidQueryException;
@@ -73,10 +77,9 @@ import nl.naturalis.nba.utils.xml.DOMUtil;
 
 /**
  * The transformer component for the CRS specimen import.
- * 
+ *
  * @author Ayco Holleman
  * @author Tom Gilissen
- *
  */
 class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 
@@ -112,13 +115,13 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
     }
 
     protected void setEnrich(boolean enrich) {
-      this.enrich = enrich;
+        this.enrich = enrich;
     }
-    
+
     protected boolean doEnrich() {
-      return enrich;
+        return enrich;
     }
-    
+
     @Override
     protected String getObjectID() {
         /*
@@ -187,7 +190,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 
         sortIdentificationsPreferredFirst(specimen);
         if (doEnrich()) {
-          enrichIdentification(specimen);
+            enrichIdentification(specimen);
         }
 
         try {
@@ -229,65 +232,62 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
             specimen.setDateLastEdited(getDateLastEdited());
             specimen.setAssociatedMultiMediaUris(getAssociatedMultiMediaUris());
             stats.objectsAccepted++;
-            return Arrays.asList(specimen);
+            return Collections.singletonList(specimen);
         } catch (Throwable t) {
             handleError(t);
             return null;
         }
     }
-    
+
     /*
      * Temporary (?) modification to allow for enrichment during the specimen import
-     * 
+     *
      * Retrieve taxonomic data from CoL and NSR and add it to the identification(s)
      */
     private void enrichIdentification(Specimen specimen) {
-      
-      // A specimen can have one or more identifications
-      // We need to check all identifications
-      for (SpecimenIdentification identification : specimen.getIdentifications()) {
-        
-        // The scientificNameGroup is the "id" to link with the taxon documents
-        String scientificNameGroup = identification.getScientificName().getScientificNameGroup();
-        
-        String field = "acceptedName.scientificNameGroup";
-        QueryCondition condition = new QueryCondition(field, "EQUALS_IC", scientificNameGroup);
-        QuerySpec query = new QuerySpec();
-        query.addCondition(condition);
-        query.setConstantScore(true);
-        
-        TaxonDao dao = new TaxonDao();
-        QueryResult<Taxon> result;
-        try {
-          result = dao.query(query);
-        }
-        catch (InvalidQueryException e) {
-          throw new ETLRuntimeException(e);
-        }
-        
-        if (result.getTotalSize() == 0) {
-          // No enrichment data available
-          continue;
+
+        // A specimen can have one or more identifications
+        // We need to check all identifications
+        for (SpecimenIdentification identification : specimen.getIdentifications()) {
+
+            // The scientificNameGroup is the "id" to link with the taxon documents
+            String scientificNameGroup = identification.getScientificName().getScientificNameGroup();
+
+            String field = "acceptedName.scientificNameGroup";
+            QueryCondition condition = new QueryCondition(field, "EQUALS_IC", scientificNameGroup);
+            QuerySpec query = new QuerySpec();
+            query.addCondition(condition);
+            query.setConstantScore(true);
+
+            TaxonDao dao = new TaxonDao();
+            QueryResult<Taxon> result;
+            try {
+                result = dao.query(query);
+            } catch (InvalidQueryException e) {
+                throw new ETLRuntimeException(e);
+            }
+
+            if (result.getTotalSize() == 0) {
+                // No enrichment data available
+                continue;
+            }
+
+            List<Taxon> taxa = new ArrayList<>();
+            for (QueryResultItem<Taxon> item : result) {
+                taxa.add(item.getItem());
+            }
+
+            List<TaxonomicEnrichment> enrichment = createEnrichments(taxa);
+            if (enrichment.size() > 0) {
+                identification.setTaxonomicEnrichments(enrichment);
+            }
+
         }
 
-        List<Taxon> taxa = new ArrayList<>();
-        for (QueryResultItem<Taxon> item : result) {
-          taxa.add(item.getItem());
-        }
-        
-        List<TaxonomicEnrichment> enrichment = null;
-        enrichment = createEnrichments(taxa);
-        
-        if (enrichment != null) {
-          identification.setTaxonomicEnrichments(enrichment);
-        }
-        
-      }
-      
     }
 
     /**
-     * getBestTaxonCoverage returns the taxon coverage with the most specific taxonomic rank
+     * getBestTaxonCoverage returns the taxon coverage of the most specific taxonomic rank
      * as a String.
      * domain : most general rank
      * ...
@@ -297,7 +297,8 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
      * @return taxonCoverage
      */
     private String getBestTaxonCoverage(List<Element> elems) {
-        if (elems == null) return null;
+        if (elems == null)
+            return null;
 
         String taxonCoverageStr = null;
         int ordinal = -1;
@@ -312,91 +313,123 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
         return taxonCoverageStr;
     }
 
+    /**
+     * getBestTaxonRank returns the most specific taxon rank from a
+     * collection of higher names
+     * <p>
+     * domain : most general rank
+     * ...
+     * subtribe : most specific rank
+     *
+     * @param elems : The elements of the ncrsHighername element
+     * @return TaxonomicRank
+     */
+    private TaxonomicRank getBestTaxonRank(List<Element> elems) {
+        if (elems == null)
+            return null;
+        TaxonomicRank bestTaxonRank = null;
+        int ordinal = -1;
+        for (Element elem : elems) {
+            String taxonRankStr = val(elem, "abcd:HigherTaxonRank");
+            TaxonomicRank taxonRank = TaxonomicRank.parse(taxonRankStr);
+            if (taxonRank != null && taxonRank.ordinal() > ordinal) {
+                bestTaxonRank = taxonRank;
+                ordinal = taxonRank.ordinal();
+            }
+        }
+        return bestTaxonRank;
+    }
+
+
     private List<ServiceAccessPoint> getAssociatedMultiMediaUris() {
 
-      Element record = input.getRecord();
-      List<Element> fileUriElems = DOMUtil.getDescendants(record, "abcd:fileuri");
-      if (fileUriElems == null) {
-        if (logger.isDebugEnabled()) {
-          debug("Missing or empty element <abcd:fileuri>");
-        }
-        return null;
-      }
-
-      /*
-       * When MultiMediaPublic is set to 0 (<abcd:MultiMediaPublic>0</abcd:MultiMediaPublic>)
-       * this means that no URI's should be added to the document. While that data should not
-       * be have been provided by the source system in the first place, we do a security check
-       * anyway.
-       *
-       * NOTE: When the source record contains more than one multimedia item, the field
-       * MultiMediaPublic will be available more than once (one for every multimedia item).
-       * Since the field multiMediaPublic in the specimen document can be set only once,
-       * we check each value provided.
-       *
-       */
-      List<Element> multimediaPublic = DOMUtil.getDescendants(record, "abcd:MultiMediaPublic");
-      if (multimediaPublic == null) {
-          return null;
-      }
-
-      List<ServiceAccessPoint> serviceAccessPoints = new ArrayList<>(fileUriElems.size());
-      int n = 0;
-      for (Element e : fileUriElems) {
-        if (n >= multimediaPublic.size() && multimediaPublic.get(n++).getTextContent().trim().equals("0")) continue;
-
-        // Retrieve uri
-        String uriStr = e.getTextContent().trim();
-        if (uriStr == null || uriStr.length() == 0) continue;
-
-        // Change http urls to https urls, but leave the rest as they are
-        if (uriStr.startsWith(MEDIALIB_HTTP_URL) && !uriStr.startsWith(MEDIALIB_HTTPS_URL)) {
-          uriStr = uriStr.replace(MEDIALIB_HTTP_URL, MEDIALIB_HTTPS_URL);
+        Element record = input.getRecord();
+        List<Element> fileUriElems = DOMUtil.getDescendants(record, "abcd:fileuri");
+        if (fileUriElems == null) {
+            if (logger.isDebugEnabled()) {
+                debug("Missing or empty element <abcd:fileuri>");
+            }
+            return null;
         }
 
-        // Test validity and/or encode uri when needed
-        try {
-          @SuppressWarnings("unused")
-          URI uri = new URI(uriStr);
-        } catch (URISyntaxException exc) {
-          stats.objectsRejected++;
-          if (!suppressErrors) {
-            logger.error("Invalid image URL for object {}. URI has been skipped: {}",  objectID, uriStr);
-          }
-          continue;
+        /*
+         * When MultiMediaPublic is set to 0 (<abcd:MultiMediaPublic>0</abcd:MultiMediaPublic>)
+         * this means that no URI's should be added to the document. While that data should not
+         * be have been provided by the source system in the first place, we do a security check
+         * anyway.
+         *
+         * NOTE: When the source record contains more than one multimedia item, the field
+         * MultiMediaPublic will be available more than once (one for every multimedia item).
+         * Since the field multiMediaPublic in the specimen document can be set only once,
+         * we check each value provided.
+         *
+         */
+        List<Element> multimediaPublic = DOMUtil.getDescendants(record, "abcd:MultiMediaPublic");
+        if (multimediaPublic == null || multimediaPublic.size() == 0) {
+            return null;
         }
 
-        // Extract medialib ID
-        String medialibId = uriStr.substring(MEDIALIB_URL_START.length());
-        int x = medialibId.indexOf('/');
-        if (x != -1) {
-          medialibId = medialibId.substring(0, x);
-        }
+        List<ServiceAccessPoint> serviceAccessPoints = new ArrayList<>(fileUriElems.size());
+        int n = 0;
+        for (Element e : fileUriElems) {
+            if (multimediaPublic.get(n++).getTextContent().trim().equals("0")) {
+                // Multimedia item is not public
+                continue;
+            }
 
-        // Retrieve mime type
-        String mimeType = mimetypeCache.getMimeType(medialibId);
-        if (mimeType != null) {
-          serviceAccessPoints.add( new ServiceAccessPoint(uriStr, mimeType, DEFAULT_IMAGE_QUALITY) );
-        } else if (uriStr.length() > 0 && mimeType == null) {
-          logger.error("Multimedia URI from object {} has no mime type! URI has been skipped: {}", objectID, uriStr);
+            // Retrieve uri
+            String uriStr = e.getTextContent().trim();
+            if (uriStr == null || uriStr.length() == 0)
+                continue;
+
+            // Change http urls to https urls, but leave the rest as they are
+            if (uriStr.startsWith(MEDIALIB_HTTP_URL) && !uriStr.startsWith(MEDIALIB_HTTPS_URL)) {
+                uriStr = uriStr.replace(MEDIALIB_HTTP_URL, MEDIALIB_HTTPS_URL);
+            }
+
+            // Test validity and/or encode uri when needed
+            try {
+                @SuppressWarnings("unused")
+                URI uri = new URI(uriStr);
+            } catch (URISyntaxException exc) {
+                stats.objectsRejected++;
+                if (!suppressErrors) {
+                    logger.error("Invalid image URL for object {}. URI has been skipped: {}", objectID, uriStr);
+                }
+                continue;
+            }
+
+            // Extract medialib ID
+            String medialibId = uriStr.substring(MEDIALIB_URL_START.length());
+            int x = medialibId.indexOf('/');
+            if (x != -1) {
+                medialibId = medialibId.substring(0, x);
+            }
+
+            // Retrieve mime type
+            String mimeType = mimetypeCache.getMimeType(medialibId);
+            if (mimeType != null) {
+                serviceAccessPoints.add(new ServiceAccessPoint(uriStr, mimeType, DEFAULT_IMAGE_QUALITY));
+            } else if (uriStr.length() > 0 && mimeType == null) {
+                logger.error("Multimedia URI from object {} has no mime type! URI has been skipped: {}", objectID, uriStr);
+            }
         }
-      }
-      return (serviceAccessPoints.size() == 0) ? null : serviceAccessPoints;
+        return (serviceAccessPoints.size() == 0) ? null : serviceAccessPoints;
     }
 
     private List<String> getPreviousSourceIds() {
-      Element record = input.getRecord();
-      List<Element> elems = DOMUtil.getDescendants(record, "abcd:PreviousSourceName");
-      if (elems == null) {
-          return null;
-      }
-      List<String> sourceIds = new ArrayList<>(elems.size());
-      for (Element e : elems) {
-        String id = e.getTextContent().trim();
-        if (id.length() > 0)
-          sourceIds.add(id);
-      }
-      return (sourceIds.size() == 0) ? null : sourceIds;
+        Element record = input.getRecord();
+        List<Element> elems = DOMUtil.getDescendants(record, "abcd:PreviousSourceName");
+        if (elems == null) {
+            return null;
+        }
+        List<String> sourceIds = new ArrayList<>(elems.size());
+        for (Element e : elems) {
+            String id = e.getTextContent().trim();
+            if (id.length() > 0)
+                sourceIds.add(id);
+        }
+        return (sourceIds.size() == 0) ? null : sourceIds;
     }
 
     private SpecimenIdentification getIdentification(Element elem, String collectionType) {
@@ -414,7 +447,8 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
         si.setTypeStatus(getTypeStatus(elem));
         si.setDateIdentified(date(elem, "abcd:IdentificationDate"));
         String identifier = val(elem, "abcd:Identifier");
-        if (identifier != null) si.addIdentifier(new Agent(identifier));
+        if (identifier != null)
+            si.addIdentifier(new Agent(identifier));
         si.setAssociatedFossilAssemblage(val(elem, "abcd:AssociatedFossilAssemblage"));
         si.setAssociatedMineralName(val(elem, "abcd:AssociatedMineralName"));
         si.setRockMineralUsage(val(elem, "abcd:RockMineralUsage"));
@@ -440,22 +474,24 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
         // 1. subspecies
         else if (si.getScientificName().getInfraspecificEpithet() != null && si.getScientificName().getGenusOrMonomial() != null)
             si.setTaxonRank("subspecies");
-        // 2. species
+            // 2. species
         else if (si.getScientificName().getSpecificEpithet() != null && si.getScientificName().getGenusOrMonomial() != null)
             si.setTaxonRank("species");
-        // 3. subgenus
+            // 3. subgenus
         else if (si.getScientificName().getSubgenus() != null && si.getScientificName().getGenusOrMonomial() != null)
             si.setTaxonRank("subgenus");
-        // 4. genus
+            // 4. genus
         else if (si.getScientificName().getGenusOrMonomial() != null)
             si.setTaxonRank("genus");
-        // 5. genus
+            // 5. genus
         else if (fullScientificNameStr != null && fullScientificNameStr.length() > 0)
             si.setTaxonRank("genus");
-        // 6. "higherName"
+            // 6. "higherName"
         else if (taxonCoverageStr != null && taxonCoverageStr.length() > 0) {
             List<Element> higherNames = DOMUtil.getDescendants(elem, "ncrsHighername");
-            si.setTaxonRank(getBestTaxonCoverage(higherNames));
+            TaxonomicRank taxonomicRank = getBestTaxonRank(higherNames);
+            if (taxonomicRank != null)
+                si.setTaxonRank(taxonomicRank.getEnglishName());
         }
 
         // Vernacular name
@@ -511,7 +547,8 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
             String nextBest = getBestTaxonCoverage(elems);
             // 3b. or the value of abcd:taxonCoverage of the first element "as is", when there is still no value
             if (nextBest == null && elems != null) {
-                if (elems.size() > 0) nextBest = val(elems.get(0), "abcd:taxonCoverage");
+                if (elems.size() > 0)
+                    nextBest = val(elems.get(0), "abcd:taxonCoverage");
             }
             sn.setFullScientificName(nextBest);
         }
@@ -563,7 +600,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
         ge.setDateTimeEnd(date(record, "abcd:CollectingEndDate"));
         String s = val(record, "abcd:GatheringAgent");
         if (s != null) {
-            ge.setGatheringPersons(Arrays.asList(new Person(s)));
+            ge.setGatheringPersons(Collections.singletonList(new Person(s)));
         }
         Double lat = dval(record, "abcd:LatitudeDecimal");
         Double lon = dval(record, "abcd:LongitudeDecimal");
@@ -578,7 +615,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
             lat = null;
         }
         if (lat != null || lon != null) {
-            ge.setSiteCoordinates(Arrays.asList(new GatheringSiteCoordinates(lat, lon)));
+            ge.setSiteCoordinates(Collections.singletonList(new GatheringSiteCoordinates(lat, lon)));
         }
         ge.setAssociatedTaxa(getAssociatedTaxa());
         ge.setChronoStratigraphy(getChronoStratigraphyList());
@@ -599,66 +636,64 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
     }
 
     private List<AssociatedTaxon> getAssociatedTaxa() {
-      Element record = input.getRecord();
-      List<Element> elements = DOMUtil.getDescendants(record, "ncrsSynecology");
-      if (elements == null) {
-          return null;
-      }
-      HashMap<TaxonRelationType, String> relationTypeMap = new HashMap<>();
-      for (Element element : elements) {
-        String scientificOrInformalName = val(element, "abcd:ScientificOrInformalName");
-        TaxonRelationType relationType = null;
-        try {
-          relationType = getTaxonRelationType(element);
-          if (relationType == null) {
-            continue;
-          }
-          else if (relationTypeMap.containsKey(relationType) && scientificOrInformalName != null) {
-            relationTypeMap.put(relationType, relationTypeMap.get(relationType).concat(" | " + scientificOrInformalName));
-          } 
-          else if (scientificOrInformalName != null) {
-            relationTypeMap.put(relationType, scientificOrInformalName);
-          }
-        } catch (IllegalArgumentException e){
-          if (!suppressErrors) {
-            warn(e.getMessage());
-            }
-          continue;
+        Element record = input.getRecord();
+        List<Element> elements = DOMUtil.getDescendants(record, "ncrsSynecology");
+        if (elements == null) {
+            return null;
         }
-      }
-      if (relationTypeMap == null || relationTypeMap.size() == 0) {
-        return null;        
-      }
-      ArrayList<AssociatedTaxon> associatedTaxa = new ArrayList<>();
-      for (Entry<TaxonRelationType, String> entry : relationTypeMap.entrySet()) {
-        associatedTaxa.add(new AssociatedTaxon(entry.getValue(), entry.getKey()));
-      }
-      return associatedTaxa;
+        HashMap<TaxonRelationType, String> relationTypeMap = new HashMap<>();
+        for (Element element : elements) {
+            String scientificOrInformalName = val(element, "abcd:ScientificOrInformalName");
+            TaxonRelationType relationType;
+            try {
+                relationType = getTaxonRelationType(element);
+                if (relationType == null) {
+                    continue;
+                } else if (relationTypeMap.containsKey(relationType) && scientificOrInformalName != null) {
+                    relationTypeMap.put(relationType, relationTypeMap.get(relationType).concat(" | " + scientificOrInformalName));
+                } else if (scientificOrInformalName != null) {
+                    relationTypeMap.put(relationType, scientificOrInformalName);
+                }
+            } catch (IllegalArgumentException e) {
+                if (!suppressErrors) {
+                    warn(e.getMessage());
+                }
+                continue;
+            }
+        }
+        if (relationTypeMap.size() == 0) {
+            return null;
+        }
+        ArrayList<AssociatedTaxon> associatedTaxa = new ArrayList<>();
+        for (Entry<TaxonRelationType, String> entry : relationTypeMap.entrySet()) {
+            associatedTaxa.add(new AssociatedTaxon(entry.getValue(), entry.getKey()));
+        }
+        return associatedTaxa;
     }
 
     private List<NamedArea> getNamedAreas() {
-      Element record = input.getRecord();
-      List<Element> elements = DOMUtil.getDescendants(record, "ncrsNamedAreas");
-      if (elements == null) {
-          return null;
-      }
-      List<NamedArea> namedAreas = new ArrayList<>();
-      for (Element element : elements) {
-        AreaClass areaClass = null;
-        try {
-          areaClass = getAreaClass(element);
-        } catch (IllegalArgumentException ex) {
-          if (!suppressErrors) {
-              warn(ex.getMessage());
-          }
-          continue;
+        Element record = input.getRecord();
+        List<Element> elements = DOMUtil.getDescendants(record, "ncrsNamedAreas");
+        if (elements == null) {
+            return null;
         }
-        String areaName = val(element, "abcd:AreaName");
-        if (areaClass != null && areaName != null) {          
-          namedAreas.add(new NamedArea(areaClass, areaName));
-        } 
-      }
-      return (namedAreas == null || namedAreas.size() == 0) ? null : namedAreas;
+        List<NamedArea> namedAreas = new ArrayList<>();
+        for (Element element : elements) {
+            AreaClass areaClass;
+            try {
+                areaClass = getAreaClass(element);
+            } catch (IllegalArgumentException ex) {
+                if (!suppressErrors) {
+                    warn(ex.getMessage());
+                }
+                continue;
+            }
+            String areaName = val(element, "abcd:AreaName");
+            if (areaClass != null && areaName != null) {
+                namedAreas.add(new NamedArea(areaClass, areaName));
+            }
+        }
+        return (namedAreas.size() == 0) ? null : namedAreas;
     }
 
     private List<ChronoStratigraphy> getChronoStratigraphyList() {
@@ -799,24 +834,24 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 
     private boolean hasStatusDeleted() {
         Element hdr = DOMUtil.getChild(input.getRecord(), "header");
-        if (!hdr.hasAttribute("status"))
+        if (hdr == null || !hdr.hasAttribute("status"))
             return false;
         return hdr.getAttribute("status").equals("deleted");
     }
 
     private OffsetDateTime getDateLastEdited() {
-      Element hdr = DOMUtil.getChild(input.getRecord(), "header");
-      String dateStamp = val(hdr, "datestamp");
-      if (dateStamp != null) {
-        ESDateInput input = new ESDateInput(dateStamp);
-        OffsetDateTime odt = input.parseAsOffsetDateTime();
-        if (odt == null && !suppressErrors) {
-          warn("Invalid date in element <datestamp>: %s", dateStamp);
+        Element hdr = DOMUtil.getChild(input.getRecord(), "header");
+        String dateStamp = val(hdr, "datestamp");
+        if (dateStamp != null) {
+            ESDateInput input = new ESDateInput(dateStamp);
+            OffsetDateTime odt = input.parseAsOffsetDateTime();
+            if (odt == null && !suppressErrors) {
+                warn("Invalid date in element <datestamp>: %s", dateStamp);
+            }
+            return odt;
         }
-        return odt;
-      }
-      return null;
-  }
+        return null;
+    }
 
     private String getPhaseOrStage() {
         String raw = val(input.getRecord(), "abcd:PhaseOrStage");
@@ -861,27 +896,27 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
     }
 
     private AreaClass getAreaClass(Element elem) {
-      String raw = val(elem, "abcd:AreaClass");
-      try {
-        return areaClassNormalizer.map(raw);
-      } catch (UnmappedValueException e) {
-        if (logger.isDebugEnabled()) {
-          debug(e.getMessage());
+        String raw = val(elem, "abcd:AreaClass");
+        try {
+            return areaClassNormalizer.map(raw);
+        } catch (UnmappedValueException e) {
+            if (logger.isDebugEnabled()) {
+                debug(e.getMessage());
+            }
+            return null;
         }
-        return null;
-      }
     }
 
     private TaxonRelationType getTaxonRelationType(Element elem) {
-      String raw = val(elem, "abcd:ResultRole");
-      try {
-        return trtNormalizer.map(raw);
-      } catch (UnmappedValueException e) {
-        if (logger.isDebugEnabled()) {
-          debug(e.getMessage());
+        String raw = val(elem, "abcd:ResultRole");
+        try {
+            return trtNormalizer.map(raw);
+        } catch (UnmappedValueException e) {
+            if (logger.isDebugEnabled()) {
+                debug(e.getMessage());
+            }
+            return null;
         }
-        return null;
-      }
     }
 
     private static final String MSG_BAD_DATE = "Invalid date in element %s: \"%s\"";

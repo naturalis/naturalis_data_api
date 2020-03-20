@@ -4,15 +4,16 @@ ENV LANG en_US.UTF-8
 
 RUN mkdir /etc/nba
 
-ADD nba.properties /etc/nba/nba.properties
-ADD log4j2.xml /etc/nba/log4j2.xml
+#ADD nba.properties /etc/nba/nba.properties
+#ADD log4j2.xml /etc/nba/log4j2.xml
 ADD standalone.xml /opt/jboss/wildfly/standalone/configuration/standalone.xml
 
 RUN yum clean all && yum install -y git
 
-RUN git clone https://github.com/naturalis/DWCAConfig.git --branch v004
+RUN git clone https://github.com/naturalis/DWCAConfig.git
 RUN mv DWCAConfig /etc/nba/dwca
-
+ADD update_dwca_config.sh /usr/local/bin/update_dwca_config.sh
+RUN chmod 755 /usr/local/bin/update_dwca_config.sh
 RUN git clone https://github.com/naturalis/nba-fieldinfo-metadata --branch 2
 RUN mv nba-fieldinfo-metadata /etc/nba/metadata
 

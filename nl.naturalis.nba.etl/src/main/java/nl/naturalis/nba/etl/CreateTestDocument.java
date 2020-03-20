@@ -503,12 +503,23 @@ public class CreateTestDocument {
   
   private static DefaultClassification createDefaultClassification() {
     DefaultClassification defaultClassification = new DefaultClassification();
+    defaultClassification.setDomain(reverseString("domain"));
     defaultClassification.setKingdom(reverseString("kingdom"));
+    defaultClassification.setSubKingdom(reverseString("subKingdom"));
     defaultClassification.setPhylum(reverseString("phylum"));
+    defaultClassification.setSubPhylum(reverseString("subPhylum"));
+    defaultClassification.setSuperClass(reverseString("superClass"));
     defaultClassification.setClassName(reverseString("className"));
+    defaultClassification.setSubClass(reverseString("subClass"));
+    defaultClassification.setSuperOrder(reverseString("superOrder"));
     defaultClassification.setOrder(reverseString("order"));
+    defaultClassification.setSubOrder(reverseString("subOrder"));
+    defaultClassification.setInfraOrder(reverseString("infraOrder"));
     defaultClassification.setSuperFamily(reverseString("superFamily"));
     defaultClassification.setFamily(reverseString("family"));
+    defaultClassification.setSubFamily(reverseString("subFamily"));
+    defaultClassification.setTribe(reverseString("tribe"));
+    defaultClassification.setSubTribe(reverseString("subTribe"));
     defaultClassification.setGenus(reverseString("genus"));
     defaultClassification.setSubgenus(reverseString("subgenus"));
     defaultClassification.setSpecificEpithet(reverseString("specificEpithet"));

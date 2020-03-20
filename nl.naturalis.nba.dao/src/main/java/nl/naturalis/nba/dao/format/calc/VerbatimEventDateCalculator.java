@@ -44,7 +44,7 @@ public class VerbatimEventDateCalculator implements ICalculator {
 		if (endDate == null || isSameDay(beginDate, endDate)) {
 			return formatISO8601ShortDate(beginDate);
 		}
-		return formatISO8601ShortDate(beginDate) + " / " + formatISO8601ShortDate(endDate);
+		return formatISO8601ShortDate(beginDate) + "/" + formatISO8601ShortDate(endDate);
 	}
 	
 	private static boolean isSameDay(OffsetDateTime begin, OffsetDateTime end)
@@ -52,12 +52,11 @@ public class VerbatimEventDateCalculator implements ICalculator {
 	  if (begin == null || end == null) return false;
 	  ZonedDateTime b = begin.atZoneSameInstant(ZoneId.of("Europe/Paris"));
 	  ZonedDateTime e = end.atZoneSameInstant(ZoneId.of("Europe/Paris"));
-	  if (b.getYear() == e.getYear() && 
-	      b.getMonth() == e.getMonth() &&
-	      b.getDayOfMonth() == e.getDayOfMonth()) {
-	    return true;
-	    }
-	  return false;
+	  return (
+	  		b.getYear() == e.getYear() &&
+			b.getMonth() == e.getMonth() &&
+			b.getDayOfMonth() == e.getDayOfMonth()
+	  );
 	}
 
 }

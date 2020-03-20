@@ -15,10 +15,17 @@
 # by the NBA REST service. This directory will contain the "dwca"
 # "metadata" subdirectories required by the REST service.
 nba.api.install.dir=/etc/nba
+
 # The top directory for configuration files and other assets used
 # by the ETL software. This directory will contain the "sh", "conf"
 # and "lib" subdirectories required to run the ETL software.
 nba.etl.install.dir=/path/to/nba/import/dir
+
+# The base url of the nba. This setting is used in the dao module.
+# (e.g. /getRestServices). When no value is set, the dao module
+# try to establish the base url itself, but this may produce
+# unexpected results in the context of a dockerised installation.
+nba.baseurl=https://api.biodiversitydata.nl/
 
 
 # ***************

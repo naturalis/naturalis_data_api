@@ -1,3 +1,15 @@
+RELEASE NOTES v 2.21
+* Moved to Elasticsearch 7 and Wildfly 18
+* Several changes to the ETL procedure for data
+  from the source systems Brahms and CRS, all
+  intended to increase the level of detail of
+  taxonomic data
+* Extensions to the data model to achieve
+  finer grained information storage and
+  retrieval. I.e. TaxonomicRank has been
+  extended with several ranks.
+* Several (minor) bug fixes
+
 RELEASE NOTES v 2.20.2
 * A few minor modifications to the ETL module 
   to address changes in some source systems 

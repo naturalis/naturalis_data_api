@@ -139,16 +139,14 @@
         <module>nl.naturalis.nba.client</module>
     </modules>
 
-    <distributionManagement>
+   <distributionManagement>
         <repository>
-            <id>naturalis-releases</id>
-            <name>Internal Release Repository</name>
-            <url>http://145.136.242.169:8080/repository/internal/</url>
+            <id>naturalis</id>
+            <url>http://mvnrepository.naturalis.io:8081/repository/naturalis/</url>
         </repository>
         <snapshotRepository>
-            <id>naturalis-snapshots</id>
-            <name>Internal Snapshot Repository</name>
-            <url>http://145.136.242.169:8080/repository/snapshots/</url>
+            <id>naturalis</id>
+            <url>http://mvnrepository.naturalis.io:8081/repository/naturalis/</url>
         </snapshotRepository>
     </distributionManagement>
 

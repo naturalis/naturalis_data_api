@@ -41,7 +41,7 @@ public class DirtyScroller implements IScroller {
 
 	private SearchRequest request;
 
-	private int batchSize = 10000;
+	private int batchSize = 5000;
 	private int from = 0;
 	private int size = 0;
 

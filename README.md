@@ -1,4 +1,4 @@
-**NOTE*:* Starting with release 2.22 this repository has moved to gitlab.com: [https://gitlab.com/naturalis/bii/nba/naturalis_data_api](https://gitlab.com/naturalis/bii/nba/naturalis_data_api)
+**NOTE**: Starting with release 2.22 this repository has moved to gitlab.com: [https://gitlab.com/naturalis/bii/nba/naturalis_data_api](https://gitlab.com/naturalis/bii/nba/naturalis_data_api)
 
 The github repo has been archived and will no longer be updated!
 
